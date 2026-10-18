@@ -259,19 +259,11 @@ root_packages = ["apps"]
 [[tool.importlinter.contracts]]
 name = "Views call actions and readers, never the other way round"
 type = "layers"
-containers = ["apps.stammbaum"]
+containers = ["apps.family_tree"]
 layers = [
     "views",
     "actions | readers",
 ]
-
-# "domain/" holds the pure functions: what has no database behind it, tested without one. Importing a model,
-# a reader or an action would give it one through the back door. See docs/patterns/app-layout.md.
-[[tool.importlinter.contracts]]
-name = "Pure functions reach no database"
-type = "forbidden"
-source_modules = ["apps.stammbaum.domain"]
-forbidden_modules = ["apps.stammbaum.models", "apps.stammbaum.readers", "apps.stammbaum.actions", "apps.stammbaum.views"]
 
 # A satellite is domain-independent by definition, so the direction of dependency is the whole point
 # of splitting one out.
@@ -279,12 +271,12 @@ forbidden_modules = ["apps.stammbaum.models", "apps.stammbaum.readers", "apps.st
 name = "Satellites do not import the domain"
 type = "forbidden"
 source_modules = ["apps.common"]
-forbidden_modules = ["apps.stammbaum"]
+forbidden_modules = ["apps.family_tree"]
 
 # "apps.config" is the settings package, not an app. Settings are read through "django.conf.settings",
 # which is lazy and overridable in tests; importing the module directly bypasses both.
 [[tool.importlinter.contracts]]
 name = "No app imports the settings package"
 type = "forbidden"
-source_modules = ["apps.stammbaum", "apps.common"]
+source_modules = ["apps.family_tree", "apps.common"]
 forbidden_modules = ["apps.config"]

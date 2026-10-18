@@ -32,15 +32,15 @@ A signal is a piece of state in the page, written `$name` in an expression. Decl
 used, with its starting value, and bind or read it from there:
 
 ```html
-<div data-signals="{suche: ''}">
-    <input data-bind="suche" data-on:input__debounce.300ms="@get('{% url 'stammbaum:personen-suche' %}')">
-    <span data-text="$suche"></span>
+<div data-signals="{search: ''}">
+    <input data-bind="search" data-on:input__debounce.300ms="@get('{% url 'family_tree:person-search-view' %}')">
+    <span data-text="$search"></span>
 </div>
 ```
 
 - **Signals are view state, not data.** What a person has entered lives in the database; a signal
   holds what the screen currently shows: the search term, the zoom, the selected card.
-- **Names are German and lower case**, like the domain: `$suche`, `$zoom`, `$auswahl`.
+- **Names are English and lower case**, like all code: `$search`, `$zoom`, `$selection`.
 - The server reads them with `read_signals(request)` and sets them with
   `ServerSentEventGenerator.patch_signals({...})`.
 
@@ -55,11 +55,11 @@ from django_cotton import render_component
 
 
 @datastar_response
-def personen_suche_view(request):
+def person_search_view(request):
     signals = read_signals(request) or {}
-    personen = get_personen(suche=signals.get("suche", ""))
+    persons = search_persons(search=signals.get("search", ""))
     yield ServerSentEventGenerator.patch_elements(
-        render_component(request, "personen.liste", personen=personen),
+        render_component(request, "person.list", persons=persons),
     )
 ```
 
@@ -82,9 +82,9 @@ def person_view(request, pk):
     person = get_person(pk=pk)
     return render_page(
         request=request,
-        template="stammbaum/person.html",
+        template="family_tree/person.html",
         context={"person": person},
-        url=reverse("stammbaum:person-view", kwargs={"pk": pk}),
+        url=reverse("family_tree:person-view", kwargs={"pk": pk}),
     )
 ```
 

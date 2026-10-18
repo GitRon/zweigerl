@@ -6,7 +6,7 @@ expensive the class of bug is to find later, not by how often it fires.
 | # | File | Lens | Normative docs the shard must read first |
 |---|---|---|---|
 | 01 | `01-correctness.md` | Correctness, actions, readers and datastar wiring | [app-layout](../../../../docs/patterns/app-layout.md), [datastar](../../../../docs/patterns/datastar.md), [components](../../../../docs/patterns/components.md) |
-| 02 | `02-data-layer.md` | Data layer, Belege, privacy and migrations | [belege](../../../../docs/patterns/belege.md), [data-storage](../../../../docs/patterns/data-storage.md), [app-layout](../../../../docs/patterns/app-layout.md) |
+| 02 | `02-data-layer.md` | Data layer, Belege, privacy and migrations | [belege](../../../../docs/patterns/evidence.md), [data-storage](../../../../docs/patterns/data-storage.md), [app-layout](../../../../docs/patterns/app-layout.md) |
 | 03 | `03-tests.md` | Test honesty and coverage substance | [testing-strategy](../../../../docs/patterns/testing-strategy.md), [testing-conventions](../../../../docs/patterns/testing-conventions.md), [testing-data](../../../../docs/patterns/testing-data.md), [mocking](../../../../docs/patterns/mocking.md), [coverage](../../../../docs/patterns/coverage.md) |
 | 04 | `04-conformance.md` | Spec conformance and simplification | `spec.md`, [app-layout](../../../../docs/patterns/app-layout.md), [visual-identity](../../../../docs/patterns/visual-identity.md), [responsive-layout](../../../../docs/patterns/responsive-layout.md) |
 
@@ -23,7 +23,7 @@ changed - which relationship name, which reliability, which date sorts first.
 
 **02 Data layer, Belege, privacy and migrations.** An Angabe that can end up claiming *belegt* without a
 source and not showing as *unbelegt*, or *unbelegt* stored instead of derived. An uncertain date stored
-other than the way [Belege](../../../../docs/patterns/belege.md) decides. A real person's name, date,
+other than the way [Belege](../../../../docs/patterns/evidence.md) decides. A real person's name, date,
 place, document or photo in a fixture, a test or an example - the one finding that is never a nitpick. A
 file served without the login check, or an upload that keeps its GPS data. Queries in loops; missing
 `select_related`/`prefetch_related` on a path the story made hot, which in a family tree is every walk
@@ -44,7 +44,9 @@ page's markup. Tests that would still pass if the story's change were reverted.
 satisfy, and behaviour in the diff that nothing in `spec.md` asked for. Something `spec.md` puts under
 "Nicht Teil davon" built anyway. Code duplicated from somewhere it could have been reused. Abstraction
 introduced for one caller. Dead branches left behind by the change. A colour, typeface or width that the
-visual identity or the responsive layout rules out.
+visual identity or the responsive layout rules out. A German identifier, path, URL, choice value or
+signal, or English text a person reads - see
+[locale and language](../../../../docs/contributing/settings.md#locale-and-language).
 
 ## Shard prompt template
 
@@ -85,7 +87,7 @@ engineer would not raise in review; changes that are obviously intentional parts
 Append each surviving finding in exactly this format:
 
 ```finding
-file: apps/stammbaum/actions/person.py
+file: apps/family_tree/actions/person.py
 line: 42
 severity: high | medium | low
 category: <short-kebab-slug>

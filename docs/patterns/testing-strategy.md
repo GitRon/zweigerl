@@ -23,7 +23,7 @@ only renders what a reader returns has one.
 
 ## Actions
 
-- Import and call the action **directly**, keyword arguments only: `create_person(vorname="Anna", ...)`.
+- Import and call the action **directly**, keyword arguments only: `create_person(given_names="Anna", ...)`.
 - Build what it needs with [factories](testing-data.md); most action tests need `django_db`.
 - At most two assertions per test: what the action returns and the database side effect.
 - One test per branch: the happy path, each refusal, each edge case worth naming.

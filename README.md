@@ -29,7 +29,7 @@ rather than inferring the conventions from nearby code.
 - [Linting](docs/contributing/linting.md) — ruff, boa-restrictor and its `ZBR` rules, import-linter,
   complexipy, pre-commit
 - [Settings](docs/contributing/settings.md) — the settings modules and the environment they read,
-  templates, static files, locale, logging
+  templates, static files, locale and which language goes where, logging
 - [Commit messages](docs/contributing/commit-messages.md) — and the `#<n>: ` that starts a pull request's title
 
 ### Architecture
@@ -38,10 +38,10 @@ rather than inferring the conventions from nearby code.
   bus, business rules as database constraints, and what has to sit at the app root
 - [Data storage and privacy](docs/patterns/data-storage.md) — no real family data in the repository, the
   data directory outside it, the login and the lockout
-- [Persons and families](docs/patterns/familie.md) — Person, Partnerschaft, Eltern-Kind and Geschwister after
-  GEDCOM, derived siblings, the Ausgangsperson, the Familie Huber fixture
-- [Belege](docs/patterns/belege.md) — Angabe, Quelle and Zitat, reliability, the derived "unbelegt", one value
-  per Angabe, uncertain dates
+- [Persons and families](docs/patterns/family.md) — `Person`, `Partnership`, `ParentChild` and `SiblingPair` after
+  GEDCOM, derived siblings, the home person, the Familie Huber fixture
+- [Belege](docs/patterns/evidence.md) — facts, sources and citations, reliability, "unbelegt", uncertain
+  dates *(scaffold, #8)*
 - [datastar](docs/patterns/datastar.md) — the pinned version, signals, fragments, pages, CSRF, toasts and
   when JavaScript of our own is allowed
 - [Template components](docs/patterns/components.md) — a reused or patched template is a cotton

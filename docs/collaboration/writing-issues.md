@@ -59,7 +59,7 @@ claim points at the [mockup](https://claude.ai/artifact/CAPCWJfqucCVNkd5U1gEpj),
 **Als** Familienforscher **möchte ich** …, **damit** …
 
 <!-- What the code does today, with references. -->
-`create_person` legt … an (`apps/stammbaum/actions/person.py:23`), aber …
+`create_person` legt … an (`apps/family_tree/actions/person.py:23`), aber …
 
 **Warum es zählt:** <!-- What it costs. Consequences, not adjectives. -->
 
@@ -108,7 +108,7 @@ Read [AGENTS.md](../../AGENTS.md) and the docs it points at for the area first.
 - Is it already there, or half there? Partly-implemented changes the issue from "build this" to "finish
   this".
 - Does the direction fit the patterns — [where code goes](../patterns/app-layout.md) for actions and
-  readers, [Belege](../patterns/belege.md), [data storage](../patterns/data-storage.md),
+  readers, [Belege](../patterns/evidence.md), [data storage](../patterns/data-storage.md),
   [datastar](../patterns/datastar.md), [testing strategy](../patterns/testing-strategy.md)?
 - What does it touch, and which existing tests will move? What breaks if it lands?
 
