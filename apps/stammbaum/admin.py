@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.forms.models import BaseInlineFormSet
 
-from apps.stammbaum.models import Einstellung, ElternKind, Geschwister, Partnerschaft, Person
+from apps.stammbaum.models import Angabe, Einstellung, ElternKind, Geschwister, Partnerschaft, Person, Quelle, Zitat
 
 # Both pair models are found by either person's name.
 PAAR_SUCHFELDER = ("person_a__familienname", "person_a__vornamen", "person_b__familienname", "person_b__vornamen")
@@ -52,7 +52,8 @@ class PartnerschaftAlsAInline(admin.TabularInline):
     model = Partnerschaft
     fk_name = "person_a"
     verbose_name_plural = "Partnerschaften"
-    fields = ("person_b", "art", "beginn", "ende")
+    fields = ("person_b", "art")
+    show_change_link = True
     autocomplete_fields = ("person_b",)
     extra = 0
 
@@ -65,8 +66,26 @@ class PartnerschaftAlsBInline(PartnerschaftAlsAInline):
 
     fk_name = "person_b"
     verbose_name_plural = "Partnerschaften (als Partner eingetragen)"
-    fields = ("person_a", "art", "beginn", "ende")
+    fields = ("person_a", "art")
     autocomplete_fields = ("person_a",)
+    extra = 0
+
+
+class AngabeInline(admin.TabularInline):
+    """
+    The Angaben of a person or a couple. Their Zitate are on the Angabe's own page, one click away.
+    """
+
+    model = Angabe
+    fields = ("art", "bezeichnung", "wert", "datum_art", "datum_1", "datum_2", "genauigkeit", "verlaesslichkeit")
+    show_change_link = True
+    extra = 0
+
+
+class ZitatInline(admin.TabularInline):
+    model = Zitat
+    fields = ("quelle", "stelle")
+    autocomplete_fields = ("quelle",)
     extra = 0
 
 
@@ -76,15 +95,16 @@ class PersonAdmin(admin.ModelAdmin):
     list_filter = ("geschlecht", "lebensstatus")
     search_fields = ("vornamen", "familienname", "rufname")
     fields = ("vornamen", "familienname", "rufname", "geschlecht", "lebensstatus", "gedcom_roh")
-    inlines = (ElternInline, KinderInline, PartnerschaftAlsAInline, PartnerschaftAlsBInline)
+    inlines = (AngabeInline, ElternInline, KinderInline, PartnerschaftAlsAInline, PartnerschaftAlsBInline)
 
 
 @admin.register(Partnerschaft)
 class PartnerschaftAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "art", "beginn", "ende")
+    list_display = ("__str__", "art")
     list_filter = ("art",)
     search_fields = PAAR_SUCHFELDER
     autocomplete_fields = ("person_a", "person_b")
+    inlines = (AngabeInline,)
 
 
 @admin.register(ElternKind)
@@ -115,3 +135,40 @@ class EinstellungAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+@admin.register(Angabe)
+class AngabeAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "person", "partnerschaft", "verlaesslichkeit")
+    list_filter = ("art", "verlaesslichkeit")
+    search_fields = ("person__familienname", "person__vornamen", "wert", "bezeichnung")
+    autocomplete_fields = ("person", "partnerschaft")
+    fields = (
+        "person",
+        "partnerschaft",
+        "art",
+        "bezeichnung",
+        "wert",
+        "datum_art",
+        "datum_1",
+        "datum_2",
+        "genauigkeit",
+        "verlaesslichkeit",
+        "gedcom_roh",
+    )
+    inlines = (ZitatInline,)
+
+
+@admin.register(Quelle)
+class QuelleAdmin(admin.ModelAdmin):
+    list_display = ("titel", "art")
+    list_filter = ("art",)
+    search_fields = ("titel", "beschreibung")
+    autocomplete_fields = ("personen",)
+
+
+@admin.register(Zitat)
+class ZitatAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "stelle")
+    search_fields = ("quelle__titel", "stelle")
+    autocomplete_fields = ("angabe", "quelle")
