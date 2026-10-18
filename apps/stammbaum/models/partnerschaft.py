@@ -1,0 +1,52 @@
+from django.core.exceptions import ValidationError
+from django.db import models
+
+from apps.stammbaum.models.gedcom import GedcomRohMixin
+from apps.stammbaum.models.paar import GeordnetesPaarMixin
+
+
+class Partnerschaft(GeordnetesPaarMixin, GedcomRohMixin):
+    """
+    Two people as a couple - GEDCOM's FAM with HUSB and WIFE, MARR and DIV. The through model of
+    Person.partner. A pair is stored once, the lower primary key as "person_a" - see "ordne_paar".
+    """
+
+    class Art(models.TextChoices):
+        EHE = "ehe", "Ehe"
+        LEBENSGEMEINSCHAFT = "lebensgemeinschaft", "Lebensgemeinschaft"
+        UNBEKANNT = "unbekannt", "unbekannt"
+
+    person_a = models.ForeignKey(
+        "stammbaum.Person", verbose_name="Person", on_delete=models.CASCADE, related_name="partnerschaften_als_a"
+    )
+    person_b = models.ForeignKey(
+        "stammbaum.Person", verbose_name="Partner", on_delete=models.CASCADE, related_name="partnerschaften_als_b"
+    )
+    art = models.CharField("Art", max_length=20, choices=Art, default=Art.UNBEKANNT)
+    # GEDCOM DATE syntax ("1985", "ABT 1931", "BET 1950 AND 1952") until the structured uncertain date of
+    # docs/patterns/belege.md arrives with #8, which replaces both.
+    beginn = models.CharField(
+        "Beginn", max_length=50, blank=True, help_text="GEDCOM-Datum, z. B. „1985“ oder „ABT 1931“"
+    )
+    ende = models.CharField("Ende", max_length=50, blank=True, help_text="GEDCOM-Datum, z. B. „2009“")
+
+    class Meta:
+        verbose_name = "Partnerschaft"
+        verbose_name_plural = "Partnerschaften"
+        constraints = (
+            models.CheckConstraint(
+                condition=models.Q(person_a__lt=models.F("person_b")), name="partnerschaft_paar_geordnet"
+            ),
+            models.UniqueConstraint(fields=("person_a", "person_b"), name="partnerschaft_einmal_pro_paar"),
+        )
+
+    def __str__(self) -> str:
+        return f"{self.person_a} & {self.person_b}"
+
+    def clean(self) -> None:
+        if self.person_a_id is not None and self.person_a_id == self.person_b_id:
+            raise ValidationError("Niemand ist sein eigener Partner.")
+        self.ordne_paar()
+
+    def enthaelt(self, *, person_id: int) -> bool:
+        return person_id in (self.person_a_id, self.person_b_id)
