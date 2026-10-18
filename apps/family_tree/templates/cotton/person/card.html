@@ -2,9 +2,10 @@
 {# The person card beside the tree (#12, #13): who was selected there, shown while "$selection" is still them. #}
 {# The head says who they are and what they are to the home person; the pencil beside the name swaps it for #}
 {# the form "Name & Status bearbeiten" (#30) while "$editing" is this person, "$status" being the status #}
-{# chosen there. The tabs, switched by "$tab", hold every fact with its Beleg, the sources with their scans #}
-{# (#15) and everyone directly related, each link with its button to remove it; "Verwandte hinzufügen" asks #}
-{# for a new one (#18), "Löschen" what deleting the person would take with it (#19). #}
+{# chosen there. The tabs, switched by "$tab", hold every fact with its Beleg - added, changed and removed in #}
+{# place (#14) - the sources with their scans (#15) and everyone directly related, each link with its button #}
+{# to remove it; "Verwandte hinzufügen" asks for a new one (#18), "Löschen" what deleting the person would #}
+{# take with it (#19). #}
 {# Closing it - the button, or Escape on the canvas - moves #}
 {# the address back to the start page, so a reload does not open it again. Below "lg" it lies over the tree #}
 {# instead of beside it - see docs/patterns/responsive-layout.md. #}
@@ -84,26 +85,16 @@
         {% if card.facts %}
             <ul class="flex flex-col">
                 {% for fact in card.facts %}
-                    <li id="fact-{{ fact.fact.pk }}" class="flex flex-col gap-1 border-b border-card-edge py-3">
-                        <div class="flex items-center justify-between gap-3">
-                            <span class="text-sm text-ink-muted">{{ fact.label }}</span>
-                            {% if fact.reliability %}
-                                <c-common.label :text="fact.reliability" />
-                            {% endif %}
-                        </div>
-                        <p>{{ fact.text }}</p>
-                        {% for citation in fact.citations %}
-                            <p class="text-sm">Beleg: {{ citation.source.title }}{% if citation.page %}, {{ citation.page }}{% endif %}</p>
-                        {% endfor %}
-                        {% if fact.undocumented %}
-                            <p><c-common.label text="unbelegt, Quelle fehlt" tone="brick" /></p>
-                        {% endif %}
-                    </li>
+                    <li class="border-b border-card-edge py-3"><c-fact.entry :entry="fact" :person="person" /></li>
                 {% endfor %}
             </ul>
         {% else %}
             <p class="py-8 text-center text-ink-muted">Zu dieser Person steht noch nix da.</p>
         {% endif %}
+        {# Swapped for the form for a new fact (#14), which carries the same id. #}
+        <div id="fact-new" class="pt-3">
+            <c-common.button data-on:click="@get('{% url 'family_tree:new-fact-view' pk=person.pk %}')">Angabe hinzufügen</c-common.button>
+        </div>
     </section>
     <section id="person-card-sources" role="tabpanel" aria-labelledby="person-card-tab-sources" style="display: none" data-show="$tab == 'sources'">
         <c-source.list :sources_tab="card.sources_tab" />

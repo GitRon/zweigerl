@@ -18,9 +18,28 @@ def test_facts__lists_a_persons_facts_in_date_order_undated_last():
     death = FactFactory(person=lena, kind=Fact.Kind.DEATH, date_1=datetime.date(2009, 11, 14))
     birth = FactFactory(person=lena)
     FactFactory()
-    FactFactory(person=None, partnership=PartnershipFactory(person_a=lena), kind=Fact.Kind.MARRIAGE)
 
     assert list(facts(person=lena)) == [birth, death, occupation]
+
+
+@pytest.mark.django_db
+def test_facts__include_those_of_the_persons_partnerships_on_either_side():
+    lena = PersonFactory()
+    first = FactFactory(
+        person=None,
+        partnership=PartnershipFactory(person_a=lena),
+        kind=Fact.Kind.MARRIAGE,
+        date_1=datetime.date(1958, 5, 3),
+    )
+    second = FactFactory(
+        person=None,
+        partnership=PartnershipFactory(person_b=lena),
+        kind=Fact.Kind.MARRIAGE,
+        date_1=datetime.date(1970, 6, 1),
+    )
+    FactFactory(person=None, partnership=PartnershipFactory(), kind=Fact.Kind.MARRIAGE)
+
+    assert list(facts(person=lena)) == [first, second]
 
 
 @pytest.mark.django_db

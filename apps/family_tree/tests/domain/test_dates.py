@@ -8,6 +8,7 @@ from apps.family_tree.domain.dates import (
     UncertainDate,
     date_text,
     from_gedcom,
+    from_german,
     lifespan,
     sort_date,
     to_gedcom,
@@ -165,3 +166,52 @@ def test_lifespan_without_a_birth_date():
 
 def test_lifespan_when_nothing_is_known():
     assert lifespan(birth=None, death=None, deceased=True) == "—"
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("1931", "1931"),
+        ("März 1989", "MAR 1989"),
+        ("3.1989", "MAR 1989"),
+        ("12. März 1989", "12 MAR 1989"),
+        ("12 märz 1989", "12 MAR 1989"),
+        ("12.3.1989", "12 MAR 1989"),
+        ("12. 03. 1989", "12 MAR 1989"),
+        ("Januar 1989", "JAN 1989"),
+        ("Feber 1989", "FEB 1989"),
+        ("um 1931", "ABT 1931"),
+        ("ca. 1931", "ABT 1931"),
+        ("etwa 1931", "ABT 1931"),
+        ("vor April 1850", "BEF APR 1850"),
+        ("nach 1850", "AFT 1850"),
+        ("  zwischen 1820  und 1825 ", "BET 1820 AND 1825"),
+    ],
+)
+def test_from_german_reads_what_a_person_types(text, expected):
+    assert from_german(text=text) == from_gedcom(text=expected)
+
+
+@pytest.mark.parametrize(
+    "text", ["12 MAR 1989", "JAN 1989", "ABT 1931", "BEF APR 1850", "AFT 1850", "BET 1820 AND 1825"]
+)
+def test_from_german_reads_what_date_text_writes(text):
+    date = from_gedcom(text=text)
+
+    assert from_german(text=date_text(date=date)) == date
+
+
+@pytest.mark.parametrize(
+    ("text", "message"),
+    [
+        ("", "Kein Datum angegeben"),
+        ("irgendwann", "kein Datum, das Zweigerl lesen kann"),
+        ("Brumaire 1799", "„brumaire“ ist kein Monat"),
+        ("31.2.1989", "kein gültiges Datum"),
+        ("zwischen März 1820 und 1825", "beide Daten müssen gleich genau sein"),
+        ("zwischen 1825 und 1820", "das zweite Datum liegt vor dem ersten"),
+    ],
+)
+def test_from_german_refuses_what_it_cannot_read(text, message):
+    with pytest.raises(ValueError, match=message):
+        from_german(text=text)
