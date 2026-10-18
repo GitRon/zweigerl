@@ -232,7 +232,7 @@ yarn-error.log
 package-lock.json
 
 # The compiled Tailwind stylesheet. "yarn build:css" writes it from "assets/css/tailwind.css"; see
-# README.md.
+# docs/contributing/setup.md.
 static/dist/
 
 .complexipy_cache/

@@ -69,7 +69,7 @@ def personen_suche_view(request):
 - **A dialog is appended**, not morphed: `mode=ElementPatchMode.APPEND, selector="body"`, as a native
   `<dialog>` that opens itself and removes itself when closed.
 - A view still reads the request and calls actions and readers, and nothing else - see
-  [AGENTS.md](../../AGENTS.md), "Where code goes".
+  [where code goes](app-layout.md).
 
 ## Pages
 
