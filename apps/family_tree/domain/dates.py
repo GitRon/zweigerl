@@ -201,3 +201,83 @@ def lifespan(*, birth: UncertainDate | None, death: UncertainDate | None, deceas
     if death:
         return f"{born} – {year_text(date=death)}"
     return f"{born} – ?" if deceased else f"{born} –"
+
+
+GERMAN_PREFIXES = {
+    "um": DateKind.ABOUT,
+    "ca.": DateKind.ABOUT,
+    "ca": DateKind.ABOUT,
+    "circa": DateKind.ABOUT,
+    "etwa": DateKind.ABOUT,
+    "vor": DateKind.BEFORE,
+    "nach": DateKind.AFTER,
+}
+# Every month the card writes, plus the two spellings north of the border.
+GERMAN_MONTH_NUMBERS = {
+    **{name.lower(): number for number, name in enumerate(GERMAN_MONTHS, start=1)},
+    "januar": 1,
+    "feber": 2,
+}
+
+DOTTED_DAY = re.compile(r"^(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{3,4})$")
+NAMED_DAY = re.compile(r"^(\d{1,2})\.?\s+(\w+)\s+(\d{3,4})$")
+NAMED_MONTH = re.compile(r"^(\w+)\s+(\d{3,4})$")
+DOTTED_MONTH = re.compile(r"^(\d{1,2})\.\s*(\d{3,4})$")
+YEAR = re.compile(r"^(\d{3,4})$")
+
+
+def from_german(*, text: str) -> UncertainDate:
+    """
+    Reads a date as a person types it into the form for a fact (#14), the way "date_text" writes it: "1931",
+    "März 1989", "3.1989", "12. März 1989", "12.3.1989", each after "um" (also "ca.", "circa", "etwa"), "vor"
+    or "nach", or "zwischen 1820 und 1825". Raises ValueError with a German message for anything else, and for
+    a range whose ends are not equally precise or run backwards - the same as "from_gedcom".
+    """
+    words = text.strip().lower().split()
+    if not words:
+        raise ValueError("Kein Datum angegeben.")
+
+    if words[0] == "zwischen" and "und" in words:
+        and_at = words.index("und")
+        date_1, precision = _german_simple_date(text=" ".join(words[1:and_at]))
+        date_2, precision_2 = _german_simple_date(text=" ".join(words[and_at + 1 :]))
+        if precision_2 != precision:
+            raise ValueError(f"„{text.strip()}“: beide Daten müssen gleich genau sein, etwa „zwischen 1820 und 1825“.")
+        if date_2 < date_1:
+            raise ValueError(f"„{text.strip()}“: das zweite Datum liegt vor dem ersten.")
+        return UncertainDate(kind=DateKind.BETWEEN, date_1=date_1, date_2=date_2, precision=precision)
+
+    kind = GERMAN_PREFIXES.get(words[0])
+    rest = words[1:] if kind else words
+    date_1, precision = _german_simple_date(text=" ".join(rest))
+    return UncertainDate(kind=kind or DateKind.EXACT, date_1=date_1, precision=precision)
+
+
+def _german_simple_date(*, text: str) -> tuple[datetime.date, Precision]:
+    year, month, day, precision = _german_parts(text=text)
+    try:
+        return datetime.date(year, month, day), precision
+    except ValueError as error:
+        raise ValueError(f"„{text}“ ist kein gültiges Datum.") from error
+
+
+def _german_parts(*, text: str) -> tuple[int, int, int, Precision]:
+    # Year, month and day; a month is its first day and a year its 1 January, as the model stores them.
+    if match := DOTTED_DAY.match(text):
+        return int(match[3]), int(match[2]), int(match[1]), Precision.DAY
+    if match := NAMED_DAY.match(text):
+        return int(match[3]), _german_month(name=match[2]), int(match[1]), Precision.DAY
+    if match := NAMED_MONTH.match(text):
+        return int(match[2]), _german_month(name=match[1]), 1, Precision.MONTH
+    if match := DOTTED_MONTH.match(text):
+        return int(match[2]), int(match[1]), 1, Precision.MONTH
+    if match := YEAR.match(text):
+        return int(match[1]), 1, 1, Precision.YEAR
+    raise ValueError(f"„{text}“ ist kein Datum, das Zweigerl lesen kann - etwa 1931, um 1931 oder 12. März 1989.")
+
+
+def _german_month(*, name: str) -> int:
+    number = GERMAN_MONTH_NUMBERS.get(name)
+    if number is None:
+        raise ValueError(f"„{name}“ ist kein Monat.")
+    return number
