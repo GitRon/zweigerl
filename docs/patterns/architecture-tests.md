@@ -6,7 +6,11 @@ can see it. They live in `apps/stammbaum/tests/architecture/`.
 
 An allowlist in one of them is part of the rule, not a way around it: every entry carries its reason.
 
-**There are none yet.** The rules that need one so far are held by other tools:
+| Module | Rule | Stated in |
+|---|---|---|
+| `test_migrations.py` | Every change to a model or a constraint ships with its migration | [rules in the database](app-layout.md#rules-in-the-database) |
+
+The other rules that need one so far are held by other tools:
 
 | Rule | Held by |
 |---|---|
@@ -25,5 +29,5 @@ in one place would go unnoticed. Two that are likely to come:
 - **No real data in the repository**: no fixture or test names a person who is not invented — see
   [data storage](data-storage.md).
 
-A new architecture test replaces the "There are none yet" above with a table of its own: the module, the
-rule it holds, and the doc that states the rule.
+A new architecture test gets a row in the first table above: the module, the rule it holds, and the doc
+that states the rule.

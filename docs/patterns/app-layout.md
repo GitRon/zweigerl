@@ -72,10 +72,22 @@ is computed, not stored, see [Belege](belege.md).
 - **Name every constraint** `<model>_<rule>`, e.g. `person_not_own_parent`, so a failure says what broke.
 - **Give it a German `violation_error_message`.** Model validation (`full_clean`, and with it every
   `ModelForm`) checks constraints too and shows that message, so the rule is written once.
+- **A model with constraints inherits `ValidateConstraintsOnSaveMixin`** from
+  [ambient-toolbox](https://pypi.org/project/ambient-toolbox/), first in its bases:
+  `class Person(ValidateConstraintsOnSaveMixin, models.Model)`. Its `save()` runs `clean()` and
+  `validate_constraints()` before writing, so a forbidden row raises `ValidationError` with that German
+  message on every path that saves - an action, the shell, an import - and not only behind a form. The
+  constraint in the database still holds whatever bypasses `save()`: `bulk_create()`, `QuerySet.update()`
+  and two writes racing each other end in `IntegrityError`. The mixin costs one query per constraint and
+  save; an import that writes thousands of rows weighs that against `bulk_create()`.
+- **Uniqueness is a `UniqueConstraint`, never `unique=True` or `unique_together`.** The mixin validates
+  `Meta.constraints` only; the other two would be left to the database and its bare `IntegrityError`.
 - **Every constraint ships with its migration**, and a constraint added to a table that already has rows
   comes with a data migration that makes them comply first - otherwise `migrate` fails on the real data.
-- **Test each constraint** by writing the forbidden row with a factory and expecting `IntegrityError` -
-  see [testing strategy](testing-strategy.md#levels).
+- **Test each constraint twice**: once through `save()`, which the mixin answers with `ValidationError`,
+  and once past it, which only the database can refuse - see [testing strategy](testing-strategy.md#levels).
+  A model change without its migration fails the suite, see
+  [architecture tests](architecture-tests.md).
 
 ## The app root is Django's
 

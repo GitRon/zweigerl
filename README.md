@@ -30,7 +30,7 @@ rather than inferring the conventions from nearby code.
   complexipy, pre-commit
 - [Settings](docs/contributing/settings.md) — the settings modules and the environment they read,
   templates, static files, locale, logging
-- [Commit messages](docs/contributing/commit-messages.md)
+- [Commit messages](docs/contributing/commit-messages.md) — and the `#<n>: ` that starts a pull request's title
 
 ### Architecture
 

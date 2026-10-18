@@ -29,7 +29,9 @@ file served without the login check, or an upload that keeps its GPS data. Queri
 `select_related`/`prefetch_related` on a path the story made hot, which in a family tree is every walk
 over parents and children. A migration that will not apply on an existing database, or model changes with
 no migration at all. A delete that cascades further than the person asked for. A rule the data must always
-satisfy that is checked only in an action or a form although a constraint could hold it - see
+satisfy that is checked only in an action or a form although a constraint could hold it, a model with
+constraints that does not inherit `ValidateConstraintsOnSaveMixin`, or uniqueness written as `unique=True`
+or `unique_together` - see
 [rules in the database](../../../../docs/patterns/app-layout.md#rules-in-the-database).
 
 **03 Test honesty and coverage substance.** Coverage that is reached without asserting anything.
