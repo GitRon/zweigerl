@@ -65,3 +65,13 @@ def test_lightbox_closes_itself():
     html = render_component(tag=TAG, context={"photos": [WEDDING]})
 
     assert parse(html).find("button", string="Schließen")["data-on:click"] == "el.closest('dialog').close()"
+
+
+def test_lightbox_keeps_escape_from_closing_the_card_behind_it_and_goes_round_by_arrow_keys():
+    html = render_component(tag=TAG, context={"photos": [WEDDING, UNDATED]})
+
+    assert parse(html).find(id="photo-lightbox")["data-on:keydown"] == (
+        "evt.key == 'Escape' && evt.stopPropagation(); "
+        "evt.key == 'ArrowLeft' && ($photo = ($photo + 2 - 1) % 2); "
+        "evt.key == 'ArrowRight' && ($photo = ($photo + 1) % 2)"
+    )

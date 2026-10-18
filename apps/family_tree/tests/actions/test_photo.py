@@ -160,11 +160,11 @@ def test_set_portrait_refuses_a_photo_the_person_is_not_on():
 
 @pytest.mark.django_db
 def test_describe_photo_saves_what_it_shows_and_when():
-    photo = PhotoFactory()
+    link = PhotoPersonFactory()
 
-    describe_photo(photo_id=photo.pk, description="  Hochzeit am Hof  ", date=ABOUT_1950)
+    describe_photo(person_id=link.person.pk, photo_id=link.photo.pk, description="  Hochzeit am Hof  ", date=ABOUT_1950)
 
-    photo.refresh_from_db()
+    photo = Photo.objects.get(pk=link.photo.pk)
     assert (photo.description, photo.date, photo.sort_date) == (
         "Hochzeit am Hof",
         ABOUT_1950,
@@ -174,14 +174,25 @@ def test_describe_photo_saves_what_it_shows_and_when():
 
 @pytest.mark.django_db
 def test_describe_photo_can_forget_the_date():
-    photo = PhotoFactory(about_1950=True)
+    link = PhotoPersonFactory(photo=PhotoFactory(about_1950=True))
 
-    describe_photo(photo_id=photo.pk, description="", date=None)
+    describe_photo(person_id=link.person.pk, photo_id=link.photo.pk, description="", date=None)
 
-    assert Photo.objects.get(pk=photo.pk).date is None
+    assert Photo.objects.get(pk=link.photo.pk).date is None
 
 
 @pytest.mark.django_db
 def test_describe_photo_refuses_a_photo_no_longer_there():
+    lena = PersonFactory()
+
     with pytest.raises(Photo.DoesNotExist, match="Photo matching query does not exist"):
-        describe_photo(photo_id=404, description="", date=None)
+        describe_photo(person_id=lena.pk, photo_id=404, description="", date=None)
+
+
+@pytest.mark.django_db
+def test_describe_photo_refuses_a_photo_the_person_is_not_on():
+    lena = PersonFactory()
+    other = PhotoPersonFactory()
+
+    with pytest.raises(Photo.DoesNotExist, match="Photo matching query does not exist"):
+        describe_photo(person_id=lena.pk, photo_id=other.photo.pk, description="Am Hof", date=None)

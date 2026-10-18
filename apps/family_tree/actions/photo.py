@@ -63,11 +63,12 @@ def set_portrait(*, person_id: int, photo_id: int) -> PhotoPerson:
     return link
 
 
-def describe_photo(*, photo_id: int, description: str, date: UncertainDate | None) -> Photo:
+def describe_photo(*, person_id: int, photo_id: int, description: str, date: UncertainDate | None) -> Photo:
     """
-    Says what a photo shows and when it was taken. Raises "Photo.DoesNotExist" for a photo no longer there.
+    Says what a photo of the person shows and when it was taken. Raises "Photo.DoesNotExist" for a photo no
+    longer there, or one the person is not on.
     """
-    photo = Photo.objects.get(pk=photo_id)
+    photo = Photo.objects.get(pk=photo_id, people=person_id)
     photo.description = description.strip()
     photo.set_date(date=date)
     photo.save()

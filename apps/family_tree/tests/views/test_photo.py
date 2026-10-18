@@ -8,9 +8,9 @@ from PIL import Image
 
 from apps.family_tree.models import Photo, PhotoPerson
 from apps.family_tree.tests.factories.person import PersonFactory
-from apps.family_tree.tests.factories.photo import PhotoFactory
 from apps.family_tree.tests.factories.photo_person import PhotoPersonFactory
 from apps.family_tree.tests.factories.tree_settings import TreeSettingsFactory
+from apps.family_tree.views.photo import _patch_photos
 
 
 @pytest.fixture(autouse=True)
@@ -170,19 +170,6 @@ def test_photo_describe_view_of_a_photo_no_longer_there_says_so(admin_client):
 
 
 @pytest.mark.django_db
-def test_photo_describe_view_patches_nothing_for_a_person_no_longer_there(admin_client):
-    photo = PhotoFactory()
-
-    body = _post(
-        admin_client,
-        reverse("family_tree:photo-describe-view", kwargs={"pk": 404, "photo_pk": photo.pk}),
-        {"description": "Am Hof"},
-    )
-
-    assert ("person-card-photo-list" in body, "Passt. Ist gespeichert." in body) == (False, True)
-
-
-@pytest.mark.django_db
 def test_photo_describe_view_does_not_patch_a_tree_card_the_tree_does_not_show(admin_client):
     TreeSettingsFactory()
     stranger = PhotoPersonFactory()
@@ -194,3 +181,8 @@ def test_photo_describe_view_does_not_patch_a_tree_card_the_tree_does_not_show(a
     )
 
     assert f"tree-card-{stranger.person.pk}" not in body
+
+
+@pytest.mark.django_db
+def test_patch_photos_patches_nothing_for_a_person_no_longer_there(rf):
+    assert list(_patch_photos(request=rf.post("/"), pk=404)) == []

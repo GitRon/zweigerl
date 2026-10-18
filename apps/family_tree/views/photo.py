@@ -81,7 +81,7 @@ def photo_describe_view(request: HttpRequest, pk: int, photo_pk: int):
         return
 
     try:
-        describe_photo(photo_id=photo_pk, description=request.POST.get("description", ""), date=date)
+        describe_photo(person_id=pk, photo_id=photo_pk, description=request.POST.get("description", ""), date=date)
     except Photo.DoesNotExist:
         yield toast_sse(request=request, text="Dieses Foto ist nicht mehr da.", style="error")
         return
