@@ -31,3 +31,11 @@ def test_layout_reloads_the_page_the_back_button_returns_to():
     html = render_component(tag="<c-common.layout>Inhalt</c-common.layout>", context={"toasts": []})
 
     assert parse(html).body["data-on:popstate__window"] == "window.location.reload()"
+
+
+def test_layout_links_the_favicon_and_the_app_icon():
+    html = render_component(tag="<c-common.layout>Inhalt</c-common.layout>", context={"toasts": []})
+
+    soup = parse(html)
+    assert soup.find("link", rel="icon", type="image/svg+xml")["href"] == "/static/brand/favicon.svg"
+    assert soup.find("link", rel="manifest")["href"] == "/static/brand/manifest.webmanifest"
