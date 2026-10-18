@@ -5,7 +5,6 @@ See docs/patterns/data-storage.md, "Photos and scans".
 """
 
 import io
-import uuid
 from pathlib import PurePosixPath
 
 from django.core.files.base import ContentFile
@@ -25,6 +24,11 @@ IMAGE_FORMATS = {
     "tiff": ("TIFF",),
 }
 PDF_EXTENSION = "pdf"
+# The one extension each kind is stored under, whatever the upload was called, so a file is found from its
+# id and role alone and storing it again replaces it rather than leaving "3.tiff" beside "3.tif".
+STORED_EXTENSIONS = {"jpg": "jpg", "jpeg": "jpg", "png": "png", "webp": "webp", "tif": "tif", "tiff": "tif"} | {
+    PDF_EXTENSION: PDF_EXTENSION
+}
 PDF_SIGNATURE = b"%PDF-"
 
 
@@ -34,11 +38,13 @@ class UploadRefusedError(ValueError):
     """
 
 
-def store_upload(*, uploaded_file: UploadedFile, folder: str) -> str:
+def store_upload(*, uploaded_file: UploadedFile, name: str) -> str:
     """
-    Stores a photo or a scan in "MEDIA_ROOT/<folder>/" under a random name and returns the stored name, as a
-    FileField wants it. The original name is dropped: it often says who is in the picture. Images keep only
-    the date they were taken and their orientation; PDFs are stored as they came.
+    Stores a photo or a scan at "MEDIA_ROOT/<name>.<extension>" and returns the stored name, as a FileField
+    wants it. "name" is the place in the layout without the extension - "photos/17/original" - and the caller
+    builds it from ids, never from a person's name; see docs/patterns/data-storage.md, "Photos and scans".
+    A file already there is replaced. The original file name is dropped: it often says who is in the
+    picture. Images keep only the date they were taken and their orientation; PDFs are stored as they came.
     """
     extension = PurePosixPath(uploaded_file.name or "").suffix.lstrip(".").lower()
     content = uploaded_file.read()
@@ -51,7 +57,13 @@ def store_upload(*, uploaded_file: UploadedFile, folder: str) -> str:
     else:
         raise UploadRefusedError("Zweigerl nimmt Fotos und Scans als JPEG, PNG, WebP, TIFF oder PDF.")
 
-    return default_storage.save(f"{folder}/{uuid.uuid4().hex}.{extension}", ContentFile(content))
+    stored_name = default_storage.save(f"{name}.{STORED_EXTENSIONS[extension]}", ContentFile(content))
+    # The storage overwrites a file of the same kind (STORAGES in the settings). One of another kind - a PNG
+    # replaced by a JPEG - goes only after the new file is safely written.
+    for other_extension in set(STORED_EXTENSIONS.values()) - {STORED_EXTENSIONS[extension]}:
+        default_storage.delete(f"{name}.{other_extension}")
+
+    return stored_name
 
 
 def _picture_only(*, content: bytes, allowed_formats: tuple[str, ...]) -> bytes:
