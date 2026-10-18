@@ -1,0 +1,16 @@
+/*
+ * The Tailwind source. "yarn build:css" compiles it to "static/dist/tailwind.css", which is not in
+ * version control - see README.md.
+ *
+ * "source(none)" switches off automatic source detection, which makes the "@source" below the only
+ * thing deciding what gets scanned. Left automatic, Tailwind walks the whole repository and matches
+ * class names out of running prose in the docs, so the stylesheet would grow with every doc written.
+ *
+ * Plain Tailwind for now: Zweigerl's own colours and typefaces arrive as theme tokens with the visual
+ * identity (#4). Until then the screens use the default palette.
+ */
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" source(none);
+
+@source "../../apps";

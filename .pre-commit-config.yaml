@@ -1,0 +1,42 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.10
+
+    hooks:
+      # Run the Ruff formatter.
+      - id: ruff-format
+      # Run the Ruff linter.
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+
+  - repo: https://github.com/adamchainz/django-upgrade
+    rev: 1.33.0
+    hooks:
+      - id: django-upgrade
+        args: [--target-version, "6.1"]
+        language_version: python3.14
+
+  - repo: https://github.com/adamchainz/djade-pre-commit
+    rev: 1.9.0
+    hooks:
+      - id: djade
+        # 6.0 is the newest target djade knows; the project runs 6.1
+        args: [ --target-version, "6.0" ]
+        exclude: |
+          (?x)^(
+            charts/.*
+            |.*\.py
+          )$
+
+  - repo: https://github.com/ambient-innovation/boa-restrictor
+    rev: v1.18.0
+    hooks:
+      - id: boa-restrictor
+        args: [ --config=pyproject.toml ]
+
+  # Reads its limit from "[tool.complexipy]" in pyproject.toml. The files pre-commit hands it take the place
+  # of the paths configured there, which only a run without arguments reads.
+  - repo: https://github.com/rohaquinlop/complexipy-pre-commit
+    rev: v8.0.1
+    hooks:
+      - id: complexipy
