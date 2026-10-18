@@ -1,15 +1,15 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models.functions import Greatest, Least
 
 from apps.stammbaum.models.gedcom import GedcomRohMixin
-from apps.stammbaum.models.paar import GeordnetesPaarMixin
 
 
-class Geschwister(GeordnetesPaarMixin, GedcomRohMixin):
+class Geschwister(GedcomRohMixin):
     """
     Two siblings whose shared parents nobody knows - in GEDCOM a FAM with children and no parents. Siblings
     with a known shared parent are siblings through it and are never stored here: a second way to say the
-    same thing is a second thing to keep in step. Stored once per pair, the lower primary key first.
+    same thing is a second thing to keep in step. Stored once per pair, either way round.
     """
 
     person_a = models.ForeignKey(
@@ -23,10 +23,14 @@ class Geschwister(GeordnetesPaarMixin, GedcomRohMixin):
         verbose_name = "Geschwister ohne bekannte Eltern"
         verbose_name_plural = "Geschwister ohne bekannte Eltern"
         constraints = (
-            models.CheckConstraint(
-                condition=models.Q(person_a__lt=models.F("person_b")), name="geschwister_paar_geordnet"
+            models.CheckConstraint(condition=~models.Q(person_a=models.F("person_b")), name="geschwister_nicht_selbst"),
+            # On the pair rather than on the two columns, so B & A is refused once A & B exists.
+            models.UniqueConstraint(
+                Least("person_a", "person_b"),
+                Greatest("person_a", "person_b"),
+                name="geschwister_einmal_pro_paar",
+                violation_error_message="Diese beiden sind schon als Geschwister eingetragen.",
             ),
-            models.UniqueConstraint(fields=("person_a", "person_b"), name="geschwister_einmal_pro_paar"),
         )
 
     def __str__(self) -> str:
@@ -37,8 +41,5 @@ class Geschwister(GeordnetesPaarMixin, GedcomRohMixin):
             return
         if self.person_a_id == self.person_b_id:
             raise ValidationError("Niemand ist sein eigenes Geschwister.")
-        eltern_a = set(self.person_a.eltern_verbindungen.values_list("elternteil_id", flat=True))
-        eltern_b = set(self.person_b.eltern_verbindungen.values_list("elternteil_id", flat=True))
-        if eltern_a & eltern_b:
+        if self.person_a.eltern_verbindungen.filter(elternteil__kind_verbindungen__kind=self.person_b_id).exists():
             raise ValidationError("Die beiden haben einen gemeinsamen Elternteil und sind darüber schon Geschwister.")
-        self.ordne_paar()

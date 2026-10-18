@@ -9,7 +9,8 @@ def test_familie_huber_loads_with_its_ausgangsperson():
     """
     The fixture is for development and the browser run, never for a test's data - see
     docs/patterns/testing-data.md. This only proves it still loads against the current models and passes
-    their rules, which a hand-edited JSON file otherwise finds out in the browser.
+    the database constraints, which a hand-edited JSON file otherwise finds out in the browser. "loaddata"
+    does not call "clean()", so the rules held there are not checked - see docs/patterns/familie.md.
     """
     call_command("loaddata", "familie_huber", verbosity=0)
 

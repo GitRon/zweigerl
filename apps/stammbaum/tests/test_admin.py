@@ -1,29 +1,62 @@
+"""
+Django's admin is not tested here (docs/patterns/testing-strategy.md, "Don't test"); what is, is the logic
+of Zweigerl's own in "admin.py".
+"""
+
 import pytest
+from django.forms import inlineformset_factory
 from django.urls import reverse
 
+from apps.stammbaum.admin import ElternFormSet
+from apps.stammbaum.models import ElternKind, Person
 from apps.stammbaum.tests.factories.einstellung import EinstellungFactory
-from apps.stammbaum.tests.factories.eltern_kind import ElternKindFactory
-from apps.stammbaum.tests.factories.geschwister import GeschwisterFactory
-from apps.stammbaum.tests.factories.partnerschaft import PartnerschaftFactory
+from apps.stammbaum.tests.factories.person import PersonFactory
+
+ElternForms = inlineformset_factory(
+    Person, ElternKind, formset=ElternFormSet, fk_name="kind", fields=("elternteil", "art")
+)
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize("model", ["person", "partnerschaft", "elternkind", "geschwister", "einstellung"])
-def test_admin_lists_every_model(admin_client, model):
-    response = admin_client.get(reverse(f"admin:stammbaum_{model}_changelist"))
+def test_eltern_formset_refuses_three_birth_parents_entered_at_once():
+    johann, maria, franz = PersonFactory.create_batch(3)
 
-    assert response.status_code == 200
+    formset = ElternForms(
+        data={
+            "eltern_verbindungen-TOTAL_FORMS": "3",
+            "eltern_verbindungen-INITIAL_FORMS": "0",
+            "eltern_verbindungen-0-elternteil": johann.pk,
+            "eltern_verbindungen-0-art": "leiblich",
+            "eltern_verbindungen-1-elternteil": maria.pk,
+            "eltern_verbindungen-1-art": "leiblich",
+            "eltern_verbindungen-2-elternteil": franz.pk,
+            "eltern_verbindungen-2-art": "leiblich",
+        },
+        instance=PersonFactory(),
+    )
+
+    assert formset.non_form_errors() == ["Ein Kind hat höchstens zwei leibliche Eltern."]
 
 
 @pytest.mark.django_db
-def test_admin_shows_a_person_with_parents_children_and_partners(admin_client):
-    eltern_kind = ElternKindFactory()
-    PartnerschaftFactory(person_a=eltern_kind.kind)
-    GeschwisterFactory(person_a=eltern_kind.kind)
+def test_eltern_formset_accepts_two_birth_parents_and_an_adoptive_one():
+    johann, maria, franz = PersonFactory.create_batch(3)
 
-    response = admin_client.get(reverse("admin:stammbaum_person_change", args=[eltern_kind.kind.pk]))
+    formset = ElternForms(
+        data={
+            "eltern_verbindungen-TOTAL_FORMS": "3",
+            "eltern_verbindungen-INITIAL_FORMS": "0",
+            "eltern_verbindungen-0-elternteil": johann.pk,
+            "eltern_verbindungen-0-art": "leiblich",
+            "eltern_verbindungen-1-elternteil": maria.pk,
+            "eltern_verbindungen-1-art": "leiblich",
+            "eltern_verbindungen-2-elternteil": franz.pk,
+            "eltern_verbindungen-2-art": "adoptiert",
+        },
+        instance=PersonFactory(),
+    )
 
-    assert response.status_code == 200
+    assert formset.is_valid() is True
 
 
 @pytest.mark.django_db

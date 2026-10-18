@@ -1,14 +1,14 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models.functions import Greatest, Least
 
 from apps.stammbaum.models.gedcom import GedcomRohMixin
-from apps.stammbaum.models.paar import GeordnetesPaarMixin
 
 
-class Partnerschaft(GeordnetesPaarMixin, GedcomRohMixin):
+class Partnerschaft(GedcomRohMixin):
     """
     Two people as a couple - GEDCOM's FAM with HUSB and WIFE, MARR and DIV. The through model of
-    Person.partner. A pair is stored once, the lower primary key as "person_a" - see "ordne_paar".
+    Person.partner. Which of the two is "person_a" means nothing; a pair is stored once either way round.
     """
 
     class Art(models.TextChoices):
@@ -35,9 +35,15 @@ class Partnerschaft(GeordnetesPaarMixin, GedcomRohMixin):
         verbose_name_plural = "Partnerschaften"
         constraints = (
             models.CheckConstraint(
-                condition=models.Q(person_a__lt=models.F("person_b")), name="partnerschaft_paar_geordnet"
+                condition=~models.Q(person_a=models.F("person_b")), name="partnerschaft_nicht_selbst"
             ),
-            models.UniqueConstraint(fields=("person_a", "person_b"), name="partnerschaft_einmal_pro_paar"),
+            # On the pair rather than on the two columns, so B & A is refused once A & B exists.
+            models.UniqueConstraint(
+                Least("person_a", "person_b"),
+                Greatest("person_a", "person_b"),
+                name="partnerschaft_einmal_pro_paar",
+                violation_error_message="Diese beiden sind schon ein Paar.",
+            ),
         )
 
     def __str__(self) -> str:
@@ -46,7 +52,6 @@ class Partnerschaft(GeordnetesPaarMixin, GedcomRohMixin):
     def clean(self) -> None:
         if self.person_a_id is not None and self.person_a_id == self.person_b_id:
             raise ValidationError("Niemand ist sein eigener Partner.")
-        self.ordne_paar()
 
     def enthaelt(self, *, person_id: int) -> bool:
         return person_id in (self.person_a_id, self.person_b_id)

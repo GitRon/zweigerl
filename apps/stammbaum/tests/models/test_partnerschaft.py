@@ -24,31 +24,21 @@ def test_partnerschaft_clean_refuses_a_person_as_their_own_partner():
 
 
 @pytest.mark.django_db
-def test_partnerschaft_full_clean_accepts_a_pair_entered_the_other_way_round():
-    josef, theresia = PersonFactory.create_batch(2)
-    partnerschaft = Partnerschaft(person_a=theresia, person_b=josef)
-
-    partnerschaft.full_clean()
-
-    assert (partnerschaft.person_a, partnerschaft.person_b) == (josef, theresia)
-
-
-@pytest.mark.django_db
-def test_partnerschaft_save_stores_the_lower_primary_key_first():
-    josef, theresia = PersonFactory.create_batch(2)
-
-    partnerschaft = PartnerschaftFactory(person_a=theresia, person_b=josef)
-
-    assert (partnerschaft.person_a, partnerschaft.person_b) == (josef, theresia)
-
-
-@pytest.mark.django_db
-def test_partnerschaft_is_stored_once_per_pair():
+def test_partnerschaft_is_stored_once_per_pair_whichever_way_round():
     josef, theresia = PersonFactory.create_batch(2)
     PartnerschaftFactory(person_a=josef, person_b=theresia)
 
-    with pytest.raises(IntegrityError, match="UNIQUE constraint failed: stammbaum_partnerschaft"):
+    with pytest.raises(IntegrityError, match="UNIQUE constraint failed"):
         PartnerschaftFactory(person_a=theresia, person_b=josef)
+
+
+@pytest.mark.django_db
+def test_partnerschaft_full_clean_names_a_pair_entered_twice():
+    josef, theresia = PersonFactory.create_batch(2)
+    PartnerschaftFactory(person_a=josef, person_b=theresia)
+
+    with pytest.raises(ValidationError, match="Diese beiden sind schon ein Paar"):
+        Partnerschaft(person_a=theresia, person_b=josef).full_clean()
 
 
 @pytest.mark.django_db

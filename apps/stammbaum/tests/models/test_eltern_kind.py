@@ -4,6 +4,7 @@ from django.db import IntegrityError
 
 from apps.stammbaum.models import ElternKind
 from apps.stammbaum.tests.factories.eltern_kind import ElternKindFactory
+from apps.stammbaum.tests.factories.geschwister import GeschwisterFactory
 from apps.stammbaum.tests.factories.partnerschaft import PartnerschaftFactory
 from apps.stammbaum.tests.factories.person import PersonFactory
 
@@ -16,8 +17,25 @@ def test_eltern_kind_str_points_from_parent_to_child():
     assert str(eltern_kind) == "Johann Huber → Lena Huber"
 
 
-def test_eltern_kind_clean_leaves_an_incomplete_link_to_the_field_validation():
+def test_eltern_kind_clean_leaves_a_link_without_parent_to_the_field_validation():
     eltern_kind = ElternKind(kind=PersonFactory.build(pk=1))
+
+    assert eltern_kind.clean() is None
+
+
+@pytest.mark.django_db
+def test_eltern_kind_clean_checks_the_partnership_before_the_child_is_saved():
+    eltern_kind = ElternKind(
+        elternteil=PersonFactory(), kind=PersonFactory.build(), partnerschaft=PartnerschaftFactory()
+    )
+
+    with pytest.raises(ValidationError, match="gehört nicht zu dieser Partnerschaft"):
+        eltern_kind.clean()
+
+
+@pytest.mark.django_db
+def test_eltern_kind_clean_accepts_a_parent_of_a_child_not_saved_yet():
+    eltern_kind = ElternKind(elternteil=PersonFactory(), kind=PersonFactory.build())
 
     assert eltern_kind.clean() is None
 
@@ -44,6 +62,28 @@ def test_eltern_kind_clean_accepts_the_partnership_of_the_parent():
     eltern_kind = ElternKind(elternteil=partnerschaft.person_a, kind=PersonFactory(), partnerschaft=partnerschaft)
 
     assert eltern_kind.clean() is None
+
+
+@pytest.mark.django_db
+def test_eltern_kind_clean_refuses_a_shared_parent_of_explicit_siblings():
+    franz = PersonFactory()
+    katharina, stefan = PersonFactory.create_batch(2)
+    GeschwisterFactory(person_a=stefan, person_b=katharina)
+    ElternKindFactory(elternteil=franz, kind=stefan)
+
+    with pytest.raises(ValidationError, match="Lösche erst diese Geschwister-Verbindung"):
+        ElternKind(elternteil=franz, kind=katharina).clean()
+
+
+@pytest.mark.django_db
+def test_eltern_kind_clean_refuses_a_shared_parent_of_explicit_siblings_stored_the_other_way_round():
+    franz = PersonFactory()
+    katharina, stefan = PersonFactory.create_batch(2)
+    GeschwisterFactory(person_a=katharina, person_b=stefan)
+    ElternKindFactory(elternteil=franz, kind=stefan)
+
+    with pytest.raises(ValidationError, match="Lösche erst diese Geschwister-Verbindung"):
+        ElternKind(elternteil=franz, kind=katharina).clean()
 
 
 @pytest.mark.django_db

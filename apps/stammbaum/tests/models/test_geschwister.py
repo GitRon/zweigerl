@@ -1,5 +1,6 @@
 import pytest
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 
 from apps.stammbaum.models import Geschwister
 from apps.stammbaum.tests.factories.eltern_kind import ElternKindFactory
@@ -41,10 +42,17 @@ def test_geschwister_clean_refuses_siblings_who_share_a_known_parent():
 
 
 @pytest.mark.django_db
-def test_geschwister_clean_orders_siblings_without_a_known_parent():
+def test_geschwister_clean_accepts_siblings_without_a_known_parent():
     katharina, stefan = PersonFactory.create_batch(2)
-    geschwister = Geschwister(person_a=stefan, person_b=katharina)
+    ElternKindFactory(kind=katharina)
+    ElternKindFactory(kind=stefan)
 
-    geschwister.clean()
+    assert Geschwister(person_a=stefan, person_b=katharina).clean() is None
 
-    assert (geschwister.person_a, geschwister.person_b) == (katharina, stefan)
+
+@pytest.mark.django_db
+def test_geschwister_is_stored_once_per_pair_whichever_way_round():
+    geschwister = GeschwisterFactory()
+
+    with pytest.raises(IntegrityError, match="UNIQUE constraint failed"):
+        GeschwisterFactory(person_a=geschwister.person_b, person_b=geschwister.person_a)

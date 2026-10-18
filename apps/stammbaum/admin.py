@@ -1,10 +1,35 @@
 from django.contrib import admin
+from django.core.exceptions import ValidationError
+from django.forms.models import BaseInlineFormSet
 
 from apps.stammbaum.models import Einstellung, ElternKind, Geschwister, Partnerschaft, Person
+
+# Both pair models are found by either person's name.
+PAAR_SUCHFELDER = ("person_a__familienname", "person_a__vornamen", "person_b__familienname", "person_b__vornamen")
+
+
+class ElternFormSet(BaseInlineFormSet):
+    """
+    "ElternKind.clean" counts the birth parents already saved, so two new rows entered together with the
+    saved ones would each pass on their own. Here the whole form is counted at once.
+    """
+
+    def clean(self):
+        super().clean()
+        leibliche = [
+            form
+            for form in self.forms
+            if form.cleaned_data
+            and not form.cleaned_data.get("DELETE")
+            and form.cleaned_data.get("art") == ElternKind.Art.LEIBLICH
+        ]
+        if len(leibliche) > ElternKind.MAX_LEIBLICHE_ELTERN:
+            raise ValidationError("Ein Kind hat höchstens zwei leibliche Eltern.")
 
 
 class ElternInline(admin.TabularInline):
     model = ElternKind
+    formset = ElternFormSet
     fk_name = "kind"
     verbose_name = "Elternteil"
     verbose_name_plural = "Eltern"
@@ -32,15 +57,14 @@ class PartnerschaftAlsAInline(admin.TabularInline):
     extra = 0
 
 
-class PartnerschaftAlsBInline(admin.TabularInline):
+class PartnerschaftAlsBInline(PartnerschaftAlsAInline):
     """
     The same partnerships seen from the other side: a pair is stored once, so a person is "person_b" in
-    half of them.
+    some of them.
     """
 
-    model = Partnerschaft
     fk_name = "person_b"
-    verbose_name_plural = "Partnerschaften (weitere)"
+    verbose_name_plural = "Partnerschaften (als Partner eingetragen)"
     fields = ("person_a", "art", "beginn", "ende")
     autocomplete_fields = ("person_a",)
     extra = 0
@@ -59,7 +83,7 @@ class PersonAdmin(admin.ModelAdmin):
 class PartnerschaftAdmin(admin.ModelAdmin):
     list_display = ("__str__", "art", "beginn", "ende")
     list_filter = ("art",)
-    search_fields = ("person_a__familienname", "person_a__vornamen", "person_b__familienname", "person_b__vornamen")
+    search_fields = PAAR_SUCHFELDER
     autocomplete_fields = ("person_a", "person_b")
 
 
@@ -74,7 +98,7 @@ class ElternKindAdmin(admin.ModelAdmin):
 @admin.register(Geschwister)
 class GeschwisterAdmin(admin.ModelAdmin):
     list_display = ("__str__",)
-    search_fields = ("person_a__familienname", "person_a__vornamen", "person_b__familienname", "person_b__vornamen")
+    search_fields = PAAR_SUCHFELDER
     autocomplete_fields = ("person_a", "person_b")
 
 

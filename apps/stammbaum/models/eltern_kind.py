@@ -48,15 +48,39 @@ class ElternKind(GedcomRohMixin):
         return f"{self.elternteil} → {self.kind}"
 
     def clean(self) -> None:
-        if self.elternteil_id is None or self.kind_id is None:
+        """
+        The rules a constraint cannot hold - see docs/patterns/familie.md. When the admin adds a person together
+        with their parents the child is still unsaved, so what needs the child waits for it; a third birth
+        parent among several entered at once is the admin formset's to refuse.
+        """
+        if self.elternteil_id is None:
+            return
+        if self.partnerschaft is not None and not self.partnerschaft.enthaelt(person_id=self.elternteil_id):
+            raise ValidationError({"partnerschaft": "Der Elternteil gehört nicht zu dieser Partnerschaft."})
+        if self.kind_id is None:
             return
         if self.elternteil_id == self.kind_id:
             raise ValidationError("Niemand ist sein eigener Elternteil.")
-        if self.partnerschaft is not None and not self.partnerschaft.enthaelt(person_id=self.elternteil_id):
-            raise ValidationError({"partnerschaft": "Der Elternteil gehört nicht zu dieser Partnerschaft."})
+        if self._macht_geschwister_doppelt():
+            raise ValidationError(
+                "Ein anderes Kind dieses Elternteils ist schon als Geschwister ohne bekannte Eltern eingetragen. "
+                "Lösche erst diese Geschwister-Verbindung, über den gemeinsamen Elternteil sind die beiden dann "
+                "ohnehin Geschwister."
+            )
         if self.art == self.Art.LEIBLICH:
             andere_leibliche = (
                 ElternKind.objects.filter(kind_id=self.kind_id, art=self.Art.LEIBLICH).exclude(pk=self.pk).count()
             )
             if andere_leibliche >= self.MAX_LEIBLICHE_ELTERN:
                 raise ValidationError("Dieses Kind hat schon zwei leibliche Eltern.")
+
+    def _macht_geschwister_doppelt(self) -> bool:
+        """
+        Whether this link would make the child a sibling, through the parent, of someone already stored as
+        their explicit sibling - the same fact twice.
+        """
+        andere_kinder = self.elternteil.kind_verbindungen.exclude(kind_id=self.kind_id).values("kind_id")
+        return (
+            self.kind.geschwister_als_a.filter(person_b__in=andere_kinder).exists()
+            or self.kind.geschwister_als_b.filter(person_a__in=andere_kinder).exists()
+        )

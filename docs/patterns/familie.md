@@ -53,17 +53,18 @@ and explicit together. Every screen that lists relatives goes through it.
 | Rule | Held by |
 |---|---|
 | Nobody is their own partner, parent or sibling | constraints, and `clean()` with a German message |
-| One Partnerschaft and one Geschwister row per pair, one ElternKind row per parent and child | unique constraints |
-| A pair is stored once, the lower primary key as `person_a` | a check constraint; `clean()` and `save()` turn a pair entered the other way round (`GeordnetesPaarMixin`) |
+| One Partnerschaft and one Geschwister row per pair, whichever way round | a unique constraint on `Least`/`Greatest` of the two persons - which of them is `person_a` means nothing |
+| One ElternKind row per parent and child | a unique constraint |
 | An ElternKind's Partnerschaft contains its parent | `ElternKind.clean()` |
-| At most two `leiblich` parents | `ElternKind.clean()` |
-| No Geschwister row for people with a shared parent | `Geschwister.clean()` |
+| At most two `leiblich` parents | `ElternKind.clean()` against the saved rows, and the admin's `ElternFormSet` for several entered at once |
+| No Geschwister row for people with a shared parent | `Geschwister.clean()`, and `ElternKind.clean()` refuses the shared parent while the row is still there |
 | The Ausgangsperson cannot be deleted | `on_delete=PROTECT`; choosing another one first is #19 |
 | One row of Einstellung | a check constraint on `id = 1`; the admin offers no second and no delete |
 
 A rule a constraint can hold is a constraint, so nothing that writes - the admin, a future action, an
 import - gets around it. What needs a query is in `clean()`, which the admin calls; the actions that write
-these models (#14, #18, #30) call `full_clean()` before saving.
+these models (#14, #18, #30) call `full_clean()` before saving. `loaddata` calls neither, so the Familie Huber
+fixture is held only by the constraints.
 
 ## Raw GEDCOM
 
