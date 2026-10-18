@@ -35,8 +35,9 @@ word. The folder keeps the names apart.
 | `<c-common.frame>` | `apps.common` | The 3:4 picture frame: the photo, else the initials, else the empty frame asking for one; `width` sizes it |
 | `<c-common.label>` | `apps.common` | The Etikett: a short word on a paper tag, in the tone `ink`, `forest` or `brick` |
 | `<c-common.button>` | `apps.common` | A button, `primary` or `secondary`, or with `href` a link drawn as one |
-| `<c-person.sidebar>` | `apps.family_tree` | The sidebar beside the tree: word mark, the search field bound to `$search`, and the list (#10) |
+| `<c-person.sidebar>` | `apps.family_tree` | The sidebar beside the tree: word mark, the search field bound to `$search`, the list (#10) and the link to the settings |
 | `<c-person.list>` | `apps.family_tree` | Every person `readers.person.person_list` found, with frame, name and Lebensdaten; `id="person-list"`, patched by the live search |
+| `<c-settings.home-person>` | `apps.family_tree` | The choice of the home person on the settings page (#20): every person, the chosen one selected, posted as a form and confirmed with a toast |
 
 What each of the last four looks like, and when a screen may use which, is
 [visual identity](visual-identity.md#the-components).
