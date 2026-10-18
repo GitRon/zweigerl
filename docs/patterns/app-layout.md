@@ -47,6 +47,36 @@ What has no database behind it — the German name of a relationship, the layout
 called by readers or views and tested without the database. The ticket that introduces the first one
 adds its package here.
 
+## Rules in the database
+
+**A rule the data must always satisfy lives in the database, as a constraint, wherever the database can
+express it.** An action or a form checks it too, to give the person a good message; the constraint is what
+holds when something writes past them - the admin, the shell, an import, the next action somebody adds. A
+rule kept only in Python is a rule that holds until the first write path that forgot it.
+
+What goes into the model's `Meta.constraints` and field options:
+
+| Rule | As | Example |
+|---|---|---|
+| A value is required | `null=False`, no `blank` | a person has a family name |
+| A value is one of a set | `CheckConstraint` on the choices - Django does not add one | the reliability is *belegt*, *wahrscheinlich* or *überliefert* |
+| Fields depend on each other | `CheckConstraint` | a second date exists only for "between" |
+| A row is not its own relative | `CheckConstraint` comparing two columns | nobody is their own parent |
+| Something exists once | `UniqueConstraint`, with `condition` where it holds only for some rows | one partnership per pair of people |
+| A row must not vanish while others point at it | `on_delete=PROTECT` or `RESTRICT` instead of `CASCADE` | a source still cited by a fact |
+
+What the database cannot express stays in the action, with its own test: rules across several rows or
+tables, such as no person being their own ancestor three generations up, and anything derived - *unbelegt*
+is computed, not stored, see [Belege](belege.md).
+
+- **Name every constraint** `<model>_<rule>`, e.g. `person_not_own_parent`, so a failure says what broke.
+- **Give it a German `violation_error_message`.** Model validation (`full_clean`, and with it every
+  `ModelForm`) checks constraints too and shows that message, so the rule is written once.
+- **Every constraint ships with its migration**, and a constraint added to a table that already has rows
+  comes with a data migration that makes them comply first - otherwise `migrate` fails on the real data.
+- **Test each constraint** by writing the forbidden row with a factory and expecting `IntegrityError` -
+  see [testing strategy](testing-strategy.md#levels).
+
 ## The app root is Django's
 
 Django looks exactly one fixed path into an app for each of the things it discovers, and never below it.

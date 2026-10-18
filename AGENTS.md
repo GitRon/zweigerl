@@ -12,7 +12,7 @@ Seven where getting it wrong is both expensive and silent:
 
 | Before you… | Read |
 |---|---|
-| add a model, an action, a reader, a view, a template tag, a fixture or a management command | [Where code goes](docs/patterns/app-layout.md) |
+| add a model, a constraint, an action, a reader, a view, a template tag, a fixture or a management command | [Where code goes](docs/patterns/app-layout.md) |
 | write or change any test, factory or fixture | [Testing strategy](docs/patterns/testing-strategy.md) |
 | put a name, a date, a document or a photo anywhere in the repository | [Data storage and privacy](docs/patterns/data-storage.md) |
 | touch a fact, a source, a citation or a date | [Belege](docs/patterns/belege.md) |
