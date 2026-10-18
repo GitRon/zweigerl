@@ -4,7 +4,14 @@ import pytest
 from django.urls import reverse
 
 from apps.common.tests.html import parse, render_component
-from apps.family_tree.readers.person import FactEntry, PersonCard, PersonListEntry, RelativeGroup, SourcesTab
+from apps.family_tree.readers.person import (
+    FactEntry,
+    PersonCard,
+    PersonListEntry,
+    RelativeEntry,
+    RelativeGroup,
+    SourcesTab,
+)
 from apps.family_tree.tests.factories.citation import CitationFactory
 from apps.family_tree.tests.factories.fact import FactFactory
 from apps.family_tree.tests.factories.person import PersonFactory
@@ -35,7 +42,10 @@ DOCUMENTED = FactEntry(
 )
 UNDOCUMENTED = replace(DOCUMENTED, citations=[], undocumented=True)
 PROBABLE = replace(DOCUMENTED, reliability="Wahrscheinlich", citations=[])
-PARENTS = RelativeGroup(title="Eltern", entries=[JOHANN])
+PARENTS = RelativeGroup(title="Eltern", relation="parent", entries=[RelativeEntry(entry=JOHANN, unlinkable=True)])
+SIBLINGS = RelativeGroup(
+    title="Geschwister", relation="sibling", entries=[RelativeEntry(entry=JOHANN, unlinkable=False)]
+)
 
 
 def test_card_shows_name_lifespan_and_relationship():
@@ -211,3 +221,31 @@ def test_card_form_cancels_by_closing_it():
 
     cancel = parse(html).find("button", string="Abbrechen")
     assert (cancel["type"], cancel["data-on:click"]) == ("reset", "$editing = 0")
+
+
+def test_card_asks_before_unlinking_a_relative():
+    html = render_component(
+        tag='<c-person.card :card="card" />',
+        context={"card": replace(CARD, relatives=[PARENTS], relative_count=1)},
+    )
+
+    button = parse(html).find("button", attrs={"aria-label": "Verbindung zu Johann Huber lösen"})
+    url = reverse("family_tree:confirm-unlink-view", kwargs={"pk": 7, "relation": "parent", "relative_pk": 3})
+    assert button["data-on:click"] == f"@get('{url}')"
+
+
+def test_card_offers_no_unlinking_of_a_sibling_through_a_parent():
+    html = render_component(
+        tag='<c-person.card :card="card" />',
+        context={"card": replace(CARD, relatives=[SIBLINGS], relative_count=1)},
+    )
+
+    assert parse(html).find("button", attrs={"aria-label": "Verbindung zu Johann Huber lösen"}) is None
+
+
+def test_card_asks_before_deleting_the_person():
+    html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
+
+    assert parse(html).find("button", string="Löschen")["data-on:click"] == (
+        f"@get('{reverse('family_tree:confirm-delete-person-view', kwargs={'pk': 7})}')"
+    )

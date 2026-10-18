@@ -11,7 +11,8 @@ canvas, scrolling and zoom - is `<c-tree.canvas>`, see [datastar](datastar.md#th
 Everyone connected to the home person through any chain of parents, children, partners and siblings. While
 no home person is chosen, the person entered first stands in for them, see
 [the home person](family.md#the-home-person). Who has no connection is left out: they are the "Lose
-Zweigerl" of #19, listed in the sidebar rather than drawn.
+Zweigerl" of #19, listed at the bottom of the sidebar rather than drawn, see
+[deleting and unlinking](family.md#deleting-and-unlinking).
 
 **All generations are shown** (decided 18.10.2026). A limit comes as its own ticket once the drawing gets
 too slow.
