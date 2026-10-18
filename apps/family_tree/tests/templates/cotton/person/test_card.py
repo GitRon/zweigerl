@@ -1,5 +1,6 @@
 from dataclasses import replace
 
+import pytest
 from django.urls import reverse
 
 from apps.common.tests.html import parse, render_component
@@ -15,7 +16,7 @@ BIRTH = FactFactory.build(pk=11)
 CITATION = CitationFactory.build(fact=BIRTH, source=SourceFactory.build(title="Taufbuch Mariazell"), page="fol. 12")
 
 
-CARD = PersonCard(entry=GERTI, relationship=None, facts=[], relatives=[], relative_count=0)
+CARD = PersonCard(entry=GERTI, relationship=None, facts=[], relatives=[], relative_count=0, sources=[], source_kinds=[])
 DOCUMENTED = FactEntry(
     fact=BIRTH, label="Geboren", text="12. März 1958", reliability=None, citations=[CITATION], undocumented=False
 )
@@ -73,9 +74,28 @@ def test_card_offers_the_tabs_of_later_tickets_disabled():
     page = parse(html)
     assert (
         page.find("button", string="Fotos").has_attr("disabled"),
-        page.find("button", string="Quellen").has_attr("disabled"),
         page.find("button", string="Notizen").has_attr("disabled"),
-    ) == (True, True, True)
+    ) == (True, True)
+
+
+@pytest.mark.django_db
+def test_card_lists_the_sources_in_their_tab():
+    source = SourceFactory(title="Taufbuch Mariazell")
+
+    html = render_component(tag='<c-person.card :card="card" />', context={"card": replace(CARD, sources=[source])})
+
+    page = parse(html)
+    assert (
+        " ".join(page.find(id="person-card-tab-sources").get_text().split()),
+        page.find(id="person-card-tab-sources")["data-on:click"],
+        "Taufbuch Mariazell" in page.find(id="person-card-sources").get_text(),
+    ) == ("Quellen 1", "$tab = 'sources'", True)
+
+
+def test_card_without_sources_invites_the_first():
+    html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
+
+    assert "Noch keine Quelle da. Leg die erste an." in parse(html).find(id="person-card-sources").get_text()
 
 
 def test_card_shows_the_beleg_of_a_documented_fact():

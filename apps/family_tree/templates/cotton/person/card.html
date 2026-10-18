@@ -1,9 +1,9 @@
 <c-vars card />
 {# The person card beside the tree (#12, #13): who was selected there, shown while "$selection" is still them. #}
 {# The head says who they are and what they are to the home person; the tabs, switched by "$tab", hold every #}
-{# fact with its Beleg and everyone directly related. Closing it - the button, or Escape on the canvas - moves #}
-{# the address back to the start page, so a reload does not open it again. Below "lg" it lies over the tree #}
-{# instead of beside it - see docs/patterns/responsive-layout.md. #}
+{# fact with its Beleg, the sources with their scans (#15) and everyone directly related. Closing it - the #}
+{# button, or Escape on the canvas - moves the address back to the start page, so a reload does not open it #}
+{# again. Below "lg" it lies over the tree instead of beside it - see docs/patterns/responsive-layout.md. #}
 {% url 'family_tree:start-view' as start_url %}
 <aside id="person-card" aria-label="Personenkarte" class="flex w-96 shrink-0 flex-col gap-4 overflow-y-auto border-l border-card-edge bg-birch p-6 max-lg:absolute max-lg:inset-y-0 max-lg:right-0 max-lg:w-full max-lg:max-w-md max-lg:border-l-[1.5px] max-lg:border-ink" data-signals="{tab: 'facts'}" data-show="$selection == {{ card.entry.person.pk }}" data-effect="$selection == 0 && location.pathname != '{{ start_url }}' && history.pushState(null, '', '{{ start_url }}')">
     <div class="flex items-start gap-4">
@@ -19,7 +19,7 @@
     <div role="tablist" aria-label="Über die Person" class="flex flex-wrap gap-x-3 border-b border-card-edge text-sm">
         <button type="button" role="tab" id="person-card-tab-facts" aria-controls="person-card-facts" aria-selected="true" data-attr:aria-selected="String($tab == 'facts')" class="-mb-px flex min-h-11 cursor-pointer items-center gap-1.5 border-b-2 border-forest text-forest" data-class="{'border-forest text-forest': $tab == 'facts', 'border-transparent': $tab != 'facts'}" data-on:click="$tab = 'facts'">Angaben <span class="text-ink-muted">{{ card.facts|length }}</span></button>
         <button type="button" role="tab" aria-disabled="true" disabled class="-mb-px min-h-11 border-b-2 border-transparent text-ink-muted">Fotos</button>
-        <button type="button" role="tab" aria-disabled="true" disabled class="-mb-px min-h-11 border-b-2 border-transparent text-ink-muted">Quellen</button>
+        <button type="button" role="tab" id="person-card-tab-sources" aria-controls="person-card-sources" aria-selected="false" data-attr:aria-selected="String($tab == 'sources')" class="-mb-px flex min-h-11 cursor-pointer items-center gap-1.5 border-b-2 border-transparent" data-class="{'border-forest text-forest': $tab == 'sources', 'border-transparent': $tab != 'sources'}" data-on:click="$tab = 'sources'">Quellen <span class="text-ink-muted">{{ card.sources|length }}</span></button>
         <button type="button" role="tab" id="person-card-tab-relatives" aria-controls="person-card-relatives" aria-selected="false" data-attr:aria-selected="String($tab == 'relatives')" class="-mb-px flex min-h-11 cursor-pointer items-center gap-1.5 border-b-2 border-transparent" data-class="{'border-forest text-forest': $tab == 'relatives', 'border-transparent': $tab != 'relatives'}" data-on:click="$tab = 'relatives'">Verwandte <span class="text-ink-muted">{{ card.relative_count }}</span></button>
         <button type="button" role="tab" aria-disabled="true" disabled class="-mb-px min-h-11 border-b-2 border-transparent text-ink-muted">Notizen</button>
     </div>
@@ -47,6 +47,18 @@
         {% else %}
             <p class="py-8 text-center text-ink-muted">Zu dieser Person steht noch nix da.</p>
         {% endif %}
+    </section>
+    <section id="person-card-sources" role="tabpanel" aria-labelledby="person-card-tab-sources" class="flex flex-col gap-3" style="display: none" data-show="$tab == 'sources'">
+        {% if card.sources %}
+            <ul class="flex flex-col gap-3">
+                {% for source in card.sources %}
+                    <c-source.card :source="source" :person="card.entry.person" />
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="py-4 text-center text-ink-muted">Noch keine Quelle da. Leg die erste an.</p>
+        {% endif %}
+        <c-source.new :person="card.entry.person" :kinds="card.source_kinds" />
     </section>
     <section id="person-card-relatives" role="tabpanel" aria-labelledby="person-card-tab-relatives" style="display: none" data-show="$tab == 'relatives'">
         {% if card.relatives %}

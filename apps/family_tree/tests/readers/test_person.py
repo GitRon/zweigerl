@@ -20,6 +20,8 @@ from apps.family_tree.tests.factories.parent_child import ParentChildFactory
 from apps.family_tree.tests.factories.partnership import PartnershipFactory
 from apps.family_tree.tests.factories.person import PersonFactory
 from apps.family_tree.tests.factories.sibling_pair import SiblingPairFactory
+from apps.family_tree.tests.factories.source import SourceFactory
+from apps.family_tree.tests.factories.source_file import SourceFileFactory
 from apps.family_tree.tests.factories.tree_settings import TreeSettingsFactory
 
 
@@ -248,6 +250,24 @@ def test_person_card_groups_the_relatives_and_counts_them():
         ],
         2,
     )
+
+
+@pytest.mark.django_db
+def test_person_card_lists_the_sources_with_their_files():
+    lena = PersonFactory(given_names="Lena")
+    scan = SourceFileFactory(source__people=[lena])
+    SourceFactory(people=[PersonFactory(given_names="Fremd")])
+
+    card = person_card(pk=lena.pk)
+
+    assert (card.sources, list(card.sources[0].files.all())) == ([scan.source], [scan])
+
+
+@pytest.mark.django_db
+def test_person_card_offers_every_kind_of_source():
+    lena = PersonFactory(given_names="Lena")
+
+    assert person_card(pk=lena.pk).source_kinds[0] == ("civil_registry", "Standesamt")
 
 
 @pytest.mark.django_db

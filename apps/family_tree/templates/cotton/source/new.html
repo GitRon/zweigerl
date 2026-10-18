@@ -1,0 +1,30 @@
+<c-vars person kinds />
+{# The form for a new source in the Quellen tab of the person card (#15), folded away until it is wanted. #}
+{# The source is filed with the person; scans and PDFs go through the protected media store (#21). #}
+<details class="rounded-md border border-card-edge p-3">
+    <summary class="cursor-pointer font-bold">Neue Quelle</summary>
+    <form class="mt-3 flex flex-col gap-3" enctype="multipart/form-data" data-on:submit="@post('{% url 'family_tree:source-create-view' pk=person.pk %}', {contentType: 'form'})">
+        {% csrf_token %}
+        <label class="flex flex-col gap-1">
+            <span class="text-sm">Titel</span>
+            <input type="text" name="title" required maxlength="300" placeholder="z. B. Taufbuch Mariazell, Band 4" class="min-h-11 rounded-md border-[1.5px] border-ink bg-sheet px-3">
+        </label>
+        <label class="flex flex-col gap-1">
+            <span class="text-sm">Art</span>
+            <select name="kind" class="min-h-11 rounded-md border-[1.5px] border-ink bg-sheet px-3">
+                {% for value, label in kinds %}
+                    <option value="{{ value }}"{% if value == "other" %} selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label class="flex flex-col gap-1">
+            <span class="text-sm">Zitat</span>
+            <textarea name="description" rows="3" placeholder="Was in der Quelle steht und wo sie liegt" class="rounded-md border-[1.5px] border-ink bg-sheet px-3 py-2"></textarea>
+        </label>
+        <label class="flex flex-col gap-1">
+            <span class="text-sm">Scans und PDFs</span>
+            <input type="file" name="files" multiple accept=".jpg,.jpeg,.png,.webp,.tif,.tiff,.pdf" class="text-sm">
+        </label>
+        <c-common.button variant="primary" type="submit" class="self-start">Quelle anlegen</c-common.button>
+    </form>
+</details>

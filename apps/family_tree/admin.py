@@ -2,7 +2,17 @@ from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.forms.models import BaseInlineFormSet
 
-from apps.family_tree.models import Citation, Fact, ParentChild, Partnership, Person, SiblingPair, Source, TreeSettings
+from apps.family_tree.models import (
+    Citation,
+    Fact,
+    ParentChild,
+    Partnership,
+    Person,
+    SiblingPair,
+    Source,
+    SourceFile,
+    TreeSettings,
+)
 
 # Both pair models are found by either person's name.
 PAIR_SEARCH_FIELDS = ("person_a__surname", "person_a__given_names", "person_b__surname", "person_b__given_names")
@@ -159,12 +169,29 @@ class FactAdmin(admin.ModelAdmin):
     inlines = (CitationInline,)
 
 
+class SourceFileInline(admin.TabularInline):
+    """
+    The scans and PDFs of a source, to look at only: a file saved through the admin would keep its original name
+    and everything in it, so they are added on the person card, through "store_upload" (#15, #21).
+    """
+
+    model = SourceFile
+    fields = ("file",)
+    readonly_fields = ("file",)
+    can_delete = False
+    extra = 0
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
 @admin.register(Source)
 class SourceAdmin(admin.ModelAdmin):
     list_display = ("title", "kind")
     list_filter = ("kind",)
     search_fields = ("title", "description")
     autocomplete_fields = ("people",)
+    inlines = (SourceFileInline,)
 
 
 @admin.register(Citation)

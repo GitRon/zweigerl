@@ -10,6 +10,7 @@ from django.urls import reverse
 from apps.family_tree.admin import FactInline, ParentsFormSet
 from apps.family_tree.models import Fact, ParentChild, Person
 from apps.family_tree.tests.factories.person import PersonFactory
+from apps.family_tree.tests.factories.source import SourceFactory
 from apps.family_tree.tests.factories.tree_settings import TreeSettingsFactory
 
 FactForms = inlineformset_factory(Person, Fact, fk_name="person", fields=FactInline.fields)
@@ -105,3 +106,12 @@ def test_fact_inline_refuses_a_marriage_on_a_person_with_a_message():
     )
 
     assert formset.errors == [{"kind": ["Heirat und Scheidung gehören zur Partnerschaft, nicht zur Person."]}]
+
+
+@pytest.mark.django_db
+def test_source_file_inline_never_adds_a_file_past_the_upload(admin_client):
+    source = SourceFactory()
+
+    response = admin_client.get(reverse("admin:family_tree_source_change", args=[source.pk]))
+
+    assert response.context["inline_admin_formsets"][0].has_add_permission is False
