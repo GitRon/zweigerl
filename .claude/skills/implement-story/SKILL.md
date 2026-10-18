@@ -31,7 +31,7 @@ directory *is* the state - it is what makes a dead reviewer cost one lens instea
   .lock                this worktree's one-run-at-a-time lock: slug, branch, epoch seconds
 .claude/runs/<slug>/
   spec.md              the story, resolved once, never re-fetched
-  plan.md              the approved implementation plan
+  plan.md              the implementation plan, with any design decisions and the answers to them
   state.json           phase, branch, shard status, attempt counts
   ci.md                latest gate results
   ci-logs/             full pre-commit and pytest output
@@ -121,8 +121,8 @@ Phase 6 asks the neighbours before the first click; [content review](references/
 the handshake and the fix.
 
 **The neighbours are working the same repository.** Two stories editing the same files find that out at
-the merge otherwise, so Phase 1 reads what the other worktrees have claimed and puts the overlap in front
-of you at the approval stop.
+the merge otherwise, so Phase 1 reads what the other worktrees have claimed, and an overlap that needs a
+call is one of the design decisions Phase 1 stops for.
 
 **One run at a time per worktree.** Phase 2 rewrites the working tree, so a second run in the same
 directory pulls the ground out from under the first. `.claude/runs/.lock` is one line -
@@ -214,7 +214,7 @@ A lock naming a different slug means another run owns this working tree. Stop an
 take it over. If that run was abandoned, its `state.json` says which phase it died in: resume it, or
 delete the lock deliberately and say you did.
 
-## Phase 1 - Plan, then stop
+## Phase 1 - Plan, and stop only for a design decision
 
 Write `plan.md`: the files you will touch, the actions, readers, views and components you will add, the
 tests you will write, and anything in the story you consider out of scope - start from what `spec.md` puts
@@ -238,8 +238,8 @@ forever.
 Intersect your `touches` with what is left. Anything shared goes into `plan.md` under **Neighbours**,
 naming the neighbour's slug, branch and phase. Match each neighbour's `session` against `ListAgents` to
 say whether it is still alive - a dead one is a merge conflict waiting in the future, a live one is a
-moving target. Rows that no `state.json` claims are other people's work; leave them alone. Decide nothing
-here: the stop below is where the call gets made.
+moving target. Rows that no `state.json` claims are other people's work; leave them alone. An overlap
+that needs a call - wait, scope around it, or stack - is a design decision, see below.
 
 If the call is to build on a neighbour's branch, record that branch as `base` in `state.json`. Later
 phases diff and open the PR against `base`, so a stacked story reviews its own change instead of the
@@ -247,7 +247,30 @@ neighbour's too. Only stack on a branch the neighbour has already pushed - it do
 and `gh pr create --base` wants a branch that exists on the remote. A neighbour still writing its story
 is a reason to wait or to scope around it, not to stack.
 
-**Present the plan and stop for approval.** This is the only mandatory stop in the run.
+### Decide, or ask
+
+**The run stops only for a design decision.** A plan that only works out what the story already says -
+which files, which tests, where the docs put each piece - is not a question: show it in a few lines and
+carry on to Phase 2 without waiting.
+
+A design decision is a choice the story, its comments and the docs leave open, where reasonable options
+lead to different behaviour, data or structure, and choosing wrongly is expensive to undo. Stop for it
+when the plan:
+
+- picks between options with real trade-offs the spec does not settle - a model shape, a URL scheme,
+  what a person sees when something fails;
+- goes beyond the story or leaves part of it out, or contradicts a doc - say which and why;
+- adds a dependency, a model or a migration nobody asked for, or changes a pattern doc's rule;
+- has to make the call on a neighbour's overlap.
+
+Then put **only those decisions** to the person: each with its options, what each costs, and your
+recommendation, plus the plan in a few lines for context. Record the questions and the answers in
+`plan.md` and go on. Everything the docs, `spec.md` or an `**Entschieden am …**` line already decides is
+not asked again. A small call the docs do not cover but which is cheap to change later - a name, a
+message text, the order of tests - is made, written into `plan.md` under **Assumed**, and named in the
+final report and the PR body, not asked.
+
+This is the only stop in the run, and it happens only when there is something to decide.
 
 ## Phase 2 - Implement
 
@@ -440,7 +463,8 @@ gh pr create --base ${base#github/} --title "<story title>" --body-file <body>
 `--base` wants a branch name, so the `github/` comes off: a run based on `github/main` opens against
 `main`, a stacked one against the neighbour's branch as recorded.
 
-The body carries: what the story asked for, what you built, `Closes #<n>` when there is an issue, the CI
+The body carries: what the story asked for, what you built, `Closes #<n>` when there is an issue, the
+design decisions asked in Phase 1 with their answers and every call listed under **Assumed**, the CI
 result, a **Review coverage** line naming any lens that was skipped or partial, and a **Content review**
 line saying which journey was walked in the browser and what it showed - or that the phase was skipped,
 and why. Unless `--no-pr`.
@@ -452,7 +476,7 @@ Release the worktree's lock once the PR is open - `rm -f .claude/runs/.lock`. A 
 the next story in this worktree for no reason. The worktree itself stays; it is where review comments get
 answered.
 
-End with a short report: what shipped, what CI said, what the review found and what you fixed, what the
+End with a short report: what shipped, the calls made under **Assumed**, what CI said, what the review found and what you fixed, what the
 browser confirmed or broke, what was skipped and why, the out-of-scope list, and the worktree path and
 branch - so it is clear what can be removed once the PR is merged.
 
