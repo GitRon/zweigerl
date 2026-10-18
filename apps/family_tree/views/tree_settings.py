@@ -31,7 +31,7 @@ def home_person_view(request: HttpRequest):
     """
     try:
         person = choose_home_person(person_id=int(request.POST.get("home_person", ""))).home_person
-    except (ValueError, Person.DoesNotExist):
+    except ValueError, Person.DoesNotExist:
         yield toast_sse(request=request, text="Diese Person ist nicht mehr im Baum.", style="error")
         return
 
