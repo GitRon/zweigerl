@@ -44,6 +44,9 @@ yarn install
 yarn build:css                           # compiles assets/css/tailwind.css -> static/dist/tailwind.css
 ```
 
+The typefaces come from the same place: fontsource packages in `package.json`. `yarn build:css` copies
+their font files to `static/dist/files/` before it compiles, see [visual identity](../patterns/visual-identity.md#the-typefaces).
+
 `static/dist/` is not in version control, so a fresh clone has to compile it once. **Without it the app
 renders with no styles at all**, which looks like a broken page but is a missing build step.
 

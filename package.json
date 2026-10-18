@@ -6,11 +6,17 @@
   "license": "MIT",
   "author": "Ronny Vedrilla",
   "scripts": {
-    "build:css": "tailwindcss --input assets/css/tailwind.css --output static/dist/tailwind.css --minify",
-    "watch:css": "tailwindcss --input assets/css/tailwind.css --output static/dist/tailwind.css --watch"
+    "build:fonts": "node assets/copy-fonts.mjs",
+    "build:css": "yarn build:fonts && tailwindcss --input assets/css/tailwind.css --output static/dist/tailwind.css --minify",
+    "watch:css": "yarn build:fonts && tailwindcss --input assets/css/tailwind.css --output static/dist/tailwind.css --watch"
   },
   "devDependencies": {
     "@tailwindcss/cli": "4.3.3",
     "tailwindcss": "4.3.3"
+  },
+  "dependencies": {
+    "@fontsource/atkinson-hyperlegible": "5.3.0",
+    "@fontsource/reenie-beanie": "5.3.0",
+    "@fontsource/young-serif": "5.3.0"
   }
 }

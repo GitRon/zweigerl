@@ -1,10 +1,10 @@
 <c-common.layout>
     <main class="mx-auto max-w-2xl px-4 py-16">
-        <h1 class="text-4xl font-semibold">Zweigerl</h1>
-        <p class="mt-4 text-lg text-stone-600">Ein Stammbaum, in dem jede Angabe ihren Beleg hat.</p>
-        <form method="post" action="{% url 'common:logout-view' %}" class="mt-8">
+        <h1><c-common.wordmark class="text-7xl" /></h1>
+        <p class="mt-6 text-lg">Ein Stammbaum, in dem jede Angabe ihren Beleg hat.</p>
+        <form method="post" action="{% url 'common:logout-view' %}" class="mt-10">
             {% csrf_token %}
-            <button type="submit" class="text-stone-600 underline">Abmelden</button>
+            <c-common.button type="submit">Abmelden</c-common.button>
         </form>
     </main>
 </c-common.layout>

@@ -31,6 +31,13 @@ word. The folder keeps the names apart.
 |---|---|---|
 | `<c-common.layout>` | `apps.common` | The page around everything: stylesheet, datastar, the toast area; the page as the slot, `title` before "Zweigerl" in the tab |
 | `<c-common.toast>` | `apps.common` | One toast, `info`, `success` or `error`, removing itself after five seconds |
+| `<c-common.wordmark>` | `apps.common` | The word mark, sized by a text size in `class` |
+| `<c-common.frame>` | `apps.common` | The 3:4 picture frame: the photo, else the initials, else the empty frame asking for one; `width` sizes it |
+| `<c-common.label>` | `apps.common` | The Etikett: a short word on a paper tag, in the tone `tinte`, `loden` or `ziegel` |
+| `<c-common.button>` | `apps.common` | A button, `primary` or `secondary`, or with `href` a link drawn as one |
+
+What each of the last four looks like, and when a screen may use which, is
+[visual identity](visual-identity.md#the-components).
 
 A new component gets a row here.
 
@@ -50,6 +57,21 @@ Declared in `<c-vars>` on the component's first line:
 
 At the call site, `:name="expression"` passes a value from the context, and `name="text"` passes the
 text. A bare `name` passes `True`, which is how a flag reads.
+
+### Attributes the component passes on
+
+An attribute the component does not declare is not a parameter: cotton collects it into `{{ attrs }}`.
+A component that wraps one element and is put to work by its caller - a button taking a datastar
+`data-on:click`, an `id` or `disabled` - writes `{{ attrs }}` on that element, so the call site can say
+what it does without the component knowing every datastar attribute there is.
+
+```html
+<c-common.button variant="primary" data-on:click="@post('/personen/')">Anlegen</c-common.button>
+```
+
+Only a component that writes `{{ attrs }}` passes anything on; everywhere else an undeclared attribute is
+dropped. A `class` the caller adds is declared (`class=""`) and appended to the component's own classes,
+so it never replaces them by accident.
 
 ## Slots
 

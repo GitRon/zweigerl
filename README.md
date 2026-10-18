@@ -46,8 +46,8 @@ rather than inferring the conventions from nearby code.
   component: where it lives, its parameters, slots, and the `id` datastar morphs on
 - [Responsive layout](docs/patterns/responsive-layout.md) — the desk is the default, what a narrow
   window still gets, and why the phone waits for `v2`
-- [Visual identity](docs/patterns/visual-identity.md) — the colours and typefaces from the moodboard
-  *(scaffold, #4)*
+- [Visual identity](docs/patterns/visual-identity.md) — the colours, typefaces and building blocks from
+  the moodboard: what each colour may be spent on, the word mark, the frame, labels and buttons
 
 ### Testing
 

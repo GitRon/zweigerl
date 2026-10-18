@@ -1,0 +1,19 @@
+<c-vars src="" alt="" initials="" width="w-18" class="" />
+{# The 3:4 picture frame. A photo fills it; without one the initials stand in it; without those it is #}
+{# the empty dashed frame that asks for a photo. "width" is a width utility and always set: the frame is #}
+{# a size container, so without one it collapses to nothing. Initials and placeholder scale with it. #}
+{# Only the photo is announced - the name beside the frame says who it is, so initials or an empty #}
+{# frame would only repeat or interrupt it. #}
+<span class="@container relative inline-flex aspect-[3/4] shrink-0 items-center justify-center overflow-hidden rounded-lg {% if src %}border border-karton-rand bg-karton{% elif initials %}border border-karton-rand bg-karton text-tinte-matt{% else %}flex-col gap-[5cqw] border-[1.5px] border-dashed border-tinte text-tinte{% endif %} {{ width }} {{ class }}"{% if not src %} aria-hidden="true"{% endif %}>
+    {% if src %}
+        <img src="{{ src }}" alt="{{ alt }}" class="size-full object-cover">
+    {% elif initials %}
+        <span class="font-serif text-[36cqw] leading-none">{{ initials }}</span>
+    {% else %}
+        <svg viewBox="0 0 24 24" class="size-[36cqw] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 8L8 8L9.5 5.5L14.5 5.5L16 8L20 8L20 19L4 19Z" />
+            <circle cx="12" cy="13" r="3.2" />
+        </svg>
+        <span class="text-[18cqw] leading-none">Foto</span>
+    {% endif %}
+</span>
