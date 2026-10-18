@@ -1,0 +1,16 @@
+{
+  "name": "zweigerl",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Ein Stammbaum, in dem jede Angabe ihren Beleg hat",
+  "license": "MIT",
+  "author": "Ronny Vedrilla",
+  "scripts": {
+    "build:css": "tailwindcss --input assets/css/tailwind.css --output static/dist/tailwind.css --minify",
+    "watch:css": "tailwindcss --input assets/css/tailwind.css --output static/dist/tailwind.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "4.3.3",
+    "tailwindcss": "4.3.3"
+  }
+}

@@ -218,3 +218,27 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- Zweigerl ---
+
+.idea
+*.sqlite3
+
+**/node_modules/**
+yarn-error.log
+
+# yarn is the package manager here and "yarn.lock" is the lock file. npm writes its own on any "npm
+# install", and a second lock file that nobody reads goes stale silently.
+package-lock.json
+
+# The compiled Tailwind stylesheet. "yarn build:css" writes it from "assets/css/tailwind.css"; see
+# README.md.
+static/dist/
+
+.complexipy_cache/
+
+# Scratch state for the /implement-story skill: specs, plans, CI logs and review shards.
+.claude/runs/
+
+# Git worktrees the agent skills check out inside the repo.
+.claude/worktrees/
