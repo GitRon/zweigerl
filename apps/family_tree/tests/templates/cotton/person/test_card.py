@@ -4,7 +4,7 @@ import pytest
 from django.urls import reverse
 
 from apps.common.tests.html import parse, render_component
-from apps.family_tree.readers.person import FactEntry, PersonCard, PersonListEntry, RelativeGroup
+from apps.family_tree.readers.person import FactEntry, PersonCard, PersonListEntry, RelativeGroup, SourcesTab
 from apps.family_tree.tests.factories.citation import CitationFactory
 from apps.family_tree.tests.factories.fact import FactFactory
 from apps.family_tree.tests.factories.person import PersonFactory
@@ -16,7 +16,14 @@ BIRTH = FactFactory.build(pk=11)
 CITATION = CitationFactory.build(fact=BIRTH, source=SourceFactory.build(title="Taufbuch Mariazell"), page="fol. 12")
 
 
-CARD = PersonCard(entry=GERTI, relationship=None, facts=[], relatives=[], relative_count=0, sources=[], source_kinds=[])
+CARD = PersonCard(
+    entry=GERTI,
+    relationship=None,
+    facts=[],
+    relatives=[],
+    relative_count=0,
+    sources_tab=SourcesTab(person=GERTI.person, sources=[], kinds=[]),
+)
 DOCUMENTED = FactEntry(
     fact=BIRTH, label="Geboren", text="12. März 1958", reliability=None, citations=[CITATION], undocumented=False
 )
@@ -82,7 +89,10 @@ def test_card_offers_the_tabs_of_later_tickets_disabled():
 def test_card_lists_the_sources_in_their_tab():
     source = SourceFactory(title="Taufbuch Mariazell")
 
-    html = render_component(tag='<c-person.card :card="card" />', context={"card": replace(CARD, sources=[source])})
+    html = render_component(
+        tag='<c-person.card :card="card" />',
+        context={"card": replace(CARD, sources_tab=SourcesTab(person=GERTI.person, sources=[source], kinds=[]))},
+    )
 
     page = parse(html)
     assert (
@@ -90,12 +100,6 @@ def test_card_lists_the_sources_in_their_tab():
         page.find(id="person-card-tab-sources")["data-on:click"],
         "Taufbuch Mariazell" in page.find(id="person-card-sources").get_text(),
     ) == ("Quellen 1", "$tab = 'sources'", True)
-
-
-def test_card_without_sources_invites_the_first():
-    html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
-
-    assert "Noch keine Quelle da. Leg die erste an." in parse(html).find(id="person-card-sources").get_text()
 
 
 def test_card_shows_the_beleg_of_a_documented_fact():

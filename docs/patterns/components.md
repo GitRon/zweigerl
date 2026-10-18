@@ -39,6 +39,8 @@ word. The folder keeps the names apart.
 | `<c-person.list>` | `apps.family_tree` | Every person `readers.person.person_list` found, with frame, name and Lebensdaten; `id="person-list"`, patched by the live search |
 | `<c-person.card>` | `apps.family_tree` | The person card beside the tree (#12, #13): frame, name, Lebensdaten and the relationship to the home person, then the tabs - every fact with its Beleg, the sources with their files, and the relatives, each opening their own card; `id="person-card"`, patched when a card is clicked |
 | `<c-source.card>` | `apps.family_tree` | One source on the person card (#15): kind, title, Zitat, its files opening through the media view, and the form attaching more; `id="source-<pk>"` |
+| `<c-source.list>` | `apps.family_tree` | The Quellen tab of the person card: every `<c-source.card>`, then `<c-source.new>`; `id="person-card-source-list"`, patched with `<c-source.count>` after a source was added - the whole card would morph its tabs back to the first |
+| `<c-source.count>` | `apps.family_tree` | The number beside "Quellen" in the card's tabs; `id="person-card-source-count"` |
 | `<c-source.new>` | `apps.family_tree` | The form for a new source in the Quellen tab, folded in a `<details>`: title, kind, Zitat, scans and PDFs |
 | `<c-tree.canvas>` | `apps.family_tree` | The tree from `readers.tree.tree`: the zoom buttons and the slot in its toolbar, the scrolling container, the lines, placeholders and cards |
 | `<c-tree.card>` | `apps.family_tree` | One person in the tree at their position; a button that selects them and fetches their person card |

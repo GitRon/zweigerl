@@ -13,6 +13,7 @@ from apps.family_tree.readers.person import (
     person_entries,
     person_list,
     relatives,
+    sources_tab,
 )
 from apps.family_tree.tests.factories.citation import CitationFactory
 from apps.family_tree.tests.factories.fact import FactFactory
@@ -253,23 +254,34 @@ def test_person_card_groups_the_relatives_and_counts_them():
 
 
 @pytest.mark.django_db
-def test_person_card_lists_the_sources_with_their_files():
+def test_person_card_holds_the_sources_tab():
     lena = PersonFactory(given_names="Lena")
-    scan = SourceFileFactory(source__people=[lena])
-    SourceFactory(people=[PersonFactory(given_names="Fremd")])
+    source = SourceFactory(people=[lena])
 
-    card = person_card(pk=lena.pk)
-
-    assert (card.sources, list(card.sources[0].files.all())) == ([scan.source], [scan])
-
-
-@pytest.mark.django_db
-def test_person_card_offers_every_kind_of_source():
-    lena = PersonFactory(given_names="Lena")
-
-    assert person_card(pk=lena.pk).source_kinds[0] == ("civil_registry", "Standesamt")
+    assert person_card(pk=lena.pk).sources_tab.sources == [source]
 
 
 @pytest.mark.django_db
 def test_person_card_of_somebody_not_there_is_none():
     assert person_card(pk=404) is None
+
+
+@pytest.mark.django_db
+def test_sources_tab_holds_the_sources_with_their_files_and_every_kind():
+    lena = PersonFactory(given_names="Lena")
+    scan = SourceFileFactory(source__people=[lena])
+    SourceFactory(people=[PersonFactory(given_names="Fremd")])
+
+    found = sources_tab(pk=lena.pk)
+
+    assert (found.person, found.sources, list(found.sources[0].files.all()), found.kinds[0]) == (
+        lena,
+        [scan.source],
+        [scan],
+        ("civil_registry", "Standesamt"),
+    )
+
+
+@pytest.mark.django_db
+def test_sources_tab_of_somebody_not_there_is_none():
+    assert sources_tab(pk=404) is None

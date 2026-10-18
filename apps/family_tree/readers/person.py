@@ -104,6 +104,15 @@ class RelativeGroup:
 
 
 @dataclass(frozen=True, kw_only=True)
+class SourcesTab:
+    person: Person
+    # Filed with the person or cited by their facts, each with its files (#15).
+    sources: list[Source]
+    # What the form for a new source offers, as (value, label).
+    kinds: list[tuple[str, str]]
+
+
+@dataclass(frozen=True, kw_only=True)
 class PersonCard:
     entry: PersonListEntry
     # How the person is related to the home person, None while nobody is chosen or nothing connects them.
@@ -111,10 +120,7 @@ class PersonCard:
     facts: list[FactEntry]
     relatives: list[RelativeGroup]
     relative_count: int
-    # Filed with the person or cited by their facts, each with its files (#15).
-    sources: list[Source]
-    # What the form for a new source offers, as (value, label).
-    source_kinds: list[tuple[str, str]]
+    sources_tab: SourcesTab
 
 
 def person_card(*, pk: int) -> PersonCard | None:
@@ -147,8 +153,24 @@ def person_card(*, pk: int) -> PersonCard | None:
             if members
         ],
         relative_count=sum(len(members) for _, members in groups),
+        sources_tab=_sources_tab(person=person),
+    )
+
+
+def sources_tab(*, pk: int) -> SourcesTab | None:
+    """
+    The Quellen tab of the person card (#15) on its own, for patching it after a source was added - or None for
+    a person who is not there.
+    """
+    person = Person.objects.filter(pk=pk).first()
+    return _sources_tab(person=person) if person else None
+
+
+def _sources_tab(*, person: Person) -> SourcesTab:
+    return SourcesTab(
+        person=person,
         sources=list(sources(person=person).prefetch_related("files")),
-        source_kinds=list(Source.Kind.choices),
+        kinds=list(Source.Kind.choices),
     )
 
 

@@ -25,7 +25,7 @@ def _post(client, url: str, data: dict) -> str:
 
 
 @pytest.mark.django_db
-def test_source_create_view_creates_the_source_and_patches_the_card(admin_client):
+def test_source_create_view_creates_the_source_and_patches_the_list(admin_client):
     lena = PersonFactory()
 
     body = _post(
@@ -40,7 +40,11 @@ def test_source_create_view_creates_the_source_and_patches_the_card(admin_client
     )
 
     assert list(Source.objects.values_list("title", flat=True)) == ["Geburtsurkunde"]
-    assert 'id="person-card"' in body and "Passt. „Geburtsurkunde“ liegt jetzt bei den Quellen." in body
+    assert (
+        "data: mode replace" in body,
+        'id="person-card-source-list"' in body,
+        "Passt. „Geburtsurkunde“ liegt jetzt bei den Quellen." in body,
+    ) == (True, True, True)
 
 
 @pytest.mark.django_db
@@ -75,7 +79,7 @@ def test_source_create_view_refuses_a_file_zweigerl_does_not_keep(admin_client):
 
 
 @pytest.mark.django_db
-def test_source_files_view_attaches_the_files_and_patches_the_card(admin_client):
+def test_source_files_view_attaches_the_files_and_patches_the_list(admin_client):
     lena = PersonFactory()
     source = SourceFactory(people=[lena])
 
@@ -86,7 +90,7 @@ def test_source_files_view_attaches_the_files_and_patches_the_card(admin_client)
     )
 
     assert source.files.count() == 1
-    assert 'id="person-card"' in body and "Passt. Hängt jetzt an der Quelle." in body
+    assert 'id="person-card-source-list"' in body and "Passt. Hängt jetzt an der Quelle." in body
 
 
 @pytest.mark.django_db
@@ -129,7 +133,7 @@ def test_source_files_view_refuses_a_file_zweigerl_does_not_keep(admin_client):
 
 
 @pytest.mark.django_db
-def test_source_files_view_patches_no_card_for_somebody_not_in_the_tree(admin_client):
+def test_source_files_view_patches_no_list_for_somebody_not_in_the_tree(admin_client):
     source = SourceFactory()
 
     body = _post(
@@ -138,4 +142,4 @@ def test_source_files_view_patches_no_card_for_somebody_not_in_the_tree(admin_cl
         {"files": [SimpleUploadedFile("Scan.pdf", PDF)]},
     )
 
-    assert ('id="person-card"' in body, "Passt. Hängt jetzt an der Quelle." in body) == (False, True)
+    assert ('id="person-card-source-list"' in body, "Passt. Hängt jetzt an der Quelle." in body) == (False, True)
