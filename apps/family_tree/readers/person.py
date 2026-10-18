@@ -6,8 +6,8 @@ from django.db.models import Prefetch, Q, QuerySet
 from apps.family_tree.domain.dates import date_text, lifespan
 from apps.family_tree.domain.names import display_name, initials, matches, sort_key
 from apps.family_tree.domain.relationship import relationship_name
-from apps.family_tree.models import Citation, Fact, Person, SiblingPair
-from apps.family_tree.readers.evidence import facts
+from apps.family_tree.models import Citation, Fact, Person, SiblingPair, Source
+from apps.family_tree.readers.evidence import facts, sources
 from apps.family_tree.readers.relationship import family_graph
 from apps.family_tree.readers.tree_settings import home_person
 
@@ -104,6 +104,15 @@ class RelativeGroup:
 
 
 @dataclass(frozen=True, kw_only=True)
+class SourcesTab:
+    person: Person
+    # Filed with the person or cited by their facts, each with its files (#15).
+    sources: list[Source]
+    # What the form for a new source offers, as (value, label).
+    kinds: list[tuple[str, str]]
+
+
+@dataclass(frozen=True, kw_only=True)
 class PersonCard:
     entry: PersonListEntry
     # How the person is related to the home person, None while nobody is chosen or nothing connects them.
@@ -111,6 +120,7 @@ class PersonCard:
     facts: list[FactEntry]
     relatives: list[RelativeGroup]
     relative_count: int
+    sources_tab: SourcesTab
     # Whether a death fact is recorded, so the form for name and status (#30) does not ask for the year again.
     death_recorded: bool
 
@@ -118,8 +128,8 @@ class PersonCard:
 def person_card(*, pk: int) -> PersonCard | None:
     """
     The person card (#12, #13): the head with name, Lebensdaten and how the person is related to the home person,
-    every fact with its reliability and its Belege, and everyone directly related - or None for a person who is
-    not there.
+    every fact with its reliability and its Belege, everyone directly related and the sources with their files -
+    or None for a person who is not there.
     """
     person = _with_life_facts().filter(pk=pk).first()
     if person is None:
@@ -145,7 +155,25 @@ def person_card(*, pk: int) -> PersonCard | None:
             if members
         ],
         relative_count=sum(len(members) for _, members in groups),
+        sources_tab=_sources_tab(person=person),
         death_recorded=any(fact.kind == Fact.Kind.DEATH for fact in person.life_facts),
+    )
+
+
+def sources_tab(*, pk: int) -> SourcesTab | None:
+    """
+    The Quellen tab of the person card (#15) on its own, for patching it after a source was added - or None for
+    a person who is not there.
+    """
+    person = Person.objects.filter(pk=pk).first()
+    return _sources_tab(person=person) if person else None
+
+
+def _sources_tab(*, person: Person) -> SourcesTab:
+    return SourcesTab(
+        person=person,
+        sources=list(sources(person=person).prefetch_related("files")),
+        kinds=list(Source.Kind.choices),
     )
 
 

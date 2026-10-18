@@ -1,0 +1,15 @@
+<c-vars sources_tab />
+{# The Quellen tab of the person card (#15): every source with its files, then the form for a new one. #}
+{# Patched on its own after a source was added - the whole card would morph its tabs back to the first. #}
+<div id="person-card-source-list" class="flex flex-col gap-3">
+    {% if sources_tab.sources %}
+        <ul class="flex flex-col gap-3">
+            {% for source in sources_tab.sources %}
+                <c-source.card :source="source" :person="sources_tab.person" />
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="py-4 text-center text-ink-muted">Noch keine Quelle da. Leg die erste an.</p>
+    {% endif %}
+    <c-source.new :person="sources_tab.person" :kinds="sources_tab.kinds" />
+</div>

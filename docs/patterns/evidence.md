@@ -28,6 +28,7 @@ The prose uses the German terms of genealogy; a name in backticks is the one in 
 | `Fact` | a `person` **or** a `partnership`, the `kind`, a `value` or an uncertain date, the `reliability` | an event or attribute: `BIRT`, `OCCU`, `MARR`, … |
 | `Source` | `title`, `kind`, `description` (what the source says and where it is kept), the `people` it is filed with | `SOUR` |
 | `Citation` | one fact citing one source, with the `page` | `SOUR` under a fact, with `PAGE` |
+| `SourceFile` | one scan or PDF of a source, its `file` stored through `store_upload` at `sources/<source-id>/<file-id>.<ext>` | `OBJE` under a `SOUR` |
 
 ### One value per fact
 
@@ -53,6 +54,12 @@ A source is cited by any number of facts - one parish register serves a whole fa
 persons it is filed with, so a scanned document can sit on a person's card before anything cites it (#15).
 The sources of a person, which #14 offers to cite and #15 lists, are those filed with them and those cited
 by their facts or by the facts of their partnerships: `readers.evidence.sources(person=…)`.
+
+The Quellen tab of the person card (#15) shows each of them with its kind, title, description - the Zitat the
+form asks for - and its files, and creates a new source filed with the person, with its scans and PDFs, or
+attaches more to one: `actions.source.create_source` and `add_source_files`. A file is written only through
+`store_upload`, after its row, so the id names it - see [data storage](data-storage.md#photos-and-scans). The
+admin shows the files of a source but adds none, since a file saved there would keep its original name.
 
 A source that is cited cannot be deleted (`on_delete=PROTECT` on the citation): its facts would quietly
 turn *unbelegt*. A citation goes with its fact.

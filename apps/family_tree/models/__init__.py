@@ -11,6 +11,17 @@ from apps.family_tree.models.partnership import Partnership
 from apps.family_tree.models.person import Person
 from apps.family_tree.models.sibling_pair import SiblingPair
 from apps.family_tree.models.source import Source
+from apps.family_tree.models.source_file import SourceFile
 from apps.family_tree.models.tree_settings import TreeSettings
 
-__all__ = ["Citation", "Fact", "ParentChild", "Partnership", "Person", "SiblingPair", "Source", "TreeSettings"]
+__all__ = [
+    "Citation",
+    "Fact",
+    "ParentChild",
+    "Partnership",
+    "Person",
+    "SiblingPair",
+    "Source",
+    "SourceFile",
+    "TreeSettings",
+]

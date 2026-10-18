@@ -1,0 +1,31 @@
+<c-vars source person />
+{# One source on the person card (#15): its kind, title and Zitat, the scans and PDFs, and a form to attach #}
+{# more. Each file opens through the media view behind the login, in a tab of its own. #}
+<li id="source-{{ source.pk }}" class="flex flex-col gap-2 rounded-md border border-card-edge bg-sheet p-3">
+    <div class="flex flex-col items-start gap-1">
+        <c-common.label :text="source.get_kind_display" />
+        <h3 class="text-lg leading-tight">{{ source.title }}</h3>
+    </div>
+    {% if source.description %}
+        <p class="text-sm whitespace-pre-line">{{ source.description }}</p>
+    {% endif %}
+    {% with files=source.files.all %}
+        {% if files %}
+            <ul class="flex flex-col gap-0.5 text-sm" aria-label="Dateien">
+                {% for source_file in files %}
+                    <li><a href="{{ source_file.file.url }}" target="_blank" rel="noopener" class="text-forest underline">Datei {{ forloop.counter }} · {{ source_file.format_name }}</a></li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-sm text-ink-muted">Noch kein Scan dabei.</p>
+        {% endif %}
+    {% endwith %}
+    <form class="flex flex-col items-start gap-2" enctype="multipart/form-data" data-on:submit="@post('{% url 'family_tree:source-files-view' pk=person.pk source_pk=source.pk %}', {contentType: 'form'})">
+        {% csrf_token %}
+        <label class="flex w-full flex-col gap-1 text-sm">
+            <span>Scan oder PDF anhängen</span>
+            <input type="file" name="files" multiple required accept=".jpg,.jpeg,.png,.webp,.tif,.tiff,.pdf" class="w-full text-sm">
+        </label>
+        <c-common.button type="submit">Anhängen</c-common.button>
+    </form>
+</li>
