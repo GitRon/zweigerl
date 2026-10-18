@@ -299,7 +299,7 @@ def test_delete_person_refuses_the_home_person():
 
 @pytest.mark.django_db
 def test_delete_person_of_somebody_not_there_raises():
-    with pytest.raises(Person.DoesNotExist):
+    with pytest.raises(Person.DoesNotExist, match="Person matching query does not exist"):
         delete_person(person_id=404)
 
 
@@ -342,7 +342,7 @@ def test_unlink_relative_without_such_a_link_raises():
     link = ParentChildFactory()
     sibling = ParentChildFactory(parent=link.parent)
 
-    with pytest.raises(ObjectDoesNotExist):
+    with pytest.raises(ObjectDoesNotExist, match="Keine solche Verbindung"):
         unlink_relative(person_id=link.child_id, relation=Relation.SIBLING, relative_id=sibling.child_id)
 
 
@@ -350,5 +350,5 @@ def test_unlink_relative_without_such_a_link_raises():
 def test_unlink_relative_refuses_an_unknown_relation():
     link = ParentChildFactory()
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="'cousin' is not a valid Relation"):
         unlink_relative(person_id=link.child_id, relation="cousin", relative_id=link.parent_id)

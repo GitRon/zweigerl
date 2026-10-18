@@ -159,4 +159,4 @@ def unlink_relative(*, person_id: int, relation: str, relative_id: int) -> None:
             )
         deleted, _ = links.delete()
         if not deleted:
-            raise ObjectDoesNotExist
+            raise ObjectDoesNotExist("Keine solche Verbindung zwischen den beiden.")
