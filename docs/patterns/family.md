@@ -85,6 +85,22 @@ Every model but `TreeSettings` has `gedcom_raw`, a JSON list of the records an i
 Zweigerl does not understand, so an export can write them back (#22, #26). Nothing in Zweigerl reads it, and
 nothing but the importer writes it.
 
+## Adding people
+
+A person is added from the sidebar, connected to nobody, or from a person's card as their parent, partner,
+child or sibling (#18) - in a short form with the names, `sex` and `living_status`; every fact follows on the new
+person's card. `actions.person.add_relative` writes the person and the one link in a transaction:
+
+| Added as | Writes |
+|---|---|
+| Elternteil | a `ParentChild` of pedigree `birth`; a third birth parent is refused |
+| Partner | a `Partnership` of kind `unknown` |
+| Kind | a `ParentChild` to this person alone - the other parent is added from the child's card |
+| Geschwister | the same `ParentChild` rows the person has, with their `partnership` and `pedigree`, so a full sibling; while the person has no known parents, a `SiblingPair` |
+
+A half-sibling is added as a child of the parent they share. `actions.person.create_person` makes the first person
+of an empty tree the home person.
+
 ## The home person
 
 The Ausgangsperson - the person the tree is laid out around (#11) - is stored as
