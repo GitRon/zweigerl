@@ -37,9 +37,10 @@ callable rather than a list, so that only the layout takes the toasts out of the
 
 ## Static files
 
-`STATICFILES_DIRS` is `static/` and nothing else: the compiled stylesheet in `static/dist/` and the
-vendored datastar bundle in `static/vendor/`. Nothing is loaded from a CDN, so the app keeps working with
-the network unplugged.
+`STATICFILES_DIRS` is `static/` and nothing else: the compiled stylesheet and the self-hosted fonts in
+`static/dist/`, the vendored datastar bundle in `static/vendor/` and the favicon, app icons and web manifest
+in `static/brand/` - see [visual identity](../patterns/visual-identity.md#word-mark-and-icon). Nothing is
+loaded from a CDN, so the app keeps working with the network unplugged.
 
 ## Locale
 
