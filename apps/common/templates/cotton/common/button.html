@@ -1,0 +1,9 @@
+<c-vars variant="secondary" type="button" href="" class="" />
+{# A button, or with "href" a link drawn as one. "primary" is the one filled control a screen may have, #}
+{# everything else is "secondary" - see docs/patterns/visual-identity.md. Any other attribute, a #}
+{# datastar "data-on:click" or "disabled", lands on the element through "attrs". #}
+{% if href %}
+    <a href="{{ href }}" class="inline-flex min-h-11 items-center justify-center rounded-md border-[1.5px] px-5 font-bold no-underline {% if variant == 'primary' %}border-ziegel bg-ziegel text-birkenpapier hover:border-tinte hover:text-birkenpapier{% else %}border-tinte text-tinte hover:bg-karton hover:text-tinte{% endif %} {{ class }}" {{ attrs }}>{{ slot }}</a>
+{% else %}
+    <button type="{{ type }}" class="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-md border-[1.5px] px-5 font-bold disabled:cursor-not-allowed disabled:border-karton-rand disabled:bg-transparent disabled:text-tinte-matt {% if variant == 'primary' %}border-ziegel bg-ziegel text-birkenpapier hover:border-tinte{% else %}border-tinte text-tinte hover:bg-karton{% endif %} {{ class }}" {{ attrs }}>{{ slot }}</button>
+{% endif %}
