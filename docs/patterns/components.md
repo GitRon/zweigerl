@@ -33,7 +33,7 @@ word. The folder keeps the names apart.
 | `<c-common.toast>` | `apps.common` | One toast, `info`, `success` or `error`, removing itself after five seconds |
 | `<c-common.wordmark>` | `apps.common` | The word mark, sized by a text size in `class` |
 | `<c-common.frame>` | `apps.common` | The 3:4 picture frame: the photo, else the initials, else the empty frame asking for one; `width` sizes it |
-| `<c-common.label>` | `apps.common` | The Etikett: a short word on a paper tag, in the tone `tinte`, `loden` or `ziegel` |
+| `<c-common.label>` | `apps.common` | The Etikett: a short word on a paper tag, in the tone `ink`, `forest` or `brick` |
 | `<c-common.button>` | `apps.common` | A button, `primary` or `secondary`, or with `href` a link drawn as one |
 
 What each of the last four looks like, and when a screen may use which, is

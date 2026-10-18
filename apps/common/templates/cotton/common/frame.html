@@ -4,7 +4,7 @@
 {# a size container, so without one it collapses to nothing. Initials and placeholder scale with it. #}
 {# Only the photo is announced - the name beside the frame says who it is, so initials or an empty #}
 {# frame would only repeat or interrupt it. #}
-<span class="@container relative inline-flex aspect-[3/4] shrink-0 items-center justify-center overflow-hidden rounded-lg {% if src %}border border-karton-rand bg-karton{% elif initials %}border border-karton-rand bg-karton text-tinte-matt{% else %}flex-col gap-[5cqw] border-[1.5px] border-dashed border-tinte text-tinte{% endif %} {{ width }} {{ class }}"{% if not src %} aria-hidden="true"{% endif %}>
+<span class="@container relative inline-flex aspect-[3/4] shrink-0 items-center justify-center overflow-hidden rounded-lg {% if src %}border border-card-edge bg-card{% elif initials %}border border-card-edge bg-card text-ink-muted{% else %}flex-col gap-[5cqw] border-[1.5px] border-dashed border-ink text-ink{% endif %} {{ width }} {{ class }}"{% if not src %} aria-hidden="true"{% endif %}>
     {% if src %}
         <img src="{{ src }}" alt="{{ alt }}" class="size-full object-cover">
     {% elif initials %}
