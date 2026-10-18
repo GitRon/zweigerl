@@ -424,9 +424,9 @@ def test_fact_form_for_a_marriage_chose_the_other_partner():
     partnership = PartnershipFactory()
     marriage = FactFactory(person=None, partnership=partnership, kind=Fact.Kind.MARRIAGE)
 
-    form = fact_form(person_id=partnership.person_b.pk, fact_id=marriage.pk)
+    form = fact_form(person_id=partnership.person_a.pk, fact_id=marriage.pk)
 
-    assert (form.key, form.fields, form.partner_id) == (str(marriage.pk), "couple", partnership.person_a.pk)
+    assert (form.key, form.fields, form.partner_id) == (str(marriage.pk), "couple", partnership.person_b.pk)
 
 
 @pytest.mark.django_db
