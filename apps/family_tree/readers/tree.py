@@ -59,6 +59,14 @@ def tree() -> Tree:
     )
 
 
+def tree_card(*, pk: int) -> TreeCard | None:
+    """
+    The one card of the person "pk" in the tree, to patch it after their name changed (#30) - or None for
+    somebody the tree does not show.
+    """
+    return next((card for card in tree().cards if card.entry.person.pk == pk), None)
+
+
 def tree_layout() -> TreeLayout:
     """
     The whole tree, laid out around the home person - or, while nobody has been chosen, around the person
