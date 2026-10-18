@@ -1,0 +1,27 @@
+<c-vars photos_tab />
+{# The Fotos tab of the person card (#16): every photo of the person with what it shows and when, the #}
+{# lightbox they open in, and the form adding more. "$photo" is the one the lightbox shows. Patched on its #}
+{# own after a change - the whole card would morph its tabs back to the first. #}
+<div id="person-card-photo-list" class="flex flex-col gap-3" data-signals="{photo: 0}">
+    {% if photos_tab.photos %}
+        <ul class="flex flex-col gap-3">
+            {% for entry in photos_tab.photos %}
+                <c-photo.card :entry="entry" :person="photos_tab.person" :index="forloop.counter0" />
+            {% endfor %}
+        </ul>
+        <c-photo.lightbox :photos="photos_tab.photos" />
+    {% else %}
+        <p class="py-4 text-center text-ink-muted">Noch kein Foto da. Mit einem kriegt die Person ein Gesicht.</p>
+    {% endif %}
+    <form class="flex flex-col items-start gap-2 rounded-md border border-card-edge p-3" enctype="multipart/form-data" data-on:submit="@post('{% url 'family_tree:photo-create-view' pk=photos_tab.person.pk %}', {contentType: 'form'})">
+        {% csrf_token %}
+        {# The search still running, so the list patched after a new portrait stays filtered by it. #}
+        <input type="hidden" name="search" value="" data-attr:value="$search">
+        <label class="flex w-full flex-col gap-1 text-sm">
+            <span>Fotos hochladen</span>
+            <input type="file" name="files" multiple required accept=".jpg,.jpeg,.png,.webp" aria-describedby="person-card-photo-hint" class="w-full text-sm">
+            <span id="person-card-photo-hint" class="text-ink-muted">JPEG, PNG oder WebP. Ortsangaben im Foto werden entfernt.</span>
+        </label>
+        <c-common.button type="submit">Hochladen</c-common.button>
+    </form>
+</div>

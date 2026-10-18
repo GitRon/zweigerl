@@ -2,6 +2,7 @@ import datetime
 
 import pytest
 
+from apps.family_tree.domain.dates import DateParts
 from apps.family_tree.models import Fact, Person
 from apps.family_tree.readers.person import (
     FactEntry,
@@ -12,6 +13,7 @@ from apps.family_tree.readers.person import (
     person_card,
     person_entries,
     person_list,
+    photos_tab,
     relatives,
     sources_tab,
 )
@@ -20,6 +22,8 @@ from apps.family_tree.tests.factories.fact import FactFactory
 from apps.family_tree.tests.factories.parent_child import ParentChildFactory
 from apps.family_tree.tests.factories.partnership import PartnershipFactory
 from apps.family_tree.tests.factories.person import PersonFactory
+from apps.family_tree.tests.factories.photo import PhotoFactory
+from apps.family_tree.tests.factories.photo_person import PhotoPersonFactory
 from apps.family_tree.tests.factories.sibling_pair import SiblingPairFactory
 from apps.family_tree.tests.factories.source import SourceFactory
 from apps.family_tree.tests.factories.source_file import SourceFileFactory
@@ -151,6 +155,36 @@ def test_person_entries_describes_only_the_people_asked_for():
     assert person_entries(person_ids=[lena.pk]) == {
         lena.pk: PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan="—")
     }
+
+
+@pytest.mark.django_db
+def test_person_entries_carry_the_portrait():
+    portrait = PhotoPersonFactory(
+        is_portrait=True, photo=PhotoFactory(file="photos/5/original.jpg", description="Am Hof")
+    )
+    PhotoPersonFactory(person=portrait.person)
+
+    entry = person_entries(person_ids=[portrait.person.pk])[portrait.person.pk]
+
+    assert (entry.portrait_url, entry.portrait_alt) == ("/media/photos/5/original.jpg", "Am Hof")
+
+
+@pytest.mark.django_db
+def test_person_entries_describe_a_portrait_without_a_description_as_such():
+    portrait = PhotoPersonFactory(is_portrait=True)
+
+    entry = person_entries(person_ids=[portrait.person.pk])[portrait.person.pk]
+
+    assert entry.portrait_alt == "Foto ohne Beschreibung"
+
+
+@pytest.mark.django_db
+def test_person_entries_without_a_portrait_have_none():
+    photo_only = PhotoPersonFactory()
+
+    entry = person_entries(person_ids=[photo_only.person.pk])[photo_only.person.pk]
+
+    assert (entry.portrait_url, entry.portrait_alt) == ("", "")
 
 
 @pytest.mark.django_db
@@ -300,3 +334,55 @@ def test_sources_tab_holds_the_sources_with_their_files_and_every_kind():
 @pytest.mark.django_db
 def test_sources_tab_of_somebody_not_there_is_none():
     assert sources_tab(pk=404) is None
+
+
+@pytest.mark.django_db
+def test_person_card_holds_the_photos_tab():
+    link = PhotoPersonFactory()
+
+    (entry,) = person_card(pk=link.person.pk).photos_tab.photos
+
+    assert entry.link == link
+
+
+@pytest.mark.django_db
+def test_photos_tab_holds_the_persons_photos_oldest_first_and_undated_last():
+    lena = PersonFactory()
+    undated = PhotoPersonFactory(person=lena)
+    later = PhotoPersonFactory(
+        person=lena, photo=PhotoFactory(date_kind="exact", date_1=datetime.date(1975, 6, 1), precision="month")
+    )
+    earlier = PhotoPersonFactory(person=lena, photo=PhotoFactory(about_1950=True))
+    PhotoPersonFactory()
+
+    first, second, third = photos_tab(pk=lena.pk).photos
+
+    assert (first.link, second.link, third.link) == (earlier, later, undated)
+
+
+@pytest.mark.django_db
+def test_photos_tab_describes_each_photo():
+    link = PhotoPersonFactory(photo=PhotoFactory(file="photos/5/original.jpg", about_1950=True))
+
+    (entry,) = photos_tab(pk=link.person.pk).photos
+
+    assert (entry.url, entry.alt, entry.date_text, entry.date_parts) == (
+        "/media/photos/5/original.jpg",
+        "Foto ohne Beschreibung",
+        "um 1950",
+        DateParts(year="1950", about=True),
+    )
+
+
+@pytest.mark.django_db
+def test_photos_tab_leaves_the_date_of_an_undated_photo_empty():
+    link = PhotoPersonFactory()
+
+    (entry,) = photos_tab(pk=link.person.pk).photos
+
+    assert (entry.date_text, entry.date_parts) == ("", DateParts())
+
+
+@pytest.mark.django_db
+def test_photos_tab_of_somebody_not_there_is_none():
+    assert photos_tab(pk=404) is None

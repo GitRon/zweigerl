@@ -9,6 +9,7 @@ from apps.family_tree.models.fact import Fact
 from apps.family_tree.models.parent_child import ParentChild
 from apps.family_tree.models.partnership import Partnership
 from apps.family_tree.models.person import Person
+from apps.family_tree.models.photo import Photo, PhotoPerson
 from apps.family_tree.models.sibling_pair import SiblingPair
 from apps.family_tree.models.source import Source
 from apps.family_tree.models.source_file import SourceFile
@@ -20,6 +21,8 @@ __all__ = [
     "ParentChild",
     "Partnership",
     "Person",
+    "Photo",
+    "PhotoPerson",
     "SiblingPair",
     "Source",
     "SourceFile",

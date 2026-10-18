@@ -201,3 +201,71 @@ def lifespan(*, birth: UncertainDate | None, death: UncertainDate | None, deceas
     if death:
         return f"{born} – {year_text(date=death)}"
     return f"{born} – ?" if deceased else f"{born} –"
+
+
+EXIF_DATE = re.compile(r"^(\d{4}):(\d{2}):(\d{2})")
+
+
+def from_exif(*, text: str) -> UncertainDate | None:
+    """
+    The date a camera wrote into a photo, "2009:07:14 16:02:11", as an exact day - or None for anything a
+    camera writes when it does not know, such as "0000:00:00 00:00:00" (#16).
+    """
+    match = EXIF_DATE.match(text.strip())
+    if match is None:
+        return None
+    try:
+        day = datetime.date(*(int(part) for part in match.groups()))
+    except ValueError:
+        return None
+    return UncertainDate(kind=DateKind.EXACT, date_1=day, precision=Precision.DAY)
+
+
+@dataclass(frozen=True, kw_only=True)
+class DateParts:
+    """
+    A date as the short form for a photo (#16) asks for it: day, month and year as typed, and whether it is
+    only roughly right.
+    """
+
+    day: str = ""
+    month: str = ""
+    year: str = ""
+    about: bool = False
+
+
+def from_parts(*, parts: DateParts) -> UncertainDate | None:
+    """
+    Reads the day, month and year of the form, each optional from the left: "1950", "7 1950", "14 7 1950".
+    Nothing at all is no date. Raises ValueError with a German message for a day without a month, a month
+    without a year, or numbers that are no date.
+    """
+    day, month, year = (part.strip() for part in (parts.day, parts.month, parts.year))
+    if not (day or month or year):
+        return None
+    if not year or (day and not month):
+        raise ValueError("Ein Datum braucht das Jahr, und ein Tag braucht den Monat.")
+    if not all(part.isdecimal() for part in (day, month, year) if part):
+        raise ValueError("Tag, Monat und Jahr sind Zahlen, etwa 14, 7 und 1950.")
+    try:
+        date_1 = datetime.date(int(year), int(month or 1), int(day or 1))
+    except ValueError as error:
+        raise ValueError(f"{'.'.join(part for part in (day, month, year) if part)} ist kein gültiges Datum.") from error
+
+    precision = Precision.DAY if day else Precision.MONTH if month else Precision.YEAR
+    return UncertainDate(kind=DateKind.ABOUT if parts.about else DateKind.EXACT, date_1=date_1, precision=precision)
+
+
+def to_parts(*, date: UncertainDate | None) -> DateParts:
+    """
+    The inverse of "from_parts", to fill the form in again. A date before, after or between is shown by its
+    first day; the form cannot say more than "ungefähr".
+    """
+    if date is None:
+        return DateParts()
+    return DateParts(
+        day=str(date.date_1.day) if date.precision == Precision.DAY else "",
+        month=str(date.date_1.month) if date.precision != Precision.YEAR else "",
+        year=str(date.date_1.year),
+        about=date.kind == DateKind.ABOUT,
+    )

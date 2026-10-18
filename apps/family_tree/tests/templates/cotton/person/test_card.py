@@ -4,10 +4,21 @@ import pytest
 from django.urls import reverse
 
 from apps.common.tests.html import parse, render_component
-from apps.family_tree.readers.person import FactEntry, PersonCard, PersonListEntry, RelativeGroup, SourcesTab
+from apps.family_tree.domain.dates import DateParts
+from apps.family_tree.readers.person import (
+    FactEntry,
+    PersonCard,
+    PersonListEntry,
+    PhotoEntry,
+    PhotosTab,
+    RelativeGroup,
+    SourcesTab,
+)
 from apps.family_tree.tests.factories.citation import CitationFactory
 from apps.family_tree.tests.factories.fact import FactFactory
 from apps.family_tree.tests.factories.person import PersonFactory
+from apps.family_tree.tests.factories.photo import PhotoFactory
+from apps.family_tree.tests.factories.photo_person import PhotoPersonFactory
 from apps.family_tree.tests.factories.source import SourceFactory
 
 GERTI = PersonListEntry(
@@ -28,6 +39,7 @@ CARD = PersonCard(
     relatives=[],
     relative_count=0,
     sources_tab=SourcesTab(person=GERTI.person, sources=[], kinds=[]),
+    photos_tab=PhotosTab(person=GERTI.person, photos=[]),
     death_recorded=False,
 )
 DOCUMENTED = FactEntry(
@@ -92,11 +104,38 @@ def test_card_switches_tabs_with_their_counts():
 def test_card_offers_the_tabs_of_later_tickets_disabled():
     html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
 
+    assert parse(html).find("button", string="Notizen").has_attr("disabled") is True
+
+
+def test_card_shows_the_portrait_in_its_head():
+    entry = replace(GERTI, portrait_url="/media/photos/5/original.jpg", portrait_alt="Am Hof, 1975")
+
+    html = render_component(tag='<c-person.card :card="card" />', context={"card": replace(CARD, entry=entry)})
+
+    image = parse(html).find(id="person-card-portrait").find("img")
+    assert (image["src"], image["alt"]) == ("/media/photos/5/original.jpg", "Am Hof, 1975")
+
+
+def test_card_lists_the_photos_in_their_tab():
+    photo = PhotoEntry(
+        link=PhotoPersonFactory.build(photo=PhotoFactory.build(pk=5, description="Am Hof"), person=GERTI.person),
+        url="/media/photos/5/original.jpg",
+        alt="Am Hof",
+        date_text="",
+        date_parts=DateParts(),
+    )
+
+    html = render_component(
+        tag='<c-person.card :card="card" />',
+        context={"card": replace(CARD, photos_tab=PhotosTab(person=GERTI.person, photos=[photo]))},
+    )
+
     page = parse(html)
     assert (
-        page.find("button", string="Fotos").has_attr("disabled"),
-        page.find("button", string="Notizen").has_attr("disabled"),
-    ) == (True, True)
+        " ".join(page.find(id="person-card-tab-photos").get_text().split()),
+        page.find(id="person-card-tab-photos")["data-on:click"],
+        page.find(id="person-card-photos").find(id="photo-5") is not None,
+    ) == ("Fotos 1", "$tab = 'photos'", True)
 
 
 @pytest.mark.django_db

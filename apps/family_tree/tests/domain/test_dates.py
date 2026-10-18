@@ -4,13 +4,17 @@ import pytest
 
 from apps.family_tree.domain.dates import (
     DateKind,
+    DateParts,
     Precision,
     UncertainDate,
     date_text,
+    from_exif,
     from_gedcom,
+    from_parts,
     lifespan,
     sort_date,
     to_gedcom,
+    to_parts,
     year_text,
 )
 
@@ -165,3 +169,71 @@ def test_lifespan_without_a_birth_date():
 
 def test_lifespan_when_nothing_is_known():
     assert lifespan(birth=None, death=None, deceased=True) == "—"
+
+
+def test_from_exif_reads_the_day_the_camera_wrote():
+    assert from_exif(text="2009:07:14 16:02:11") == UncertainDate(
+        kind=DateKind.EXACT, date_1=datetime.date(2009, 7, 14), precision=Precision.DAY
+    )
+
+
+@pytest.mark.parametrize("text", ["0000:00:00 00:00:00", "2009:02:30 10:00:00", "gestern", ""])
+def test_from_exif_ignores_what_is_no_date(text):
+    assert from_exif(text=text) is None
+
+
+@pytest.mark.parametrize(
+    ("parts", "expected"),
+    [
+        (
+            DateParts(year="1950"),
+            UncertainDate(kind=DateKind.EXACT, date_1=datetime.date(1950, 1, 1), precision=Precision.YEAR),
+        ),
+        (
+            DateParts(month="7", year="1950", about=True),
+            UncertainDate(kind=DateKind.ABOUT, date_1=datetime.date(1950, 7, 1), precision=Precision.MONTH),
+        ),
+        (
+            DateParts(day=" 14 ", month="07", year="1950"),
+            UncertainDate(kind=DateKind.EXACT, date_1=datetime.date(1950, 7, 14), precision=Precision.DAY),
+        ),
+    ],
+)
+def test_from_parts_reads_as_much_as_is_known(parts, expected):
+    assert from_parts(parts=parts) == expected
+
+
+def test_from_parts_without_anything_is_no_date():
+    assert from_parts(parts=DateParts(day=" ", about=True)) is None
+
+
+@pytest.mark.parametrize("parts", [DateParts(month="7"), DateParts(day="14", year="1950")])
+def test_from_parts_refuses_a_gap_on_the_right(parts):
+    with pytest.raises(ValueError, match="Ein Datum braucht das Jahr, und ein Tag braucht den Monat"):
+        from_parts(parts=parts)
+
+
+def test_from_parts_refuses_what_is_no_number():
+    with pytest.raises(ValueError, match="Tag, Monat und Jahr sind Zahlen"):
+        from_parts(parts=DateParts(year="um 1950"))
+
+
+def test_from_parts_refuses_a_day_the_calendar_has_not():
+    with pytest.raises(ValueError, match=r"30\.2\.1950 ist kein gültiges Datum"):
+        from_parts(parts=DateParts(day="30", month="2", year="1950"))
+
+
+def test_to_parts_of_no_date_is_empty():
+    assert to_parts(date=None) == DateParts()
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("14 JUL 1950", DateParts(day="14", month="7", year="1950")),
+        ("ABT JUL 1950", DateParts(month="7", year="1950", about=True)),
+        ("1950", DateParts(year="1950")),
+    ],
+)
+def test_to_parts_fills_the_form_in_again(text, expected):
+    assert to_parts(date=from_gedcom(text=text)) == expected

@@ -41,3 +41,22 @@ def test_list_of_an_empty_tree_invites_the_first_person():
     )
 
     assert "Jeder Baum fangt mit an Zweigerl an. Mit dir." in parse(html).get_text()
+
+
+def test_list_shows_the_portrait_in_the_frame():
+    entry = PersonListEntry(
+        person=PersonFactory.build(pk=7),
+        name="Gerti Huber",
+        initials="GH",
+        lifespan="—",
+        portrait_url="/media/photos/5/original.jpg",
+        portrait_alt="Am Hof",
+    )
+
+    html = render_component(
+        tag='<c-person.list :person_list="person_list" />',
+        context={"person_list": PersonList(entries=[entry], total=1)},
+    )
+
+    image = parse(html).find(id="person-list-7").find("img")
+    assert (image["src"], image["alt"]) == ("/media/photos/5/original.jpg", "Am Hof")

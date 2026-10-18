@@ -1,0 +1,6 @@
+<c-vars entry />
+{# The picture frame in the head of the person card: the portrait (#16), else the initials. Patched on its own #}
+{# when the portrait changes, so the card keeps the tab it is on. #}
+<span id="person-card-portrait" class="flex shrink-0">
+    <c-common.frame :src="entry.portrait_url" :alt="entry.portrait_alt" :initials="entry.initials" width="w-24" />
+</span>

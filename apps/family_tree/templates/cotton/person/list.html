@@ -13,7 +13,7 @@
         <ul class="flex min-h-0 flex-col gap-0.5 overflow-y-auto">
             {% for entry in person_list.entries %}
                 <li id="person-list-{{ entry.person.pk }}" class="flex items-center gap-3 rounded-md px-2 py-1.5">
-                    <c-common.frame :initials="entry.initials" width="w-7" />
+                    <c-common.frame :src="entry.portrait_url" :alt="entry.portrait_alt" :initials="entry.initials" width="w-7" />
                     <span class="flex min-w-0 flex-col leading-tight">
                         <span class="truncate">{{ entry.name }}</span>
                         <span class="truncate text-sm text-ink-muted">{{ entry.lifespan }}</span>
