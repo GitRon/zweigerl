@@ -137,3 +137,31 @@ def _as_simple_date(*, date: datetime.date, precision: Precision) -> str:
     if precision == Precision.MONTH:
         return f"{MONTHS[date.month - 1]} {date.year}"
     return str(date.year)
+
+
+YEAR_PREFIX = {DateKind.ABOUT: "um", DateKind.BEFORE: "vor", DateKind.AFTER: "nach"}
+
+
+def year_text(*, date: UncertainDate) -> str:
+    """
+    The year of a date as a list shows it, in German: "1931", "um 1931", "vor 1850", "nach 1850", and
+    "1820/1825" for a range. The day and the month are left to the person's card.
+    """
+    if date.kind == DateKind.BETWEEN:
+        return f"{date.date_1.year}/{date.date_2.year}"
+    prefix = YEAR_PREFIX.get(date.kind)
+    return f"{prefix} {date.date_1.year}" if prefix else str(date.date_1.year)
+
+
+def lifespan(*, birth: UncertainDate | None, death: UncertainDate | None, deceased: bool) -> str:
+    """
+    The Lebensdaten beside a name: "1931 – 2009", "1958 –" for somebody alive or not known to be dead,
+    "1931 – ?" for somebody dead whose death date nobody knows, "? – 2009" without a birth, and "—" when
+    nothing is known at all.
+    """
+    if birth is None and death is None:
+        return "—"
+    born = year_text(date=birth) if birth else "?"
+    if death:
+        return f"{born} – {year_text(date=death)}"
+    return f"{born} – ?" if deceased else f"{born} –"

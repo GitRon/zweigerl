@@ -77,6 +77,8 @@ lint.ignore = [
     'TD002',    # Missing author in To-do
     'TD003',    # Missing issue link on the line following this To-do
 ]
+# The en dash is German typography for a range, "1931 – 2009", not a hyphen typed by mistake.
+lint.allowed-confusables = ["–"]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 lint.fixable = [

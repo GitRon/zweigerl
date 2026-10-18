@@ -2,7 +2,16 @@ import datetime
 
 import pytest
 
-from apps.family_tree.domain.dates import DateKind, Precision, UncertainDate, from_gedcom, sort_date, to_gedcom
+from apps.family_tree.domain.dates import (
+    DateKind,
+    Precision,
+    UncertainDate,
+    from_gedcom,
+    lifespan,
+    sort_date,
+    to_gedcom,
+    year_text,
+)
 
 
 @pytest.mark.parametrize(
@@ -104,3 +113,39 @@ def test_sort_date_of_a_range_of_years_runs_to_the_end_of_the_last():
 )
 def test_sort_date_of_a_range_of_months_runs_to_the_end_of_the_last(text, expected):
     assert sort_date(date=from_gedcom(text=text)) == expected
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("12 MAR 1931", "1931"),
+        ("ABT 1931", "um 1931"),
+        ("BEF 1850", "vor 1850"),
+        ("AFT 1850", "nach 1850"),
+        ("BET 1820 AND 1825", "1820/1825"),
+    ],
+)
+def test_year_text_says_the_year_in_german(text, expected):
+    assert year_text(date=from_gedcom(text=text)) == expected
+
+
+def test_lifespan_with_birth_and_death():
+    result = lifespan(birth=from_gedcom(text="1931"), death=from_gedcom(text="ABT 2009"), deceased=True)
+
+    assert result == "1931 – um 2009"
+
+
+def test_lifespan_of_somebody_not_known_to_be_dead_stays_open():
+    assert lifespan(birth=from_gedcom(text="1958"), death=None, deceased=False) == "1958 –"
+
+
+def test_lifespan_of_somebody_dead_without_a_death_date_asks_for_it():
+    assert lifespan(birth=from_gedcom(text="1931"), death=None, deceased=True) == "1931 – ?"
+
+
+def test_lifespan_without_a_birth_date():
+    assert lifespan(birth=None, death=from_gedcom(text="2009"), deceased=True) == "? – 2009"
+
+
+def test_lifespan_when_nothing_is_known():
+    assert lifespan(birth=None, death=None, deceased=True) == "—"
