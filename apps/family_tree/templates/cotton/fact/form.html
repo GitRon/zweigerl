@@ -1,0 +1,70 @@
+<c-vars form />
+{# The form for a fact on the person card (#14), in place of the fact it edits - the two share their id - or of #}
+{# "Angabe hinzufügen". "$fact_fields_<key>" follows the kind chosen and says which fields it has: a date, a #}
+{# value, a custom fact's label with value and date, or a couple's partner with the date. The date is typed #}
+{# the way the card writes it, "um 1931". "Abbrechen" fetches the card again; "Entfernen" asks first. #}
+<form id="fact-{{ form.key }}" aria-label="Angabe" class="flex flex-col gap-3 rounded-md border-[1.5px] border-ink bg-sheet p-3" data-signals="{fact_fields_{{ form.key }}: '{{ form.fields }}'}" data-on:submit="@post('{% if form.fact %}{% url 'family_tree:change-fact-view' pk=form.person.pk fact_pk=form.fact.pk %}{% else %}{% url 'family_tree:create-fact-view' pk=form.person.pk %}{% endif %}', {contentType: 'form'})">
+    {% csrf_token %}
+    {# The search still running, so the list patched after saving stays filtered by it. #}
+    <input type="hidden" name="search" value="" data-attr:value="$search">
+    <label class="flex flex-col gap-1">
+        <span class="text-sm">Art</span>
+        <select name="kind" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3" data-on:change="$fact_fields_{{ form.key }} = el.selectedOptions[0].dataset.fields">
+            {% for kind in form.kinds %}
+                <option value="{{ kind.value }}" data-fields="{{ kind.fields }}"{% if kind.value == form.kind %} selected{% endif %}>{{ kind.label }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    <label class="flex flex-col gap-1" data-show="$fact_fields_{{ form.key }} == 'custom'">
+        <span class="text-sm">Bezeichnung</span>
+        <input name="label" value="{{ form.label }}" maxlength="100" autocomplete="off" placeholder="z. B. Erstkommunion" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
+    </label>
+    <label class="flex flex-col gap-1" data-show="$fact_fields_{{ form.key }} == 'couple'">
+        <span class="text-sm">Mit</span>
+        <select name="partner" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
+            {% for partner in form.partners %}
+                <option value="{{ partner.person.pk }}"{% if partner.person.pk == form.partner_id %} selected{% endif %}>{{ partner.name }}</option>
+            {% endfor %}
+        </select>
+    </label>
+    <label class="flex flex-col gap-1" data-show="['value', 'custom'].includes($fact_fields_{{ form.key }})">
+        <span class="text-sm">Wert</span>
+        <input name="value" value="{{ form.value }}" maxlength="300" autocomplete="off" placeholder="z. B. Mariazell oder Uhrmacher" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
+    </label>
+    <label class="flex flex-col gap-1" data-show="['date', 'couple', 'custom'].includes($fact_fields_{{ form.key }})">
+        <span class="text-sm">Datum</span>
+        <input name="date" value="{{ form.date }}" autocomplete="off" placeholder="z. B. 12. März 1931" aria-describedby="fact-{{ form.key }}-date-hint" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
+        <span id="fact-{{ form.key }}-date-hint" class="text-sm text-ink-muted">Auch ungefähr: um 1931, vor 1850, zwischen 1820 und 1825.</span>
+    </label>
+    <fieldset class="flex flex-col gap-1">
+        <legend class="mb-1 text-sm">Verlässlichkeit</legend>
+        <div class="flex flex-wrap gap-x-4 gap-y-1">
+            {% for value, label in form.reliabilities %}
+                <label class="flex min-h-11 cursor-pointer items-center gap-2"><input type="radio" class="accent-forest" name="reliability" value="{{ value }}"{% if value == form.reliability %} checked{% endif %}> {{ label }}</label>
+            {% endfor %}
+        </div>
+    </fieldset>
+    <fieldset class="flex flex-col gap-2">
+        <legend class="mb-1 text-sm">Belege</legend>
+        {% if form.citations %}
+            {% for choice in form.citations %}
+                <div class="flex flex-col gap-1">
+                    <label class="flex min-h-11 cursor-pointer items-center gap-2"><input type="checkbox" class="accent-forest" name="sources" value="{{ choice.source.pk }}"{% if choice.cited %} checked{% endif %}> {{ choice.source.title }}</label>
+                    <label class="flex flex-col gap-1 pl-6">
+                        <span class="text-sm">Stelle</span>
+                        <input name="page_{{ choice.source.pk }}" value="{{ choice.page }}" maxlength="300" autocomplete="off" placeholder="z. B. fol. 12" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
+                    </label>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-sm text-ink-muted">Noch keine Quelle bei dieser Person. Leg sie unter „Quellen“ an.</p>
+        {% endif %}
+    </fieldset>
+    <div class="flex flex-wrap gap-3">
+        <c-common.button variant="primary" type="submit">Speichern</c-common.button>
+        <c-common.button data-on:click="@get('{% url 'family_tree:person-view' pk=form.person.pk %}')">Abbrechen</c-common.button>
+        {% if form.fact %}
+            <c-common.button data-on:click="@get('{% url 'family_tree:delete-fact-view' pk=form.person.pk fact_pk=form.fact.pk %}')">Entfernen</c-common.button>
+        {% endif %}
+    </div>
+</form>

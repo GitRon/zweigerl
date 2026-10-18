@@ -45,6 +45,8 @@ into one `BIRT` with `DATE` and `PLAC`; the import (#22) splits it, the export (
 
 **A marriage belongs to the couple, not to each partner.** Written on both persons it would be two copies
 to keep in step; on the Partnership it is one fact with one set of citations, where GEDCOM keeps it too.
+The person card shows it on both partners' cards all the same, "mit" the other one, and either card edits
+it: `readers.evidence.facts(person=…)` returns the facts of the person's partnerships along with their own.
 
 **Places are text**, for now. A place model with coordinates and historical names is a later ticket.
 
@@ -97,8 +99,28 @@ it raw rather than inventing a day or dropping one. Both dates of a range share 
 **Something that writes past `save()`** - `bulk_create()` in an import, a data migration - sets
 `sort_date` itself, from the same function; a constraint refuses a date without one.
 
-The form (#14) accepts German free text such as "um 1931" or "zwischen 1820 und 1825" and splits it into
-these fields; that parser arrives with the form.
+The form (#14) accepts German free text and splits it into these fields: `domain.dates.from_german` reads
+"1931", "März 1989", "3.1989", "12. März 1989" and "12.3.1989", each after "um" (also "ca.", "circa",
+"etwa"), "vor" or "nach", and "zwischen 1820 und 1825" - everything `date_text` writes, so a fact opened
+for editing shows its date the way the card does and saves it unchanged. It refuses what it cannot read
+with a German `ValueError`, as `from_gedcom` does.
+
+## Adding, changing and removing a fact
+
+The person card (#14) edits its facts in place, after the inline editing of Fabian's todo example: the
+pencil on a fact fetches its form, which takes the fact's place under the same id (`fact-<pk>`), and
+"Angabe hinzufügen" is swapped for the form of a new one (`fact-new`) the same way. The form asks for the
+kind, then only what that kind carries - a date, a value, or for `custom` a label with a value, a date or
+both - the reliability, and which of the person's sources it cites, each with its `page`. A marriage or a
+divorce asks for the partner instead and goes on that Partnership; the two are offered only to somebody
+with a partner.
+
+`actions.fact.create_fact` and `change_fact` take the form's values as they come: what the chosen kind
+does not carry is dropped rather than refused, since the form keeps the fields of every kind and a hidden
+one may still hold text. The rules are the constraints above, with `full_clean` holding the lengths too;
+a citation no longer chosen goes. `delete_fact` removes a fact with its citations, after the card asked in
+a dialog; the sources stay. A saved or removed fact patches the whole card - a birth or a death changes
+its head - and the Lebensdaten in the sidebar's list and on the tree's card.
 
 ## The rules, and who holds them
 

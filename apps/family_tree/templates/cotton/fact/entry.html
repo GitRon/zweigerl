@@ -1,0 +1,26 @@
+<c-vars entry person />
+{# One fact on the person card (#13): what it is, its reliability, what it says, the partner of a couple's fact #}
+{# and its Belege - or that it wants one. The pencil swaps it for its form (#14), which carries the same id. #}
+<div id="fact-{{ entry.fact.pk }}" class="flex flex-col gap-1">
+    <div class="flex items-center justify-between gap-3">
+        <span class="text-sm text-ink-muted">{{ entry.label }}</span>
+        <div class="flex items-center gap-2">
+            {% if entry.reliability %}
+                <c-common.label :text="entry.reliability" />
+            {% endif %}
+            <c-common.button class="w-11 shrink-0 px-0!" aria-label="{{ entry.label }} bearbeiten" title="Bearbeiten" data-on:click="@get('{% url 'family_tree:edit-fact-view' pk=person.pk fact_pk=entry.fact.pk %}')">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 2.5l2.5 2.5L5.5 13H3v-2.5z M9.5 4l2.5 2.5" /></svg>
+            </c-common.button>
+        </div>
+    </div>
+    <p>{{ entry.text }}</p>
+    {% if entry.partner %}
+        <p class="text-sm">mit {{ entry.partner }}</p>
+    {% endif %}
+    {% for citation in entry.citations %}
+        <p class="text-sm">Beleg: {{ citation.source.title }}{% if citation.page %}, {{ citation.page }}{% endif %}</p>
+    {% endfor %}
+    {% if entry.undocumented %}
+        <p><c-common.label text="unbelegt, Quelle fehlt" tone="brick" /></p>
+    {% endif %}
+</div>
