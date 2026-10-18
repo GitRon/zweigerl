@@ -1,0 +1,10 @@
+<c-vars card width height />
+{# One person in the tree (#12), at the place "domain.layout" gave them. A click selects them - "$selection" #}
+{# - and fetches their person card. While a search runs, its hits are outlined and everybody else fades. #}
+{# "aria-pressed" is spelt out as a string: datastar writes "true" as an empty attribute, which assistive #}
+{# technology does not read as pressed. #}
+<button type="button" id="tree-card-{{ card.entry.person.pk }}" class="absolute flex cursor-pointer flex-col items-center gap-2 overflow-hidden rounded-lg border-[1.5px] bg-sheet px-2 pt-3 text-center outline-offset-2 hover:bg-card" style="left: {{ card.x }}px; top: {{ card.y }}px; width: {{ width }}px; height: {{ height }}px;" data-class="{'border-forest': $selection == {{ card.entry.person.pk }}, 'border-ink': $selection != {{ card.entry.person.pk }}, 'outline-2 outline-ink': $filtered && $matches.includes({{ card.entry.person.pk }}), 'opacity-35': $filtered && !$matches.includes({{ card.entry.person.pk }})}" aria-pressed="false" data-attr:aria-pressed="String($selection == {{ card.entry.person.pk }})" data-on:click="$selection = {{ card.entry.person.pk }}; @get('{% url 'family_tree:person-card-view' pk=card.entry.person.pk %}')">
+    <c-common.frame :initials="card.entry.initials" width="w-18" />
+    <span class="line-clamp-2 font-serif leading-tight">{{ card.entry.name }}</span>
+    <span class="text-sm text-ink-muted">{{ card.entry.lifespan }}</span>
+</button>

@@ -1,6 +1,7 @@
+from collections.abc import Iterable
 from dataclasses import dataclass
 
-from django.db.models import Prefetch, Q
+from django.db.models import Prefetch, Q, QuerySet
 
 from apps.family_tree.domain.dates import lifespan
 from apps.family_tree.domain.names import display_name, initials, matches, sort_key
@@ -61,13 +62,7 @@ def person_list(*, search: str) -> PersonList:
     in Python rather than in the query: SQLite compares umlauts neither case-insensitively nor in German
     order, and one family is few enough rows to read whole.
     """
-    persons = Person.objects.prefetch_related(
-        Prefetch(
-            "facts",
-            queryset=Fact.objects.filter(kind__in=(Fact.Kind.BIRTH, Fact.Kind.DEATH)),
-            to_attr="life_facts",
-        )
-    )
+    persons = _with_life_facts()
     found = [
         person
         for person in persons
@@ -76,6 +71,32 @@ def person_list(*, search: str) -> PersonList:
     found.sort(key=lambda person: sort_key(given_names=person.given_names, surname=person.surname))
 
     return PersonList(entries=[_entry(person=person) for person in found], total=len(persons))
+
+
+def person_entries(*, person_ids: Iterable[int]) -> dict[int, PersonListEntry]:
+    """
+    The name, initials and Lebensdaten of each of "person_ids", by id - what a card in the tree (#12) shows.
+    """
+    return {person.pk: _entry(person=person) for person in _with_life_facts().filter(pk__in=person_ids)}
+
+
+def person_card(*, pk: int) -> PersonListEntry | None:
+    """
+    The head of the person card (#12): name, initials and Lebensdaten, or None for a person who is not there.
+    #13 adds the facts with their Belege.
+    """
+    person = _with_life_facts().filter(pk=pk).first()
+    return _entry(person=person) if person else None
+
+
+def _with_life_facts() -> QuerySet[Person]:
+    return Person.objects.prefetch_related(
+        Prefetch(
+            "facts",
+            queryset=Fact.objects.filter(kind__in=(Fact.Kind.BIRTH, Fact.Kind.DEATH)),
+            to_attr="life_facts",
+        )
+    )
 
 
 def _entry(*, person: Person) -> PersonListEntry:
