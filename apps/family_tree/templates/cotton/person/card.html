@@ -1,21 +1,77 @@
 <c-vars card />
 {# The person card beside the tree (#12, #13): who was selected there, shown while "$selection" is still them. #}
-{# The head says who they are and what they are to the home person; the tabs, switched by "$tab", hold every #}
-{# fact with its Beleg, the sources with their scans (#15) and everyone directly related. Closing it - the #}
-{# button, or Escape on the canvas - moves the address back to the start page, so a reload does not open it #}
-{# again. Below "lg" it lies over the tree instead of beside it - see docs/patterns/responsive-layout.md. #}
+{# The head says who they are and what they are to the home person; the pencil beside the name swaps it for #}
+{# the form "Name & Status bearbeiten" (#30) while "$editing" is this person, "$status" being the status #}
+{# chosen there. The tabs, switched by "$tab", hold every fact with its Beleg, the sources with their scans #}
+{# (#15) and everyone directly related; "Verwandte hinzufügen" asks for a new one (#18). #}
+{# Closing it - the button, or Escape on the canvas - moves #}
+{# the address back to the start page, so a reload does not open it again. Below "lg" it lies over the tree #}
+{# instead of beside it - see docs/patterns/responsive-layout.md. #}
 {% url 'family_tree:start-view' as start_url %}
-<aside id="person-card" aria-label="Personenkarte" class="flex w-96 shrink-0 flex-col gap-4 overflow-y-auto border-l border-card-edge bg-birch p-6 max-lg:absolute max-lg:inset-y-0 max-lg:right-0 max-lg:w-full max-lg:max-w-md max-lg:border-l-[1.5px] max-lg:border-ink" data-signals="{tab: 'facts'}" data-show="$selection == {{ card.entry.person.pk }}" data-effect="$selection == 0 && location.pathname != '{{ start_url }}' && history.pushState(null, '', '{{ start_url }}')">
-    <div class="flex items-start gap-4">
+{% with person=card.entry.person %}
+<aside id="person-card" aria-label="Personenkarte" class="flex w-96 shrink-0 flex-col gap-4 overflow-y-auto border-l border-card-edge bg-birch p-6 max-lg:absolute max-lg:inset-y-0 max-lg:right-0 max-lg:w-full max-lg:max-w-md max-lg:border-l-[1.5px] max-lg:border-ink" data-signals="{tab: 'facts', editing: 0, status: ''}" data-show="$selection == {{ card.entry.person.pk }}" data-effect="$selection == 0 && location.pathname != '{{ start_url }}' && history.pushState(null, '', '{{ start_url }}')">
+    <div class="flex items-start gap-4" data-show="$editing != {{ person.pk }}">
         <c-common.frame :initials="card.entry.initials" width="w-24" />
         <div class="flex min-w-0 flex-1 flex-col gap-1">
-            <h2 class="text-2xl leading-tight">{{ card.entry.name }}</h2>
+            <div class="flex items-start justify-between gap-2">
+                <h2 class="text-2xl leading-tight">{{ card.entry.name }}</h2>
+                <c-common.button class="w-11 shrink-0 px-0!" aria-label="Name &amp; Status bearbeiten" title="Name &amp; Status bearbeiten" data-on:click="$editing = {{ person.pk }}; $status = '{{ person.living_status }}'">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 2.5l2.5 2.5L5.5 13H3v-2.5z M9.5 4l2.5 2.5" /></svg>
+                </c-common.button>
+            </div>
             <p class="text-ink-muted">{{ card.entry.lifespan }}</p>
             {% if card.relationship %}
                 <p>{{ card.relationship }}</p>
             {% endif %}
         </div>
     </div>
+    <form id="person-card-name" aria-label="Name &amp; Status bearbeiten" class="flex flex-col gap-3" style="display: none" data-show="$editing == {{ person.pk }}" data-on:submit="@post('{% url 'family_tree:person-name-view' pk=person.pk %}', {contentType: 'form'})">
+        {% csrf_token %}
+        <h2 class="text-2xl leading-tight">Name &amp; Status bearbeiten</h2>
+        {# The search still running, so the list patched after saving stays filtered by it. #}
+        <input type="hidden" name="search" value="" data-attr:value="$search">
+        <label class="flex flex-col gap-1">
+            <span class="text-sm">Vornamen</span>
+            <input name="given_names" value="{{ person.given_names }}" maxlength="200" autocomplete="off" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
+        </label>
+        <label class="flex flex-col gap-1">
+            <span class="text-sm">Familienname</span>
+            <input name="surname" value="{{ person.surname }}" maxlength="200" autocomplete="off" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
+        </label>
+        <label class="flex flex-col gap-1">
+            <span class="text-sm">Rufname</span>
+            <input name="call_name" value="{{ person.call_name }}" maxlength="100" autocomplete="off" aria-describedby="person-card-call-name-hint" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
+            <span id="person-card-call-name-hint" class="text-sm text-ink-muted">Ohne Rufname steht der erste Vorname da.</span>
+        </label>
+        <label class="flex flex-col gap-1">
+            <span class="text-sm">Geschlecht</span>
+            <select name="sex" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
+                {% for value, label in person.Sex.choices %}
+                    <option value="{{ value }}"{% if value == person.sex %} selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label class="flex flex-col gap-1">
+            <span class="text-sm">Lebend oder verstorben</span>
+            <select name="living_status" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3" data-on:change="$status = el.value">
+                {% for value, label in person.LivingStatus.choices %}
+                    <option value="{{ value }}"{% if value == person.living_status %} selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        {% if not card.death_recorded %}
+            {# Switching to "verstorben" asks for the year of death, which becomes a fact "Gestorben". #}
+            <label class="flex flex-col gap-1" style="display: none" data-show="$status == 'deceased'">
+                <span class="text-sm">Sterbejahr</span>
+                <input name="death_year" inputmode="numeric" maxlength="4" autocomplete="off" aria-describedby="person-card-death-year-hint" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
+                <span id="person-card-death-year-hint" class="text-sm text-ink-muted">Leer lassen, wenn's niemand weiß.</span>
+            </label>
+        {% endif %}
+        <div class="flex gap-3">
+            <c-common.button variant="primary" type="submit">Speichern</c-common.button>
+            <c-common.button type="reset" data-on:click="$editing = 0">Abbrechen</c-common.button>
+        </div>
+    </form>
     <div role="tablist" aria-label="Über die Person" class="flex flex-wrap gap-x-3 border-b border-card-edge text-sm">
         <button type="button" role="tab" id="person-card-tab-facts" aria-controls="person-card-facts" aria-selected="true" data-attr:aria-selected="String($tab == 'facts')" class="-mb-px flex min-h-11 cursor-pointer items-center gap-1.5 border-b-2 border-forest text-forest" data-class="{'border-forest text-forest': $tab == 'facts', 'border-transparent': $tab != 'facts'}" data-on:click="$tab = 'facts'">Angaben <span class="text-ink-muted">{{ card.facts|length }}</span></button>
         <button type="button" role="tab" aria-disabled="true" disabled class="-mb-px min-h-11 border-b-2 border-transparent text-ink-muted">Fotos</button>
@@ -77,5 +133,9 @@
             <p class="py-8 text-center text-ink-muted">Noch niemand mit dieser Person verbunden.</p>
         {% endif %}
     </section>
-    <c-common.button class="self-start" data-on:click="$selection = 0">Schließen</c-common.button>
+    <div class="flex flex-wrap gap-3">
+        <c-common.button data-on:click="@get('{% url 'family_tree:new-relative-view' pk=card.entry.person.pk %}')">Verwandte hinzufügen</c-common.button>
+        <c-common.button data-on:click="$selection = 0; $editing = 0">Schließen</c-common.button>
+    </div>
 </aside>
+{% endwith %}

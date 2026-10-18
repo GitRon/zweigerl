@@ -262,6 +262,21 @@ def test_person_card_holds_the_sources_tab():
 
 
 @pytest.mark.django_db
+def test_person_card_knows_a_death_fact_is_recorded():
+    death = FactFactory(kind=Fact.Kind.DEATH, date_1=datetime.date(2009, 5, 2))
+
+    assert person_card(pk=death.person.pk).death_recorded is True
+
+
+@pytest.mark.django_db
+def test_person_card_knows_no_death_fact_is_recorded():
+    birth = FactFactory()
+    FactFactory(kind=Fact.Kind.DEATH, person=PersonFactory(given_names="Fremd"))
+
+    assert person_card(pk=birth.person.pk).death_recorded is False
+
+
+@pytest.mark.django_db
 def test_person_card_of_somebody_not_there_is_none():
     assert person_card(pk=404) is None
 

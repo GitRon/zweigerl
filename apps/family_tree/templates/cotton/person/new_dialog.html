@@ -1,0 +1,49 @@
+<c-vars title url relations sexes living_statuses />
+{# The short form a new person starts with (#18): who they are to the person whose card it was opened from - #}
+{# only there, "relations" is empty from the sidebar - their names, sex and whether they are alive. Everything #}
+{# else goes on their card afterwards. Appended to the body, it opens itself and removes itself when closed, #}
+{# with "Abbrechen" or Escape - which stops here, so the canvas does not close the card behind it as well. #}
+<dialog id="new-person-dialog" aria-labelledby="new-person-dialog-title" class="m-auto w-full max-w-md rounded-lg border-[1.5px] border-ink bg-sheet p-6 text-ink backdrop:bg-ink/40" data-init="el.showModal()" data-on:close="el.remove()" data-on:keydown="evt.key == 'Escape' && evt.stopPropagation()">
+    <form class="flex flex-col gap-4" data-on:submit="@post('{{ url }}', {contentType: 'form'})">
+        {% csrf_token %}
+        <h2 id="new-person-dialog-title" class="text-2xl">{{ title }}</h2>
+        {% if relations %}
+            <fieldset class="flex flex-col gap-1">
+                <legend class="mb-1 text-sm">Beziehung</legend>
+                <div class="flex flex-wrap gap-x-4 gap-y-1">
+                    {% for value, label in relations %}
+                        <label class="flex min-h-11 cursor-pointer items-center gap-2"><input type="radio" class="accent-forest" name="relation" value="{{ value }}" required> {{ label }}</label>
+                    {% endfor %}
+                </div>
+            </fieldset>
+        {% endif %}
+        <label class="flex flex-col gap-1">
+            <span class="text-sm">Vornamen</span>
+            <input type="text" name="given_names" maxlength="200" autocomplete="off" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
+        </label>
+        <label class="flex flex-col gap-1">
+            <span class="text-sm">Familienname</span>
+            <input type="text" name="surname" maxlength="200" autocomplete="off" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
+        </label>
+        <fieldset class="flex flex-col gap-1">
+            <legend class="mb-1 text-sm">Geschlecht</legend>
+            <div class="flex flex-wrap gap-x-4 gap-y-1">
+                {% for value, label in sexes %}
+                    <label class="flex min-h-11 cursor-pointer items-center gap-2"><input type="radio" class="accent-forest" name="sex" value="{{ value }}"{% if value == "U" %} checked{% endif %}> {{ label }}</label>
+                {% endfor %}
+            </div>
+        </fieldset>
+        <fieldset class="flex flex-col gap-1">
+            <legend class="mb-1 text-sm">Lebt die Person noch?</legend>
+            <div class="flex flex-wrap gap-x-4 gap-y-1">
+                {% for value, label in living_statuses %}
+                    <label class="flex min-h-11 cursor-pointer items-center gap-2"><input type="radio" class="accent-forest" name="living_status" value="{{ value }}"{% if value == "unknown" %} checked{% endif %}> {{ label }}</label>
+                {% endfor %}
+            </div>
+        </fieldset>
+        <div class="flex justify-end gap-3">
+            <c-common.button data-on:click="el.closest('dialog').close()">Abbrechen</c-common.button>
+            <c-common.button variant="primary" type="submit">Anlegen</c-common.button>
+        </div>
+    </form>
+</dialog>

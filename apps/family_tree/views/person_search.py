@@ -1,4 +1,5 @@
 from datastar_py.django import ServerSentEventGenerator, datastar_response, read_signals
+from datastar_py.sse import DatastarEvent
 from django.http import HttpRequest
 from django_cotton import render_component
 
@@ -12,11 +13,20 @@ def person_search_view(request: HttpRequest):
     gets the hits as "$matches" to outline them, and "$filtered" to fade everybody else while a search runs.
     Without a search "$matches" stays empty: datastar sends every signal along with each request.
     """
-    search = str((read_signals(request) or {}).get("search", "")).strip()
+    yield from search_events(request, search=str((read_signals(request) or {}).get("search", "")).strip())
+
+
+def search_events(request: HttpRequest, *, search: str) -> list[DatastarEvent]:
+    """
+    The list patched for "search" and the hits handed to the tree - also sent after a name changed (#30), which
+    may move the person in the list or out of the hits.
+    """
     found = person_list(search=search)
-    yield ServerSentEventGenerator.patch_elements(
-        render_component(request, "person.list", person_list=found, search=search),
-    )
-    yield ServerSentEventGenerator.patch_signals(
-        {"filtered": bool(search), "matches": [entry.person.pk for entry in found.entries] if search else []}
-    )
+    return [
+        ServerSentEventGenerator.patch_elements(
+            render_component(request, "person.list", person_list=found, search=search),
+        ),
+        ServerSentEventGenerator.patch_signals(
+            {"filtered": bool(search), "matches": [entry.person.pk for entry in found.entries] if search else []}
+        ),
+    ]

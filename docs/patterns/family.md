@@ -32,6 +32,12 @@ may be shown and exported about them, so a guess is worse than "unknown".
 [Belege](evidence.md). Until #8 the Partnership held it as text in `start` and `end`; migration `0003`
 turned that into facts.
 
+**Names and status are corrected on the person card** (#30): the pencil beside the name opens the form
+"Name & Status bearbeiten", saved by `actions.person.change_name_and_status`. Switching to `deceased` asks for
+the year of death and records it as a `death` fact of that year, marked *belegt* and so shown as *unbelegt*
+until it cites a source. The year is optional, it is asked only while no death fact is recorded, and switching
+back leaves a recorded death fact alone - changing facts is #14.
+
 ## Children belong to a couple, or to one parent
 
 A `ParentChild` row is one edge: a child with two known parents has two rows. Each may name the
@@ -84,6 +90,22 @@ A name may be empty: GEDCOM allows a person without one, and "the unknown first 
 Every model but `TreeSettings` has `gedcom_raw`, a JSON list of the records an import brought along that
 Zweigerl does not understand, so an export can write them back (#22, #26). Nothing in Zweigerl reads it, and
 nothing but the importer writes it.
+
+## Adding people
+
+A person is added from the sidebar, connected to nobody, or from a person's card as their parent, partner,
+child or sibling (#18) - in a short form with the names, `sex` and `living_status`; every fact follows on the new
+person's card. `actions.person.add_relative` writes the person and the one link in a transaction:
+
+| Added as | Writes |
+|---|---|
+| Elternteil | a `ParentChild` of pedigree `birth`; a third birth parent is refused |
+| Partner | a `Partnership` of kind `unknown` |
+| Kind | a `ParentChild` to this person alone - the other parent is added from the child's card |
+| Geschwister | the same `ParentChild` rows the person has, with their `partnership` and `pedigree`, so a full sibling; while the person has no known parents, a `SiblingPair` |
+
+A half-sibling is added as a child of the parent they share. `actions.person.create_person` makes the first person
+of an empty tree the home person.
 
 ## The home person
 

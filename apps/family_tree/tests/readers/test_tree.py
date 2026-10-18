@@ -5,7 +5,7 @@ import pytest
 from apps.family_tree.domain.layout import CARD_HEIGHT, ROW_GAP, Card, TreeLayout
 from apps.family_tree.models import Fact
 from apps.family_tree.readers.person import PersonListEntry
-from apps.family_tree.readers.tree import Tree, TreeCard, tree, tree_layout
+from apps.family_tree.readers.tree import Tree, TreeCard, tree, tree_card, tree_layout
 from apps.family_tree.tests.factories.fact import FactFactory
 from apps.family_tree.tests.factories.parent_child import ParentChildFactory
 from apps.family_tree.tests.factories.partnership import PartnershipFactory
@@ -126,3 +126,24 @@ def test_tree_marks_the_ancestor_in_whom_two_lines_of_the_home_person_meet():
 
     assert (cards[0].entry.person, cards[0].pedigree_collapse) == (josef, True)
     assert (cards[1].entry.person, cards[1].pedigree_collapse) == (johann, False)
+
+
+@pytest.mark.django_db
+def test_tree_card_is_the_card_of_the_person():
+    johann = PersonFactory(given_names="Johann")
+    lena = PersonFactory(given_names="Lena")
+    ParentChildFactory(parent=johann, child=lena)
+    TreeSettingsFactory(home_person=lena)
+
+    assert tree_card(pk=lena.pk) == TreeCard(
+        entry=PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan="—"), x=0, y=ROW
+    )
+
+
+@pytest.mark.django_db
+def test_tree_card_of_somebody_the_tree_does_not_show_is_none():
+    lena = PersonFactory(given_names="Lena")
+    stranger = PersonFactory(given_names="Fremd")
+    TreeSettingsFactory(home_person=lena)
+
+    assert tree_card(pk=stranger.pk) is None
