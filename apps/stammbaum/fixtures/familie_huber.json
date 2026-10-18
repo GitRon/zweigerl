@@ -186,8 +186,6 @@
       "person_a": 1,
       "person_b": 2,
       "art": "ehe",
-      "beginn": "",
-      "ende": "",
       "gedcom_roh": []
     }
   },
@@ -198,8 +196,6 @@
       "person_a": 5,
       "person_b": 6,
       "art": "ehe",
-      "beginn": "1985",
-      "ende": "",
       "gedcom_roh": []
     }
   },
@@ -210,8 +206,6 @@
       "person_a": 12,
       "person_b": 13,
       "art": "lebensgemeinschaft",
-      "beginn": "",
-      "ende": "",
       "gedcom_roh": []
     }
   },
@@ -429,6 +423,353 @@
     "pk": 1,
     "fields": {
       "ausgangsperson": 12
+    }
+  },
+  {
+    "model": "stammbaum.quelle",
+    "pk": 1,
+    "fields": {
+      "titel": "Geburtsurkunde",
+      "art": "standesamt",
+      "beschreibung": "Standesamt Graz, Geburtenbuch Nr. 1989/3471. Nennt beide Eltern und den behandelnden Arzt.",
+      "personen": [
+        12
+      ],
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.quelle",
+    "pk": 2,
+    "fields": {
+      "titel": "Gespräch mit Oma Theresia, 2014",
+      "art": "familienueberlieferung",
+      "beschreibung": "Aufgeschriebene Erinnerungen an Lenas Kindheit und den Umzug der Familie von Graz nach Wien. Keine Dokumente angehängt.",
+      "personen": [
+        12
+      ],
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.quelle",
+    "pk": 3,
+    "fields": {
+      "titel": "Studienunterlagen",
+      "art": "sonstiges",
+      "beschreibung": "TU Wien.",
+      "personen": [
+        12
+      ],
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.quelle",
+    "pk": 4,
+    "fields": {
+      "titel": "Heiratseintrag, 1985",
+      "art": "standesamt",
+      "beschreibung": "Trauung von Johann Huber und Maria Gruber, eingetragen in Graz.",
+      "personen": [
+        5,
+        6
+      ],
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.angabe",
+    "pk": 1,
+    "fields": {
+      "person": 12,
+      "partnerschaft": null,
+      "art": "geboren",
+      "bezeichnung": "",
+      "wert": "",
+      "datum_art": "genau",
+      "datum_1": "1989-03-12",
+      "datum_2": null,
+      "genauigkeit": "tag",
+      "sortierdatum": "1989-03-12",
+      "verlaesslichkeit": "belegt",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.angabe",
+    "pk": 2,
+    "fields": {
+      "person": 12,
+      "partnerschaft": null,
+      "art": "getauft",
+      "bezeichnung": "",
+      "wert": "",
+      "datum_art": "ungefaehr",
+      "datum_1": "1989-04-01",
+      "datum_2": null,
+      "genauigkeit": "monat",
+      "sortierdatum": "1989-04-01",
+      "verlaesslichkeit": "wahrscheinlich",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.angabe",
+    "pk": 3,
+    "fields": {
+      "person": 12,
+      "partnerschaft": null,
+      "art": "geburtsort",
+      "bezeichnung": "",
+      "wert": "Graz, Steiermark",
+      "datum_art": "",
+      "datum_1": null,
+      "datum_2": null,
+      "genauigkeit": "",
+      "sortierdatum": null,
+      "verlaesslichkeit": "belegt",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.angabe",
+    "pk": 4,
+    "fields": {
+      "person": 12,
+      "partnerschaft": null,
+      "art": "beruf",
+      "bezeichnung": "",
+      "wert": "Architektin",
+      "datum_art": "",
+      "datum_1": null,
+      "datum_2": null,
+      "genauigkeit": "",
+      "sortierdatum": null,
+      "verlaesslichkeit": "belegt",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.angabe",
+    "pk": 5,
+    "fields": {
+      "person": 12,
+      "partnerschaft": null,
+      "art": "wohnort",
+      "bezeichnung": "",
+      "wert": "Wien",
+      "datum_art": "",
+      "datum_1": null,
+      "datum_2": null,
+      "genauigkeit": "",
+      "sortierdatum": null,
+      "verlaesslichkeit": "belegt",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.angabe",
+    "pk": 6,
+    "fields": {
+      "person": 5,
+      "partnerschaft": null,
+      "art": "geboren",
+      "bezeichnung": "",
+      "wert": "",
+      "datum_art": "genau",
+      "datum_1": "1960-07-02",
+      "datum_2": null,
+      "genauigkeit": "tag",
+      "sortierdatum": "1960-07-02",
+      "verlaesslichkeit": "belegt",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.angabe",
+    "pk": 7,
+    "fields": {
+      "person": 5,
+      "partnerschaft": null,
+      "art": "geburtsort",
+      "bezeichnung": "",
+      "wert": "Graz, Steiermark",
+      "datum_art": "",
+      "datum_1": null,
+      "datum_2": null,
+      "genauigkeit": "",
+      "sortierdatum": null,
+      "verlaesslichkeit": "belegt",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.angabe",
+    "pk": 8,
+    "fields": {
+      "person": 5,
+      "partnerschaft": null,
+      "art": "beruf",
+      "bezeichnung": "",
+      "wert": "Bauingenieur",
+      "datum_art": "",
+      "datum_1": null,
+      "datum_2": null,
+      "genauigkeit": "",
+      "sortierdatum": null,
+      "verlaesslichkeit": "belegt",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.angabe",
+    "pk": 9,
+    "fields": {
+      "person": 1,
+      "partnerschaft": null,
+      "art": "geboren",
+      "bezeichnung": "",
+      "wert": "",
+      "datum_art": "ungefaehr",
+      "datum_1": "1931-01-01",
+      "datum_2": null,
+      "genauigkeit": "jahr",
+      "sortierdatum": "1931-01-01",
+      "verlaesslichkeit": "wahrscheinlich",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.angabe",
+    "pk": 10,
+    "fields": {
+      "person": 1,
+      "partnerschaft": null,
+      "art": "geburtsort",
+      "bezeichnung": "",
+      "wert": "Mariazell",
+      "datum_art": "",
+      "datum_1": null,
+      "datum_2": null,
+      "genauigkeit": "",
+      "sortierdatum": null,
+      "verlaesslichkeit": "ueberliefert",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.angabe",
+    "pk": 11,
+    "fields": {
+      "person": 1,
+      "partnerschaft": null,
+      "art": "gestorben",
+      "bezeichnung": "",
+      "wert": "",
+      "datum_art": "genau",
+      "datum_1": "2009-11-14",
+      "datum_2": null,
+      "genauigkeit": "tag",
+      "sortierdatum": "2009-11-14",
+      "verlaesslichkeit": "belegt",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.angabe",
+    "pk": 12,
+    "fields": {
+      "person": 1,
+      "partnerschaft": null,
+      "art": "beruf",
+      "bezeichnung": "",
+      "wert": "Uhrmacher",
+      "datum_art": "",
+      "datum_1": null,
+      "datum_2": null,
+      "genauigkeit": "",
+      "sortierdatum": null,
+      "verlaesslichkeit": "ueberliefert",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.angabe",
+    "pk": 13,
+    "fields": {
+      "person": null,
+      "partnerschaft": 2,
+      "art": "geheiratet",
+      "bezeichnung": "",
+      "wert": "",
+      "datum_art": "genau",
+      "datum_1": "1985-01-01",
+      "datum_2": null,
+      "genauigkeit": "jahr",
+      "sortierdatum": "1985-01-01",
+      "verlaesslichkeit": "belegt",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.zitat",
+    "pk": 1,
+    "fields": {
+      "angabe": 1,
+      "quelle": 1,
+      "stelle": "Nr. 1989/3471",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.zitat",
+    "pk": 2,
+    "fields": {
+      "angabe": 2,
+      "quelle": 2,
+      "stelle": "",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.zitat",
+    "pk": 3,
+    "fields": {
+      "angabe": 3,
+      "quelle": 1,
+      "stelle": "Nr. 1989/3471",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.zitat",
+    "pk": 4,
+    "fields": {
+      "angabe": 4,
+      "quelle": 3,
+      "stelle": "",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.zitat",
+    "pk": 5,
+    "fields": {
+      "angabe": 7,
+      "quelle": 4,
+      "stelle": "",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.zitat",
+    "pk": 6,
+    "fields": {
+      "angabe": 13,
+      "quelle": 4,
+      "stelle": "",
+      "gedcom_roh": []
     }
   }
 ]
