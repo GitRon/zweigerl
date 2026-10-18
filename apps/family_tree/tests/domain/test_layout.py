@@ -306,38 +306,53 @@ def test_layout_does_not_pair_partners_of_different_generations():
 
 
 def test_layout_turns_a_couple_towards_the_side_of_each_ones_parents():
-    alois, rosa, johann, maria = 1, 2, 3, 4
-    markus, lena = 5, 6
+    johann, maria, alois, rosa = 1, 2, 3, 4
+    lena, markus, lukas, florian, matthias = 5, 6, 7, 8, 9
 
     result = layout(
         people=[
-            LayoutPerson(id=alois),
-            LayoutPerson(id=rosa),
             LayoutPerson(id=johann),
             LayoutPerson(id=maria),
+            LayoutPerson(id=alois),
+            LayoutPerson(id=rosa),
+            LayoutPerson(id=lena, birth=datetime.date(1980, 1, 1)),
             LayoutPerson(id=markus),
-            LayoutPerson(id=lena),
+            LayoutPerson(id=lukas, birth=datetime.date(1982, 1, 1)),
+            LayoutPerson(id=florian, birth=datetime.date(1984, 1, 1)),
+            LayoutPerson(id=matthias, birth=datetime.date(1986, 1, 1)),
         ],
         partnerships=[
-            PartnerLink(person_a=alois, person_b=rosa),
             PartnerLink(person_a=johann, person_b=maria),
+            PartnerLink(person_a=alois, person_b=rosa),
             PartnerLink(person_a=lena, person_b=markus),
         ],
         parent_links=[
-            ParentLink(parent=alois, child=markus),
-            ParentLink(parent=rosa, child=markus),
             ParentLink(parent=johann, child=lena),
             ParentLink(parent=maria, child=lena),
+            ParentLink(parent=johann, child=lukas),
+            ParentLink(parent=maria, child=lukas),
+            ParentLink(parent=johann, child=florian),
+            ParentLink(parent=maria, child=florian),
+            ParentLink(parent=johann, child=matthias),
+            ParentLink(parent=maria, child=matthias),
+            ParentLink(parent=alois, child=markus),
+            ParentLink(parent=rosa, child=markus),
         ],
         sibling_links=[],
         home_person_id=lena,
     )
 
-    assert result.cards[4:] == (
-        Card(person_id=lena, x=184, y=ROW, generation=0),
-        Card(person_id=markus, x=348, y=ROW, generation=0),
+    assert result.cards == (
+        Card(person_id=alois, x=0, y=0, generation=-1),
+        Card(person_id=rosa, x=164, y=0, generation=-1),
+        Card(person_id=johann, x=422, y=0, generation=-1),
+        Card(person_id=maria, x=586, y=0, generation=-1),
+        Card(person_id=markus, x=82, y=ROW, generation=0),
+        Card(person_id=lena, x=246, y=ROW, generation=0),
+        Card(person_id=lukas, x=418, y=ROW, generation=0),
+        Card(person_id=florian, x=590, y=ROW, generation=0),
+        Card(person_id=matthias, x=762, y=ROW, generation=0),
     )
-    assert result.cards[2] == Card(person_id=alois, x=368, y=0, generation=-1)
 
 
 def test_layout_keeps_a_couple_of_two_siblings_in_their_order():
