@@ -32,7 +32,7 @@ word. The folder keeps the names apart.
 | `<c-common.layout>` | `apps.common` | The page around everything: stylesheet, datastar, the toast area; the page as the slot, `title` before "Zweigerl" in the tab |
 | `<c-common.toast>` | `apps.common` | One toast, `info`, `success` or `error`, removing itself after five seconds |
 | `<c-common.wordmark>` | `apps.common` | The word mark, sized by a text size in `class` |
-| `<c-common.frame>` | `apps.common` | The 3:4 picture frame: the photo, else the initials, else the empty frame asking for one |
+| `<c-common.frame>` | `apps.common` | The 3:4 picture frame: the photo, else the initials, else the empty frame asking for one; `width` sizes it |
 | `<c-common.label>` | `apps.common` | The Etikett: a short word on a paper tag, in the tone `tinte`, `loden` or `ziegel` |
 | `<c-common.button>` | `apps.common` | A button, `primary` or `secondary`, or with `href` a link drawn as one |
 

@@ -9,8 +9,9 @@
     {# Compiled by "yarn build:css" and not in version control - see docs/contributing/setup.md. #}
     <link rel="stylesheet" href="{% static 'dist/tailwind.css' %}">
     {# The "l" with its leaf - see docs/patterns/visual-identity.md, "Word mark and icon". #}
-    <link rel="icon" href="{% static 'brand/favicon.svg' %}" type="image/svg+xml">
+    {# The PNG first: a browser takes the last icon it can use, so one that reads SVG ends on the SVG. #}
     <link rel="icon" href="{% static 'brand/favicon-32.png' %}" sizes="32x32" type="image/png">
+    <link rel="icon" href="{% static 'brand/favicon.svg' %}" type="image/svg+xml">
     <link rel="apple-touch-icon" href="{% static 'brand/apple-touch-icon.png' %}">
     <link rel="manifest" href="{% static 'brand/manifest.webmanifest' %}">
     {# Vendored rather than loaded from a CDN, so Zweigerl runs with the network unplugged. The version #}
@@ -19,7 +20,7 @@
 </head>
 {# "render_page" moves the address bar without loading the page, so going back only changes the address. #}
 {# Loading it is what brings the content along - see docs/patterns/datastar.md, "Pages". #}
-<body class="min-h-screen bg-birkenpapier text-tinte" data-on:popstate__window="window.location.reload()">
+<body class="min-h-screen" data-on:popstate__window="window.location.reload()">
 {{ slot }}
 {# Where every toast lands: the ones a redirect left in the session render here, the ones a datastar #}
 {# response sends are appended by "toast_sse". #}

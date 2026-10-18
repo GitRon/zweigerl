@@ -15,5 +15,9 @@ const TARGET = "static/dist/files";
 
 mkdirSync(TARGET, { recursive: true });
 for (const face of FACES) {
-    cpSync(`node_modules/@fontsource/${face}/files`, TARGET, { recursive: true });
+    // Upright only: the italics are in the package but no stylesheet imports them.
+    cpSync(`node_modules/@fontsource/${face}/files`, TARGET, {
+        recursive: true,
+        filter: (path) => !path.includes("-italic."),
+    });
 }

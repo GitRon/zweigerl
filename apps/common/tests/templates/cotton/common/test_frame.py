@@ -3,7 +3,8 @@ from apps.common.tests.html import parse, render_component
 
 def test_frame_shows_the_photo_with_its_description():
     html = render_component(
-        tag='<c-common.frame src="/media/foto.jpg" alt="Hochzeit 1951" initials="MM" class="w-14" />', context={}
+        tag='<c-common.frame src="/media/foto.jpg" alt="Hochzeit 1951" initials="MM" width="w-14" class="mt-2" />',
+        context={},
     )
 
     image = parse(html).find("img")
@@ -27,4 +28,4 @@ def test_frame_without_photo_or_initials_asks_for_a_photo():
 def test_frame_without_a_photo_is_left_to_the_name_beside_it():
     html = render_component(tag='<c-common.frame initials="MM" />', context={})
 
-    assert parse(html).span["aria-hidden"] == "true"
+    assert parse(html).find(attrs={"aria-hidden": "true"}) is not None

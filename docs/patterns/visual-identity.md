@@ -95,10 +95,11 @@ than `tinte` with a `loden` leaf.
 
 ### The picture frame
 
-`<c-common.frame src="…" alt="…" initials="JH" class="w-18" />` - always 3:4, a portrait. The photo fills
+`<c-common.frame src="…" alt="…" initials="JH" width="w-18" />` - always 3:4, a portrait. The photo fills
 it; without one the initials stand in it on `karton`; without those it is the dashed frame with
-"Foto" that asks for one. The caller sets the width; initials and the placeholder scale with it. Only the
-photo is announced - the name beside the frame says who it is.
+"Foto" that asks for one. `width` is a width utility (72px by default); initials and the placeholder
+scale with it. Only the photo is announced - the name beside the frame says who it is - so **a `src`
+always comes with an `alt`** describing the picture, not repeating the name.
 
 ### The label
 
@@ -113,7 +114,7 @@ greyscale. Which tone a reliability state gets is #13's.
 
 **At most one `primary` per screen**, filled `ziegel` with `birkenpapier` text, and it is the thing the
 screen exists for. Everything else is `secondary`: a `tinte` outline. With `href` the component draws a
-link that looks the same. A `disabled` button drops to `tinte-matt` on a `karton-rand` edge - quieter, still
+link that looks the same. A link is never disabled: a control that may refuse is a button. A `disabled` button drops to `tinte-matt` on a `karton-rand` edge - quieter, still
 readable. At least 44px tall, so a finger finds it too.
 
 ### The toast

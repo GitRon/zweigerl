@@ -31,8 +31,8 @@
  *
  * "--color-*: initial" is the enforcement: it drops Tailwind's own palette, so "bg-stone-50" or
  * "text-white" stops compiling and there is no quiet way to bring in a hue nobody chose. A stray colour
- * utility becomes an element that inherits its colour and still reads. "transparent" and "current" are
- * put back because they name a behaviour rather than a colour.
+ * utility becomes an element that inherits its colour and still reads. "bg-transparent" and
+ * "stroke-current" survive it: they are built into Tailwind rather than read from the palette.
  *
  * The five CI colours carry the moodboard's names. The four after them are the moodboard's own values
  * for the album page: the card a picture sits on, its edge, the initials in an empty frame and the
@@ -40,9 +40,6 @@
  */
 @theme {
     --color-*: initial;
-    --color-transparent: transparent;
-    --color-current: currentColor;
-
     --color-loden: #4a5d3f;
     --color-birkenpapier: #f2ede3;
     --color-ziegel: #9e4430;
@@ -77,11 +74,10 @@
  * body text and every link as a word.
  */
 @layer base {
+    /* Preflight already sets "font-sans" and a line height of 1.5 here. */
     html {
         color: var(--color-tinte);
         background-color: var(--color-birkenpapier);
-        font-family: var(--font-sans);
-        line-height: 1.5;
     }
 
     h1,
