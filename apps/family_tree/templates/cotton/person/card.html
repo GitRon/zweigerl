@@ -14,7 +14,7 @@
         <div class="flex min-w-0 flex-1 flex-col gap-1">
             <div class="flex items-start justify-between gap-2">
                 <h2 class="text-2xl leading-tight">{{ card.entry.name }}</h2>
-                <c-common.button class="shrink-0" aria-label="Name &amp; Status bearbeiten" title="Name &amp; Status bearbeiten" data-on:click="$editing = {{ person.pk }}; $status = '{{ person.living_status }}'">
+                <c-common.button class="w-11 shrink-0 px-0!" aria-label="Name &amp; Status bearbeiten" title="Name &amp; Status bearbeiten" data-on:click="$editing = {{ person.pk }}; $status = '{{ person.living_status }}'">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 2.5l2.5 2.5L5.5 13H3v-2.5z M9.5 4l2.5 2.5" /></svg>
                 </c-common.button>
             </div>
