@@ -42,10 +42,23 @@ callable rather than a list, so that only the layout takes the toasts out of the
 in `static/brand/` - see [visual identity](../patterns/visual-identity.md#word-mark-and-icon). Nothing is
 loaded from a CDN, so the app keeps working with the network unplugged.
 
-## Locale
+## Locale and language
 
-`LANGUAGE_CODE = "de-at"` and `TIME_ZONE = "Europe/Vienna"`. The interface is German, so are model and
-field names where a person reads them, and the docs and code comments are English.
+`LANGUAGE_CODE = "de-at"` and `TIME_ZONE = "Europe/Vienna"`.
+
+**What a person reads is German; everything else is English.**
+
+| German | English |
+|---|---|
+| Templates, `verbose_name`s, choice labels, `help_text`, validation and constraint messages, toasts | Identifiers: apps, modules, classes, functions, variables, fields, constraint names |
+| Issues, see [writing an issue](../collaboration/writing-issues.md) | File and directory names, the paths in the media directory, URLs |
+| | Choice values, which the database stores: `living`, not `lebend` |
+| | datastar signals, the docs and code comments |
+
+A model and its labels side by side: `given_names = models.CharField("Vornamen", ...)`. Where GEDCOM has a
+word, the code uses it: `surname`, `sex`, `pedigree`. The docs may use the German terms of genealogy -
+Beleg, Angabe, Ausgangsperson - in their prose, as long as a name in backticks is the one in the code.
+Invented test data - the Familie Huber, the name of an uploaded file - is data, not code, and stays as it is.
 
 ## Logging
 

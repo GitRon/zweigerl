@@ -8,9 +8,9 @@ and plain `assert` throughout. No `setUpTestData`, no `self.assertEqual`.
 ## Layout
 
 - Each app's `tests/` mirrors the structure of its production code:
-  `apps/stammbaum/views/start.py` → `apps/stammbaum/tests/views/test_start.py`.
+  `apps/family_tree/views/start.py` → `apps/family_tree/tests/views/test_start.py`.
   The tests that check the whole tree at once rather than one testee live in
-  `apps/stammbaum/tests/architecture/`, see [architecture tests](architecture-tests.md).
+  `apps/family_tree/tests/architecture/`, see [architecture tests](architecture-tests.md).
 - One test module per testee. If a module would have to hold tests for two testees, split it.
 - **Always add `__init__.py`** to every `tests/` package and sub-package. Without it, two packages that
   both contain e.g. `tests/test_person.py` collide during collection and pytest fails on the duplicate
@@ -25,8 +25,8 @@ and plain `assert` throughout. No `setUpTestData`, no `self.assertEqual`.
 - `test_[testee]_[case]`, e.g. `test_toast_session_keeps_every_toast_in_order`.
 - Don't repeat the module name in the test name — it is already in the path.
 - Avoid double underscores when testing protected functions.
-- Use semantically useful names: `person_ohne_eltern`, not `p1`.
-- No type hints in variable names — avoid `person_qs`, `angaben_list`.
+- Use semantically useful names: `person_without_parents`, not `p1`.
+- No type hints in variable names — avoid `person_qs`, `facts_list`.
 
 ## Design
 

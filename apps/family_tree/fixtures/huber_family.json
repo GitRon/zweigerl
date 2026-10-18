@@ -1,0 +1,434 @@
+[
+  {
+    "model": "family_tree.person",
+    "pk": 1,
+    "fields": {
+      "given_names": "Josef",
+      "surname": "Huber",
+      "call_name": "",
+      "sex": "M",
+      "living_status": "deceased",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.person",
+    "pk": 2,
+    "fields": {
+      "given_names": "Theresia",
+      "surname": "Huber",
+      "call_name": "",
+      "sex": "F",
+      "living_status": "deceased",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.person",
+    "pk": 3,
+    "fields": {
+      "given_names": "Gertrud",
+      "surname": "Huber",
+      "call_name": "Gerti",
+      "sex": "F",
+      "living_status": "living",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.person",
+    "pk": 4,
+    "fields": {
+      "given_names": "Franz",
+      "surname": "Huber",
+      "call_name": "",
+      "sex": "M",
+      "living_status": "deceased",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.person",
+    "pk": 5,
+    "fields": {
+      "given_names": "Johann",
+      "surname": "Huber",
+      "call_name": "",
+      "sex": "M",
+      "living_status": "living",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.person",
+    "pk": 6,
+    "fields": {
+      "given_names": "Maria",
+      "surname": "Huber",
+      "call_name": "",
+      "sex": "F",
+      "living_status": "living",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.person",
+    "pk": 7,
+    "fields": {
+      "given_names": "Florian",
+      "surname": "Huber",
+      "call_name": "",
+      "sex": "M",
+      "living_status": "living",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.person",
+    "pk": 8,
+    "fields": {
+      "given_names": "Lukas",
+      "surname": "Huber",
+      "call_name": "",
+      "sex": "M",
+      "living_status": "living",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.person",
+    "pk": 9,
+    "fields": {
+      "given_names": "Matthias",
+      "surname": "Huber",
+      "call_name": "",
+      "sex": "M",
+      "living_status": "living",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.person",
+    "pk": 10,
+    "fields": {
+      "given_names": "Katharina",
+      "surname": "Huber",
+      "call_name": "",
+      "sex": "F",
+      "living_status": "living",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.person",
+    "pk": 11,
+    "fields": {
+      "given_names": "Stefan",
+      "surname": "Huber",
+      "call_name": "",
+      "sex": "M",
+      "living_status": "living",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.person",
+    "pk": 12,
+    "fields": {
+      "given_names": "Lena",
+      "surname": "Huber",
+      "call_name": "",
+      "sex": "F",
+      "living_status": "living",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.person",
+    "pk": 13,
+    "fields": {
+      "given_names": "Markus",
+      "surname": "Brandl",
+      "call_name": "",
+      "sex": "M",
+      "living_status": "living",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.person",
+    "pk": 14,
+    "fields": {
+      "given_names": "Emma",
+      "surname": "Brandl",
+      "call_name": "",
+      "sex": "F",
+      "living_status": "living",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.person",
+    "pk": 15,
+    "fields": {
+      "given_names": "Jakob",
+      "surname": "Brandl",
+      "call_name": "",
+      "sex": "M",
+      "living_status": "living",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.partnership",
+    "pk": 1,
+    "fields": {
+      "person_a": 1,
+      "person_b": 2,
+      "kind": "marriage",
+      "start": "",
+      "end": "",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.partnership",
+    "pk": 2,
+    "fields": {
+      "person_a": 5,
+      "person_b": 6,
+      "kind": "marriage",
+      "start": "1985",
+      "end": "",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.partnership",
+    "pk": 3,
+    "fields": {
+      "person_a": 12,
+      "person_b": 13,
+      "kind": "cohabitation",
+      "start": "",
+      "end": "",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.parentchild",
+    "pk": 1,
+    "fields": {
+      "parent": 1,
+      "child": 3,
+      "partnership": 1,
+      "pedigree": "birth",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.parentchild",
+    "pk": 2,
+    "fields": {
+      "parent": 2,
+      "child": 3,
+      "partnership": 1,
+      "pedigree": "birth",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.parentchild",
+    "pk": 3,
+    "fields": {
+      "parent": 1,
+      "child": 4,
+      "partnership": 1,
+      "pedigree": "birth",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.parentchild",
+    "pk": 4,
+    "fields": {
+      "parent": 2,
+      "child": 4,
+      "partnership": 1,
+      "pedigree": "birth",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.parentchild",
+    "pk": 5,
+    "fields": {
+      "parent": 1,
+      "child": 5,
+      "partnership": 1,
+      "pedigree": "birth",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.parentchild",
+    "pk": 6,
+    "fields": {
+      "parent": 2,
+      "child": 5,
+      "partnership": 1,
+      "pedigree": "birth",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.parentchild",
+    "pk": 7,
+    "fields": {
+      "parent": 5,
+      "child": 8,
+      "partnership": 2,
+      "pedigree": "birth",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.parentchild",
+    "pk": 8,
+    "fields": {
+      "parent": 6,
+      "child": 8,
+      "partnership": 2,
+      "pedigree": "birth",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.parentchild",
+    "pk": 9,
+    "fields": {
+      "parent": 5,
+      "child": 9,
+      "partnership": 2,
+      "pedigree": "birth",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.parentchild",
+    "pk": 10,
+    "fields": {
+      "parent": 6,
+      "child": 9,
+      "partnership": 2,
+      "pedigree": "birth",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.parentchild",
+    "pk": 11,
+    "fields": {
+      "parent": 5,
+      "child": 12,
+      "partnership": 2,
+      "pedigree": "birth",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.parentchild",
+    "pk": 12,
+    "fields": {
+      "parent": 6,
+      "child": 12,
+      "partnership": 2,
+      "pedigree": "birth",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.parentchild",
+    "pk": 13,
+    "fields": {
+      "parent": 5,
+      "child": 7,
+      "partnership": null,
+      "pedigree": "birth",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.parentchild",
+    "pk": 14,
+    "fields": {
+      "parent": 4,
+      "child": 10,
+      "partnership": null,
+      "pedigree": "birth",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.parentchild",
+    "pk": 15,
+    "fields": {
+      "parent": 4,
+      "child": 11,
+      "partnership": null,
+      "pedigree": "birth",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.parentchild",
+    "pk": 16,
+    "fields": {
+      "parent": 12,
+      "child": 14,
+      "partnership": 3,
+      "pedigree": "birth",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.parentchild",
+    "pk": 17,
+    "fields": {
+      "parent": 13,
+      "child": 14,
+      "partnership": 3,
+      "pedigree": "birth",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.parentchild",
+    "pk": 18,
+    "fields": {
+      "parent": 12,
+      "child": 15,
+      "partnership": 3,
+      "pedigree": "birth",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.parentchild",
+    "pk": 19,
+    "fields": {
+      "parent": 13,
+      "child": 15,
+      "partnership": 3,
+      "pedigree": "birth",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.treesettings",
+    "pk": 1,
+    "fields": {
+      "home_person": 12
+    }
+  }
+]

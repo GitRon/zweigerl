@@ -1,6 +1,6 @@
 # Where code goes
 
-**There are two Django apps: `apps.stammbaum`, which is the domain, and `apps.common`, which is not.** A
+**There are two Django apps: `apps.family_tree`, which is the domain, and `apps.common`, which is not.** A
 Django app is a unit of persistence and Django configuration — models, migrations, templates, template
 tags, fixtures, admin — and not a unit of code organisation.
 
@@ -10,12 +10,12 @@ Everything in the app layer sits directly under `apps/`, so that directory lists
 apps/
 ├── config/                      # the settings package, deliberately not an app
 ├── common/                      # a satellite: layout, toasts, datastar helpers; imports no domain code
-└── stammbaum/                   # the domain app
+└── family_tree/                 # the domain app
     ├── urls.py
     ├── actions/                 # everything that writes
     ├── readers/                 # everything that reads
     ├── views/                   # the web interface, one module per screen
-    ├── templates/stammbaum/     # pages
+    ├── templates/family_tree/     # pages
     ├── templates/cotton/<topic>/  # components
     └── tests/                   # mirrors the tree above
 ```
@@ -43,7 +43,7 @@ The layers contract in `pyproject.toml` fails the build when an import goes the 
 [linting](../contributing/linting.md#import-boundaries).
 
 What has no database behind it — the German name of a relationship, the layout of the tree, parsing
-"um 1931" — is a pure function in a module named after its subject (`verwandtschaft.py`, `baum.py`),
+"um 1931" — is a pure function in a module named after its subject (`relationship.py`, `layout.py`),
 called by readers or views and tested without the database. The ticket that introduces the first one
 adds its package here.
 
@@ -67,7 +67,7 @@ What goes into the model's `Meta.constraints` and field options:
 
 What the database cannot express stays in the action, with its own test: rules across several rows or
 tables, such as no person being their own ancestor three generations up, and anything derived - *unbelegt*
-is computed, not stored, see [Belege](belege.md).
+is computed, not stored, see [Belege](evidence.md).
 
 - **Name every constraint** `<model>_<rule>`, e.g. `person_not_own_parent`, so a failure says what broke.
 - **Give it a German `violation_error_message`.** Model validation (`full_clean`, and with it every
@@ -108,6 +108,6 @@ These live at the app root and nowhere else — putting one anywhere deeper make
 ## apps.common
 
 `apps.common` holds what does not know about families: the page layout and toast components, the toast
-helpers, the datastar helpers, the toast context processor. It never imports `apps.stammbaum`; the
+helpers, the datastar helpers, the toast context processor. It never imports `apps.family_tree`; the
 import-linter contract fails the build when it does. Something that needs a person, a source or a
-relationship belongs in `apps.stammbaum`, however general it looks.
+relationship belongs in `apps.family_tree`, however general it looks.

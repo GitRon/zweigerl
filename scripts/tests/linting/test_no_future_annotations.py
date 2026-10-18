@@ -10,15 +10,15 @@ def test_check_flags_the_annotations_import():
     source_tree = ast.parse("from __future__ import annotations\n\nfrom dataclasses import dataclass\n")
 
     occurrences = NoFutureAnnotationsImportRule.run_check(
-        file_path=Path("stammbaum_export.py"), source_tree=source_tree
+        file_path=Path("family_tree_export.py"), source_tree=source_tree
     )
 
     assert occurrences == [
         Occurrence(
             rule_id="ZBR001",
             rule_label=NoFutureAnnotationsImportRule.RULE_LABEL,
-            filename="stammbaum_export.py",
-            file_path=Path("stammbaum_export.py"),
+            filename="family_tree_export.py",
+            file_path=Path("family_tree_export.py"),
             identifier=None,
             line_number=1,
         )
@@ -29,7 +29,7 @@ def test_check_leaves_other_future_imports_alone():
     source_tree = ast.parse("from __future__ import division\n")
 
     occurrences = NoFutureAnnotationsImportRule.run_check(
-        file_path=Path("stammbaum_export.py"), source_tree=source_tree
+        file_path=Path("family_tree_export.py"), source_tree=source_tree
     )
 
     assert occurrences == []
@@ -39,7 +39,7 @@ def test_check_passes_a_file_without_the_import():
     source_tree = ast.parse("import ast\n\nfrom dataclasses import dataclass\n\n\ndef parse():\n    return ast\n")
 
     occurrences = NoFutureAnnotationsImportRule.run_check(
-        file_path=Path("stammbaum_export.py"), source_tree=source_tree
+        file_path=Path("family_tree_export.py"), source_tree=source_tree
     )
 
     assert occurrences == []

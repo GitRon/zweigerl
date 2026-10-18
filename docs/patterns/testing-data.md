@@ -9,7 +9,7 @@ a recognisable family, it is the invented Familie Huber.
 - **Never create model instances directly in a test** — no `Person.objects.create()`, no
   `Person(...).save()`. Always go through a factory.
 - Factories use [factory_boy](https://factoryboy.readthedocs.io) and live in
-  `apps/stammbaum/tests/factories/<model>.py`, one factory per model, subclassing
+  `apps/family_tree/tests/factories/<model>.py`, one factory per model, subclassing
   `factory.django.DjangoModelFactory`.
 - Use `build()` where the object never has to hit the database, `create()` only where it must.
 - Create in batches (`create_batch()`) rather than in loops when you need several objects.
@@ -23,14 +23,14 @@ sense, the factory creates it with a `SubFactory` or `RelatedFactory`, and a tes
 set up a case rather than building the related object separately:
 
 ```python
-ElternKindFactory(kind__vornamen="Lena")  # a child with one parent, both made for it
-ElternKindFactory(elternteil=johann, kind=lena)  # or the two people the test already has
+ParentChildFactory(child__given_names="Lena")  # a child with one parent, both made for it
+ParentChildFactory(parent=johann, child=lena)  # or the two people the test already has
 ```
 
 ## Fixtures
 
-The Familie Huber from the mockup is `apps/stammbaum/fixtures/familie_huber.json` - see
-[persons and families](familie.md#familie-huber) - for development and for the browser run of
+The Familie Huber from the mockup is `apps/family_tree/fixtures/huber_family.json` - see
+[persons and families](family.md#familie-huber) - for development and for the browser run of
 [`/implement-story`](../../.claude/skills/implement-story/SKILL.md). **Tests do not load them.** A test that
 asserts against the Hubers asserts against data it did not write down, and breaks when someone adds a
 cousin. Build what the test needs with factories.

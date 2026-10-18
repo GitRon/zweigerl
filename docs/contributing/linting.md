@@ -43,10 +43,10 @@ as a pre-commit hook — it builds the whole import graph, which is too slow for
 Three contracts:
 
 - **Views call actions and readers, never the other way round.** A layers contract over
-  `apps.stammbaum`: `views` above `actions | readers`, the two side by side and independent of each other.
+  `apps.family_tree`: `views` above `actions | readers`, the two side by side and independent of each other.
   It is what keeps business logic out of the views and a reader from writing — see
   [where code goes](../patterns/app-layout.md).
-- **`apps.common` may not import `apps.stammbaum`.** A satellite is domain-independent by definition, and
+- **`apps.common` may not import `apps.family_tree`.** A satellite is domain-independent by definition, and
   the direction of dependency is the entire reason for splitting one out.
 - **Neither app may import `apps.config`.** It is the settings package, not an app. Settings are read
   through `django.conf.settings`, which is lazy and which `override_settings` can reach; importing the
