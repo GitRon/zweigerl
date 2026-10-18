@@ -14,6 +14,17 @@ def test_data_dir_from_environment_returns_the_directory(tmp_path):
     assert result == data_dir.resolve()
 
 
+def test_data_dir_from_environment_reads_a_relative_path_from_the_repository(tmp_path):
+    repo_root = tmp_path / "zweigerl"
+    repo_root.mkdir()
+    data_dir = tmp_path / "daten"
+    data_dir.mkdir()
+
+    result = data_dir_from_environment(environ={"ZWEIGERL_DATA_DIR": "../daten"}, repo_root=repo_root)
+
+    assert result == data_dir.resolve()
+
+
 def test_data_dir_from_environment_refuses_a_missing_variable(tmp_path):
     with pytest.raises(ImproperlyConfigured, match="ZWEIGERL_DATA_DIR is not set"):
         data_dir_from_environment(environ={}, repo_root=tmp_path)

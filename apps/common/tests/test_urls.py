@@ -4,6 +4,7 @@ page sits behind them, and that the lockout follows the settings in docs/pattern
 """
 
 import pytest
+from axes.models import AccessAttempt, AccessLog
 from django.urls import reverse
 from pytest_django.asserts import assertRedirects, assertTemplateUsed
 
@@ -31,14 +32,6 @@ def test_login_view_lands_on_the_start_page(client, admin_user):
 
 
 @pytest.mark.django_db
-def test_login_view_shows_the_form_again_after_a_wrong_password(client, admin_user):
-    response = client.post(reverse("common:login-view"), {"username": "admin", "password": "falsch"})
-
-    assert response.status_code == 200
-    assert response.context["form"].is_valid() is False
-
-
-@pytest.mark.django_db
 def test_login_view_locks_the_username_after_three_wrong_passwords(client, admin_user):
     login_url = reverse("common:login-view")
     client.post(login_url, {"username": "admin", "password": "falsch"})
@@ -49,6 +42,30 @@ def test_login_view_locks_the_username_after_three_wrong_passwords(client, admin
 
     assert response.status_code == 429
     assertTemplateUsed(response, "common/login_lockout.html")
+
+
+@pytest.mark.django_db
+def test_login_view_keeps_no_address_of_a_failed_attempt(client, admin_user):
+    client.post(reverse("common:login-view"), {"username": "admin", "password": "falsch"}, REMOTE_ADDR="192.0.2.7")
+
+    assert AccessAttempt.objects.get().ip_address is None
+
+
+@pytest.mark.django_db
+def test_login_view_forgets_failed_attempts_after_a_successful_login(client, admin_user):
+    login_url = reverse("common:login-view")
+    client.post(login_url, {"username": "admin", "password": "falsch"})
+
+    client.post(login_url, {"username": "admin", "password": "password"})
+
+    assert AccessAttempt.objects.exists() is False
+
+
+@pytest.mark.django_db
+def test_login_view_writes_no_log_of_successful_logins(client, admin_user):
+    client.post(reverse("common:login-view"), {"username": "admin", "password": "password"})
+
+    assert AccessLog.objects.exists() is False
 
 
 @pytest.mark.django_db

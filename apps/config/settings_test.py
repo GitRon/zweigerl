@@ -4,12 +4,15 @@ Settings used when running the test suite.
 
 import os
 import tempfile
+from pathlib import Path
 
-# The suite runs without a ".env": a data directory of its own, outside the repository, and a key that
-# protects nothing. "setdefault", so a developer's environment is not overridden - but the database the
-# tests use is pytest-django's own, never the one in the data directory.
-os.environ.setdefault("ZWEIGERL_DATA_DIR", tempfile.mkdtemp(prefix="zweigerl-tests-"))
-os.environ.setdefault("DJANGO_SECRET_KEY", "zweigerl-tests-only")
+# The suite brings its own data directory and key, so it needs no ".env" - and set unconditionally, not as
+# a default: a developer who exports ZWEIGERL_DATA_DIR for the app must never have the suite write into the
+# real family data. One fixed directory in the system temp, outside the repository, reused by every run.
+TEST_DATA_DIR = Path(tempfile.gettempdir()) / "zweigerl-tests"
+TEST_DATA_DIR.mkdir(exist_ok=True)
+os.environ["ZWEIGERL_DATA_DIR"] = str(TEST_DATA_DIR)
+os.environ["DJANGO_SECRET_KEY"] = "zweigerl-tests-only"
 
 from apps.config.settings import *
 

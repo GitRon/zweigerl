@@ -26,7 +26,12 @@ def data_dir_from_environment(*, environ: Mapping[str, str], repo_root: Path) ->
             f"see docs/contributing/setup.md."
         )
 
-    data_dir = Path(value).expanduser().resolve()
+    # A relative path means relative to the project, where ".env" sits - not to wherever manage.py was
+    # started from.
+    data_dir = Path(value).expanduser()
+    if not data_dir.is_absolute():
+        data_dir = repo_root / data_dir
+    data_dir = data_dir.resolve()
     if not data_dir.exists():
         raise ImproperlyConfigured(f"{ENVIRONMENT_VARIABLE} names {data_dir}, which does not exist. Create it first.")
     if not data_dir.is_dir():

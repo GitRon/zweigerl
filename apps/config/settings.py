@@ -181,15 +181,16 @@ STATICFILES_DIRS = (BASE_DIR / "static",)
 
 
 # django-axes
-# Three wrong passwords lock the username out for fifteen minutes. Locked by username alone, and no IP
-# address is kept: "no_client_ip" hands axes None for every request.
+# Three wrong passwords in a row lock the username out for fifteen minutes. Locked by username alone, and
+# as little as possible kept: "no_client_ip" hands axes None for every request, a successful login deletes
+# the failed attempts before it, and no log of successful logins is written at all.
 AXES_FAILURE_LIMIT = 3
 AXES_COOLOFF_TIME = datetime.timedelta(minutes=15)
 AXES_LOCKOUT_PARAMETERS = ["username"]
 AXES_CLIENT_IP_CALLABLE = "apps.common.axes.no_client_ip"
+AXES_RESET_ON_SUCCESS = True
+AXES_DISABLE_ACCESS_LOG = True
 AXES_LOCKOUT_TEMPLATE = "common/login_lockout.html"
-AXES_USERNAME_FORM_FIELD = "username"
-AXES_SENSITIVE_PARAMETERS = ["username", "ip_address"]
 # axes.W006 asks for "ip_address" in AXES_LOCKOUT_PARAMETERS. With no address handed over, that parameter
 # would put every attempt into one bucket instead of rate-limiting anyone.
 SILENCED_SYSTEM_CHECKS = ["axes.W006"]

@@ -42,8 +42,12 @@ login.
 `apps/config/settings.py` loads `.env` from the project root with python-dotenv. `.env` is in
 `.gitignore`; `.env.example` is the committed template. A variable set in the shell wins over the file.
 The test settings and the smoke settings set both variables themselves before the base settings read
-them, so neither the suite nor the browser run of `/implement-story` needs a `.env` — see
+them - unconditionally, so an exported `ZWEIGERL_DATA_DIR` can never point a test or a smoke run at the
+real family data. Neither the suite nor the browser run of `/implement-story` needs a `.env` — see
 [settings](../contributing/settings.md).
+
+A relative `ZWEIGERL_DATA_DIR` is read from the project root, where `.env` sits, not from wherever
+`manage.py` was started.
 
 ## The login
 
@@ -62,6 +66,12 @@ login says so with `login_not_required`; Django's own login view already does.
 | `AXES_COOLOFF_TIME` | 15 minutes | then it opens again by itself |
 | `AXES_LOCKOUT_PARAMETERS` | `["username"]` | the same name from another address is still locked; another name from the same address is not |
 | `AXES_CLIENT_IP_CALLABLE` | `apps.common.axes.no_client_ip` | returns `None`, so no IP address is ever stored - lockouts go by username and the address would be personal data kept for nothing |
+| `AXES_RESET_ON_SUCCESS` | `True` | a successful login deletes the failed attempts before it: three wrong passwords *in a row* lock, and nothing about them is kept afterwards |
+| `AXES_DISABLE_ACCESS_LOG` | `True` | no record of successful logins - who logged in when, with which browser - is written at all |
+
+What axes still keeps, and only while it matters: an open failed attempt carries the username, the
+browser's user-agent string and the page, until a successful login or `manage.py axes_reset` removes it.
+axes has no setting to leave the user agent out.
 
 `axes.W006` asks for `ip_address` in the lockout parameters; it is silenced, because with no address
 handed over that parameter would put every attempt into one bucket. A locked-out login answers with HTTP

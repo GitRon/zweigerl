@@ -60,6 +60,21 @@ PY="$REPO_ROOT/.venv/bin/python"
 export DJANGO_SETTINGS_MODULE="apps.config.settings_smoke"
 export SMOKE_DB_PATH="$DB_FILE"
 
+# The data directory has to lie outside the repository - the settings refuse anything inside it - so it
+# is a temporary directory, made once per run and remembered in the run directory, so a restart keeps
+# the media of the round. "fresh" starts a new one.
+DATA_DIR_FILE="$CONTENT_DIR/.data_dir"
+smoke_data_dir() {
+  local dir
+  dir="$(cat "$DATA_DIR_FILE" 2>/dev/null)"
+  if [ -z "$dir" ] || [ ! -d "$dir" ]; then
+    dir="$(mktemp -d "${TMPDIR:-/tmp}/zweigerl-smoke-XXXXXX")"
+    echo "$dir" > "$DATA_DIR_FILE"
+  fi
+  echo "$dir"
+}
+export SMOKE_DATA_DIR="$(smoke_data_dir)"
+
 http_code() {
   "$PY" -c "
 import sys, urllib.error, urllib.request
@@ -329,7 +344,16 @@ case "$VERB" in
   fresh)
     do_stop > /dev/null
     rm -f "$DB_FILE"
-    echo "deleted the smoke database, starting from an empty tree"
+    # Only a directory this script made: the name is checked, so a damaged ".data_dir" cannot point the
+    # removal anywhere else.
+    old_data_dir="$(cat "$DATA_DIR_FILE" 2>/dev/null)"
+    case "$(basename "$old_data_dir")" in
+      zweigerl-smoke-*) rm -rf "$old_data_dir" ;;
+    esac
+    rm -f "$DATA_DIR_FILE"
+    SMOKE_DATA_DIR="$(smoke_data_dir)"
+    export SMOKE_DATA_DIR
+    echo "deleted the smoke database and its media, starting from an empty tree"
     do_start
     ;;
   restart)
