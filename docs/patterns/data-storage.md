@@ -93,7 +93,7 @@ and the pictures a PAF import brings (#24) alike:
 - **Stored under a random name** in `MEDIA_ROOT/<folder>/`, e.g. `fotos/3f2a….jpg`. The original name is
   dropped and kept nowhere: "Taufe Josef Huber 1931.jpg" says who is in the picture.
 - **Accepted:** JPEG, PNG, WebP, TIFF and PDF, by extension and by content. Anything else, or a file whose
-  content does not match its extension, raises `UploadRefused` with a German message for the form. HEIC
+  content does not match its extension, raises `UploadRefusedError` with a German message for the form. HEIC
   from phones is not accepted yet.
 - **Images lose where and with what they were taken:** the GPS block, and the camera's make, model,
   serial numbers, lens, owner name, software and maker note. XMP and comments are not carried over either.

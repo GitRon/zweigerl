@@ -5,7 +5,7 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from PIL import ExifTags, Image
 
-from apps.common.media import UploadRefused, store_upload
+from apps.common.media import UploadRefusedError, store_upload
 
 
 @pytest.fixture(autouse=True)
@@ -104,26 +104,26 @@ def test_store_upload_keeps_a_pdf_as_it_came(media_root):
 def test_store_upload_refuses_a_pdf_that_is_none(media_root):
     upload = SimpleUploadedFile("urkunde.pdf", b"kein PDF")
 
-    with pytest.raises(UploadRefused, match="ist aber kein PDF"):
+    with pytest.raises(UploadRefusedError, match="ist aber kein PDF"):
         store_upload(uploaded_file=upload, folder="quellen")
 
 
 def test_store_upload_refuses_an_unknown_kind_of_file(media_root):
     upload = SimpleUploadedFile("notiz.docx", b"PK")
 
-    with pytest.raises(UploadRefused, match="JPEG, PNG, WebP, TIFF oder PDF"):
+    with pytest.raises(UploadRefusedError, match="JPEG, PNG, WebP, TIFF oder PDF"):
         store_upload(uploaded_file=upload, folder="quellen")
 
 
 def test_store_upload_refuses_an_image_that_does_not_open(media_root):
     upload = SimpleUploadedFile("foto.jpg", b"kein Bild")
 
-    with pytest.raises(UploadRefused, match="nicht als Bild öffnen"):
+    with pytest.raises(UploadRefusedError, match="nicht als Bild öffnen"):
         store_upload(uploaded_file=upload, folder="fotos")
 
 
 def test_store_upload_refuses_an_image_under_the_wrong_extension(media_root):
     upload = SimpleUploadedFile("foto.jpg", _image_with_exif(image_format="PNG"))
 
-    with pytest.raises(UploadRefused, match="passt nicht zum Inhalt"):
+    with pytest.raises(UploadRefusedError, match="passt nicht zum Inhalt"):
         store_upload(uploaded_file=upload, folder="fotos")

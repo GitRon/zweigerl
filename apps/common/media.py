@@ -38,7 +38,7 @@ CAMERA_TAGS_IN_EXIF_IFD = (
 )
 
 
-class UploadRefused(ValueError):
+class UploadRefusedError(ValueError):
     """
     The file is not one Zweigerl keeps. The message is meant for the person who uploaded it.
     """
@@ -57,9 +57,9 @@ def store_upload(*, uploaded_file: UploadedFile, folder: str) -> str:
         content = _without_location_and_camera(content=content, expected_format=IMAGE_FORMATS[extension])
     elif extension == PDF_EXTENSION:
         if not content.startswith(PDF_SIGNATURE):
-            raise UploadRefused("Die Datei endet auf .pdf, ist aber kein PDF.")
+            raise UploadRefusedError("Die Datei endet auf .pdf, ist aber kein PDF.")
     else:
-        raise UploadRefused("Zweigerl nimmt Fotos und Scans als JPEG, PNG, WebP, TIFF oder PDF.")
+        raise UploadRefusedError("Zweigerl nimmt Fotos und Scans als JPEG, PNG, WebP, TIFF oder PDF.")
 
     return default_storage.save(f"{folder}/{uuid.uuid4().hex}.{extension}", ContentFile(content))
 
@@ -73,9 +73,9 @@ def _without_location_and_camera(*, content: bytes, expected_format: str) -> byt
         image = Image.open(io.BytesIO(content))
         image.load()
     except (UnidentifiedImageError, Image.DecompressionBombError, OSError) as error:
-        raise UploadRefused("Die Datei lässt sich nicht als Bild öffnen.") from error
+        raise UploadRefusedError("Die Datei lässt sich nicht als Bild öffnen.") from error
     if image.format != expected_format:
-        raise UploadRefused("Die Dateiendung passt nicht zum Inhalt des Bildes.")
+        raise UploadRefusedError("Die Dateiendung passt nicht zum Inhalt des Bildes.")
 
     exif = image.getexif()
     if ExifTags.IFD.GPSInfo in exif:
