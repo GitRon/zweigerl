@@ -51,6 +51,14 @@ def test_card_moves_the_address_back_to_the_start_page_when_closed():
     )
 
 
+def test_card_asks_for_a_new_relative():
+    html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
+
+    assert parse(html).find("button", string="Verwandte hinzufügen")["data-on:click"] == (
+        f"@get('{reverse('family_tree:new-relative-view', kwargs={'pk': 7})}')"
+    )
+
+
 def test_card_closes_by_clearing_the_selection():
     html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
 
