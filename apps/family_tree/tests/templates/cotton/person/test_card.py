@@ -33,8 +33,6 @@ CARD = PersonCard(
 DOCUMENTED = FactEntry(
     fact=BIRTH, label="Geboren", text="12. März 1958", reliability=None, citations=[CITATION], undocumented=False
 )
-UNDOCUMENTED = replace(DOCUMENTED, citations=[], undocumented=True)
-PROBABLE = replace(DOCUMENTED, reliability="Wahrscheinlich", citations=[])
 PARENTS = RelativeGroup(title="Eltern", entries=[JOHANN])
 
 
@@ -77,7 +75,7 @@ def test_card_closes_by_clearing_the_selection():
 def test_card_switches_tabs_with_their_counts():
     html = render_component(
         tag='<c-person.card :card="card" />',
-        context={"card": replace(CARD, facts=[UNDOCUMENTED], relatives=[PARENTS], relative_count=1)},
+        context={"card": replace(CARD, facts=[DOCUMENTED], relatives=[PARENTS], relative_count=1)},
     )
 
     page = parse(html)
@@ -116,29 +114,24 @@ def test_card_lists_the_sources_in_their_tab():
     ) == ("Quellen 1", "$tab = 'sources'", True)
 
 
-def test_card_shows_the_beleg_of_a_documented_fact():
+def test_card_lists_each_fact_as_its_entry():
     html = render_component(tag='<c-person.card :card="card" />', context={"card": replace(CARD, facts=[DOCUMENTED])})
 
-    text = parse(html).find(id="fact-11").get_text()
-    assert "Beleg: Taufbuch Mariazell, fol. 12" in text and "unbelegt" not in text
-
-
-def test_card_marks_an_undocumented_fact():
-    html = render_component(tag='<c-person.card :card="card" />', context={"card": replace(CARD, facts=[UNDOCUMENTED])})
-
-    assert "unbelegt, Quelle fehlt" in parse(html).find(id="fact-11").get_text()
-
-
-def test_card_labels_a_probable_fact():
-    html = render_component(tag='<c-person.card :card="card" />', context={"card": replace(CARD, facts=[PROBABLE])})
-
-    assert "Wahrscheinlich" in parse(html).find(id="fact-11").get_text()
+    assert "12. März 1958" in parse(html).find(id="fact-11").get_text()
 
 
 def test_card_without_facts_says_so():
     html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
 
-    assert parse(html).find(id="person-card-facts").get_text().strip() == "Zu dieser Person steht noch nix da."
+    assert "Zu dieser Person steht noch nix da." in parse(html).find(id="person-card-facts").get_text()
+
+
+def test_card_asks_for_the_form_of_a_new_fact():
+    html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
+
+    assert parse(html).find(id="fact-new").find("button", string="Angabe hinzufügen")["data-on:click"] == (
+        f"@get('{reverse('family_tree:new-fact-view', kwargs={'pk': 7})}')"
+    )
 
 
 def test_card_opens_the_card_of_a_relative():

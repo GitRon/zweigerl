@@ -4,11 +4,15 @@ import pytest
 
 from apps.family_tree.models import Fact, Person
 from apps.family_tree.readers.person import (
+    CitationChoice,
     FactEntry,
+    KindChoice,
     PersonList,
     PersonListEntry,
     RelativeGroup,
     Relatives,
+    fact_entry,
+    fact_form,
     person_card,
     person_entries,
     person_list,
@@ -229,6 +233,17 @@ def test_person_card_shows_both_value_and_date_of_a_custom_fact():
 
 
 @pytest.mark.django_db
+def test_person_card_names_the_partner_of_a_marriage():
+    lena = PersonFactory(given_names="Lena", surname="Huber")
+    markus = PersonFactory(given_names="Markus", surname="Gruber")
+    FactFactory(person=None, partnership=PartnershipFactory(person_a=markus, person_b=lena), kind=Fact.Kind.MARRIAGE)
+
+    found = person_card(pk=lena.pk).facts
+
+    assert (len(found), found[0].label, found[0].partner) == (1, "Geheiratet", "Markus Gruber")
+
+
+@pytest.mark.django_db
 def test_person_card_groups_the_relatives_and_counts_them():
     johann = PersonFactory(given_names="Johann", surname="Huber")
     lena = PersonFactory(given_names="Lena", surname="Huber")
@@ -282,6 +297,31 @@ def test_person_card_of_somebody_not_there_is_none():
 
 
 @pytest.mark.django_db
+def test_fact_entry_describes_one_fact_of_the_person():
+    occupation = FactFactory(as_value=True)
+    FactFactory(person=occupation.person)
+
+    assert fact_entry(person_id=occupation.person.pk, fact_id=occupation.pk) == FactEntry(
+        fact=occupation, label="Beruf", text="Uhrmacher", reliability=None, citations=[], undocumented=True
+    )
+
+
+@pytest.mark.django_db
+def test_fact_entry_of_somebody_else_is_none():
+    birth = FactFactory()
+    stranger = PersonFactory(given_names="Fremd")
+
+    assert fact_entry(person_id=stranger.pk, fact_id=birth.pk) is None
+
+
+@pytest.mark.django_db
+def test_fact_entry_of_somebody_not_there_is_none():
+    birth = FactFactory()
+
+    assert fact_entry(person_id=404, fact_id=birth.pk) is None
+
+
+@pytest.mark.django_db
 def test_sources_tab_holds_the_sources_with_their_files_and_every_kind():
     lena = PersonFactory(given_names="Lena")
     scan = SourceFileFactory(source__people=[lena])
@@ -300,3 +340,103 @@ def test_sources_tab_holds_the_sources_with_their_files_and_every_kind():
 @pytest.mark.django_db
 def test_sources_tab_of_somebody_not_there_is_none():
     assert sources_tab(pk=404) is None
+
+
+@pytest.mark.django_db
+def test_fact_form_for_a_new_fact_asks_for_a_birth_date_and_offers_the_persons_sources():
+    lena = PersonFactory(given_names="Lena")
+    source = SourceFactory(people=[lena])
+    SourceFactory(people=[PersonFactory(given_names="Fremd")])
+
+    form = fact_form(person_id=lena.pk)
+
+    assert (form.person, form.key, form.kind, form.fields, form.date, form.reliability, form.citations) == (
+        lena,
+        "new",
+        "birth",
+        "date",
+        "",
+        "documented",
+        [CitationChoice(source=source, cited=False, page="")],
+    )
+
+
+@pytest.mark.django_db
+def test_fact_form_offers_marriage_and_divorce_only_with_a_partner():
+    lena = PersonFactory(given_names="Lena")
+
+    kinds = fact_form(person_id=lena.pk).kinds
+
+    assert (
+        KindChoice(value="marriage", label="Geheiratet", fields="couple") in kinds,
+        KindChoice(value="divorce", label="Geschieden", fields="couple") in kinds,
+        KindChoice(value="custom", label="Eigene", fields="custom") in kinds,
+    ) == (False, False, True)
+
+
+@pytest.mark.django_db
+def test_fact_form_shows_each_kind_with_its_fields_and_the_partners():
+    lena = PersonFactory(given_names="Lena")
+    markus = PersonFactory(given_names="Markus", surname="Gruber")
+    PartnershipFactory(person_a=lena, person_b=markus)
+
+    form = fact_form(person_id=lena.pk)
+
+    assert (form.kinds, form.partners) == (
+        [
+            KindChoice(value="birth", label="Geboren", fields="date"),
+            KindChoice(value="baptism", label="Getauft", fields="date"),
+            KindChoice(value="death", label="Gestorben", fields="date"),
+            KindChoice(value="burial", label="Begräbnis", fields="date"),
+            KindChoice(value="birthplace", label="Geburtsort", fields="value"),
+            KindChoice(value="occupation", label="Beruf", fields="value"),
+            KindChoice(value="residence", label="Wohnort", fields="value"),
+            KindChoice(value="education", label="Ausbildung", fields="value"),
+            KindChoice(value="nationality", label="Staatsbürgerschaft", fields="value"),
+            KindChoice(value="marriage", label="Geheiratet", fields="couple"),
+            KindChoice(value="divorce", label="Geschieden", fields="couple"),
+            KindChoice(value="custom", label="Eigene", fields="custom"),
+        ],
+        [person_entries(person_ids=[markus.pk])[markus.pk]],
+    )
+
+
+@pytest.mark.django_db
+def test_fact_form_for_a_fact_holds_its_date_as_text_and_its_citations():
+    citation = CitationFactory(fact__reliability=Fact.Reliability.PROBABLE, page="fol. 12")
+    other = SourceFactory(people=[citation.fact.person])
+
+    form = fact_form(person_id=citation.fact.person.pk, fact_id=citation.fact.pk)
+
+    assert (form.fact, form.date, form.reliability, form.citations) == (
+        citation.fact,
+        "12. März 1931",
+        "probable",
+        [
+            CitationChoice(source=citation.source, cited=True, page="fol. 12"),
+            CitationChoice(source=other, cited=False, page=""),
+        ],
+    )
+
+
+@pytest.mark.django_db
+def test_fact_form_for_a_marriage_chose_the_other_partner():
+    partnership = PartnershipFactory()
+    marriage = FactFactory(person=None, partnership=partnership, kind=Fact.Kind.MARRIAGE)
+
+    form = fact_form(person_id=partnership.person_a.pk, fact_id=marriage.pk)
+
+    assert (form.key, form.fields, form.partner_id) == (str(marriage.pk), "couple", partnership.person_b.pk)
+
+
+@pytest.mark.django_db
+def test_fact_form_of_somebody_not_there_is_none():
+    assert fact_form(person_id=404) is None
+
+
+@pytest.mark.django_db
+def test_fact_form_for_a_fact_of_somebody_else_is_none():
+    birth = FactFactory()
+    stranger = PersonFactory(given_names="Fremd")
+
+    assert fact_form(person_id=stranger.pk, fact_id=birth.pk) is None
