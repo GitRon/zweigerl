@@ -11,7 +11,7 @@ from pytest_django.asserts import assertRedirects, assertTemplateUsed
 
 @pytest.mark.django_db
 def test_an_anonymous_visit_is_sent_to_the_login(client):
-    response = client.get(reverse("stammbaum:start-view"))
+    response = client.get(reverse("family_tree:start-view"))
 
     assertRedirects(response, f"{reverse('common:login-view')}?next=/")
 
@@ -28,7 +28,7 @@ def test_login_view_renders_without_a_login(client):
 def test_login_view_lands_on_the_start_page(client, admin_user):
     response = client.post(reverse("common:login-view"), {"username": "admin", "password": "password"})
 
-    assertRedirects(response, reverse("stammbaum:start-view"))
+    assertRedirects(response, reverse("family_tree:start-view"))
 
 
 @pytest.mark.django_db

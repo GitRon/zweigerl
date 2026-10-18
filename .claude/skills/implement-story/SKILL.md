@@ -68,7 +68,7 @@ means that lens was never reviewed, which is reported as a gap rather than block
   "phase": "review",
   "deadline_seconds": 720,
   "ci_attempts": 2,
-  "touches": ["apps/stammbaum/readers/person.py", "apps/stammbaum/tests/readers/test_person.py"],
+  "touches": ["apps/family_tree/readers/person.py", "apps/family_tree/tests/readers/test_person.py"],
   "review": {
     "head_sha": "c753616",
     "shards": {

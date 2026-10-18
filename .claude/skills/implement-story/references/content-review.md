@@ -67,7 +67,7 @@ other than where it was aimed:
 1. Log in, once the login exists.
 2. The start page renders, and `browser_console_messages` shows no error - a broken datastar bundle or a
    script error shows up here first.
-3. The Familie Huber is there: `/admin/stammbaum/person/` lists fifteen people and Lena Huber's page shows
+3. The Familie Huber is there: `/admin/family_tree/person/` lists fifteen people and Lena Huber's page shows
    her parents, her partner and her two children. Until the tree has a screen of its own (#11) this is
    where a story that broke the models or the fixture shows it.
 4. Every page the app links to from the start page loads.
@@ -86,7 +86,7 @@ story specifies - refusing to delete the starting person is behaviour too.
 ## Reaching the state the story needs
 
 Use the app where using it is cheap. `fresh` loads the invented Familie Huber
-(`apps/stammbaum/fixtures/familie_huber.json`, fifteen people around Lena Huber, the Ausgangsperson), so most
+(`apps/family_tree/fixtures/huber_family.json`, fifteen people around Lena Huber, the Ausgangsperson), so most
 stories have a family to work on from the first click. `/admin/` shows all of it.
 
 Where using the app is not cheap, seed the precondition through the shell:

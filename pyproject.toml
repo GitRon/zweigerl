@@ -259,7 +259,7 @@ root_packages = ["apps"]
 [[tool.importlinter.contracts]]
 name = "Views call actions and readers, never the other way round"
 type = "layers"
-containers = ["apps.stammbaum"]
+containers = ["apps.family_tree"]
 layers = [
     "views",
     "actions | readers",
@@ -271,12 +271,12 @@ layers = [
 name = "Satellites do not import the domain"
 type = "forbidden"
 source_modules = ["apps.common"]
-forbidden_modules = ["apps.stammbaum"]
+forbidden_modules = ["apps.family_tree"]
 
 # "apps.config" is the settings package, not an app. Settings are read through "django.conf.settings",
 # which is lazy and overridable in tests; importing the module directly bypasses both.
 [[tool.importlinter.contracts]]
 name = "No app imports the settings package"
 type = "forbidden"
-source_modules = ["apps.stammbaum", "apps.common"]
+source_modules = ["apps.family_tree", "apps.common"]
 forbidden_modules = ["apps.config"]

@@ -18,7 +18,7 @@ def test_is_datastar_request_passes_over_plain_navigation(rf):
 
 @pytest.mark.django_db
 def test_render_page_answers_navigation_with_the_whole_document(request_with_session):
-    response = render_page(request=request_with_session, template="stammbaum/start.html", context={}, url="/")
+    response = render_page(request=request_with_session, template="family_tree/start.html", context={}, url="/")
 
     assert not isinstance(response, DatastarResponse)
     assert response.status_code == 200
@@ -26,7 +26,9 @@ def test_render_page_answers_navigation_with_the_whole_document(request_with_ses
 
 @pytest.mark.django_db
 def test_render_page_answers_datastar_with_events(datastar_request_with_session):
-    response = render_page(request=datastar_request_with_session, template="stammbaum/start.html", context={}, url="/")
+    response = render_page(
+        request=datastar_request_with_session, template="family_tree/start.html", context={}, url="/"
+    )
 
     assert isinstance(response, DatastarResponse)
 
@@ -34,10 +36,10 @@ def test_render_page_answers_datastar_with_events(datastar_request_with_session)
 @pytest.mark.django_db
 def test_render_page_moves_the_address_bar(datastar_request_with_session):
     response = render_page(
-        request=datastar_request_with_session, template="stammbaum/start.html", context={}, url="/personen/?q=Huber"
+        request=datastar_request_with_session, template="family_tree/start.html", context={}, url="/persons/?q=Huber"
     )
 
-    assert """history.pushState(null, '', "/personen/?q=Huber");""" in b"".join(response.streaming_content).decode()
+    assert """history.pushState(null, '', "/persons/?q=Huber");""" in b"".join(response.streaming_content).decode()
 
 
 @pytest.mark.django_db
@@ -47,7 +49,7 @@ def test_render_page_keeps_a_query_from_closing_the_script(datastar_request_with
     escaping of the address inside the script element, and nothing but the body shows it.
     """
     response = render_page(
-        request=datastar_request_with_session, template="stammbaum/start.html", context={}, url="/?q=</script>"
+        request=datastar_request_with_session, template="family_tree/start.html", context={}, url="/?q=</script>"
     )
 
     body = b"".join(response.streaming_content).decode()
@@ -57,6 +59,8 @@ def test_render_page_keeps_a_query_from_closing_the_script(datastar_request_with
 
 @pytest.mark.django_db
 def test_render_page_adds_no_history_entry_for_the_page_already_open(datastar_request_with_session):
-    response = render_page(request=datastar_request_with_session, template="stammbaum/start.html", context={}, url="/")
+    response = render_page(
+        request=datastar_request_with_session, template="family_tree/start.html", context={}, url="/"
+    )
 
     assert 'if (location.pathname + location.search !== "/")' in b"".join(response.streaming_content).decode()

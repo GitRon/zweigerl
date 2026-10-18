@@ -53,7 +53,7 @@ A relative `ZWEIGERL_DATA_DIR` is read from the project root, where `.env` sits,
 Every page sits behind `LoginRequiredMiddleware`, locally too. A view that has to be reachable without a
 login says so with `login_not_required`; Django's own login view already does.
 
-- `/anmelden/` and `/abmelden/` are Django's `LoginView` and `LogoutView`, wired in `apps/common/urls.py`
+- `/login/` and `/logout/` are Django's `LoginView` and `LogoutView`, wired in `apps/common/urls.py`
   with the templates in `apps/common/templates/common/`. Logging out is a POST.
 - Accounts are made with `manage.py createsuperuser`; there is no sign-up.
 
@@ -136,7 +136,7 @@ media/
   A ticket that hides people from some accounts has to check that in `media_view` too. A replaced file
   keeps its URL, so the view answers `Cache-Control: private, no-cache` and the browser never shows the old
   picture.
-- The layout lives here and in the callers in `apps.stammbaum`, not in `store_upload`: `apps.common` knows
+- The layout lives here and in the callers in `apps.family_tree`, not in `store_upload`: `apps.common` knows
   no photos and no sources. An action that adds such a file writes its row first, so the id exists, and
   stores the file inside the same transaction - a refused upload then leaves no row behind.
 

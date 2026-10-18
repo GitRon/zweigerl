@@ -2,7 +2,7 @@
 
 An architecture test checks the whole tree at once rather than one testee. It holds a rule that is
 otherwise silent when broken: the code keeps working, just wrongly, and no unit test of a single function
-can see it. They live in `apps/stammbaum/tests/architecture/`.
+can see it. They live in `apps/family_tree/tests/architecture/`.
 
 An allowlist in one of them is part of the rule, not a way around it: every entry carries its reason.
 

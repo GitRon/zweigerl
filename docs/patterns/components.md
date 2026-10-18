@@ -20,11 +20,11 @@ page and in the update — see [datastar](datastar.md#fragments).
 
 `<app>/templates/cotton/<topic>/<name>.html`, at the app root like every other template — see
 [where code goes](app-layout.md). The tag is the path below `cotton/`: folders become dots and
-underscores become hyphens, so `apps/stammbaum/templates/cotton/person/karte.html` is
-`<c-person.karte>`.
+underscores become hyphens, so `apps/family_tree/templates/cotton/person/card.html` is
+`<c-person.card>`.
 
 **Always one topic folder.** Both apps share the one `cotton/` namespace, and the template loader takes
-the first app that has the file, so a second `cotton/karte.html` in another app is shadowed without a
+the first app that has the file, so a second `cotton/card.html` in another app is shadowed without a
 word. The folder keeps the names apart.
 
 | Component | Lives in | For |
@@ -66,7 +66,7 @@ A component that wraps one element and is put to work by its caller - a button t
 what it does without the component knowing every datastar attribute there is.
 
 ```html
-<c-common.button variant="primary" data-on:click="@post('/personen/')">Anlegen</c-common.button>
+<c-common.button variant="primary" data-on:click="@post('/persons/')">Anlegen</c-common.button>
 ```
 
 Only a component that writes `{{ attrs }}` passes anything on; everywhere else an undeclared attribute is

@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     "django_cotton.apps.SimpleAppConfig",
     # One domain app, plus a satellite for domain-independent logic. A Django app is a unit of
     # persistence and Django configuration, not of code organisation.
-    "apps.stammbaum",
+    "apps.family_tree",
     "apps.common",
     "axes",
 ]
@@ -85,7 +85,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 LOGIN_URL = "common:login-view"
-LOGIN_REDIRECT_URL = "stammbaum:start-view"
+LOGIN_REDIRECT_URL = "family_tree:start-view"
 LOGOUT_REDIRECT_URL = "common:login-view"
 
 ROOT_URLCONF = "apps.config.urls"
