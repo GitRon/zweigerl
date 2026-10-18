@@ -1,7 +1,8 @@
 # Writing an issue
 
-An issue here is not a reminder to yourself — it is the input to `/implement-story` (#29). That skill
-copies the title, body and comments into its spec **once** and never fetches the issue again. Whatever is
+An issue here is not a reminder to yourself — it is the input to
+[`/implement-story`](../../.claude/skills/implement-story/SKILL.md). Phase 0 of that skill copies the
+title, body and comments into its spec **once** and never fetches the issue again. Whatever is
 not in the body or a comment does not exist for the implementation.
 
 So an issue has to survive being read exactly once, by someone with no memory of the conversation that

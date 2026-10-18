@@ -45,7 +45,8 @@ rewritten for it, and that ticket owns the decision of which screens get a phone
 
 Nothing in the suite asserts on markup — see [testing strategy](testing-strategy.md). The only gate on
 this convention is looking at the page at **1280px** and at **1024px**. `/implement-story` does that on
-every page a story touched once its browser run exists (#29).
+every page a story touched, in step 5 of the baseline journey in its
+[content review](../../.claude/skills/implement-story/references/content-review.md).
 
 ## See also
 
