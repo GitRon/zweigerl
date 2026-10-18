@@ -35,9 +35,9 @@ Import as `from unittest import mock` and always spell it `mock.patch(...)`, nev
 
 Patch the name **where it is used**, not where it is defined. A module that imports
 `from django.utils.timezone import now` is patched as
-`mock.patch("apps.family_tree.actions.sicherung.now", return_value=...)`. Patching
+`mock.patch("apps.family_tree.actions.backup.now", return_value=...)`. Patching
 `django.utils.timezone.now` instead moves the clock for everything in the test, session expiry and
-`auto_now` fields included; patching `...sicherung.timezone.now` in a module that imports the
+`auto_now` fields included; patching `...backup.timezone.now` in a module that imports the
 `timezone` module is the same global patch under a longer name.
 
 Always pass `return_value` when the patched call feeds an expression. Without it the call returns a

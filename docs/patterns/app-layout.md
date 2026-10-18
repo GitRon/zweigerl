@@ -15,7 +15,7 @@ apps/
     ├── actions/                 # everything that writes
     ├── readers/                 # everything that reads
     ├── views/                   # the web interface, one module per screen
-    ├── templates/family_tree/     # pages
+    ├── templates/family_tree/   # pages
     ├── templates/cotton/<topic>/  # components
     └── tests/                   # mirrors the tree above
 ```

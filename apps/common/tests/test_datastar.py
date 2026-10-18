@@ -36,10 +36,10 @@ def test_render_page_answers_datastar_with_events(datastar_request_with_session)
 @pytest.mark.django_db
 def test_render_page_moves_the_address_bar(datastar_request_with_session):
     response = render_page(
-        request=datastar_request_with_session, template="family_tree/start.html", context={}, url="/personen/?q=Huber"
+        request=datastar_request_with_session, template="family_tree/start.html", context={}, url="/persons/?q=Huber"
     )
 
-    assert """history.pushState(null, '', "/personen/?q=Huber");""" in b"".join(response.streaming_content).decode()
+    assert """history.pushState(null, '', "/persons/?q=Huber");""" in b"".join(response.streaming_content).decode()
 
 
 @pytest.mark.django_db

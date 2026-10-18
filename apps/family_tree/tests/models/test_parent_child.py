@@ -127,13 +127,13 @@ def test_parent_child_refuses_the_same_link_twice_in_the_database():
 
 
 @pytest.mark.django_db
-def test_parent_child_refuses_an_unknown_kind_of_link_on_save():
+def test_parent_child_refuses_an_unknown_pedigree_on_save():
     with pytest.raises(ValidationError, match="leiblich, adoptiert, Pflegekind oder unbekannt"):
-        ParentChildFactory(pedigree="geraten")
+        ParentChildFactory(pedigree="guessed")
 
 
 @pytest.mark.django_db
-def test_parent_child_refuses_an_unknown_kind_of_link_in_the_database():
+def test_parent_child_refuses_an_unknown_pedigree_in_the_database():
     johann, lena = PersonFactory.create_batch(2)
 
     with pytest.raises(IntegrityError, match="parentchild_pedigree_valid"):

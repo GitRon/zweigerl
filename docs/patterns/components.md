@@ -66,7 +66,7 @@ A component that wraps one element and is put to work by its caller - a button t
 what it does without the component knowing every datastar attribute there is.
 
 ```html
-<c-common.button variant="primary" data-on:click="@post('/personen/')">Anlegen</c-common.button>
+<c-common.button variant="primary" data-on:click="@post('/persons/')">Anlegen</c-common.button>
 ```
 
 Only a component that writes `{{ attrs }}` passes anything on; everywhere else an undeclared attribute is
