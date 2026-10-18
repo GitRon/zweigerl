@@ -56,20 +56,30 @@ def _stored_exif(*, media_root: Path, name: str) -> Image.Exif:
     return Image.open(media_root / name).getexif()
 
 
-def test_store_upload_names_the_file_at_random_inside_the_folder(media_root):
+def test_store_upload_stores_the_file_at_the_name_with_its_extension(media_root):
     upload = SimpleUploadedFile("Oma Huber Taufe.JPG", _image_with_exif(image_format="JPEG"))
 
-    name = store_upload(uploaded_file=upload, folder="fotos")
+    name = store_upload(uploaded_file=upload, name="photos/17/original")
 
-    assert Path(name).parent == Path("fotos")
-    assert "Huber" not in name
-    assert Path(name).suffix == ".jpg"
+    assert name == "photos/17/original.jpg"
+    assert (media_root / name).is_file()
+
+
+def test_store_upload_replaces_a_file_already_at_the_name(media_root):
+    first = SimpleUploadedFile("urkunde.pdf", b"%PDF-1.4\n% erste Fassung\n%%EOF\n")
+    second = SimpleUploadedFile("urkunde.pdf", b"%PDF-1.4\n% zweite Fassung\n%%EOF\n")
+    store_upload(uploaded_file=first, name="sources/8/3")
+
+    name = store_upload(uploaded_file=second, name="sources/8/3")
+
+    assert name == "sources/8/3.pdf"
+    assert (media_root / name).read_bytes() == b"%PDF-1.4\n% zweite Fassung\n%%EOF\n"
 
 
 def test_store_upload_removes_the_location_from_a_jpeg(media_root):
     upload = SimpleUploadedFile("foto.jpg", _image_with_exif(image_format="JPEG"))
 
-    name = store_upload(uploaded_file=upload, folder="fotos")
+    name = store_upload(uploaded_file=upload, name="photos/1/original")
 
     assert dict(_stored_exif(media_root=media_root, name=name).get_ifd(ExifTags.IFD.GPSInfo)) == {}
 
@@ -77,7 +87,7 @@ def test_store_upload_removes_the_location_from_a_jpeg(media_root):
 def test_store_upload_removes_the_camera_from_a_jpeg(media_root):
     upload = SimpleUploadedFile("foto.jpg", _image_with_exif(image_format="JPEG"))
 
-    name = store_upload(uploaded_file=upload, folder="fotos")
+    name = store_upload(uploaded_file=upload, name="photos/1/original")
 
     exif = _stored_exif(media_root=media_root, name=name)
     assert (exif.get(ExifTags.Base.Make), exif.get(ExifTags.Base.Model)) == (None, None)
@@ -87,7 +97,7 @@ def test_store_upload_removes_the_camera_from_a_jpeg(media_root):
 def test_store_upload_keeps_the_date_and_orientation_of_a_jpeg(media_root):
     upload = SimpleUploadedFile("foto.jpg", _image_with_exif(image_format="JPEG"))
 
-    name = store_upload(uploaded_file=upload, folder="fotos")
+    name = store_upload(uploaded_file=upload, name="photos/1/original")
 
     exif = _stored_exif(media_root=media_root, name=name)
     assert exif.get_ifd(ExifTags.IFD.Exif)[ExifTags.Base.DateTimeOriginal] == "1931:05:01 10:00:00"
@@ -97,7 +107,7 @@ def test_store_upload_keeps_the_date_and_orientation_of_a_jpeg(media_root):
 def test_store_upload_removes_the_location_from_a_png(media_root):
     upload = SimpleUploadedFile("scan.png", _image_with_exif(image_format="PNG"))
 
-    name = store_upload(uploaded_file=upload, folder="quellen")
+    name = store_upload(uploaded_file=upload, name="sources/1/1")
 
     assert dict(_stored_exif(media_root=media_root, name=name).get_ifd(ExifTags.IFD.GPSInfo)) == {}
 
@@ -105,7 +115,7 @@ def test_store_upload_removes_the_location_from_a_png(media_root):
 def test_store_upload_keeps_no_name_from_a_jpeg(media_root):
     upload = SimpleUploadedFile("foto.jpg", _image_with_exif(image_format="JPEG"))
 
-    name = store_upload(uploaded_file=upload, folder="fotos")
+    name = store_upload(uploaded_file=upload, name="photos/1/original")
 
     assert ExifTags.Base.Artist not in _stored_exif(media_root=media_root, name=name)
 
@@ -115,7 +125,7 @@ def test_store_upload_drops_the_comment_of_a_jpeg(media_root):
     Image.new("RGB", (8, 8)).save(output, "JPEG", comment=b"Taufe Josef Erfunden, Hallstatt")
     upload = SimpleUploadedFile("foto.jpg", output.getvalue())
 
-    name = store_upload(uploaded_file=upload, folder="fotos")
+    name = store_upload(uploaded_file=upload, name="photos/1/original")
 
     assert Image.open(media_root / name).info.get("comment") is None
 
@@ -125,7 +135,7 @@ def test_store_upload_takes_a_camera_jpeg_with_previews(media_root):
     Image.new("RGB", (16, 8)).save(output, "MPO", save_all=True, append_images=[Image.new("RGB", (4, 2))])
     upload = SimpleUploadedFile("kamera.jpg", output.getvalue())
 
-    name = store_upload(uploaded_file=upload, folder="fotos")
+    name = store_upload(uploaded_file=upload, name="photos/1/original")
 
     assert Image.open(media_root / name).format == "JPEG"
 
@@ -133,7 +143,7 @@ def test_store_upload_takes_a_camera_jpeg_with_previews(media_root):
 def test_store_upload_removes_the_location_from_a_webp(media_root):
     upload = SimpleUploadedFile("foto.webp", _image_with_exif(image_format="WEBP"))
 
-    name = store_upload(uploaded_file=upload, folder="fotos")
+    name = store_upload(uploaded_file=upload, name="photos/1/original")
 
     assert dict(_stored_exif(media_root=media_root, name=name).get_ifd(ExifTags.IFD.GPSInfo)) == {}
 
@@ -141,7 +151,7 @@ def test_store_upload_removes_the_location_from_a_webp(media_root):
 def test_store_upload_turns_a_tiff_upright(media_root):
     upload = SimpleUploadedFile("scan.tif", _tiff_with_tags())
 
-    name = store_upload(uploaded_file=upload, folder="quellen")
+    name = store_upload(uploaded_file=upload, name="sources/1/1")
 
     assert Image.open(media_root / name).size == (8, 16)
 
@@ -149,7 +159,7 @@ def test_store_upload_turns_a_tiff_upright(media_root):
 def test_store_upload_drops_the_tags_of_a_tiff(media_root):
     upload = SimpleUploadedFile("scan.tif", _tiff_with_tags())
 
-    name = store_upload(uploaded_file=upload, folder="quellen")
+    name = store_upload(uploaded_file=upload, name="sources/1/1")
 
     tags = Image.open(media_root / name).getexif()
     assert (tags.get(ExifTags.Base.Make), tags.get(ExifTags.Base.Artist)) == (None, None)
@@ -161,14 +171,14 @@ def test_store_upload_refuses_a_scan_with_several_pages(media_root):
     upload = SimpleUploadedFile("urkunde.tif", output.getvalue())
 
     with pytest.raises(UploadRefusedError, match="Mehrseitige Scans bitte als PDF"):
-        store_upload(uploaded_file=upload, folder="quellen")
+        store_upload(uploaded_file=upload, name="sources/1/1")
 
 
 def test_store_upload_keeps_a_pdf_as_it_came(media_root):
     pdf = b"%PDF-1.4\n% erfundene Urkunde\n%%EOF\n"
     upload = SimpleUploadedFile("Urkunde Josef Huber.pdf", pdf)
 
-    name = store_upload(uploaded_file=upload, folder="quellen")
+    name = store_upload(uploaded_file=upload, name="sources/1/1")
 
     assert (media_root / name).read_bytes() == pdf
 
@@ -177,25 +187,25 @@ def test_store_upload_refuses_a_pdf_that_is_none(media_root):
     upload = SimpleUploadedFile("urkunde.pdf", b"kein PDF")
 
     with pytest.raises(UploadRefusedError, match="ist aber kein PDF"):
-        store_upload(uploaded_file=upload, folder="quellen")
+        store_upload(uploaded_file=upload, name="sources/1/1")
 
 
 def test_store_upload_refuses_an_unknown_kind_of_file(media_root):
     upload = SimpleUploadedFile("notiz.docx", b"PK")
 
     with pytest.raises(UploadRefusedError, match="JPEG, PNG, WebP, TIFF oder PDF"):
-        store_upload(uploaded_file=upload, folder="quellen")
+        store_upload(uploaded_file=upload, name="sources/1/1")
 
 
 def test_store_upload_refuses_an_image_that_does_not_open(media_root):
     upload = SimpleUploadedFile("foto.jpg", b"kein Bild")
 
     with pytest.raises(UploadRefusedError, match="nicht als Bild öffnen"):
-        store_upload(uploaded_file=upload, folder="fotos")
+        store_upload(uploaded_file=upload, name="photos/1/original")
 
 
 def test_store_upload_refuses_an_image_under_the_wrong_extension(media_root):
     upload = SimpleUploadedFile("foto.jpg", _image_with_exif(image_format="PNG"))
 
     with pytest.raises(UploadRefusedError, match="passt nicht zum Inhalt"):
-        store_upload(uploaded_file=upload, folder="fotos")
+        store_upload(uploaded_file=upload, name="photos/1/original")

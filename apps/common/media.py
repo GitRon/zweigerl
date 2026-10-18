@@ -5,7 +5,6 @@ See docs/patterns/data-storage.md, "Photos and scans".
 """
 
 import io
-import uuid
 from pathlib import PurePosixPath
 
 from django.core.files.base import ContentFile
@@ -34,11 +33,13 @@ class UploadRefusedError(ValueError):
     """
 
 
-def store_upload(*, uploaded_file: UploadedFile, folder: str) -> str:
+def store_upload(*, uploaded_file: UploadedFile, name: str) -> str:
     """
-    Stores a photo or a scan in "MEDIA_ROOT/<folder>/" under a random name and returns the stored name, as a
-    FileField wants it. The original name is dropped: it often says who is in the picture. Images keep only
-    the date they were taken and their orientation; PDFs are stored as they came.
+    Stores a photo or a scan at "MEDIA_ROOT/<name>.<extension>" and returns the stored name, as a FileField
+    wants it. "name" is the place in the layout without the extension - "photos/17/original" - and the caller
+    builds it from ids, never from a person's name; see docs/patterns/data-storage.md, "Photos and scans".
+    A file already there is replaced. The original file name is dropped: it often says who is in the
+    picture. Images keep only the date they were taken and their orientation; PDFs are stored as they came.
     """
     extension = PurePosixPath(uploaded_file.name or "").suffix.lstrip(".").lower()
     content = uploaded_file.read()
@@ -51,7 +52,11 @@ def store_upload(*, uploaded_file: UploadedFile, folder: str) -> str:
     else:
         raise UploadRefusedError("Zweigerl nimmt Fotos und Scans als JPEG, PNG, WebP, TIFF oder PDF.")
 
-    return default_storage.save(f"{folder}/{uuid.uuid4().hex}.{extension}", ContentFile(content))
+    stored_name = f"{name}.{extension}"
+    # Without this the storage would keep the old file and save the new one under a random suffix, which
+    # the layout - and the export reading it - would never find.
+    default_storage.delete(stored_name)
+    return default_storage.save(stored_name, ContentFile(content))
 
 
 def _picture_only(*, content: bytes, allowed_formats: tuple[str, ...]) -> bytes:

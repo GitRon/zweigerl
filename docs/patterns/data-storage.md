@@ -12,7 +12,7 @@ Everything a person enters lives in one directory **outside the repository**, na
 ```
 <ZWEIGERL_DATA_DIR>/
 ├── zweigerl.sqlite3     # the database
-└── medien/              # photos and scans (MEDIA_ROOT)
+└── media/               # photos and scans (MEDIA_ROOT)
 ```
 
 `apps.common.data_dir.data_dir_from_environment` reads the variable when the settings load, and Zweigerl
@@ -28,7 +28,7 @@ refuses to start when:
 **Put the directory in an encrypted area** — an encrypted volume, a FileVault/BitLocker disk, a
 Cryptomator vault. A stolen laptop should not hand over the family.
 
-What goes into `medien/` and how it comes out again is [Photos and scans](#photos-and-scans), below.
+What goes into `media/` and how it comes out again is [Photos and scans](#photos-and-scans), below.
 
 ## The secret key
 
@@ -79,14 +79,14 @@ handed over that parameter would put every attempt into one bucket. A locked-out
 ## Photos and scans
 
 **A media file is handed out by one view, behind the login, and by nothing else.** `MEDIA_URL` is
-`/medien/`, which is `apps.common.views.media.media_view`; there is no `static()` for media and no web
+`/media/`, which is `apps.common.views.media.media_view`; there is no `static()` for media and no web
 server pointing at `MEDIA_ROOT`. A guessed URL gets the login page, a path that leads out of the media
 directory - `../`, a symlink - gets a 404. So does any file of a kind the upload never makes: only JPEG,
 PNG, WebP, TIFF and PDF are handed out, with a fixed content type, so an `.html` or `.svg` that reached the
 directory some other way cannot run as a page of Zweigerl.
 
 Behind nginx (#37), `ZWEIGERL_MEDIA_ACCEL_PREFIX` names an `internal` nginx location mapped to
-`MEDIA_ROOT`, e.g. `/_medien/`. The view still checks the login, then answers with an empty body and
+`MEDIA_ROOT`, e.g. `/_media/`. The view still checks the login, then answers with an empty body and
 `X-Accel-Redirect` - the path percent-encoded, since nginx reads it as a URI - and nginx sends the bytes.
 Unset, Django sends the file itself.
 
@@ -95,12 +95,14 @@ and the pictures a PAF import brings (#24) alike. A `FileField` saved any other 
 the admin - writes the file under its original name with everything in it, so the ticket that adds a file
 field routes it through `store_upload`, and a review finds it when it does not.
 
-- **Stored under a random name** in `MEDIA_ROOT/<folder>/`, e.g. `fotos/3f2a….jpg`. The original name is
-  dropped and kept nowhere: "Taufe Josef Huber 1931.jpg" says who is in the picture.
+- **Stored where the layout below puts it**, under the name the caller passes without its extension -
+  `store_upload(uploaded_file=…, name="photos/17/original")` - and the extension the content was checked
+  against. A file already there is replaced. The original name is dropped and kept nowhere: "Taufe Josef
+  Huber 1931.jpg" says who is in the picture.
 - **Accepted:** JPEG (also the camera kind with previews, MPO), PNG, WebP, TIFF and PDF, by extension and
   by content. Anything else, a file whose content does not match its extension, and a scan with several
   pages or an animation - only the first frame would survive - raise `UploadRefusedError` with a German
-  message for the form. HEIC from phones is not accepted yet.
+  message for the form. HEIC from phones is not accepted yet (#49).
 - **An image keeps the picture and nothing about it but two facts:** the date it was taken - which #16
   shows - and its orientation, plus the colour profile. Everything else is dropped rather than picked
   out: GPS, camera and lens, serial numbers, the photographer's name, descriptions, copyright, comments,
@@ -108,7 +110,29 @@ field routes it through `store_upload`, and a review finds it when it does not.
   quantisation tables, so it is not visibly recompressed; one with previews is saved at quality 95.
 - **A TIFF is turned upright and keeps no tags:** Pillow writes no EXIF sub-blocks into a TIFF, so the
   orientation is applied to the pixels and the date taken does not survive. A scan rarely has one.
-- **A PDF is stored as it came.** Its own metadata - author, producer - is not touched yet.
+- **A PDF is stored as it came.** Its own metadata - author, producer - is not touched yet (#50).
+
+### The layout
+
+**The media directory is ordered by the row a file belongs to, and named from ids and roles - never from
+a name.** Anyone holding the data directory finds every file of a photo or a source from its id in the
+database or the export, without Zweigerl.
+
+```
+media/
+├── photos/<photo-id>/original.<ext>     # what was uploaded; a file derived from it sits beside it, named for its role
+└── sources/<source-id>/<file-id>.<ext>  # the scans and PDFs of one source
+```
+
+- **No folder per person.** A group photo belongs to several people; who is on a photo is the database's
+  to say, and the export sorts by person.
+- **No name, date or place in a path.** A path ends up in logs, in URLs, in the browser history and in the
+  file list of a backup (#39), and a name that changes - corrected, or after a wedding - would have to move
+  files. Readable names are written by the export (#26), from the data as it is then.
+- **Paths are English**: `photos`, `sources`, `original`.
+- The layout lives here and in the callers in `apps.stammbaum`, not in `store_upload`: `apps.common` knows
+  no photos and no sources. An action that adds such a file writes its row first, so the id exists, and
+  stores the file inside the same transaction - a refused upload then leaves no row behind.
 
 ## Running it
 
