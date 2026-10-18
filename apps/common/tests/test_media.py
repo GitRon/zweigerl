@@ -101,10 +101,22 @@ def _pdf(*, pages: int = 1) -> bytes:
     )
     xmp = DecodedStreamObject()
     xmp.set_data(b"<x:xmpmeta><dc:creator>Josef Erfunden</dc:creator></x:xmpmeta>")
+    xmp.update({NameObject("/Type"): NameObject("/Metadata"), NameObject("/Subtype"): NameObject("/XML")})
+    piece_info = DictionaryObject(
+        {
+            NameObject("/Editor"): DictionaryObject(
+                {
+                    NameObject("/LastModified"): TextStringObject("D:20240501100000"),
+                    NameObject("/Private"): TextStringObject("Erfunden"),
+                }
+            )
+        }
+    )
     writer.root_object[NameObject("/Metadata")] = writer._add_object(xmp)
     writer.pages[0][NameObject("/Metadata")] = writer._add_object(xmp)
-    writer.pages[0][NameObject("/PieceInfo")] = DictionaryObject({NameObject("/Editor"): TextStringObject("Erfunden")})
+    writer.pages[0][NameObject("/PieceInfo")] = piece_info
     picture[NameObject("/Metadata")] = writer._add_object(xmp)
+    picture[NameObject("/PieceInfo")] = piece_info
     # The same picture under two names, as a page that shows a stamp twice has it.
     picture_reference = writer._add_object(picture)
     writer.pages[0][NameObject("/Resources")] = DictionaryObject(
@@ -336,6 +348,29 @@ def test_store_upload_keeps_a_comment_in_a_pdf_without_its_author(media_root):
         "Seite 1 ist die Vorderseite",
         False,
     )
+
+
+def test_store_upload_keeps_what_a_pdf_page_draws_under_the_names_of_metadata(media_root):
+    writer = PdfWriter()
+    page = writer.add_blank_page(width=200, height=100)
+    font = DictionaryObject(
+        {NameObject("/Type"): NameObject("/Font"), NameObject("/BaseFont"): NameObject("/Helvetica")}
+    )
+    page[NameObject("/Resources")] = DictionaryObject(
+        {
+            NameObject("/Font"): DictionaryObject(
+                {NameObject("/Metadata"): writer._add_object(font), NameObject("/PieceInfo"): writer._add_object(font)}
+            )
+        }
+    )
+    output = io.BytesIO()
+    writer.write(output)
+    upload = SimpleUploadedFile("urkunde.pdf", output.getvalue())
+
+    name = store_upload(uploaded_file=upload, name="sources/1/1")
+
+    fonts = _stored_pdf(media_root=media_root, name=name)[1].pages[0]["/Resources"]["/Font"]
+    assert set(fonts) == {"/Metadata", "/PieceInfo"}
 
 
 def test_store_upload_refuses_a_pdf_that_does_not_open(media_root):

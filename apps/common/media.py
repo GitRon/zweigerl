@@ -13,7 +13,7 @@ from django.core.files.uploadedfile import UploadedFile
 from PIL import ExifTags, Image, ImageOps, UnidentifiedImageError
 from pypdf import PageObject, PdfReader, PdfWriter
 from pypdf.errors import PyPdfError
-from pypdf.generic import ArrayObject, DictionaryObject, IndirectObject, NameObject
+from pypdf.generic import ArrayObject, DictionaryObject, IndirectObject, NameObject, StreamObject
 
 # The extension a file is stored under, and the Pillow formats its content may have. A JPEG from many
 # cameras and phones carries preview pictures (CIPA multi-picture) and opens as "MPO"; it is a JPEG all the
@@ -67,9 +67,6 @@ PDF_ANNOTATION_SUBTYPES = {
     "/Ink",
     "/Widget",
 }
-# What nothing a page draws keeps: XMP and an editor's private data sit on pictures, forms, fonts and the look
-# of a comment as well as on the page.
-PDF_METADATA_KEYS = {"/Metadata", "/PieceInfo"}
 # What such an annotation keeps: where it sits, what it looks like and the text it shows - not who wrote
 # it, when, or the action and form field behind it.
 PDF_ANNOTATION_KEYS = {
@@ -213,8 +210,8 @@ def _pages_only(*, content: bytes) -> bytes:
 def _page_only(*, page: PageObject) -> PageObject:
     """
     The page of the reader cut down, in place, to what PDF_PAGE_KEYS and the two annotation sets keep and
-    without PDF_METADATA_KEYS below it, before the writer copies it - so what was cut is never copied in the
-    first place.
+    without XMP or an editor's private data below it, before the writer copies it - so what was cut is never
+    copied in the first place.
     """
     for key in set(page) - PDF_PAGE_KEYS:
         del page[key]
@@ -235,25 +232,53 @@ def _page_only(*, page: PageObject) -> PageObject:
 
 def _drop_metadata(*, page: PageObject) -> None:
     """
-    PDF_METADATA_KEYS taken off everything the cut page still reaches - its resources and the appearance of
-    its annotations, all the way down. Walked rather than recursed, since a file can nest deep enough to
-    exhaust the stack, and each object visited once, since forms can refer to each other.
+    XMP and an editor's private data taken off everything the cut page still reaches - its resources and
+    the appearance of its annotations, all the way down. Walked rather than recursed, since a file can nest
+    deep enough to exhaust the stack, and each object visited once, since forms can refer to each other.
     """
     pending = [page]
     seen = set()
     while pending:
         item = pending.pop()
         if isinstance(item, IndirectObject):
-            if (item.idnum, item.generation) in seen:
+            reference = (item.idnum, item.generation)
+            if reference in seen:
                 continue
-            seen.add((item.idnum, item.generation))
-            item = item.get_object()
-        if isinstance(item, DictionaryObject):
-            for key in PDF_METADATA_KEYS & set(item):
-                del item[key]
-            pending.extend(item.values())
-        elif isinstance(item, ArrayObject):
-            pending.extend(item)
+            seen.add(reference)
+        pending.extend(_without_metadata(item=item.get_object()))
+
+
+def _without_metadata(*, item: object) -> list:
+    """
+    What a dictionary or an array holds, the dictionary's XMP and private data taken off first. Anything
+    else holds nothing to walk.
+    """
+    if isinstance(item, ArrayObject):
+        return list(item)
+    if not isinstance(item, DictionaryObject):
+        return []
+    for key in [key for key, value in item.items() if _is_metadata(key=key, value=value.get_object())]:
+        del item[key]
+
+    return list(item.values())
+
+
+def _is_metadata(*, key: str, value: object) -> bool:
+    """
+    Whether a key holds XMP or an editor's private data - "PieceInfo", whose every entry carries the date it
+    was last changed. Told apart by what the value is rather than by the key alone, because a font or a
+    picture may be listed in the resources under any name, "/Metadata" too.
+    """
+    if key == "/Metadata":
+        return isinstance(value, StreamObject) and value.get("/Subtype") == "/XML"
+    return (
+        key == "/PieceInfo"
+        and isinstance(value, DictionaryObject)
+        and all(
+            isinstance(entry.get_object(), DictionaryObject) and "/LastModified" in entry.get_object()
+            for entry in value.values()
+        )
+    )
 
 
 def _date_and_orientation(*, exif: Image.Exif) -> Image.Exif:
