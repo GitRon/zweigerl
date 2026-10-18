@@ -10,6 +10,7 @@ def person_search_view(request: HttpRequest):
     """
     The sidebar's live search (#10): the people matching "$search", patched into the list. The tree (#12)
     gets the hits as "$matches" to outline them, and "$filtered" to fade everybody else while a search runs.
+    Without a search "$matches" stays empty: datastar sends every signal along with each request.
     """
     search = str((read_signals(request) or {}).get("search", "")).strip()
     found = person_list(search=search)
@@ -17,5 +18,5 @@ def person_search_view(request: HttpRequest):
         render_component(request, "person.list", person_list=found, search=search),
     )
     yield ServerSentEventGenerator.patch_signals(
-        {"filtered": bool(search), "matches": [entry.person.pk for entry in found.entries]}
+        {"filtered": bool(search), "matches": [entry.person.pk for entry in found.entries] if search else []}
     )

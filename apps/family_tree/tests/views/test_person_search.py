@@ -48,4 +48,4 @@ def test_person_search_view_without_a_search_fades_nobody(admin_client):
     )
 
     body = b"".join(response.streaming_content).decode()
-    assert '"filtered":false' in body
+    assert 'data: signals {"filtered":false,"matches":[]}' in body

@@ -39,4 +39,4 @@ def test_card_tells_assistive_technology_whether_it_is_selected():
         context={"card": CARD},
     )
 
-    assert parse(html).find(id="tree-card-7")["data-attr:aria-pressed"] == "$selection == 7"
+    assert parse(html).find(id="tree-card-7")["data-attr:aria-pressed"] == "String($selection == 7)"
