@@ -104,3 +104,25 @@ def test_tree_puts_each_person_on_their_card():
         TreeCard(entry=PersonListEntry(person=johann, name="Johann Huber", initials="JH", lifespan="—"), x=0, y=0),
         TreeCard(entry=PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan="—"), x=0, y=ROW),
     ]
+
+
+@pytest.mark.django_db
+def test_tree_marks_the_ancestor_in_whom_two_lines_of_the_home_person_meet():
+    josef = PersonFactory(given_names="Josef")
+    johann = PersonFactory(given_names="Johann")
+    franz = PersonFactory(given_names="Franz")
+    anna = PersonFactory(given_names="Anna")
+    bernd = PersonFactory(given_names="Bernd")
+    emma = PersonFactory(given_names="Emma")
+    ParentChildFactory(parent=josef, child=johann)
+    ParentChildFactory(parent=josef, child=franz)
+    ParentChildFactory(parent=johann, child=anna)
+    ParentChildFactory(parent=franz, child=bernd)
+    ParentChildFactory(parent=anna, child=emma)
+    ParentChildFactory(parent=bernd, child=emma)
+    TreeSettingsFactory(home_person=emma)
+
+    cards = tree().cards
+
+    assert (cards[0].entry.person, cards[0].pedigree_collapse) == (josef, True)
+    assert (cards[1].entry.person, cards[1].pedigree_collapse) == (johann, False)
