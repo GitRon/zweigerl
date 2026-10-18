@@ -7,7 +7,15 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from PIL import ExifTags, Image
 from pypdf import PdfReader, PdfWriter
 from pypdf.annotations import Text
-from pypdf.generic import ArrayObject, DecodedStreamObject, DictionaryObject, NameObject, TextStringObject
+from pypdf.generic import (
+    ArrayObject,
+    DecodedStreamObject,
+    DictionaryObject,
+    NameObject,
+    NullObject,
+    NumberObject,
+    TextStringObject,
+)
 
 from apps.common.media import UploadRefusedError, store_upload
 
@@ -59,8 +67,9 @@ def _tiff_with_tags() -> bytes:
 def _pdf(*, pages: int = 1) -> bytes:
     """
     An invented certificate carrying everything the upload has to strip - the document information, XMP on
-    the document and on a page, an editor's "PieceInfo", a bookmark, an embedded file, a comment's
-    author and a file attachment - around pages whose content it has to keep.
+    the document, on a page and on a picture it draws, an editor's "PieceInfo", a bookmark, an embedded
+    file, a comment's author, a file attachment and a broken entry among the annotations - around pages
+    whose content it has to keep.
     """
     writer = PdfWriter()
     for number in range(pages):
@@ -69,6 +78,18 @@ def _pdf(*, pages: int = 1) -> bytes:
         content.set_data(f"BT /F1 12 Tf 10 50 Td (Seite {number + 1}) Tj ET".encode())
         page[NameObject("/Contents")] = writer._add_object(content)
     writer.pages[0].rotate(90)
+    picture = DecodedStreamObject()
+    picture.set_data(b"\x00")
+    picture.update(
+        {
+            NameObject("/Type"): NameObject("/XObject"),
+            NameObject("/Subtype"): NameObject("/Image"),
+            NameObject("/Width"): NumberObject(1),
+            NameObject("/Height"): NumberObject(1),
+            NameObject("/ColorSpace"): NameObject("/DeviceGray"),
+            NameObject("/BitsPerComponent"): NumberObject(8),
+        }
+    )
     writer.add_metadata(
         {
             "/Author": "Josef Erfunden",
@@ -83,6 +104,16 @@ def _pdf(*, pages: int = 1) -> bytes:
     writer.root_object[NameObject("/Metadata")] = writer._add_object(xmp)
     writer.pages[0][NameObject("/Metadata")] = writer._add_object(xmp)
     writer.pages[0][NameObject("/PieceInfo")] = DictionaryObject({NameObject("/Editor"): TextStringObject("Erfunden")})
+    picture[NameObject("/Metadata")] = writer._add_object(xmp)
+    # The same picture under two names, as a page that shows a stamp twice has it.
+    picture_reference = writer._add_object(picture)
+    writer.pages[0][NameObject("/Resources")] = DictionaryObject(
+        {
+            NameObject("/XObject"): DictionaryObject(
+                {NameObject("/Im0"): picture_reference, NameObject("/Im1"): picture_reference}
+            )
+        }
+    )
     writer.add_outline_item("Josef Erfunden", 0)
     writer.add_attachment("Josef Erfunden.txt", b"Josef Erfunden")
     comment = Text(rect=(10, 10, 30, 30), text="Seite 1 ist die Vorderseite")
@@ -97,6 +128,7 @@ def _pdf(*, pages: int = 1) -> bytes:
         }
     )
     writer.add_annotation(page_number=0, annotation=attachment)
+    writer.pages[0]["/Annots"].append(NullObject())
     output = io.BytesIO()
     writer.write(output)
 

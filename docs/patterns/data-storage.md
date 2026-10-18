@@ -114,12 +114,13 @@ field routes it through `store_upload`, and a review finds it when it does not.
   orientation is applied to the pixels and the date taken does not survive. A scan rarely has one.
 - **A PDF keeps its pages and nothing else** (#50). It is written again from what each page shows -
   content, resources, size, rotation - with `pypdf`, and everything around it stays behind: the document
-  information (author, title, subject, keywords, creator, producer and both dates), XMP on the document and
-  on its pages, bookmarks, form fields, page labels, embedded files and scripts. The creation date goes too:
-  for a scan it is the day of the scanning, not of the certificate. A comment or a mark-up on a page stays,
-  without its author and date; a file attachment, a sound, a movie or a link does not. A PDF `pypdf` cannot
-  read, and an encrypted one, raise `UploadRefusedError` rather than being kept as they came. Pictures
-  inside a PDF are not checked for EXIF of their own.
+  information (author, title, subject, keywords, creator, producer and both dates), XMP and an editor's
+  private data on the document, on its pages and on anything they draw - pictures, forms, fonts -,
+  bookmarks, form fields, page labels, embedded files and scripts. The creation date goes too: for a scan
+  it is the day of the scanning, not of the certificate. A comment or a mark-up on a page stays, without
+  its author and date; a file attachment, a sound, a movie or a link does not. A PDF `pypdf` cannot read,
+  and an encrypted one, raise `UploadRefusedError` rather than being kept as they came. Pictures inside a
+  PDF are not checked for EXIF of their own.
 
 ### The layout
 
