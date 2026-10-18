@@ -1,0 +1,139 @@
+"""
+The uncertain date of a fact, structured after GEDCOM as decided in #5 - see docs/patterns/evidence.md.
+
+Pure functions: no database, no Django. The model stores the fields of "UncertainDate"; this module turns
+GEDCOM date strings into it and back, and derives the date a list sorts by.
+"""
+
+import datetime
+import re
+from dataclasses import dataclass
+from enum import StrEnum
+
+
+class DateKind(StrEnum):
+    EXACT = "exact"
+    ABOUT = "about"  # GEDCOM ABT, and EST and CAL, which Zweigerl does not tell apart
+    BEFORE = "before"  # BEF
+    AFTER = "after"  # AFT
+    BETWEEN = "between"  # BET ... AND ...
+
+
+class Precision(StrEnum):
+    DAY = "day"
+    MONTH = "month"
+    YEAR = "year"
+
+
+@dataclass(frozen=True, kw_only=True)
+class UncertainDate:
+    """
+    "date_1" and "date_2" are real dates; a month or a year is stored as its first day, and "precision" says
+    how much of it is known. "date_2" exists for "between" only.
+    """
+
+    kind: DateKind
+    date_1: datetime.date
+    precision: Precision
+    date_2: datetime.date | None = None
+
+
+MONTHS = ("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC")
+
+PREFIXES = {
+    "ABT": DateKind.ABOUT,
+    "EST": DateKind.ABOUT,
+    "CAL": DateKind.ABOUT,
+    "BEF": DateKind.BEFORE,
+    "AFT": DateKind.AFTER,
+}
+GEDCOM_PREFIX = {DateKind.ABOUT: "ABT", DateKind.BEFORE: "BEF", DateKind.AFTER: "AFT"}
+
+SIMPLE_DATE = re.compile(r"^(?:(?:(\d{1,2}) )?([A-Z]{3}) )?(\d{3,4})$")
+
+
+def from_gedcom(*, text: str) -> UncertainDate:
+    """
+    Reads a GEDCOM 5.5.1 date: "1931", "APR 1989", "12 MAR 1989", "ABT 1931", "BEF 1850", "AFT 1850",
+    "BET 1820 AND 1825". Raises ValueError for anything else - a date phrase, FROM/TO periods, another
+    calendar, a range whose ends are not equally precise - which the importer keeps raw instead (#22).
+    """
+    parts = text.strip().upper().split()
+    if not parts:
+        raise ValueError("Kein Datum angegeben.")
+
+    if parts[0] == "BET" and "AND" in parts:
+        and_at = parts.index("AND")
+        date_1, precision = _simple_date(text=" ".join(parts[1:and_at]))
+        date_2, precision_2 = _simple_date(text=" ".join(parts[and_at + 1 :]))
+        # One precision for both ends is what Zweigerl stores; a mixed range is kept raw by the importer
+        # rather than written back with a day nobody gave or without one somebody did.
+        if precision_2 != precision:
+            raise ValueError(f"„{text}“: beide Daten müssen gleich genau sein.")
+        if date_2 < date_1:
+            raise ValueError(f"„{text}“: das zweite Datum liegt vor dem ersten.")
+        return UncertainDate(kind=DateKind.BETWEEN, date_1=date_1, date_2=date_2, precision=precision)
+
+    kind = PREFIXES.get(parts[0])
+    rest = parts[1:] if kind else parts
+    date_1, precision = _simple_date(text=" ".join(rest))
+    return UncertainDate(kind=kind or DateKind.EXACT, date_1=date_1, precision=precision)
+
+
+def to_gedcom(*, date: UncertainDate) -> str:
+    """
+    The GEDCOM 5.5.1 form of a structured date, the inverse of "from_gedcom".
+    """
+    first = _as_simple_date(date=date.date_1, precision=date.precision)
+    if date.kind == DateKind.BETWEEN:
+        second = _as_simple_date(date=date.date_2, precision=date.precision)
+        return f"BET {first} AND {second}"
+    if date.kind == DateKind.EXACT:
+        return first
+    return f"{GEDCOM_PREFIX[date.kind]} {first}"
+
+
+def sort_date(*, date: UncertainDate) -> datetime.date:
+    """
+    The date a list sorts and filters by: the date itself, and for "between" the middle of the range, so
+    "between 1820 and 1830" sorts beside 1825 rather than beside 1820. The range runs to the end of its
+    last month or year: "1820 to 1825" is the whole of 1825 too.
+    """
+    if date.kind == DateKind.BETWEEN:
+        end = _last_day(date=date.date_2, precision=date.precision)
+        return date.date_1 + (end - date.date_1) / 2
+    return date.date_1
+
+
+def _last_day(*, date: datetime.date, precision: Precision) -> datetime.date:
+    if precision == Precision.YEAR:
+        return datetime.date(date.year, 12, 31)
+    if precision == Precision.MONTH:
+        next_month = datetime.date(date.year + date.month // 12, date.month % 12 + 1, 1)
+        return next_month - datetime.timedelta(days=1)
+    return date
+
+
+def _simple_date(*, text: str) -> tuple[datetime.date, Precision]:
+    match = SIMPLE_DATE.match(text)
+    if match is None:
+        raise ValueError(f"„{text}“ ist kein Datum, das Zweigerl lesen kann.")
+    day, month, year = match.groups()
+    if month is not None and month not in MONTHS:
+        raise ValueError(f"„{month}“ ist kein Monat.")
+    try:
+        if day is not None:
+            return datetime.date(int(year), MONTHS.index(month) + 1, int(day)), Precision.DAY
+        if month is not None:
+            return datetime.date(int(year), MONTHS.index(month) + 1, 1), Precision.MONTH
+        return datetime.date(int(year), 1, 1), Precision.YEAR
+    except ValueError as error:
+        raise ValueError(f"„{text}“ ist kein gültiges Datum.") from error
+
+
+def _as_simple_date(*, date: datetime.date, precision: Precision) -> str:
+    if precision == Precision.DAY:
+        return f"{date.day} {MONTHS[date.month - 1]} {date.year}"
+    if precision == Precision.MONTH:
+        return f"{MONTHS[date.month - 1]} {date.year}"
+    return str(date.year)

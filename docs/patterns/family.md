@@ -12,7 +12,7 @@ each.
 | Model | Is | GEDCOM |
 |---|---|---|
 | `Person` | `given_names`, `surname`, `call_name` (Rufname), `sex`, `living_status` | `INDI` with `NAME`/`GIVN`/`SURN`, `NICK`, `SEX` |
-| `Partnership` | Two people as a couple: `kind`, `start`, `end`. The through model of `Person.partners` | `FAM` with `HUSB`/`WIFE`, `MARR`, `DIV` |
+| `Partnership` | Two people as a couple, with its `kind`. The through model of `Person.partners`. When they married or divorced are [facts](evidence.md) on it | `FAM` with `HUSB`/`WIFE`; `MARR`, `DIV` |
 | `ParentChild` | One parent and one child, optionally the `partnership` the child belongs to, and the `pedigree` | `CHIL` in a `FAM`, `PEDI` |
 | `SiblingPair` | Two siblings whose shared parents nobody knows | a `FAM` with children and no parents |
 | `TreeSettings` | The tree's settings - one row - holding the `home_person` (Ausgangsperson) | - |
@@ -27,9 +27,10 @@ such field - "deceased" is a death record, "living" its absence on someone young
 someone born in 1820 without a death record must not land as alive. Whether a person is alive decides what
 may be shown and exported about them, so a guess is worse than "unknown".
 
-**`start` and `end` of a Partnership** are text in GEDCOM DATE syntax for now: `1985`, `ABT 1931`,
-`BET 1950 AND 1952`. A wedding date wants a source like any other fact, so #8 replaces both with the
-structured uncertain date of [Belege](evidence.md) and its Zitat.
+**When a couple married or divorced** is not a field of the Partnership but a `Fact` on it, of kind
+`marriage` or `divorce`, with the uncertain date and the citations every fact has - see
+[Belege](evidence.md). Until #8 the Partnership held it as text in `start` and `end`; migration `0003`
+turned that into facts.
 
 ## Children belong to a couple, or to one parent
 
@@ -104,6 +105,6 @@ uv run python manage.py loaddata huber_family
 
 ## See also
 
-- [Belege](evidence.md) - facts, sources and the uncertain date that replaces `start` and `end`
+- [Belege](evidence.md) - facts, sources, citations and the uncertain date, including a couple's marriage
 - [Test data](testing-data.md) - the factories for these models
 - [Where code goes](app-layout.md) - models, readers and the admin at the app root

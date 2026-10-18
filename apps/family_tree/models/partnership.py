@@ -7,8 +7,9 @@ from apps.family_tree.models.gedcom import GedcomRawMixin
 
 class Partnership(ValidateConstraintsOnSaveMixin, GedcomRawMixin):
     """
-    Two people as a couple - GEDCOM's FAM with HUSB and WIFE, MARR and DIV. The through model of
-    Person.partners. Which of the two is "person_a" means nothing; a pair is stored once either way round.
+    Two people as a couple - GEDCOM's FAM with HUSB and WIFE. The through model of Person.partners. When they
+    married or divorced are facts on it (MARR, DIV), with their citations. Which of the two is "person_a"
+    means nothing; a pair is stored once either way round.
     """
 
     class Kind(models.TextChoices):
@@ -23,12 +24,6 @@ class Partnership(ValidateConstraintsOnSaveMixin, GedcomRawMixin):
         "family_tree.Person", verbose_name="Partner", on_delete=models.CASCADE, related_name="partnerships_as_b"
     )
     kind = models.CharField("Art", max_length=20, choices=Kind, default=Kind.UNKNOWN)
-    # GEDCOM DATE syntax ("1985", "ABT 1931", "BET 1950 AND 1952") until the structured uncertain date of
-    # docs/patterns/evidence.md arrives with #8, which replaces both.
-    start = models.CharField(
-        "Beginn", max_length=50, blank=True, help_text="GEDCOM-Datum, z. B. „1985“ oder „ABT 1931“"
-    )
-    end = models.CharField("Ende", max_length=50, blank=True, help_text="GEDCOM-Datum, z. B. „2009“")
 
     class Meta:
         verbose_name = "Partnerschaft"

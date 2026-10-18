@@ -265,6 +265,14 @@ layers = [
     "actions | readers",
 ]
 
+# "domain/" holds the pure functions: what has no database behind it, tested without one. Importing a model,
+# a reader or an action would give it one through the back door. See docs/patterns/app-layout.md.
+[[tool.importlinter.contracts]]
+name = "Pure functions reach no database"
+type = "forbidden"
+source_modules = ["apps.family_tree.domain"]
+forbidden_modules = ["apps.family_tree.models", "apps.family_tree.readers", "apps.family_tree.actions", "apps.family_tree.views"]
+
 # A satellite is domain-independent by definition, so the direction of dependency is the whole point
 # of splitting one out.
 [[tool.importlinter.contracts]]
