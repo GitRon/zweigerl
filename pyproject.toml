@@ -11,6 +11,7 @@ dependencies = [
     "datastar-py==1.0.3",
     "django-axes~=8.3",
     "django-cotton~=2.7",
+    "pillow~=13.0",
     "python-dotenv~=1.2",
 ]
 

@@ -28,8 +28,7 @@ refuses to start when:
 **Put the directory in an encrypted area** — an encrypted volume, a FileVault/BitLocker disk, a
 Cryptomator vault. A stolen laptop should not hand over the family.
 
-`MEDIA_ROOT` is set, but nothing serves it yet: a URL anyone could guess must not reach a photo, and the
-view that checks the login before handing out a file is #21.
+What goes into `medien/` and how it comes out again is [Photos and scans](#photos-and-scans), below.
 
 ## The secret key
 
@@ -76,6 +75,40 @@ axes has no setting to leave the user agent out.
 `axes.W006` asks for `ip_address` in the lockout parameters; it is silenced, because with no address
 handed over that parameter would put every attempt into one bucket. A locked-out login answers with HTTP
 429 and `common/login_lockout.html`. `manage.py axes_reset` lifts every lockout.
+
+## Photos and scans
+
+**A media file is handed out by one view, behind the login, and by nothing else.** `MEDIA_URL` is
+`/medien/`, which is `apps.common.views.media.media_view`; there is no `static()` for media and no web
+server pointing at `MEDIA_ROOT`. A guessed URL gets the login page, a path that leads out of the media
+directory - `../`, a symlink - gets a 404. So does any file of a kind the upload never makes: only JPEG,
+PNG, WebP, TIFF and PDF are handed out, with a fixed content type, so an `.html` or `.svg` that reached the
+directory some other way cannot run as a page of Zweigerl.
+
+Behind nginx (#37), `ZWEIGERL_MEDIA_ACCEL_PREFIX` names an `internal` nginx location mapped to
+`MEDIA_ROOT`, e.g. `/_medien/`. The view still checks the login, then answers with an empty body and
+`X-Accel-Redirect` - the path percent-encoded, since nginx reads it as a URI - and nginx sends the bytes.
+Unset, Django sends the file itself.
+
+**Every upload goes through `apps.common.media.store_upload`** - the files on a source (#15), photos (#16)
+and the pictures a PAF import brings (#24) alike. A `FileField` saved any other way - a plain model form,
+the admin - writes the file under its original name with everything in it, so the ticket that adds a file
+field routes it through `store_upload`, and a review finds it when it does not.
+
+- **Stored under a random name** in `MEDIA_ROOT/<folder>/`, e.g. `fotos/3f2a….jpg`. The original name is
+  dropped and kept nowhere: "Taufe Josef Huber 1931.jpg" says who is in the picture.
+- **Accepted:** JPEG (also the camera kind with previews, MPO), PNG, WebP, TIFF and PDF, by extension and
+  by content. Anything else, a file whose content does not match its extension, and a scan with several
+  pages or an animation - only the first frame would survive - raise `UploadRefusedError` with a German
+  message for the form. HEIC from phones is not accepted yet.
+- **An image keeps the picture and nothing about it but two facts:** the date it was taken - which #16
+  shows - and its orientation, plus the colour profile. Everything else is dropped rather than picked
+  out: GPS, camera and lens, serial numbers, the photographer's name, descriptions, copyright, comments,
+  XMP. Whatever a phone or a program writes there next may name a person or a place. A JPEG keeps its
+  quantisation tables, so it is not visibly recompressed; one with previews is saved at quality 95.
+- **A TIFF is turned upright and keeps no tags:** Pillow writes no EXIF sub-blocks into a TIFF, so the
+  orientation is applied to the pixels and the date taken does not survive. A scan rarely has one.
+- **A PDF is stored as it came.** Its own metadata - author, producer - is not touched yet.
 
 ## Running it
 

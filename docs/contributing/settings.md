@@ -17,6 +17,14 @@
 Where the database, the media and the secret key come from is the subject of
 [data storage](../patterns/data-storage.md).
 
+## Environment
+
+| Variable | Read by | |
+|---|---|---|
+| `ZWEIGERL_DATA_DIR` | `settings.py` | The data directory, required - see [data storage](../patterns/data-storage.md) |
+| `DJANGO_SECRET_KEY` | `settings.py` | Required |
+| `ZWEIGERL_MEDIA_ACCEL_PREFIX` | `settings.py` | Optional. Behind nginx, the internal location media are handed to - see [data storage](../patterns/data-storage.md#photos-and-scans) |
+
 ## Templates
 
 The template loaders are written out instead of `APP_DIRS`, because the cotton loader has to run first,
