@@ -4,7 +4,8 @@ import pytest
 
 from apps.family_tree.domain.layout import CARD_HEIGHT, ROW_GAP, Card, TreeLayout
 from apps.family_tree.models import Fact
-from apps.family_tree.readers.tree import tree_layout
+from apps.family_tree.readers.person import PersonListEntry
+from apps.family_tree.readers.tree import Tree, TreeCard, tree, tree_layout
 from apps.family_tree.tests.factories.fact import FactFactory
 from apps.family_tree.tests.factories.parent_child import ParentChildFactory
 from apps.family_tree.tests.factories.partnership import PartnershipFactory
@@ -84,3 +85,22 @@ def test_tree_layout_orders_siblings_by_their_earliest_birth_fact():
         Card(person_id=lukas.pk, x=172, y=ROW, generation=0),
         Card(person_id=florian.pk, x=344, y=ROW, generation=0),
     )
+
+
+@pytest.mark.django_db
+def test_tree_of_an_empty_tree_has_no_cards():
+    assert tree() == Tree(cards=[], placeholders=(), lines=(), width=0, height=0)
+
+
+@pytest.mark.django_db
+def test_tree_puts_each_person_on_their_card():
+    johann = PersonFactory(given_names="Johann", surname="Huber")
+    lena = PersonFactory(given_names="Lena", surname="Huber")
+    PersonFactory(given_names="Fremd")
+    ParentChildFactory(parent=johann, child=lena)
+    TreeSettingsFactory(home_person=lena)
+
+    assert tree().cards == [
+        TreeCard(entry=PersonListEntry(person=johann, name="Johann Huber", initials="JH", lifespan="—"), x=0, y=0),
+        TreeCard(entry=PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan="—"), x=0, y=ROW),
+    ]

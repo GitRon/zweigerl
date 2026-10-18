@@ -1,12 +1,15 @@
 <c-common.layout>
     <div class="flex min-h-screen max-lg:flex-col">
         <c-person.sidebar :person_list="person_list" />
-        <main class="flex-1 px-8 py-16">
-            <p class="text-lg">Ein Stammbaum, in dem jede Angabe ihren Beleg hat.</p>
-            <form method="post" action="{% url 'common:logout-view' %}" class="mt-10">
-                {% csrf_token %}
-                <c-common.button type="submit">Abmelden</c-common.button>
-            </form>
+        <main class="relative flex h-screen min-w-0 flex-1">
+            <c-tree.canvas :tree="tree">
+                <form method="post" action="{% url 'common:logout-view' %}">
+                    {% csrf_token %}
+                    <c-common.button type="submit">Abmelden</c-common.button>
+                </form>
+            </c-tree.canvas>
+            {# Where the person card lands when a card in the tree is clicked. #}
+            <div id="person-card"></div>
         </main>
     </div>
 </c-common.layout>

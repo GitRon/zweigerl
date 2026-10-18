@@ -1,0 +1,14 @@
+<c-vars entry />
+{# The person card beside the tree (#12): who was selected there, fetched when their card is clicked and #}
+{# shown while "$selection" is still them. #13 fills it with every fact and its Beleg. Below "lg" it lies #}
+{# over the tree instead of beside it - see docs/patterns/responsive-layout.md. #}
+<aside id="person-card" aria-label="Personenkarte" class="flex w-96 shrink-0 flex-col gap-4 overflow-y-auto border-l border-card-edge bg-birch p-6 max-lg:absolute max-lg:inset-y-0 max-lg:right-0 max-lg:w-full max-lg:max-w-md max-lg:border-l-[1.5px] max-lg:border-ink" data-show="$selection == {{ entry.person.pk }}">
+    <div class="flex items-start gap-4">
+        <c-common.frame :initials="entry.initials" width="w-24" />
+        <div class="flex min-w-0 flex-1 flex-col gap-1">
+            <h2 class="text-2xl leading-tight">{{ entry.name }}</h2>
+            <p class="text-ink-muted">{{ entry.lifespan }}</p>
+        </div>
+    </div>
+    <c-common.button class="self-start" data-on:click="$selection = 0">Schließen</c-common.button>
+</aside>

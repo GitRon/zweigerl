@@ -2,8 +2,9 @@
 
 **Where every card and every line of the tree goes is one pure function, `domain.layout.layout()`: people and
 how they are related in, positions and SVG paths out.** It has no database and no request behind it, so every
-rule below is tested without a browser. `readers.tree.tree_layout()` loads the rows and calls it; drawing what
-it returns - the cards, the canvas, scrolling and zoom - is #12's.
+rule below is tested without a browser. `readers.tree.tree_layout()` loads the rows and calls it, and
+`readers.tree.tree()` puts each person's name and Lebensdaten on their card. Drawing that - the cards, the
+canvas, scrolling and zoom - is `<c-tree.canvas>`, see [datastar](datastar.md#the-tree-and-its-canvas).
 
 ## Who is in the tree
 
