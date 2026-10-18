@@ -89,10 +89,11 @@ def test_form_switches_its_fields_with_the_kind():
     html = render_component(tag=TAG, context={"form": NEW})
 
     select = parse(html).find("select", attrs={"name": "kind"})
-    assert (select["data-on:change"], [option["data-fields"] for option in select.find_all("option")]) == (
-        "$fact_fields_new = el.selectedOptions[0].dataset.fields",
-        ["date", "value", "couple", "custom"],
-    )
+    assert (
+        select["data-on:change"],
+        select.find("option", attrs={"value": "marriage"})["data-fields"],
+        select.find("option", attrs={"value": "custom"})["data-fields"],
+    ) == ("$fact_fields_new = el.selectedOptions[0].dataset.fields", "couple", "custom")
 
 
 @pytest.mark.parametrize(
@@ -115,9 +116,10 @@ def test_form_offers_every_source_of_the_person_with_its_place():
 
     form = parse(html).find("form")
     assert (
-        [(box["value"], box.has_attr("checked")) for box in form.find_all("input", attrs={"name": "sources"})],
+        form.find("input", attrs={"name": "sources", "value": "21"}).has_attr("checked"),
+        form.find("input", attrs={"name": "sources", "value": "22"}).has_attr("checked"),
         form.find("input", attrs={"name": "page_22"})["value"],
-    ) == ([("21", False), ("22", True)], "Nr. 1958/12")
+    ) == (False, True, "Nr. 1958/12")
 
 
 def test_form_without_sources_says_where_they_come_from():

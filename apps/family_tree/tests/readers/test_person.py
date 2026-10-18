@@ -6,6 +6,7 @@ from apps.family_tree.models import Fact, Person
 from apps.family_tree.readers.person import (
     CitationChoice,
     FactEntry,
+    KindChoice,
     PersonList,
     PersonListEntry,
     RelativeGroup,
@@ -237,9 +238,9 @@ def test_person_card_names_the_partner_of_a_marriage():
     markus = PersonFactory(given_names="Markus", surname="Gruber")
     FactFactory(person=None, partnership=PartnershipFactory(person_a=markus, person_b=lena), kind=Fact.Kind.MARRIAGE)
 
-    assert [(entry.label, entry.partner) for entry in person_card(pk=lena.pk).facts] == [
-        ("Geheiratet", "Markus Gruber")
-    ]
+    found = person_card(pk=lena.pk).facts
+
+    assert (len(found), found[0].label, found[0].partner) == (1, "Geheiratet", "Markus Gruber")
 
 
 @pytest.mark.django_db
@@ -364,9 +365,13 @@ def test_fact_form_for_a_new_fact_asks_for_a_birth_date_and_offers_the_persons_s
 def test_fact_form_offers_marriage_and_divorce_only_with_a_partner():
     lena = PersonFactory(given_names="Lena")
 
-    kinds = [kind.value for kind in fact_form(person_id=lena.pk).kinds]
+    kinds = fact_form(person_id=lena.pk).kinds
 
-    assert ("marriage" in kinds, "divorce" in kinds, "custom" in kinds) == (False, False, True)
+    assert (
+        KindChoice(value="marriage", label="Geheiratet", fields="couple") in kinds,
+        KindChoice(value="divorce", label="Geschieden", fields="couple") in kinds,
+        KindChoice(value="custom", label="Eigene", fields="custom") in kinds,
+    ) == (False, False, True)
 
 
 @pytest.mark.django_db
@@ -377,25 +382,22 @@ def test_fact_form_shows_each_kind_with_its_fields_and_the_partners():
 
     form = fact_form(person_id=lena.pk)
 
-    assert (
-        {kind.value: kind.fields for kind in form.kinds},
-        [partner.name for partner in form.partners],
-    ) == (
-        {
-            "birth": "date",
-            "baptism": "date",
-            "death": "date",
-            "burial": "date",
-            "birthplace": "value",
-            "occupation": "value",
-            "residence": "value",
-            "education": "value",
-            "nationality": "value",
-            "marriage": "couple",
-            "divorce": "couple",
-            "custom": "custom",
-        },
-        ["Markus Gruber"],
+    assert (form.kinds, form.partners) == (
+        [
+            KindChoice(value="birth", label="Geboren", fields="date"),
+            KindChoice(value="baptism", label="Getauft", fields="date"),
+            KindChoice(value="death", label="Gestorben", fields="date"),
+            KindChoice(value="burial", label="Begräbnis", fields="date"),
+            KindChoice(value="birthplace", label="Geburtsort", fields="value"),
+            KindChoice(value="occupation", label="Beruf", fields="value"),
+            KindChoice(value="residence", label="Wohnort", fields="value"),
+            KindChoice(value="education", label="Ausbildung", fields="value"),
+            KindChoice(value="nationality", label="Staatsbürgerschaft", fields="value"),
+            KindChoice(value="marriage", label="Geheiratet", fields="couple"),
+            KindChoice(value="divorce", label="Geschieden", fields="couple"),
+            KindChoice(value="custom", label="Eigene", fields="custom"),
+        ],
+        [person_entries(person_ids=[markus.pk])[markus.pk]],
     )
 
 
