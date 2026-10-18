@@ -177,7 +177,8 @@ def _fact_entry(*, fact: Fact) -> FactEntry:
     return FactEntry(
         fact=fact,
         label=fact.label or fact.get_kind_display(),
-        text=date_text(date=date) if date else fact.value,
+        # Only a custom fact may carry both, e.g. a first communion with its place.
+        text=", ".join(part for part in (fact.value, date_text(date=date) if date else "") if part),
         reliability=(
             None if fact.reliability == Fact.Reliability.DOCUMENTED else fact.get_reliability_display().capitalize()
         ),

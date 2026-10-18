@@ -219,6 +219,13 @@ def test_person_card_labels_a_handed_down_fact():
 
 
 @pytest.mark.django_db
+def test_person_card_shows_both_value_and_date_of_a_custom_fact():
+    custom = FactFactory(kind=Fact.Kind.CUSTOM, label="Erstkommunion", value="Pfarrkirche Mariazell")
+
+    assert person_card(pk=custom.person.pk).facts[0].text == "Pfarrkirche Mariazell, 12. März 1931"
+
+
+@pytest.mark.django_db
 def test_person_card_groups_the_relatives_and_counts_them():
     johann = PersonFactory(given_names="Johann", surname="Huber")
     lena = PersonFactory(given_names="Lena", surname="Huber")

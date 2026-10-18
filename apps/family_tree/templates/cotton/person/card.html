@@ -16,11 +16,11 @@
             {% endif %}
         </div>
     </div>
-    <div role="tablist" aria-label="Über die Person" class="flex flex-wrap gap-x-4 border-b border-card-edge">
-        <button type="button" role="tab" id="person-card-tab-facts" aria-controls="person-card-facts" aria-selected="true" data-attr:aria-selected="String($tab == 'facts')" class="-mb-px flex min-h-11 cursor-pointer items-center gap-1.5 border-b-2 border-forest text-forest" data-class="{'border-forest text-forest': $tab == 'facts', 'border-transparent': $tab != 'facts'}" data-on:click="$tab = 'facts'">Angaben <span class="text-sm">{{ card.facts|length }}</span></button>
+    <div role="tablist" aria-label="Über die Person" class="flex flex-wrap gap-x-3 border-b border-card-edge text-sm">
+        <button type="button" role="tab" id="person-card-tab-facts" aria-controls="person-card-facts" aria-selected="true" data-attr:aria-selected="String($tab == 'facts')" class="-mb-px flex min-h-11 cursor-pointer items-center gap-1.5 border-b-2 border-forest text-forest" data-class="{'border-forest text-forest': $tab == 'facts', 'border-transparent': $tab != 'facts'}" data-on:click="$tab = 'facts'">Angaben <span class="text-ink-muted">{{ card.facts|length }}</span></button>
         <button type="button" role="tab" aria-disabled="true" disabled class="-mb-px min-h-11 border-b-2 border-transparent text-ink-muted">Fotos</button>
         <button type="button" role="tab" aria-disabled="true" disabled class="-mb-px min-h-11 border-b-2 border-transparent text-ink-muted">Quellen</button>
-        <button type="button" role="tab" id="person-card-tab-relatives" aria-controls="person-card-relatives" aria-selected="false" data-attr:aria-selected="String($tab == 'relatives')" class="-mb-px flex min-h-11 cursor-pointer items-center gap-1.5 border-b-2 border-transparent" data-class="{'border-forest text-forest': $tab == 'relatives', 'border-transparent': $tab != 'relatives'}" data-on:click="$tab = 'relatives'">Verwandte <span class="text-sm">{{ card.relative_count }}</span></button>
+        <button type="button" role="tab" id="person-card-tab-relatives" aria-controls="person-card-relatives" aria-selected="false" data-attr:aria-selected="String($tab == 'relatives')" class="-mb-px flex min-h-11 cursor-pointer items-center gap-1.5 border-b-2 border-transparent" data-class="{'border-forest text-forest': $tab == 'relatives', 'border-transparent': $tab != 'relatives'}" data-on:click="$tab = 'relatives'">Verwandte <span class="text-ink-muted">{{ card.relative_count }}</span></button>
         <button type="button" role="tab" aria-disabled="true" disabled class="-mb-px min-h-11 border-b-2 border-transparent text-ink-muted">Notizen</button>
     </div>
     <section id="person-card-facts" role="tabpanel" aria-labelledby="person-card-tab-facts" data-show="$tab == 'facts'">
