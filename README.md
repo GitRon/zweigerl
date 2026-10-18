@@ -5,46 +5,59 @@ Ein Stammbaum, in dem jede Angabe ihren Beleg hat.
 A Django 6.1 app on Python 3.14 with a SQLite database. Pages are server-rendered and move with
 [datastar](https://data-star.dev); components are [django-cotton](https://django-cotton.com).
 
-## Local setup
-
-Dependencies are managed with [uv](https://docs.astral.sh/uv/) from `pyproject.toml`. uv installs the
-interpreter pinned in `.python-version` itself:
-
 ```bash
-uv sync                                  # creates .venv and installs everything, dev group included
+uv sync && yarn install && yarn build:css
 uv run python manage.py migrate
 uv run python manage.py runserver
 ```
 
-The stylesheet is compiled with Tailwind, installed with **yarn** (use `yarn add`, not `npm install`:
-`yarn.lock` is the lock file). `static/dist/` is not in version control, so a fresh clone builds it once,
-and again after a template gains a class it did not use before:
-
-```bash
-yarn install
-yarn build:css                           # assets/css/tailwind.css -> static/dist/tailwind.css
-yarn watch:css                           # the same, rebuilding while you work
-```
-
-The datastar bundle is vendored in `static/vendor/datastar/` and needs no install - see
-[datastar](docs/patterns/datastar.md).
-
-## Tests and linting
-
-```bash
-uv run pytest --cov                      # the suite, failing below 100 % branch coverage
-uv run lint-imports                      # the import boundaries in pyproject.toml
-uvx pre-commit install                   # ruff, django-upgrade, djade, boa-restrictor, complexipy on commit
-uvx pre-commit run --all-files
-```
-
-CI runs all of it on every pull request (`.github/workflows/tests.yml`).
+The details are in [local setup](docs/contributing/setup.md).
 
 ## Documentation
 
-Each doc is normative for the area it covers. Read the relevant one before working in that area rather
-than inferring the conventions from nearby code.
+**This list is the index of every doc.** Each doc is normative for the area it covers and holds its topic
+once; a doc that is not listed here does not exist. Read the relevant one before working in that area
+rather than inferring the conventions from nearby code.
 
-- [Agent guide](AGENTS.md) — what to read before touching what, and where code goes
+### Getting started
+
+- [Agent guide](AGENTS.md) — which doc to read before touching what
+- [Local setup](docs/contributing/setup.md) — stack, dependencies, the stylesheet, running the app, the
+  suite and CI
+- [Linting](docs/contributing/linting.md) — ruff, boa-restrictor and its `ZBR` rules, import-linter,
+  complexipy, pre-commit
+- [Settings](docs/contributing/settings.md) — the two settings modules, templates, static files, locale,
+  logging
+- [Commit messages](docs/contributing/commit-messages.md)
+
+### Architecture
+
+- [Where code goes](docs/patterns/app-layout.md) — the two apps, actions and readers instead of a message
+  bus, and what has to sit at the app root
+- [Data storage and privacy](docs/patterns/data-storage.md) — no real family data in the repository, and
+  where the data lives instead *(scaffold, #3)*
+- [Belege](docs/patterns/belege.md) — facts, sources and citations, reliability, "unbelegt", uncertain
+  dates *(scaffold, #8)*
 - [datastar](docs/patterns/datastar.md) — the pinned version, signals, fragments, pages, CSRF, toasts and
   when JavaScript of our own is allowed
+- [Template components](docs/patterns/components.md) — a reused or patched template is a cotton
+  component: where it lives, its parameters, slots, and the `id` datastar morphs on
+- [Responsive layout](docs/patterns/responsive-layout.md) — the desk is the default, what a narrow
+  window still gets, and why the phone waits for `v2`
+- [Visual identity](docs/patterns/visual-identity.md) — the colours and typefaces from the moodboard
+  *(scaffold, #4)*
+
+### Testing
+
+- [Testing strategy](docs/patterns/testing-strategy.md) — what to test, at which level
+- [Test conventions](docs/patterns/testing-conventions.md) — layout, naming, assertions
+- [Test data](docs/patterns/testing-data.md) — invented data only, factories and fixtures
+- [Mocking](docs/patterns/mocking.md) — first-party mocks are a review finding
+- [Coverage](docs/patterns/coverage.md) — the 100% branch gate
+- [Architecture tests](docs/patterns/architecture-tests.md) — the whole-tree tests, and the rule each one
+  holds
+
+### Planning
+
+- [Writing an issue](docs/collaboration/writing-issues.md) — labels, anatomy in German, and the review
+  pass before an issue is created

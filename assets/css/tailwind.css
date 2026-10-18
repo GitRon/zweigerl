@@ -1,6 +1,6 @@
 /*
  * The Tailwind source. "yarn build:css" compiles it to "static/dist/tailwind.css", which is not in
- * version control - see README.md.
+ * version control - see docs/contributing/setup.md.
  *
  * "source(none)" switches off automatic source detection, which makes the "@source" below the only
  * thing deciding what gets scanned. Left automatic, Tailwind walks the whole repository and matches

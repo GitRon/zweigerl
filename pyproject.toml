@@ -204,7 +204,7 @@ exclude = [
 ]
 
 [tool.complexipy]
-paths = ["apps", "scripts", "conftest.py", "manage.py"]
+paths = ["apps", "scripts", "manage.py"]
 max-complexity-allowed = 15
 
 [tool.pytest.ini_options]
@@ -243,7 +243,7 @@ root_packages = ["apps"]
 # example: "actions/" writes, "readers/" reads, and a view is the only thing that calls either. The
 # layers hold that shape: a view may reach both, an action or a reader never reaches a view, and the
 # two sit side by side ("|") so that a reader cannot start writing by calling an action, nor an action
-# hide a query a reader should own. See AGENTS.md, "Where code goes".
+# hide a query a reader should own. See docs/patterns/app-layout.md.
 [[tool.importlinter.contracts]]
 name = "Views call actions and readers, never the other way round"
 type = "layers"

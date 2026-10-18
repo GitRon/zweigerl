@@ -5,6 +5,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import importlib.util
 import os
 from pathlib import Path
 
@@ -42,7 +43,9 @@ INSTALLED_APPS = [
     "apps.common",
 ]
 
-if DEBUG:
+# A dev dependency: an install without the dev group ("uv sync --no-dev") has no such module, and the app
+# would fail to load.
+if DEBUG and importlib.util.find_spec("django_removals"):
     INSTALLED_APPS += ["django_removals"]
 
 MIDDLEWARE = [
@@ -146,9 +149,8 @@ STATICFILES_DIRS = (BASE_DIR / "static",)
 
 # Logging
 # https://docs.djangoproject.com/en/stable/topics/logging/
-# Django configures its own "django" logger and nothing else, so any other logger propagates to a
-# root logger with no handler and falls back to "logging.lastResort", which drops everything below
-# WARNING. One console handler for the whole project, on the root logger.
+# One console handler for the whole project, on the root logger, at WARNING. A logger of our own that
+# should say more in development gets its level set below, the way "django" does.
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
