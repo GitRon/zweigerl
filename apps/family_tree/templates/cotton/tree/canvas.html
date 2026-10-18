@@ -1,9 +1,10 @@
-<c-vars tree />
+<c-vars tree selection="0" />
 {# The tree (#12): the cards and lines "readers.tree.tree" laid out, on a canvas that scrolls in its own #}
 {# container - trackpad, wheel, touch and the keyboard move it, the page itself never scrolls sideways. #}
 {# "$zoom" scales the drawing; the sizer around it grows and shrinks with it so the scroll range follows. #}
-{# The toolbar's slot takes what else belongs above the tree. See docs/patterns/datastar.md, "The canvas". #}
-<section aria-label="Stammbaum" class="flex min-h-0 min-w-0 flex-1 flex-col" data-signals="{zoom: 1, selection: 0, filtered: false, matches: []}" data-on:keydown__window="evt.key == 'Escape' && ($selection = 0)">
+{# "selection" is the person whose card is open on arrival, 0 for nobody. The toolbar's slot takes what else #}
+{# belongs above the tree. See docs/patterns/datastar.md, "The canvas". #}
+<section aria-label="Stammbaum" class="flex min-h-0 min-w-0 flex-1 flex-col" data-signals="{zoom: 1, selection: {{ selection }}, filtered: false, matches: []}" data-on:keydown__window="evt.key == 'Escape' && ($selection = 0)">
     <div class="flex flex-wrap items-center gap-2 border-b border-card-edge px-4 py-2">
         <c-common.button aria-label="Verkleinern" data-on:click="$zoom = Math.max(0.25, $zoom - 0.25)" data-attr:disabled="$zoom == 0.25">−</c-common.button>
         <span class="w-14 shrink-0 whitespace-nowrap text-center" aria-live="polite" data-text="Math.round($zoom * 100) + ' %'">100 %</span>

@@ -29,7 +29,7 @@ def test_card_selects_the_person_and_fetches_their_person_card():
 
     assert (
         parse(html).find(id="tree-card-7")["data-on:click"]
-        == f"$selection = 7; @get('{reverse('family_tree:person-card-view', kwargs={'pk': 7})}')"
+        == f"$selection = 7; @get('{reverse('family_tree:person-view', kwargs={'pk': 7})}')"
     )
 
 

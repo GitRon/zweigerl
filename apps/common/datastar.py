@@ -29,17 +29,18 @@ def render_page(*, request: HttpRequest, template: str, context: dict, url: str)
     if not is_datastar_request(request=request):
         return response
 
+    return DatastarResponse([ServerSentEventGenerator.patch_elements(response.content.decode()), push_url(url=url)])
+
+
+def push_url(*, url: str) -> str:
+    """
+    The event that moves the address bar to "url" without loading it, for a datastar answer that stands for a
+    page of its own - see docs/patterns/datastar.md, "Pages".
+    """
     # The address goes into a script element, so it is written as a JavaScript string literal, and "<"
     # is escaped so that a "</script>" in a query string cannot end the element early. A request for the
     # page already open adds no history entry, so the back button does not have to be pressed twice.
     url_literal = json.dumps(url).replace("<", "\\u003c")
-    push_state = (
+    return ServerSentEventGenerator.execute_script(
         f"if (location.pathname + location.search !== {url_literal}) history.pushState(null, '', {url_literal});"
-    )
-
-    return DatastarResponse(
-        [
-            ServerSentEventGenerator.patch_elements(response.content.decode()),
-            ServerSentEventGenerator.execute_script(push_state),
-        ]
     )

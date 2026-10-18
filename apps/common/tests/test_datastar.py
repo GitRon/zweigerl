@@ -1,7 +1,7 @@
 import pytest
 from datastar_py.django import DatastarResponse
 
-from apps.common.datastar import is_datastar_request, render_page
+from apps.common.datastar import is_datastar_request, push_url, render_page
 
 
 def test_is_datastar_request_recognises_a_datastar_action(rf):
@@ -64,3 +64,7 @@ def test_render_page_adds_no_history_entry_for_the_page_already_open(datastar_re
     )
 
     assert 'if (location.pathname + location.search !== "/")' in b"".join(response.streaming_content).decode()
+
+
+def test_push_url_moves_the_address_bar():
+    assert """history.pushState(null, '', "/persons/7/");""" in push_url(url="/persons/7/")

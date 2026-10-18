@@ -6,6 +6,7 @@ from apps.family_tree.domain.dates import (
     DateKind,
     Precision,
     UncertainDate,
+    date_text,
     from_gedcom,
     lifespan,
     sort_date,
@@ -127,6 +128,21 @@ def test_sort_date_of_a_range_of_months_runs_to_the_end_of_the_last(text, expect
 )
 def test_year_text_says_the_year_in_german(text, expected):
     assert year_text(date=from_gedcom(text=text)) == expected
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("12 MAR 1989", "12. März 1989"),
+        ("JAN 1989", "Jänner 1989"),
+        ("ABT 1931", "um 1931"),
+        ("BEF APR 1850", "vor April 1850"),
+        ("AFT 1850", "nach 1850"),
+        ("BET 1820 AND 1825", "zwischen 1820 und 1825"),
+    ],
+)
+def test_date_text_says_the_date_in_german_as_precisely_as_it_is_known(text, expected):
+    assert date_text(date=from_gedcom(text=text)) == expected
 
 
 def test_lifespan_with_birth_and_death():
