@@ -7,7 +7,7 @@ from apps.common.toasts import toast_sse
 from apps.family_tree.actions.tree_settings import choose_home_person
 from apps.family_tree.domain.names import display_name
 from apps.family_tree.models import Person
-from apps.family_tree.readers.person import person_list
+from apps.family_tree.readers.person import loose_people, person_list
 from apps.family_tree.readers.tree_settings import home_person
 
 
@@ -18,7 +18,7 @@ def tree_settings_view(request: HttpRequest) -> HttpResponse:
     return render(
         request,
         "family_tree/tree_settings.html",
-        {"person_list": person_list(search=""), "home_person": home_person()},
+        {"person_list": person_list(search=""), "loose_people": loose_people(), "home_person": home_person()},
     )
 
 

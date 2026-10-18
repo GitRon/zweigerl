@@ -28,3 +28,20 @@ def test_family_graph_holds_every_link():
     assert graph.marriages == {frozenset((link.parent_id, marriage.person_b_id))}
     assert graph.sex[link.child_id] == Person.Sex.FEMALE
     assert stranger.pk in graph.sex
+
+
+@pytest.mark.django_db
+def test_family_graph_without_a_person_leaves_out_them_and_their_links():
+    link = ParentChildFactory()
+    partnership = PartnershipFactory(person_a=link.parent)
+    sibling_pair = SiblingPairFactory(person_a=link.parent)
+    kept = ParentChildFactory(parent=partnership.person_b)
+
+    graph = family_graph(without_id=link.parent_id)
+
+    assert (link.parent_id in graph.sex, dict(graph.parents), dict(graph.partners)) == (
+        False,
+        {kept.child_id: {partnership.person_b_id}},
+        {},
+    )
+    assert sibling_pair.person_b_id in graph.sex

@@ -104,6 +104,21 @@ def relationship_name(*, family: FamilyGraph, home_id: int, person_id: int) -> s
     return FALLBACK if _connected(family=family, from_id=home_id, to_id=person_id) else None
 
 
+def connected_people(*, family: FamilyGraph, start_id: int) -> frozenset[int]:
+    """
+    Everyone connected to "start_id" through any chain of parents, children, partners and siblings, "start_id"
+    among them - the people the tree shows around them. Whoever is missing is a loose twig (#19).
+    """
+    seen: set[Node] = {start_id}
+    frontier: list[Node] = [start_id]
+    while frontier:
+        unseen = family.neighbours.get(frontier.pop(), frozenset()) - seen
+        seen |= unseen
+        frontier.extend(unseen)
+    # The unknown parents of explicit sibling groups are nodes of the walk, not people.
+    return frozenset(node for node in seen if isinstance(node, int))
+
+
 def _sibling_groups(*, sibling_pairs: Iterable[tuple[int, int]]) -> list[frozenset[int]]:
     """
     The explicit sibling pairs joined into groups: whoever is a sibling of one member is a sibling of all.
@@ -260,13 +275,4 @@ def _collateral_name(*, distance: tuple[int, int], sex: str | None) -> str | Non
 
 
 def _connected(*, family: FamilyGraph, from_id: int, to_id: int) -> bool:
-    seen: set[Node] = {from_id}
-    frontier: list[Node] = [from_id]
-    while frontier:
-        node = frontier.pop()
-        if node == to_id:
-            return True
-        unseen = family.neighbours.get(node, frozenset()) - seen
-        seen |= unseen
-        frontier.extend(unseen)
-    return False
+    return to_id in connected_people(family=family, start_id=from_id)

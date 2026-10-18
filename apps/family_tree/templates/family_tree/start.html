@@ -1,6 +1,6 @@
 <c-common.layout>
     <div class="flex min-h-screen max-lg:flex-col">
-        <c-person.sidebar :person_list="person_list" />
+        <c-person.sidebar :person_list="person_list" :loose_people="loose_people" />
         <main class="relative flex h-screen min-w-0 flex-1">
             <c-tree.canvas :tree="tree" :selection="selection">
                 <form method="post" action="{% url 'common:logout-view' %}">
