@@ -134,9 +134,13 @@ DATABASES = {
     }
 }
 
-# Photos and scans. Stored in the data directory and served by nothing yet: a URL anyone could guess
-# must not reach them, which is what #21 builds.
+# Photos and scans, in the data directory. They are only ever handed out by "media_view", behind the
+# login: MEDIA_URL points at it, and nothing serves MEDIA_ROOT directly. See docs/patterns/data-storage.md.
 MEDIA_ROOT = DATA_DIR / "medien"
+MEDIA_URL = "/medien/"
+# Behind nginx (#37), set to the "internal" location that maps to MEDIA_ROOT, e.g. "/_medien/": the view
+# then checks the login and leaves the bytes to nginx via X-Accel-Redirect. Unset, Django sends the file.
+ZWEIGERL_MEDIA_ACCEL_PREFIX = os.environ.get("ZWEIGERL_MEDIA_ACCEL_PREFIX") or None
 
 
 # Password validation

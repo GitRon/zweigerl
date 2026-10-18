@@ -28,8 +28,7 @@ refuses to start when:
 **Put the directory in an encrypted area** — an encrypted volume, a FileVault/BitLocker disk, a
 Cryptomator vault. A stolen laptop should not hand over the family.
 
-`MEDIA_ROOT` is set, but nothing serves it yet: a URL anyone could guess must not reach a photo, and the
-view that checks the login before handing out a file is #21.
+What goes into `medien/` and how it comes out again is [Photos and scans](#photos-and-scans), below.
 
 ## The secret key
 
@@ -76,6 +75,33 @@ axes has no setting to leave the user agent out.
 `axes.W006` asks for `ip_address` in the lockout parameters; it is silenced, because with no address
 handed over that parameter would put every attempt into one bucket. A locked-out login answers with HTTP
 429 and `common/login_lockout.html`. `manage.py axes_reset` lifts every lockout.
+
+## Photos and scans
+
+**A media file is handed out by one view, behind the login, and by nothing else.** `MEDIA_URL` is
+`/medien/`, which is `apps.common.views.media.media_view`; there is no `static()` for media and no web
+server pointing at `MEDIA_ROOT`. A guessed URL gets the login page, a path that leads out of the media
+directory - `../`, a symlink - gets a 404.
+
+Behind nginx (#37), `ZWEIGERL_MEDIA_ACCEL_PREFIX` names an `internal` nginx location mapped to
+`MEDIA_ROOT`, e.g. `/_medien/`. The view still checks the login, then answers with an empty body and
+`X-Accel-Redirect`, and nginx sends the bytes. Unset, Django sends the file itself.
+
+**Every upload goes through `apps.common.media.store_upload`** - the files on a source (#15), photos (#16)
+and the pictures a PAF import brings (#24) alike:
+
+- **Stored under a random name** in `MEDIA_ROOT/<folder>/`, e.g. `fotos/3f2a….jpg`. The original name is
+  dropped and kept nowhere: "Taufe Josef Huber 1931.jpg" says who is in the picture.
+- **Accepted:** JPEG, PNG, WebP, TIFF and PDF, by extension and by content. Anything else, or a file whose
+  content does not match its extension, raises `UploadRefused` with a German message for the form. HEIC
+  from phones is not accepted yet.
+- **Images lose where and with what they were taken:** the GPS block, and the camera's make, model,
+  serial numbers, lens, owner name, software and maker note. XMP and comments are not carried over either.
+  **The date taken stays** - it is what #16 shows - and so does the orientation and the colour profile. A
+  JPEG keeps its quantisation tables, so it is not visibly recompressed.
+- **A TIFF is turned upright and keeps no tags:** Pillow writes no EXIF sub-blocks into a TIFF, so the
+  orientation is applied to the pixels and the date taken does not survive. A scan rarely has one.
+- **A PDF is stored as it came.** Its own metadata - author, producer - is not touched yet.
 
 ## Running it
 
