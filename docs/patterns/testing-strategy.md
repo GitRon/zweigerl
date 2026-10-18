@@ -16,6 +16,7 @@ only renders what a reader returns has one.
 | Pure function | one per branch | Call it directly, no database |
 | Action | one per branch | Call it directly; assert what it returns and what changed in the database |
 | Reader | one per branch | Call it directly; assert what it returns |
+| Constraint | two per constraint | Save the forbidden row with a factory and expect `ValidationError` with the German message - the mixin's check. Then write it past `save()` with `bulk_create()` and expect `IntegrityError`, matched on the constraint's name for a check and on its columns for a unique one - SQLite names only those - which proves the database holds it. See [rules in the database](app-layout.md#rules-in-the-database) |
 | View | one, plus one per branch the view decides | Status code, context, datastar events |
 | Component | per component | Render, plus one output test per behaviour — see [Components](#components) |
 | Architecture | per rule | The whole tree at once — see [architecture tests](architecture-tests.md) |

@@ -30,12 +30,12 @@ rather than inferring the conventions from nearby code.
   complexipy, pre-commit
 - [Settings](docs/contributing/settings.md) — the settings modules and the environment they read,
   templates, static files, locale, logging
-- [Commit messages](docs/contributing/commit-messages.md)
+- [Commit messages](docs/contributing/commit-messages.md) — and the `#<n>: ` that starts a pull request's title
 
 ### Architecture
 
 - [Where code goes](docs/patterns/app-layout.md) — the two apps, actions and readers instead of a message
-  bus, and what has to sit at the app root
+  bus, business rules as database constraints, and what has to sit at the app root
 - [Data storage and privacy](docs/patterns/data-storage.md) — no real family data in the repository, the
   data directory outside it, the login and the lockout
 - [Belege](docs/patterns/belege.md) — facts, sources and citations, reliability, "unbelegt", uncertain

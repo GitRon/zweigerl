@@ -4,6 +4,8 @@ version = "0.1.0"
 description = "Ein Stammbaum, in dem jede Angabe ihren Beleg hat"
 requires-python = ">=3.14"
 dependencies = [
+    # For "ValidateConstraintsOnSaveMixin" - see docs/patterns/app-layout.md, "Rules in the database".
+    "ambient-toolbox~=12.14",
     "Django~=6.1",
     # Pinned to the release rather than a range: the SDK writes the server-sent events the vendored
     # datastar bundle in "static/vendor/datastar/" reads, so the two move together - see

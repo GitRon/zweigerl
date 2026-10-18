@@ -28,7 +28,11 @@ place, document or photo in a fixture, a test or an example - the one finding th
 file served without the login check, or an upload that keeps its GPS data. Queries in loops; missing
 `select_related`/`prefetch_related` on a path the story made hot, which in a family tree is every walk
 over parents and children. A migration that will not apply on an existing database, or model changes with
-no migration at all. A delete that cascades further than the person asked for.
+no migration at all. A delete that cascades further than the person asked for. A rule the data must always
+satisfy that is checked only in an action or a form although a constraint could hold it, a model with
+constraints that does not inherit `ValidateConstraintsOnSaveMixin`, or uniqueness written as `unique=True`
+or `unique_together` - see
+[rules in the database](../../../../docs/patterns/app-layout.md#rules-in-the-database).
 
 **03 Test honesty and coverage substance.** Coverage that is reached without asserting anything.
 First-party code mocked - the docs call that a review finding outright. Branches covered by patching the
