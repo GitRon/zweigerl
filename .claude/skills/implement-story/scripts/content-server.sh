@@ -112,6 +112,7 @@ report_ready() {
   local url
   url="$(base_url)"
   echo "server:   $url (pid $(cat "$PID_FILE"), --noreload)"
+  echo "login:    $url/anmelden/   (username, not email)"
   echo "user:     $SMOKE_USER / $SMOKE_EMAIL"
   echo "password: $SMOKE_PASSWORD"
   echo "admin:    $url/admin/  (the smoke user is a superuser)"

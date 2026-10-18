@@ -9,7 +9,9 @@ dependencies = [
     # datastar bundle in "static/vendor/datastar/" reads, so the two move together - see
     # docs/patterns/datastar.md.
     "datastar-py==1.0.3",
+    "django-axes~=8.3",
     "django-cotton~=2.7",
+    "python-dotenv~=1.2",
 ]
 
 [dependency-groups]
@@ -108,6 +110,9 @@ lint.unfixable = []
 # Allow noqa's from "boa-restrictor" linter
 lint.external = ["PBR", "DBR", "ZBR"]
 
+# Allow unused variables when underscore-prefixed.
+lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
 exclude = [
     ".bzr",
     ".direnv",
@@ -135,9 +140,6 @@ exclude = [
 # Same as Black.
 line-length = 120
 
-# Allow unused variables when underscore-prefixed.
-lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-
 # Assume Python 3.14. Two consequences worth knowing, both applied automatically:
 # PEP 649 makes annotations lazy, so quoted forward references under TYPE_CHECKING are no longer
 # needed, and PEP 758 allows "except A, B:" without the parentheses.
@@ -149,9 +151,11 @@ target-version = "py314"
   "F401",
 ]
 
-# Settings modules for a single environment extend the base settings wholesale
+# Settings modules for a single environment extend the base settings wholesale, after setting the
+# environment the base settings read - so the import cannot sit at the top
 "apps/config/settings_*.py" = [
   "F403",
+  "E402",
 ]
 
 [tool.boa-restrictor]
@@ -175,6 +179,10 @@ exclude = [
 "*/views/*.py" = [
     "PBR001",
     "PBR002",
+]
+# django-axes calls the callable named in AXES_CLIENT_IP_CALLABLE with the request, positionally
+"apps/common/axes.py" = [
+    "PBR001",
 ]
 # Django calls a context processor with the request, positionally
 "*/context_processors.py" = [

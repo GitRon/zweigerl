@@ -7,7 +7,15 @@ database, pointed at a throwaway file so a smoke run cannot touch the developmen
 """
 
 import os
+import tempfile
 from pathlib import Path
+
+# The smoke run needs no ".env": its media go next to its database, and the key protects nothing.
+os.environ.setdefault(
+    "ZWEIGERL_DATA_DIR",
+    str(Path(os.environ["SMOKE_DB_PATH"]).parent) if "SMOKE_DB_PATH" in os.environ else tempfile.mkdtemp(),
+)
+os.environ.setdefault("DJANGO_SECRET_KEY", "zweigerl-smoke-only")
 
 from apps.config.settings import *
 from apps.config.settings import BASE_DIR, DATABASES
