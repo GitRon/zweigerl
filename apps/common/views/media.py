@@ -47,5 +47,6 @@ def media_view(request: HttpRequest, path: str) -> HttpResponse:
     else:
         response = FileResponse(file_path.open("rb"), content_type=content_type)
 
-    response["Cache-Control"] = "private"
+    # "no-cache": a replaced photo keeps its URL, so the browser asks again rather than showing the old one.
+    response["Cache-Control"] = "private, no-cache"
     return response

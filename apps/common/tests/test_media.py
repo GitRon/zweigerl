@@ -65,6 +65,24 @@ def test_store_upload_stores_the_file_at_the_name_with_its_extension(media_root)
     assert (media_root / name).is_file()
 
 
+def test_store_upload_stores_one_extension_per_kind(media_root):
+    upload = SimpleUploadedFile("scan.TIFF", _tiff_with_tags())
+
+    name = store_upload(uploaded_file=upload, name="sources/8/3")
+
+    assert name == "sources/8/3.tif"
+
+
+def test_store_upload_replaces_a_file_of_another_kind_at_the_name(media_root):
+    first = SimpleUploadedFile("foto.png", _image_with_exif(image_format="PNG"))
+    second = SimpleUploadedFile("foto.jpg", _image_with_exif(image_format="JPEG"))
+    store_upload(uploaded_file=first, name="photos/17/original")
+
+    store_upload(uploaded_file=second, name="photos/17/original")
+
+    assert sorted(path.name for path in (media_root / "photos" / "17").iterdir()) == ["original.jpg"]
+
+
 def test_store_upload_replaces_a_file_already_at_the_name(media_root):
     first = SimpleUploadedFile("urkunde.pdf", b"%PDF-1.4\n% erste Fassung\n%%EOF\n")
     second = SimpleUploadedFile("urkunde.pdf", b"%PDF-1.4\n% zweite Fassung\n%%EOF\n")

@@ -22,7 +22,7 @@ def test_media_view_hands_out_the_file_after_login(admin_client, media_root):
 
     assert response.status_code == 200
     assert b"".join(response.streaming_content) == b"erfundenes Foto"
-    assert response["Cache-Control"] == "private"
+    assert response["Cache-Control"] == "private, no-cache"
 
 
 @pytest.mark.django_db

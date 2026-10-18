@@ -96,9 +96,11 @@ the admin - writes the file under its original name with everything in it, so th
 field routes it through `store_upload`, and a review finds it when it does not.
 
 - **Stored where the layout below puts it**, under the name the caller passes without its extension -
-  `store_upload(uploaded_file=…, name="photos/17/original")` - and the extension the content was checked
-  against. A file already there is replaced. The original name is dropped and kept nowhere: "Taufe Josef
-  Huber 1931.jpg" says who is in the picture.
+  `store_upload(uploaded_file=…, name="photos/17/original")` - and one extension per kind: `jpg`, `png`,
+  `webp`, `tif`, `pdf`, whatever the upload was called. Storing at a name again replaces the file there,
+  also one of another kind; the storage is set to `allow_overwrite`, since Django would otherwise keep the
+  old file and put the new one beside it under a random suffix. The original name is dropped and kept
+  nowhere: "Taufe Josef Huber 1931.jpg" says who is in the picture.
 - **Accepted:** JPEG (also the camera kind with previews, MPO), PNG, WebP, TIFF and PDF, by extension and
   by content. Anything else, a file whose content does not match its extension, and a scan with several
   pages or an animation - only the first frame would survive - raise `UploadRefusedError` with a German
@@ -130,6 +132,10 @@ media/
   file list of a backup (#39), and a name that changes - corrected, or after a wedding - would have to move
   files. Readable names are written by the export (#26), from the data as it is then.
 - **Paths are English**: `photos`, `sources`, `original`.
+- **A path can be guessed from an id**, which is harmless while everyone logged in sees the whole family.
+  A ticket that hides people from some accounts has to check that in `media_view` too. A replaced file
+  keeps its URL, so the view answers `Cache-Control: private, no-cache` and the browser never shows the old
+  picture.
 - The layout lives here and in the callers in `apps.stammbaum`, not in `store_upload`: `apps.common` knows
   no photos and no sources. An action that adds such a file writes its row first, so the id exists, and
   stores the file inside the same transaction - a refused upload then leaves no row behind.

@@ -138,6 +138,16 @@ DATABASES = {
 # login: MEDIA_URL points at it, and nothing serves MEDIA_ROOT directly. See docs/patterns/data-storage.md.
 MEDIA_ROOT = DATA_DIR / "media"
 MEDIA_URL = "/media/"
+# A file's place in MEDIA_ROOT comes from ids and its role ("photos/17/original.jpg"), so storing it again is
+# a replacement. Without "allow_overwrite" Django would keep the old file and save the new one under a random
+# suffix, outside the layout.
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "OPTIONS": {"allow_overwrite": True},
+    },
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+}
 # Behind nginx (#37), set to the "internal" location that maps to MEDIA_ROOT, e.g. "/_media/": the view
 # then checks the login and leaves the bytes to nginx via X-Accel-Redirect. Unset, Django sends the file.
 ZWEIGERL_MEDIA_ACCEL_PREFIX = os.environ.get("ZWEIGERL_MEDIA_ACCEL_PREFIX") or None
