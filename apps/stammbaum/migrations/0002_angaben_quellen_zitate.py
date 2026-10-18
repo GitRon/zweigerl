@@ -443,7 +443,6 @@ class Migration(migrations.Migration):
                         ("datum_2__isnull", True),
                         ("datum_art", ""),
                         ("genauigkeit", ""),
-                        ("sortierdatum__isnull", True),
                     ),
                     models.Q(
                         ("datum_1__isnull", False),
@@ -452,12 +451,25 @@ class Migration(migrations.Migration):
                             ("genau", "ungefaehr", "vor", "nach", "zwischen"),
                         ),
                         ("genauigkeit__in", ("tag", "monat", "jahr")),
-                        ("sortierdatum__isnull", False),
                     ),
                     _connector="OR",
                 ),
                 name="angabe_datum_vollstaendig",
                 violation_error_message="Ein Datum braucht seine Art und seine Genauigkeit.",
+            ),
+        ),
+        migrations.AddConstraint(
+            model_name="angabe",
+            constraint=models.CheckConstraint(
+                condition=models.Q(
+                    models.Q(("datum_1__isnull", True), ("sortierdatum__isnull", True)),
+                    models.Q(
+                        ("datum_1__isnull", False), ("sortierdatum__isnull", False)
+                    ),
+                    _connector="OR",
+                ),
+                name="angabe_sortierdatum_mit_datum",
+                violation_error_message="Ein Datum braucht sein Sortierdatum.",
             ),
         ),
         migrations.AddConstraint(

@@ -46,3 +46,14 @@ def test_quellen_are_filed_with_the_person_or_cited_by_their_facts():
     QuelleFactory(titel="Fremde Quelle")
 
     assert list(quellen(person=lena)) == [abgelegt, zitiert]
+
+
+@pytest.mark.django_db
+def test_quellen_include_those_of_the_persons_partnerships():
+    lena, markus = PersonFactory.create_batch(2)
+    paar = PartnerschaftFactory(person_a=markus, person_b=lena)
+    heiratsurkunde = ZitatFactory(
+        angabe__person=None, angabe__partnerschaft=paar, angabe__art=Angabe.Art.GEHEIRATET
+    ).quelle
+
+    assert list(quellen(person=lena)) == [heiratsurkunde]

@@ -57,6 +57,7 @@ def test_aus_gedcom_reads_every_form(text, erwartet):
         ("31 FEB 1931", "kein gültiges Datum"),
         ("BET 1825 AND 1820", "das zweite Datum liegt vor dem ersten"),
         ("BET 1820 AND", "kein Datum, das Zweigerl lesen kann"),
+        ("BET 12 MAR 1820 AND 1825", "beide Daten müssen gleich genau sein"),
     ],
 )
 def test_aus_gedcom_refuses_what_it_cannot_read(text, meldung):
@@ -86,3 +87,20 @@ def test_sortierdatum_of_a_range_is_its_middle():
     )
 
     assert sortierdatum(datum=datum) == datetime.date(1820, 3, 16)
+
+
+def test_sortierdatum_of_a_range_of_years_runs_to_the_end_of_the_last():
+    datum = aus_gedcom(text="BET 1820 AND 1821")
+
+    assert sortierdatum(datum=datum) == datetime.date(1820, 12, 31)
+
+
+@pytest.mark.parametrize(
+    ("text", "erwartet"),
+    [
+        ("BET JAN 1820 AND FEB 1820", datetime.date(1820, 1, 30)),
+        ("BET NOV 1820 AND DEC 1820", datetime.date(1820, 12, 1)),
+    ],
+)
+def test_sortierdatum_of_a_range_of_months_runs_to_the_end_of_the_last(text, erwartet):
+    assert sortierdatum(datum=aus_gedcom(text=text)) == erwartet

@@ -7,11 +7,12 @@ import pytest
 from django.forms import inlineformset_factory
 from django.urls import reverse
 
-from apps.stammbaum.admin import ElternFormSet
-from apps.stammbaum.models import ElternKind, Person
+from apps.stammbaum.admin import AngabeInline, ElternFormSet
+from apps.stammbaum.models import Angabe, ElternKind, Person
 from apps.stammbaum.tests.factories.einstellung import EinstellungFactory
 from apps.stammbaum.tests.factories.person import PersonFactory
 
+AngabeForms = inlineformset_factory(Person, Angabe, fk_name="person", fields=AngabeInline.fields)
 ElternForms = inlineformset_factory(
     Person, ElternKind, formset=ElternFormSet, fk_name="kind", fields=("elternteil", "art")
 )
@@ -82,3 +83,25 @@ def test_admin_never_deletes_the_settings(admin_client):
     response = admin_client.get(reverse("admin:stammbaum_einstellung_delete", args=[einstellung.pk]))
 
     assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_angabe_inline_refuses_a_marriage_on_a_person_with_a_message():
+    """
+    The inline leaves "person" out of its form, so the constraint is not checked there; "Angabe.clean" is
+    what turns the save into a form error instead of a 500.
+    """
+    formset = AngabeForms(
+        data={
+            "angaben-TOTAL_FORMS": "1",
+            "angaben-INITIAL_FORMS": "0",
+            "angaben-0-art": "geheiratet",
+            "angaben-0-datum_art": "genau",
+            "angaben-0-datum_1": "1985-06-01",
+            "angaben-0-genauigkeit": "tag",
+            "angaben-0-verlaesslichkeit": "belegt",
+        },
+        instance=PersonFactory(),
+    )
+
+    assert formset.errors == [{"art": ["Heirat und Scheidung gehören zur Partnerschaft, nicht zur Person."]}]

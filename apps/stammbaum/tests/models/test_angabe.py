@@ -28,7 +28,17 @@ def test_angabe_str_shows_the_date_and_an_own_label():
 def test_angabe_save_derives_the_sort_date():
     angabe = AngabeFactory(zwischen=True)
 
-    assert Angabe.objects.get(pk=angabe.pk).sortierdatum == datetime.date(1824, 12, 31)
+    assert Angabe.objects.get(pk=angabe.pk).sortierdatum == datetime.date(1825, 7, 1)
+
+
+@pytest.mark.django_db
+def test_angabe_save_of_some_fields_keeps_the_sort_date_in_step():
+    angabe = AngabeFactory()
+    angabe.datum_1 = datetime.date(1950, 6, 1)
+
+    angabe.save(update_fields=["datum_1"])
+
+    assert Angabe.objects.get(pk=angabe.pk).sortierdatum == datetime.date(1950, 6, 1)
 
 
 @pytest.mark.django_db
@@ -72,6 +82,40 @@ def test_angabe_with_a_zitat_is_not_unbelegt():
 @pytest.mark.django_db
 def test_angabe_marked_wahrscheinlich_is_not_unbelegt():
     assert AngabeFactory(verlaesslichkeit=Angabe.Verlaesslichkeit.WAHRSCHEINLICH).ist_unbelegt is False
+
+
+def test_angabe_clean_derives_the_sort_date_for_the_form():
+    angabe = AngabeFactory.build()
+
+    angabe.clean()
+
+    assert angabe.sortierdatum == datetime.date(1931, 3, 12)
+
+
+def test_angabe_clean_refuses_a_marriage_on_an_unsaved_person():
+    """
+    The admin inline holds the person it hangs on as an unsaved object, and leaves the field out of the form
+    - so the constraint is not checked there, and this is what turns a 500 into a message.
+    """
+    angabe = AngabeFactory.build(person=PersonFactory.build(), art=Angabe.Art.GEHEIRATET)
+
+    with pytest.raises(ValidationError, match="Heirat und Scheidung gehören zur Partnerschaft"):
+        angabe.clean()
+
+
+def test_angabe_clean_refuses_a_birth_on_a_partnership():
+    angabe = AngabeFactory.build(person=None, partnerschaft=PartnerschaftFactory.build())
+
+    with pytest.raises(ValidationError, match="gehört zu einer Person, nicht zur Partnerschaft"):
+        angabe.clean()
+
+
+@pytest.mark.django_db
+def test_angabe_with_prefetched_zitate_asks_nothing_more(django_assert_num_queries):
+    angabe = Angabe.objects.prefetch_related("zitate").get(pk=ZitatFactory().angabe.pk)
+
+    with django_assert_num_queries(0):
+        assert angabe.ist_unbelegt is False
 
 
 # Every constraint twice: through "save", which the mixin answers with the German message, and past it with
@@ -220,6 +264,12 @@ def test_angabe_refuses_a_range_ending_before_it_starts_in_the_database():
 def test_angabe_refuses_a_second_date_on_an_exact_date_on_save():
     with pytest.raises(ValidationError, match="Ein zweites Datum gibt es nur bei „zwischen“"):
         AngabeFactory(datum_2=datetime.date(1940, 1, 1))
+
+
+@pytest.mark.django_db
+def test_angabe_refuses_a_date_without_its_sort_date_in_the_database():
+    with pytest.raises(IntegrityError, match="angabe_sortierdatum_mit_datum"):
+        Angabe.objects.bulk_create([AngabeFactory.build(person=PersonFactory())])
 
 
 @pytest.mark.django_db

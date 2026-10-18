@@ -65,7 +65,11 @@ def aus_gedcom(*, text: str) -> UnscharfesDatum:
     if teile[0] == "BET" and "AND" in teile:
         und = teile.index("AND")
         datum_1, genauigkeit = _einfaches_datum(text=" ".join(teile[1:und]))
-        datum_2, _ = _einfaches_datum(text=" ".join(teile[und + 1 :]))
+        datum_2, genauigkeit_2 = _einfaches_datum(text=" ".join(teile[und + 1 :]))
+        # One precision for both ends is what Zweigerl stores; a mixed range is kept raw by the importer
+        # rather than written back with a day nobody gave or without one somebody did.
+        if genauigkeit_2 != genauigkeit:
+            raise ValueError(f"„{text}“: beide Daten müssen gleich genau sein.")
         if datum_2 < datum_1:
             raise ValueError(f"„{text}“: das zweite Datum liegt vor dem ersten.")
         return UnscharfesDatum(art=DatumArt.ZWISCHEN, datum_1=datum_1, datum_2=datum_2, genauigkeit=genauigkeit)
@@ -92,11 +96,22 @@ def als_gedcom(*, datum: UnscharfesDatum) -> str:
 def sortierdatum(*, datum: UnscharfesDatum) -> datetime.date:
     """
     The date a list sorts and filters by: the date itself, and for "zwischen" the middle of the range, so
-    "between 1820 and 1830" sorts beside 1825 rather than beside 1820.
+    "between 1820 and 1830" sorts beside 1825 rather than beside 1820. The range runs to the end of its
+    last month or year: "1820 to 1825" is the whole of 1825 too.
     """
     if datum.art == DatumArt.ZWISCHEN:
-        return datum.datum_1 + (datum.datum_2 - datum.datum_1) / 2
+        ende = _letzter_tag(datum=datum.datum_2, genauigkeit=datum.genauigkeit)
+        return datum.datum_1 + (ende - datum.datum_1) / 2
     return datum.datum_1
+
+
+def _letzter_tag(*, datum: datetime.date, genauigkeit: Genauigkeit) -> datetime.date:
+    if genauigkeit == Genauigkeit.JAHR:
+        return datetime.date(datum.year, 12, 31)
+    if genauigkeit == Genauigkeit.MONAT:
+        naechster = datetime.date(datum.year + datum.month // 12, datum.month % 12 + 1, 1)
+        return naechster - datetime.timedelta(days=1)
+    return datum
 
 
 def _einfaches_datum(*, text: str) -> tuple[datetime.date, Genauigkeit]:

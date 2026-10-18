@@ -1,4 +1,7 @@
+import datetime
+
 from ambient_toolbox.mixins.validation import ValidateConstraintsOnSaveMixin
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from apps.stammbaum.domain.datum import DatumArt, Genauigkeit, UnscharfesDatum, sortierdatum
@@ -132,17 +135,21 @@ class Angabe(ValidateConstraintsOnSaveMixin, GedcomRohMixin):
                 violation_error_message="Eine eigene Angabe braucht eine Bezeichnung und einen Wert oder ein Datum.",
             ),
             models.CheckConstraint(
-                condition=models.Q(
-                    datum_1__isnull=True, datum_2__isnull=True, datum_art="", genauigkeit="", sortierdatum__isnull=True
-                )
+                condition=models.Q(datum_1__isnull=True, datum_2__isnull=True, datum_art="", genauigkeit="")
                 | models.Q(
                     datum_1__isnull=False,
-                    sortierdatum__isnull=False,
                     datum_art__in=("genau", "ungefaehr", "vor", "nach", "zwischen"),
                     genauigkeit__in=("tag", "monat", "jahr"),
                 ),
                 name="angabe_datum_vollstaendig",
                 violation_error_message="Ein Datum braucht seine Art und seine Genauigkeit.",
+            ),
+            # Derived, so no form shows it: "clean" and "save" set it, this holds whatever writes past both.
+            models.CheckConstraint(
+                condition=models.Q(datum_1__isnull=True, sortierdatum__isnull=True)
+                | models.Q(datum_1__isnull=False, sortierdatum__isnull=False),
+                name="angabe_sortierdatum_mit_datum",
+                violation_error_message="Ein Datum braucht sein Sortierdatum.",
             ),
             models.CheckConstraint(
                 condition=models.Q(datum_art="zwischen", datum_2__isnull=False, datum_2__gte=models.F("datum_1"))
@@ -163,10 +170,35 @@ class Angabe(ValidateConstraintsOnSaveMixin, GedcomRohMixin):
         bezeichnung = self.bezeichnung or self.get_art_display()
         return f"{bezeichnung}: {self.wert or self.datum_1}"
 
+    def clean(self) -> None:
+        """
+        Derives the sort date, and checks again in Python the one rule a form cannot: an admin inline leaves
+        the foreign key it hangs on out of the form, so "angabe_art_passt_zum_bezug" would only surface in
+        "save" - as a 500 instead of a message.
+        """
+        self.sortierdatum = self._sortierdatum()
+        if self.art in PAAR_ARTEN and not self._hat_bezug(feld="partnerschaft"):
+            raise ValidationError({"art": "Heirat und Scheidung gehören zur Partnerschaft, nicht zur Person."})
+        if self.art in PERSONEN_ARTEN and not self._hat_bezug(feld="person"):
+            raise ValidationError({"art": "Diese Angabe gehört zu einer Person, nicht zur Partnerschaft."})
+
     def save(self, *args, **kwargs) -> None:
-        datum = self.datum
-        self.sortierdatum = sortierdatum(datum=datum) if datum else None
+        self.sortierdatum = self._sortierdatum()
+        # A save limited to some fields would otherwise leave the old sort date behind a changed date.
+        if kwargs.get("update_fields") is not None:
+            kwargs["update_fields"] = {*kwargs["update_fields"], "sortierdatum"}
         super().save(*args, **kwargs)
+
+    def _sortierdatum(self) -> datetime.date | None:
+        datum = self.datum
+        return sortierdatum(datum=datum) if datum else None
+
+    def _hat_bezug(self, *, feld: str) -> bool:
+        # The id while the row is saved, the cached object while an admin form still holds an unsaved parent.
+        return (
+            getattr(self, f"{feld}_id") is not None
+            or self._meta.get_field(feld).get_cached_value(self, None) is not None
+        )
 
     @property
     def datum(self) -> UnscharfesDatum | None:
@@ -190,4 +222,5 @@ class Angabe(ValidateConstraintsOnSaveMixin, GedcomRohMixin):
         """
         Marked "belegt" without a single Zitat - derived, never stored. See docs/patterns/belege.md.
         """
-        return self.verlaesslichkeit == self.Verlaesslichkeit.BELEGT and not self.zitate.exists()
+        # "all()" rather than "exists()", so a list loaded with its Zitate prefetched asks nothing more.
+        return self.verlaesslichkeit == self.Verlaesslichkeit.BELEGT and not self.zitate.all()

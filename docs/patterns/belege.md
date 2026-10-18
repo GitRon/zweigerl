@@ -76,13 +76,13 @@ Decided in #5 (18.10.2026): a date is stored structured after GEDCOM, plus a der
 | `datum_1` | the date; a month is stored as its first day, a year as 1 January |
 | `datum_2` | the end of the range - for *zwischen* only, and never before `datum_1` |
 | `genauigkeit` | *Tag*, *Monat* or *Jahr*: how much of `datum_1` is known |
-| `sortierdatum` | derived on `save()`: `datum_1`, and the middle of the range for *zwischen*, so "between 1820 and 1830" sorts beside 1825 |
+| `sortierdatum` | derived in `clean()` and `save()`: `datum_1`, and the middle of the range for *zwischen*, the range running to the end of its last month or year - "between 1820 and 1830" sorts beside mid-1825 |
 
 `apps/stammbaum/domain/datum.py` holds the pure functions: `aus_gedcom` reads `ABT 1931`,
 `BET 1820 AND 1825`, `APR 1989` or `12 MAR 1989`, `als_gedcom` writes them back, `sortierdatum` derives the
 sort key. A date GEDCOM can express but Zweigerl cannot read - a date phrase, `FROM … TO`, another
-calendar - raises `ValueError`, and the importer keeps it raw. Both dates of a range share one
-`genauigkeit`.
+calendar, or a range whose two ends are not equally precise - raises `ValueError`, and the importer keeps
+it raw rather than inventing a day or dropping one. Both dates of a range share one `genauigkeit`.
 
 **Something that writes past `save()`** - `bulk_create()` in an import, a data migration - sets
 `sortierdatum` itself, from the same function; a constraint refuses a date without one.
@@ -103,10 +103,23 @@ All of them are constraints with a German message - see
 | `angabe_datumsart_hat_datum` | A date kind has a date and no value |
 | `angabe_wertart_hat_wert` | A value kind has a value and no date |
 | `angabe_eigene_hat_bezeichnung` | Eigene has a `bezeichnung` and a value or a date; nothing else has one |
-| `angabe_datum_vollstaendig` | A date has its kind, its precision and its sort date; no date has none of them |
+| `angabe_datum_vollstaendig` | A date has its kind and its precision; no date has neither |
+| `angabe_sortierdatum_mit_datum` | A date has its sort date, and only a date has one |
 | `angabe_datum_bis_nur_bei_zwischen` | `datum_2` exists for *zwischen* only and is not before `datum_1` |
 | `quelle_hat_titel`, `quelle_art_gueltig` | A Quelle has a title and a known kind |
 | `zitat_einmal_pro_angabe_und_quelle` | An Angabe cites a Quelle once; several places in it go into one `stelle` |
+
+**`Angabe.clean()` checks `angabe_art_passt_zum_bezug` again in Python.** An admin inline leaves out the
+foreign key it hangs on, so a form never validates that constraint, and the mixin would only find it in
+`save()` - as a 500. `clean()` also sets `sortierdatum`, which no form shows.
+
+## Before #8
+
+Until #8 a Partnerschaft held its start and end as GEDCOM text in `beginn` and `ende`. Migration `0003`
+turned them into Angaben on the Partnerschaft: "Geheiratet" and "Geschieden" for an Ehe, own Angaben
+"Beginn der Partnerschaft" and "Ende der Partnerschaft" for any other couple - the start of a
+Lebensgemeinschaft is not a wedding. A text it could not read went into the Partnerschaft's `gedcom_roh`.
+Migrating back writes the dates into the two fields again.
 
 ## Later
 
