@@ -1,7 +1,8 @@
 import datetime
 
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models, transaction
+from django.db.models import Q
 from django.utils import timezone
 
 from apps.family_tree.models import Fact, ParentChild, Partnership, Person, SiblingPair, TreeSettings
@@ -110,3 +111,52 @@ def change_name_and_status(
                 precision=Fact.PrecisionChoice.YEAR,
             )
     return person
+
+
+def delete_person(*, person_id: int) -> Person:
+    """
+    Deletes a person with their facts, the facts of their partnerships, the citations of both and every link to
+    them (#19). Their sources stay, and so do the people they were connected to, whether still connected to the
+    home person or not. Returns the person as they were.
+
+    Raises "Person.DoesNotExist" for somebody not in the tree and "ValidationError" for the home person, who is
+    deleted only once another one is chosen.
+    """
+    with transaction.atomic():
+        person = Person.objects.get(pk=person_id)
+        if TreeSettings.objects.filter(home_person=person).exists():
+            raise ValidationError(
+                "Das ist die Ausgangsperson. Wähl erst eine andere Ausgangsperson, dann lässt sie sich löschen."
+            )
+        # Everything that goes with them goes by CASCADE: their facts, their links, their partnerships and with
+        # those the couple's facts, and the citations of all of them. A source is a row of its own and stays.
+        person.delete()
+    return person
+
+
+def unlink_relative(*, person_id: int, relation: str, relative_id: int) -> None:
+    """
+    Removes the one link that makes "relative_id" the parent, partner, child or explicit sibling of "person_id"
+    (#19) - for both of them, since the link is one row. A partnership takes the couple's facts with it, and its
+    children stay the children of each of the two. Nobody is deleted, whoever hangs loose afterwards.
+
+    Raises "ValueError" for a relation that is none of "Relation" and "ObjectDoesNotExist" when no such link
+    joins the two - a sibling through a shared parent is joined by the parent's links, not one of their own.
+    """
+    relation = Relation(relation)
+    with transaction.atomic():
+        if relation == Relation.PARENT:
+            links = ParentChild.objects.filter(parent=relative_id, child=person_id)
+        elif relation == Relation.CHILD:
+            links = ParentChild.objects.filter(parent=person_id, child=relative_id)
+        elif relation == Relation.PARTNER:
+            links = Partnership.objects.filter(
+                Q(person_a=person_id, person_b=relative_id) | Q(person_a=relative_id, person_b=person_id)
+            )
+        else:
+            links = SiblingPair.objects.filter(
+                Q(person_a=person_id, person_b=relative_id) | Q(person_a=relative_id, person_b=person_id)
+            )
+        deleted, _ = links.delete()
+        if not deleted:
+            raise ObjectDoesNotExist
