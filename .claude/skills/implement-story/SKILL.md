@@ -460,6 +460,9 @@ Commit the fixes, push with `git push -u github <branch>`, and open the PR:
 gh pr create --base ${base#github/} --title "<story title>" --body-file <body>
 ```
 
+The title starts with the issue number and a colon, `#<n>: <story title>`; without an issue it is the
+story title alone - see [commit messages](../../../docs/contributing/commit-messages.md#pull-request-titles).
+
 `--base` wants a branch name, so the `github/` comes off: a run based on `github/main` opens against
 `main`, a stacked one against the neighbour's branch as recorded.
 
