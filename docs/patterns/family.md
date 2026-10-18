@@ -116,9 +116,10 @@ where it has none. Four generations and more repeat the "Ur": Ururgroßvater, Ur
 
 ## Familie Huber
 
-`apps/family_tree/fixtures/huber_family.json` is the invented family of the mockup: fifteen people over four
+`apps/family_tree/fixtures/huber_family.json` is the invented family of the mockup: sixteen people over four
 generations around Lena Huber, the home person. It holds every case above - two couples with their
-children, a son with one known parent, two cousins with only their father - and it is what the browser run
+children, a father married twice with a son from his first marriage, two cousins with only their father -
+and it is what the browser run
 of [`/implement-story`](../../.claude/skills/implement-story/SKILL.md) plays with. Tests never load it to get
 data, see [test data](testing-data.md).
 

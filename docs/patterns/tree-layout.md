@@ -20,27 +20,46 @@ too slow.
 
 A person's generation is their distance from the home person: a parent one row above, a child one below, a
 partner and a sibling in the same row. `Card.generation` is 0 for the home person's row, -1 for their
-parents', 1 for their children's. Where two paths disagree - a marriage across generations - the shorter
-one wins; drawing such trees properly is #31's.
+parents', 1 for their children's. Where two paths disagree, three rules settle it (#31):
+
+1. **Blood before marriage.** The generation comes from the path with the fewest steps to a partner or a
+   sibling, then from the shortest. A niece who married her uncle stays a row below her father.
+2. **A parent stands above their child**, also where lines of different length meet - someone who is a
+   grandfather through one line and a great-grandfather through the other. Above the home person's row the
+   parent moves up, below it the child moves down, and the line between them crosses the rows in between.
+3. **A couple shares a row** wherever rule 2 still holds: the one further from the home person moves, else
+   the other; the home person stays. A couple that cannot - a marriage across generations - keeps its two
+   rows and gets a stepped line, see [Lines](#lines).
 
 ## What stands together
 
-- **A couple** stands side by side: a `Partnership`, or two parents of one child without one. One partner
-  per person; a second partner stands apart and their children still connect to both parents. Several
-  marriages and pedigree collapse are #31's.
+- **A couple** stands side by side: a `Partnership`, or two parents of one child without one.
+- **Several partners** (#31): everyone a chain of couples joins in a row stands as one unit. Whoever has
+  the most partners stands in the middle, the first partner - by the order the Partnerships were entered -
+  to the left, the others to the right; a partner with partners of their own takes them further out on
+  their side. Of a single couple, the one with parents in the tree stands left.
 - **Siblings** stand side by side under the bar of their parents, ordered by the sort date of their earliest
   birth fact (#5, see [Belege](evidence.md)). Siblings without a birth date come last, ties in the order
   they were entered. A sibling's partner stands next to them, on the side of the partner's own parents
   when those are in the tree too.
-- **A child with one known parent** hangs from that parent, and so do half-siblings, until #31 puts them
-  under the right couple. Their bar runs `BAR_STEP` higher than a couple's, so a father's son from before
-  the marriage does not look like the couple's.
+- **Half-siblings** hang under their own couple: the children of each marriage from the gap between that
+  pair, so they stand apart from their half-siblings.
+- **A child with one known parent** hangs from that parent. Their bar runs `BAR_STEP` higher than a
+  couple's, so a father's son of an unknown mother does not look like the couple's.
 - **Siblings without known parents** - those only a `SiblingPair` connects - hang from a `Placeholder`: a
   card-sized gap with a dashed frame, drawn where their parents would stand. It is not a person in the
   database; it shows where research is missing. A single person without parents gets none.
 - **Aunts, uncles and great-uncles** stand in the row of their sibling, among their siblings.
 
 Very wide rows of many children are not handled yet; they get their own ticket once real data shows them.
+
+## Ahnenschwund
+
+**A person is drawn once, however many ways they are related to the home person** (decided 18.10.2026):
+where two lines of ancestors meet, both lines lead to the same card. That ancestor - the grandparents a
+cousin and a cousin who married share - gets `Card.pedigree_collapse`, and the canvas pins the label
+"Ahnenschwund" over the card. Only where the lines meet: two or more of their children are the home person
+or among the home person's ancestors. Their own ancestors are reached the same ways but are not marked.
 
 ## Placement
 
@@ -61,8 +80,12 @@ Every line is a `Line` with its `kind` and an SVG `path`:
 
 | Kind | From | To |
 |---|---|---|
-| `partners` | the right edge of one partner | the left edge of the other, at half the card's height |
-| `children` | the middle of the partner line, or the bottom of a single parent's or a placeholder's card | a bar above the children, and from it down to each child |
+| `partners` | the right edge of one partner | the left edge of the other, at half the card's height, and `PARTNER_STEP` lower for every card it passes behind - the line to a third spouse does not lie on the line to the second |
+| `partners`, across two rows | the side of the upper partner facing the lower | down the gap beside them, across a quarter of the row gap above the lower row, down the gap beside the lower partner and into their side - clear of the cards in between |
+| `children` | the gap beside the outer of a couple, on their partner line - between the two when they stand side by side; the last bend of a stepped line; or the bottom of a single parent's, two unmarried parents' or a placeholder's card | a bar above the children, and from it down to each child |
+
+A line between rows that are not neighbours - Ahnenschwund over a different number of generations - runs
+straight down through the rows in between.
 
 **Lines are drawn as pen strokes** by `domain.stroke.pen_stroke()`: every straight segment bows a little,
 by at most `WOBBLE` pixels, its ends left exactly where they are. The bow is random only in appearance - each
