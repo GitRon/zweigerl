@@ -9,7 +9,10 @@ dependencies = [
     # datastar bundle in "static/vendor/datastar/" reads, so the two move together - see
     # docs/patterns/datastar.md.
     "datastar-py==1.0.3",
+    "django-axes~=8.3",
     "django-cotton~=2.7",
+    "pillow~=13.0",
+    "python-dotenv~=1.2",
 ]
 
 [dependency-groups]
@@ -150,9 +153,11 @@ target-version = "py314"
   "F401",
 ]
 
-# Settings modules for a single environment extend the base settings wholesale
+# Settings modules for a single environment extend the base settings wholesale, after setting the
+# environment the base settings read - so the import cannot sit at the top
 "apps/config/settings_*.py" = [
   "F403",
+  "E402",
 ]
 
 [tool.boa-restrictor]
@@ -176,6 +181,10 @@ exclude = [
 "*/views/*.py" = [
     "PBR001",
     "PBR002",
+]
+# django-axes calls the callable named in AXES_CLIENT_IP_CALLABLE with the request, positionally
+"apps/common/axes.py" = [
+    "PBR001",
 ]
 # Django calls a context processor with the request, positionally
 "*/context_processors.py" = [

@@ -7,8 +7,10 @@ A Django 6.1 app on Python 3.14 with a SQLite database. Pages are server-rendere
 
 ```bash
 uv sync && yarn install && yarn build:css
+cp .env.example .env                     # then name a data directory outside the repo and set a key
 uv run python manage.py migrate
-uv run python manage.py runserver
+uv run python manage.py createsuperuser
+uv run python manage.py runserver        # 127.0.0.1 only
 ```
 
 The details are in [local setup](docs/contributing/setup.md).
@@ -26,16 +28,16 @@ rather than inferring the conventions from nearby code.
   suite and CI
 - [Linting](docs/contributing/linting.md) — ruff, boa-restrictor and its `ZBR` rules, import-linter,
   complexipy, pre-commit
-- [Settings](docs/contributing/settings.md) — the two settings modules, templates, static files, locale,
-  logging
+- [Settings](docs/contributing/settings.md) — the settings modules and the environment they read,
+  templates, static files, locale, logging
 - [Commit messages](docs/contributing/commit-messages.md)
 
 ### Architecture
 
 - [Where code goes](docs/patterns/app-layout.md) — the two apps, actions and readers instead of a message
   bus, and what has to sit at the app root
-- [Data storage and privacy](docs/patterns/data-storage.md) — no real family data in the repository, and
-  where the data lives instead *(scaffold, #3)*
+- [Data storage and privacy](docs/patterns/data-storage.md) — no real family data in the repository, the
+  data directory outside it, the login and the lockout
 - [Persons and families](docs/patterns/familie.md) — Person, Partnerschaft, Eltern-Kind and Geschwister after
   GEDCOM, derived siblings, the Ausgangsperson, the Familie Huber fixture
 - [Belege](docs/patterns/belege.md) — facts, sources and citations, reliability, "unbelegt", uncertain

@@ -1,16 +1,29 @@
 # Settings
 
-- `apps/config/settings.py` — the application settings.
+- `apps/config/settings.py` — the application settings. It reads `.env` from the project root and refuses
+  to start without `ZWEIGERL_DATA_DIR` and `DJANGO_SECRET_KEY` - see
+  [data storage](../patterns/data-storage.md).
 - `apps/config/settings_test.py` — the test settings, pointed at by `[tool.pytest.ini_options]` in
-  `pyproject.toml`. It only swaps the password hasher for a fast one.
+  `pyproject.toml`. It sets both variables - unconditionally, never to the real data directory - to
+  `zweigerl-tests` in the system temp and a throwaway key before the base settings read them, so the suite
+  needs no `.env`, and swaps the password hasher for a fast one.
 - `apps/config/settings_smoke.py` — used when a browser drives the app for the content review of
   [`/implement-story`](../../.claude/skills/implement-story/SKILL.md). Identical to the application
-  settings except for the database, which comes from `SMOKE_DB_PATH` so a smoke run uses a throwaway file
-  instead of the development data. Nothing else is relaxed: a content review is only worth its wall-clock
-  if the app under the browser is the real one.
+  settings except for where the data goes: the database comes from `SMOKE_DB_PATH`, the data directory
+  from `SMOKE_DATA_DIR` (a temporary directory outside the repository that `content-server.sh` makes per
+  run), and the key is a throwaway. Nothing else is relaxed: a content review is only worth its
+  wall-clock if the app under the browser is the real one.
 
 Where the database, the media and the secret key come from is the subject of
 [data storage](../patterns/data-storage.md).
+
+## Environment
+
+| Variable | Read by | |
+|---|---|---|
+| `ZWEIGERL_DATA_DIR` | `settings.py` | The data directory, required - see [data storage](../patterns/data-storage.md) |
+| `DJANGO_SECRET_KEY` | `settings.py` | Required |
+| `ZWEIGERL_MEDIA_ACCEL_PREFIX` | `settings.py` | Optional. Behind nginx, the internal location media are handed to - see [data storage](../patterns/data-storage.md#photos-and-scans) |
 
 ## Templates
 

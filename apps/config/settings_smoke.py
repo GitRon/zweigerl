@@ -1,23 +1,30 @@
 """
 Settings used when a browser drives the app for a content review, see the "/implement-story" skill.
 
-Deliberately the application settings, not a stripped-down variant: a content review is only worth
-its wall-clock if the app under the browser behaves like the real one. The single change is the
-database, pointed at a throwaway file so a smoke run cannot touch the development data.
+Deliberately the application settings, not a stripped-down variant: a content review is only worth its
+wall-clock if the app under the browser behaves like the real one. What changes is where the data goes -
+a throwaway database and a throwaway data directory - and the secret key, so a smoke run can never touch
+the real family data and needs no ".env".
 """
 
 import os
+import tempfile
 from pathlib import Path
 
-from apps.config.settings import *
-from apps.config.settings import BASE_DIR, DATABASES
+# content-server.sh names both: the database inside the run directory, the data directory outside the
+# repository, where the data directory check accepts it. Set unconditionally, not as a default, so an
+# exported ZWEIGERL_DATA_DIR cannot point a smoke run at the real data. By hand, without either, both go
+# into one fresh temporary directory.
+SMOKE_DATA_DIR = Path(os.environ.get("SMOKE_DATA_DIR") or tempfile.mkdtemp(prefix="zweigerl-smoke-"))
+os.environ["ZWEIGERL_DATA_DIR"] = str(SMOKE_DATA_DIR)
+os.environ["DJANGO_SECRET_KEY"] = "zweigerl-smoke-only"
 
-# Every run directory gets its own database, so the path comes from the environment rather than
-# being fixed here. The fallback keeps "manage.py ... --settings=apps.config.settings_smoke" usable
-# by hand without exporting anything first.
+from apps.config.settings import *
+from apps.config.settings import DATABASES
+
 DATABASES = {
     "default": {
         **DATABASES["default"],
-        "NAME": Path(os.environ.get("SMOKE_DB_PATH", BASE_DIR / "smoke.sqlite3")),
+        "NAME": Path(os.environ.get("SMOKE_DB_PATH", SMOKE_DATA_DIR / "smoke.sqlite3")),
     }
 }
