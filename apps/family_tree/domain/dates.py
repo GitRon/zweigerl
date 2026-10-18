@@ -153,6 +153,42 @@ def year_text(*, date: UncertainDate) -> str:
     return f"{prefix} {date.date_1.year}" if prefix else str(date.date_1.year)
 
 
+GERMAN_MONTHS = (
+    "Jänner",
+    "Februar",
+    "März",
+    "April",
+    "Mai",
+    "Juni",
+    "Juli",
+    "August",
+    "September",
+    "Oktober",
+    "November",
+    "Dezember",
+)
+
+
+def date_text(*, date: UncertainDate) -> str:
+    """
+    A date as the person's card shows it, in German and only as precise as it is known: "12. März 1989",
+    "März 1989", "um 1931", "vor April 1850", "zwischen 1820 und 1825".
+    """
+    first = _german_date(date=date.date_1, precision=date.precision)
+    if date.kind == DateKind.BETWEEN:
+        return f"zwischen {first} und {_german_date(date=date.date_2, precision=date.precision)}"
+    prefix = YEAR_PREFIX.get(date.kind)
+    return f"{prefix} {first}" if prefix else first
+
+
+def _german_date(*, date: datetime.date, precision: Precision) -> str:
+    if precision == Precision.DAY:
+        return f"{date.day}. {GERMAN_MONTHS[date.month - 1]} {date.year}"
+    if precision == Precision.MONTH:
+        return f"{GERMAN_MONTHS[date.month - 1]} {date.year}"
+    return str(date.year)
+
+
 def lifespan(*, birth: UncertainDate | None, death: UncertainDate | None, deceased: bool) -> str:
     """
     The Lebensdaten beside a name: "1931 – 2009", "1958 –" for somebody alive or not known to be dead,

@@ -1,14 +1,78 @@
-<c-vars entry />
-{# The person card beside the tree (#12): who was selected there, fetched when their card is clicked and #}
-{# shown while "$selection" is still them. #13 fills it with every fact and its Beleg. Below "lg" it lies #}
-{# over the tree instead of beside it - see docs/patterns/responsive-layout.md. #}
-<aside id="person-card" aria-label="Personenkarte" class="flex w-96 shrink-0 flex-col gap-4 overflow-y-auto border-l border-card-edge bg-birch p-6 max-lg:absolute max-lg:inset-y-0 max-lg:right-0 max-lg:w-full max-lg:max-w-md max-lg:border-l-[1.5px] max-lg:border-ink" data-show="$selection == {{ entry.person.pk }}">
+<c-vars card />
+{# The person card beside the tree (#12, #13): who was selected there, shown while "$selection" is still them. #}
+{# The head says who they are and what they are to the home person; the tabs, switched by "$tab", hold every #}
+{# fact with its Beleg and everyone directly related. Closing it - the button, or Escape on the canvas - moves #}
+{# the address back to the start page, so a reload does not open it again. Below "lg" it lies over the tree #}
+{# instead of beside it - see docs/patterns/responsive-layout.md. #}
+{% url 'family_tree:start-view' as start_url %}
+<aside id="person-card" aria-label="Personenkarte" class="flex w-96 shrink-0 flex-col gap-4 overflow-y-auto border-l border-card-edge bg-birch p-6 max-lg:absolute max-lg:inset-y-0 max-lg:right-0 max-lg:w-full max-lg:max-w-md max-lg:border-l-[1.5px] max-lg:border-ink" data-signals="{tab: 'facts'}" data-show="$selection == {{ card.entry.person.pk }}" data-effect="$selection == 0 && location.pathname != '{{ start_url }}' && history.pushState(null, '', '{{ start_url }}')">
     <div class="flex items-start gap-4">
-        <c-common.frame :initials="entry.initials" width="w-24" />
+        <c-common.frame :initials="card.entry.initials" width="w-24" />
         <div class="flex min-w-0 flex-1 flex-col gap-1">
-            <h2 class="text-2xl leading-tight">{{ entry.name }}</h2>
-            <p class="text-ink-muted">{{ entry.lifespan }}</p>
+            <h2 class="text-2xl leading-tight">{{ card.entry.name }}</h2>
+            <p class="text-ink-muted">{{ card.entry.lifespan }}</p>
+            {% if card.relationship %}
+                <p>{{ card.relationship }}</p>
+            {% endif %}
         </div>
     </div>
+    <div role="tablist" aria-label="Über die Person" class="flex flex-wrap gap-x-3 border-b border-card-edge text-sm">
+        <button type="button" role="tab" id="person-card-tab-facts" aria-controls="person-card-facts" aria-selected="true" data-attr:aria-selected="String($tab == 'facts')" class="-mb-px flex min-h-11 cursor-pointer items-center gap-1.5 border-b-2 border-forest text-forest" data-class="{'border-forest text-forest': $tab == 'facts', 'border-transparent': $tab != 'facts'}" data-on:click="$tab = 'facts'">Angaben <span class="text-ink-muted">{{ card.facts|length }}</span></button>
+        <button type="button" role="tab" aria-disabled="true" disabled class="-mb-px min-h-11 border-b-2 border-transparent text-ink-muted">Fotos</button>
+        <button type="button" role="tab" aria-disabled="true" disabled class="-mb-px min-h-11 border-b-2 border-transparent text-ink-muted">Quellen</button>
+        <button type="button" role="tab" id="person-card-tab-relatives" aria-controls="person-card-relatives" aria-selected="false" data-attr:aria-selected="String($tab == 'relatives')" class="-mb-px flex min-h-11 cursor-pointer items-center gap-1.5 border-b-2 border-transparent" data-class="{'border-forest text-forest': $tab == 'relatives', 'border-transparent': $tab != 'relatives'}" data-on:click="$tab = 'relatives'">Verwandte <span class="text-ink-muted">{{ card.relative_count }}</span></button>
+        <button type="button" role="tab" aria-disabled="true" disabled class="-mb-px min-h-11 border-b-2 border-transparent text-ink-muted">Notizen</button>
+    </div>
+    <section id="person-card-facts" role="tabpanel" aria-labelledby="person-card-tab-facts" data-show="$tab == 'facts'">
+        {% if card.facts %}
+            <ul class="flex flex-col">
+                {% for fact in card.facts %}
+                    <li id="fact-{{ fact.fact.pk }}" class="flex flex-col gap-1 border-b border-card-edge py-3">
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="text-sm text-ink-muted">{{ fact.label }}</span>
+                            {% if fact.reliability %}
+                                <c-common.label :text="fact.reliability" />
+                            {% endif %}
+                        </div>
+                        <p>{{ fact.text }}</p>
+                        {% for citation in fact.citations %}
+                            <p class="text-sm">Beleg: {{ citation.source.title }}{% if citation.page %}, {{ citation.page }}{% endif %}</p>
+                        {% endfor %}
+                        {% if fact.undocumented %}
+                            <p><c-common.label text="unbelegt, Quelle fehlt" tone="brick" /></p>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="py-8 text-center text-ink-muted">Zu dieser Person steht noch nix da.</p>
+        {% endif %}
+    </section>
+    <section id="person-card-relatives" role="tabpanel" aria-labelledby="person-card-tab-relatives" style="display: none" data-show="$tab == 'relatives'">
+        {% if card.relatives %}
+            <div class="flex flex-col gap-4">
+                {% for group in card.relatives %}
+                    <div class="flex flex-col gap-1">
+                        <h3 class="text-lg">{{ group.title }}</h3>
+                        <ul class="flex flex-col gap-0.5">
+                            {% for entry in group.entries %}
+                                <li>
+                                    <button type="button" class="flex w-full cursor-pointer items-center gap-3 rounded-md px-2 py-1.5 text-left hover:bg-card" data-on:click="$selection = {{ entry.person.pk }}; @get('{% url 'family_tree:person-view' pk=entry.person.pk %}')">
+                                        <c-common.frame :initials="entry.initials" width="w-7" />
+                                        <span class="flex min-w-0 flex-col leading-tight">
+                                            <span class="truncate">{{ entry.name }}</span>
+                                            <span class="truncate text-sm text-ink-muted">{{ entry.lifespan }}</span>
+                                        </span>
+                                    </button>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="py-8 text-center text-ink-muted">Noch niemand mit dieser Person verbunden.</p>
+        {% endif %}
+    </section>
     <c-common.button class="self-start" data-on:click="$selection = 0">Schließen</c-common.button>
 </aside>

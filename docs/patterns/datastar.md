@@ -88,7 +88,10 @@ def person_view(request, pk):
     )
 ```
 
-`is_datastar_request(request=...)` tells the two apart where a view needs to on its own.
+`is_datastar_request(request=...)` tells the two apart where a view needs to on its own. The person
+card (#13) is such a case: its address `/persons/<pk>/` loads the start page with the card open, but a
+click in the tree only wants the card. The view patches the component and adds `push_url(url=...)`, the
+same address-bar event `render_page` sends.
 
 ## The tree and its canvas
 
@@ -105,10 +108,12 @@ card his contacts example.
   it gets the scaled width and height through `data-style:width` and `data-style:height`, so the scroll
   range shrinks and grows with the tree. Nothing goes to the server: zoom is view state.
 - **A card is a button that selects.** A click sets `$selection` to the person's id and fetches their person
-  card in the same expression: `$selection = 7; @get('/persons/7/card/')`. The card reads the signal back
+  card in the same expression: `$selection = 7; @get('/persons/7/')`. The card reads the signal back
   for its frame (`data-class`) and for `aria-pressed` (`data-attr:aria-pressed`); the person card is
   patched into `#person-card` and shows itself with `data-show="$selection == 7"`, so closing it - the
-  button or Escape - is setting `$selection = 0`.
+  button or Escape - is setting `$selection = 0`. A `data-effect` on the card moves the address back to
+  the start page when that happens, so a reload does not open it again. Loaded at its own address, the
+  canvas starts with `$selection` already set to the person.
 - **The search reaches the tree as signals.** Besides patching the list, the search answers with
   `patch_signals({"filtered": ..., "matches": [...]})`: the ids of the hits, and whether a search is running
   at all. Each card fades with `$filtered && !$matches.includes(7)` and is outlined with

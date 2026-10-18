@@ -9,4 +9,8 @@ def start_view(request: HttpRequest) -> HttpResponse:
     """
     The page a visit starts on: the sidebar with every person (#10) and the tree beside it (#12).
     """
-    return render(request, "family_tree/start.html", {"person_list": person_list(search=""), "tree": tree()})
+    return render(
+        request,
+        "family_tree/start.html",
+        {"person_list": person_list(search=""), "tree": tree(), "card": None, "selection": 0},
+    )

@@ -2,14 +2,18 @@
     <div class="flex min-h-screen max-lg:flex-col">
         <c-person.sidebar :person_list="person_list" />
         <main class="relative flex h-screen min-w-0 flex-1">
-            <c-tree.canvas :tree="tree">
+            <c-tree.canvas :tree="tree" :selection="selection">
                 <form method="post" action="{% url 'common:logout-view' %}">
                     {% csrf_token %}
                     <c-common.button type="submit">Abmelden</c-common.button>
                 </form>
             </c-tree.canvas>
-            {# Where the person card lands when a card in the tree is clicked. #}
-            <div id="person-card"></div>
+            {# The card of the person whose address this is, or where it lands when a card in the tree is clicked. #}
+            {% if card %}
+                <c-person.card :card="card" />
+            {% else %}
+                <div id="person-card"></div>
+            {% endif %}
         </main>
     </div>
 </c-common.layout>

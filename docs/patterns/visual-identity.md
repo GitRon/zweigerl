@@ -108,7 +108,9 @@ always comes with an `alt`** describing the picture, not repeating the name.
 `<c-common.label text="belegt" tone="forest" />` - the Etikett: a short word on a small paper tag, like the
 label on a herbarium sheet. `tone` is `ink` (a fact), `forest` (confirmed, yours) or `brick` (wants
 attention). The word is the meaning and the tone only underlines it, so a label still says everything in
-greyscale. Which tone a reliability state gets is #13's.
+greyscale. On the person card (#13) a fact marked *wahrscheinlich* or *überliefert* gets an `ink` label
+with that word, an *unbelegt* one a `brick` label "unbelegt, Quelle fehlt" - it wants a source - and a
+*belegt* one no label at all, only its "Beleg: …" line: the normal state is not news.
 
 ### The buttons
 

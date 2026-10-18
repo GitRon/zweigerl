@@ -29,3 +29,10 @@ def test_start_view_draws_the_tree(admin_client):
     response = admin_client.get(reverse("family_tree:start-view"))
 
     assert response.context["tree"].cards[0].entry.person == lena
+
+
+@pytest.mark.django_db
+def test_start_view_opens_no_card(admin_client):
+    response = admin_client.get(reverse("family_tree:start-view"))
+
+    assert (response.context["card"], response.context["selection"]) == (None, 0)
