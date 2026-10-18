@@ -49,9 +49,9 @@ MORE_MEN = (WERNER, ALOIS_SON, ALOIS_GRANDSON, ALOIS_GREAT_GRANDSON, STEFAN, RUD
 WOMEN = (LENA, MARIA, ANNA, THERESIA, EVA, SOPHIE, MIA, CLARA, HILDE, LAURA, JULIA, GERDA, SANDRA, PETRA, INGRID)
 MORE_WOMEN = (NINA, LISA, CARINA, ROSA)
 
-HUBERS = FamilyGraph.from_links(
-    sex={person: "M" for person in (*MEN, *MORE_MEN, JAN, WALTER, HANS, MORITZ)}
-    | {person: "F" for person in (*WOMEN, *MORE_WOMEN)}
+FAMILY = FamilyGraph.from_links(
+    sex=dict.fromkeys((*MEN, *MORE_MEN, JAN, WALTER, HANS, MORITZ), "M")
+    | dict.fromkeys((*WOMEN, *MORE_WOMEN), "F")
     | {KIM: "X", ALEX: "U", VIKTOR: "U"},
     parent_child=[
         (THOMAS, LENA),
@@ -115,7 +115,7 @@ HUBERS = FamilyGraph.from_links(
 
 
 def test_relationship_name_of_the_home_person_is_ausgangsperson():
-    assert relationship_name(family=HUBERS, home_id=LENA, person_id=LENA) == "Ausgangsperson"
+    assert relationship_name(family=FAMILY, home_id=LENA, person_id=LENA) == "Ausgangsperson"
 
 
 @pytest.mark.parametrize(
@@ -131,7 +131,7 @@ def test_relationship_name_of_the_home_person_is_ausgangsperson():
     ],
 )
 def test_relationship_name_of_an_ancestor(person_id, expected):
-    assert relationship_name(family=HUBERS, home_id=LENA, person_id=person_id) == expected
+    assert relationship_name(family=FAMILY, home_id=LENA, person_id=person_id) == expected
 
 
 @pytest.mark.parametrize(
@@ -146,7 +146,7 @@ def test_relationship_name_of_an_ancestor(person_id, expected):
     ],
 )
 def test_relationship_name_of_a_descendant(person_id, expected):
-    assert relationship_name(family=HUBERS, home_id=LENA, person_id=person_id) == expected
+    assert relationship_name(family=FAMILY, home_id=LENA, person_id=person_id) == expected
 
 
 @pytest.mark.parametrize(
@@ -158,7 +158,7 @@ def test_relationship_name_of_a_descendant(person_id, expected):
     ],
 )
 def test_relationship_name_of_a_sibling(person_id, expected):
-    assert relationship_name(family=HUBERS, home_id=LENA, person_id=person_id) == expected
+    assert relationship_name(family=FAMILY, home_id=LENA, person_id=person_id) == expected
 
 
 @pytest.mark.parametrize(
@@ -171,7 +171,7 @@ def test_relationship_name_of_a_sibling(person_id, expected):
     ],
 )
 def test_relationship_name_of_a_siblings_descendant(person_id, expected):
-    assert relationship_name(family=HUBERS, home_id=LENA, person_id=person_id) == expected
+    assert relationship_name(family=FAMILY, home_id=LENA, person_id=person_id) == expected
 
 
 @pytest.mark.parametrize(
@@ -185,7 +185,7 @@ def test_relationship_name_of_a_siblings_descendant(person_id, expected):
     ],
 )
 def test_relationship_name_of_an_ancestors_sibling(person_id, expected):
-    assert relationship_name(family=HUBERS, home_id=LENA, person_id=person_id) == expected
+    assert relationship_name(family=FAMILY, home_id=LENA, person_id=person_id) == expected
 
 
 @pytest.mark.parametrize(
@@ -199,28 +199,28 @@ def test_relationship_name_of_an_ancestors_sibling(person_id, expected):
     ],
 )
 def test_relationship_name_of_a_cousin(person_id, expected):
-    assert relationship_name(family=HUBERS, home_id=LENA, person_id=person_id) == expected
+    assert relationship_name(family=FAMILY, home_id=LENA, person_id=person_id) == expected
 
 
 @pytest.mark.parametrize("person_id", [TIM, WERNER, HANS])
 def test_relationship_name_of_a_cousin_of_another_generation_is_verwandt(person_id):
-    assert relationship_name(family=HUBERS, home_id=LENA, person_id=person_id) == "verwandt"
+    assert relationship_name(family=FAMILY, home_id=LENA, person_id=person_id) == "verwandt"
 
 
 def test_relationship_name_of_the_husband():
-    assert relationship_name(family=HUBERS, home_id=LENA, person_id=STEFAN) == "Ehemann"
+    assert relationship_name(family=FAMILY, home_id=LENA, person_id=STEFAN) == "Ehemann"
 
 
 def test_relationship_name_of_the_wife():
-    assert relationship_name(family=HUBERS, home_id=STEFAN, person_id=LENA) == "Ehefrau"
+    assert relationship_name(family=FAMILY, home_id=STEFAN, person_id=LENA) == "Ehefrau"
 
 
 def test_relationship_name_of_an_unmarried_partner():
-    assert relationship_name(family=HUBERS, home_id=CLARA, person_id=JAN) == "Partner"
+    assert relationship_name(family=FAMILY, home_id=CLARA, person_id=JAN) == "Partner"
 
 
 def test_relationship_name_of_an_unmarried_partner_who_is_a_woman():
-    assert relationship_name(family=HUBERS, home_id=JAN, person_id=CLARA) == "Partnerin"
+    assert relationship_name(family=FAMILY, home_id=JAN, person_id=CLARA) == "Partnerin"
 
 
 @pytest.mark.parametrize(
@@ -235,7 +235,7 @@ def test_relationship_name_of_an_unmarried_partner_who_is_a_woman():
     ],
 )
 def test_relationship_name_of_a_blood_relatives_partner(person_id, expected):
-    assert relationship_name(family=HUBERS, home_id=LENA, person_id=person_id) == expected
+    assert relationship_name(family=FAMILY, home_id=LENA, person_id=person_id) == expected
 
 
 @pytest.mark.parametrize(
@@ -249,16 +249,16 @@ def test_relationship_name_of_a_blood_relatives_partner(person_id, expected):
     ],
 )
 def test_relationship_name_of_a_partners_blood_relative(person_id, expected):
-    assert relationship_name(family=HUBERS, home_id=LENA, person_id=person_id) == expected
+    assert relationship_name(family=FAMILY, home_id=LENA, person_id=person_id) == expected
 
 
 @pytest.mark.parametrize("person_id", [LISA, CARINA, OTTO])
 def test_relationship_name_by_marriage_without_a_word_is_verwandt(person_id):
-    assert relationship_name(family=HUBERS, home_id=LENA, person_id=person_id) == "verwandt"
+    assert relationship_name(family=FAMILY, home_id=LENA, person_id=person_id) == "verwandt"
 
 
 def test_relationship_name_of_someone_not_connected_is_none():
-    assert relationship_name(family=HUBERS, home_id=LENA, person_id=VIKTOR) is None
+    assert relationship_name(family=FAMILY, home_id=LENA, person_id=VIKTOR) is None
 
 
 # Everyone below is of unknown sex, so each takes the neutral word.

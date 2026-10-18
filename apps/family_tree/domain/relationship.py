@@ -241,9 +241,7 @@ def _relative_of_partner_name(*, distance: tuple[int, int], sex: str | None) -> 
     """
     match distance:
         case (1, 0):
-            return _gendered(
-                sex=sex, male="Schwiegervater", female="Schwiegermutter", neutral="Schwiegerelternteil"
-            )
+            return _gendered(sex=sex, male="Schwiegervater", female="Schwiegermutter", neutral="Schwiegerelternteil")
         case (0, 1):
             return _gendered(sex=sex, male="Stiefsohn", female="Stieftochter", neutral="Stiefkind")
     return _collateral_name(distance=distance, sex=sex)
