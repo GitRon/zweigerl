@@ -134,8 +134,8 @@ because every round starts from scratch anyway. With `--isolated` in place, skip
 Without it, ask before the first click rather than finding out mid-navigation:
 
 1. Read the neighbouring worktrees' `state.json`, the same ones Phase 1 scanned. A neighbour whose `phase`
-   is `content` and whose `content.status` is still `pending` is the one in the browser. None, no
-   contention - go.
+   is `content` is the one in the browser, whatever its `content.status` says - a run in a fix round has
+   `findings` and is still clicking. None, no contention - go.
 2. Message that neighbour, and only it, at the `session` name its `state.json` records. One `SendMessage`,
    carrying `notify_when_idle: true` so the same call both asks the question and subscribes to the notice
    for when it goes idle. Do not send a second one, and never message a name that no `state.json` claims -
@@ -196,5 +196,7 @@ story-caused: yes | no
 
 ## Teardown
 
-Stop the server and close the browser, pass or fail. A server left running holds the port and will serve
-pre-fix code to the next run, which is a lie that costs a whole round to notice.
+Stop the server and close your tab, pass or fail. A server left running holds the port and will serve
+pre-fix code to the next run, which is a lie that costs a whole round to notice. `browser_close` only
+when the Playwright server runs `--isolated`: on the shared daemon browser it closes the neighbour's
+browser too.

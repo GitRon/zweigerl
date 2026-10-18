@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Runs the three gates from .github/workflows/tests.yml locally, plus the one gate no CI run can have,
-# and records the outcome.
+# Runs the gates from .github/workflows/tests.yml locally - the lock file, the hooks, the suite, the import
+# contracts and the stylesheet build - plus the one gate no CI run can have, and records the outcome.
 #
 # Usage: bash .claude/skills/implement-story/scripts/ci.sh .claude/runs/<slug>
 # Exit code: 0 when every gate passes, 1 otherwise.
@@ -64,6 +64,11 @@ fi
 restore_index
 trap - EXIT
 
+# CI installs with "uv sync --locked", which refuses a uv.lock that no longer matches pyproject.toml. The
+# "uv run" calls below would quietly re-lock instead, so the check is its own gate.
+uv lock --check > "$LOG_DIR/uv-lock.log" 2>&1
+lock_status=$?
+
 # Coverage config lives in pyproject.toml and fails below 100% branch coverage, so this one command is
 # both the test gate and the coverage gate.
 uv run pytest --cov > "$LOG_DIR/pytest.log" 2>&1
@@ -73,6 +78,11 @@ test_status=$?
 # and the suite - so neither gate above sees a module importing across a boundary it may not cross.
 uv run lint-imports > "$LOG_DIR/lint-imports.log" 2>&1
 imports_status=$?
+
+# CI's "assets" job: the stylesheet is compiled, not committed, so this is the only thing that notices a
+# build that has stopped working. It writes to static/dist/, which is gitignored.
+yarn build:css > "$LOG_DIR/build-css.log" 2>&1
+assets_status=$?
 
 # The suite above already refuses a migration graph with two leaves - "migrate" raises before a single
 # database test runs. What it cannot see is the neighbouring worktree holding the other 0009, because
@@ -101,9 +111,11 @@ fi
   echo
   echo "| Gate | Command | Result |"
   echo "|---|---|---|"
+  echo "| Lock file | \`uv lock --check\` | $(verdict $lock_status) |"
   echo "| Lint | \`pre-commit run --all-files\` ($lint_passes pass(es)) | $(verdict $lint_status) |"
   echo "| Tests + coverage | \`uv run pytest --cov\` | $(verdict $test_status) |"
   echo "| Import boundaries | \`uv run lint-imports\` | $(verdict $imports_status) |"
+  echo "| Stylesheet | \`yarn build:css\` | $(verdict $assets_status) |"
   echo "| Migration numbers | \`migration-numbers.sh ${BASE_REF:-github/main}\` | $migration_verdict |"
   echo
   if [ $lint_status -ne 0 ]; then
@@ -119,6 +131,22 @@ fi
     echo
     echo '```'
     tail -n 80 "$LOG_DIR/pytest.log"
+    echo '```'
+    echo
+  fi
+  if [ $lock_status -ne 0 ]; then
+    echo "## uv lock --check"
+    echo
+    echo '```'
+    tail -n 20 "$LOG_DIR/uv-lock.log"
+    echo '```'
+    echo
+  fi
+  if [ $assets_status -ne 0 ]; then
+    echo "## yarn build:css (last 40 lines)"
+    echo
+    echo '```'
+    tail -n 40 "$LOG_DIR/build-css.log"
     echo '```'
     echo
   fi
@@ -143,7 +171,8 @@ fi
 
 cat "$OUT"
 
-if [ $lint_status -eq 0 ] && [ $test_status -eq 0 ] && [ $imports_status -eq 0 ] && [ $migration_status -eq 0 ]; then
+if [ $lock_status -eq 0 ] && [ $lint_status -eq 0 ] && [ $test_status -eq 0 ] && [ $imports_status -eq 0 ] \
+  && [ $assets_status -eq 0 ] && [ $migration_status -eq 0 ]; then
   exit 0
 fi
 exit 1

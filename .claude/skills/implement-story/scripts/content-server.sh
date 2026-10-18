@@ -81,6 +81,9 @@ import socket, sys
 start = int(sys.argv[1])
 for port in range(start, start + 20):
     with socket.socket() as probe:
+        # The server just stopped on this port leaves it in TIME_WAIT. runserver binds with SO_REUSEADDR
+        # and gets it back; a probe without it would wrongly call the port taken.
+        probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             probe.bind(('127.0.0.1', port))
         except OSError:
@@ -150,8 +153,13 @@ check_prerequisites() {
   # it every data-* attribute is inert, every control on every page does nothing, and the whole review is
   # false negatives. Fail here rather than let a reviewer file "the button does nothing" against a
   # working feature.
-  if ! ls "$REPO_ROOT"/static/vendor/datastar/*/datastar.js > /dev/null 2>&1; then
-    echo "no static/vendor/datastar/<version>/datastar.js - see docs/patterns/datastar.md." >&2
+  # The layout names one versioned path; that file, not any version lying around, is what has to exist.
+  local bundle
+  bundle="$(grep -o "vendor/datastar/[^'\"]*/datastar.js" \
+    "$REPO_ROOT/apps/common/templates/cotton/common/layout.html" 2>/dev/null | head -n 1)"
+  if [ -z "$bundle" ] || [ ! -f "$REPO_ROOT/static/$bundle" ]; then
+    echo "the layout loads static/${bundle:-vendor/datastar/<version>/datastar.js}, which does not exist" >&2
+    echo "- see docs/patterns/datastar.md, \"The version\"." >&2
     echo "Without datastar every control on every page does nothing and the review is false negatives." >&2
     return 1
   fi
@@ -208,6 +216,12 @@ check_prerequisites() {
 prepare_database() {
   : > "$SETUP_LOG"
 
+  # Fixtures go into a new database only. A "restart" keeps the database on purpose: loading the fixtures
+  # again would put back the person the reviewer just deleted, and the failed step would be re-walked from
+  # a state other than the one it failed in.
+  local new_database=0
+  [ -f "$DB_FILE" ] || new_database=1
+
   "$PY" manage.py migrate --noinput >> "$SETUP_LOG" 2>&1 || {
     echo "migrate failed, see ${SETUP_LOG#"$REPO_ROOT/"}" >&2
     return 1
@@ -215,9 +229,14 @@ prepare_database() {
 
   # Every fixture in the app is loaded: the invented Familie Huber (#7) is what the browser plays with.
   # Taken off disk rather than named here, because a list written down in a second place goes stale
-  # silently. Before the first fixture exists there is nothing to load, and the tree starts empty.
-  fixtures=$(find "$REPO_ROOT/apps" -path '*/fixtures/*.json' -exec basename {} .json \; | sort)
-  if [ -n "$fixtures" ]; then
+  # silently. Only "<app>/fixtures/*.json", which is where loaddata looks for a bare name - a test's
+  # fixture folder or a subfolder would hand it a name it cannot find. Before the first fixture exists
+  # there is nothing to load, and the tree starts empty.
+  fixtures=$(find "$REPO_ROOT"/apps/*/fixtures -maxdepth 1 -name '*.json' -exec basename {} .json \; 2>/dev/null \
+    | sort -u)
+  if [ "$new_database" -eq 0 ]; then
+    echo "note: kept the existing smoke database, fixtures not reloaded - use 'fresh' to start over" >&2
+  elif [ -n "$fixtures" ]; then
     # Unquoted on purpose: the names are one argument each.
     # shellcheck disable=SC2086
     "$PY" manage.py loaddata $fixtures >> "$SETUP_LOG" 2>&1 || {
@@ -271,7 +290,8 @@ do_start() {
   prepare_database || return 1
 
   local port
-  port="$(free_port "${PORT_ARG:-$DEFAULT_PORT}")"
+  # A restart comes back on the port the browser is already pointed at, when it is free.
+  port="$(free_port "${PORT_ARG:-$(cat "$PORT_FILE" 2>/dev/null || echo "$DEFAULT_PORT")}")"
   if [ -z "$port" ]; then
     echo "no free port in the 20 above ${PORT_ARG:-$DEFAULT_PORT}" >&2
     return 1

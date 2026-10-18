@@ -33,9 +33,10 @@ stays.
 
 ## Phase 1 - gather
 
-Run these as plain, separate commands. In a session isolated to a worktree, the guard refuses `git -C`
-pointed at another checkout and any loop or pipeline around `git` it cannot verify - so do not build a
-shell loop, and do not wrap the commands in a script to get past it. Do the comparison yourself from the
+Run these as plain, separate commands. In a session isolated to a worktree, Claude Code's own guard - not a
+hook of this repository - refuses `git -C` pointed at another checkout and any loop or pipeline around
+`git` it cannot verify - so do not build a shell loop, and do not wrap the commands in a script to get past
+it. Do the comparison yourself from the
 output.
 
 ```bash

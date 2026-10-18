@@ -148,7 +148,8 @@ nothing else, which is what lets several stories run at once.
 
 ```bash
 git fetch github
-[ "$(git rev-parse --git-dir)" = "$(git rev-parse --git-common-dir)" ] || echo "already in a worktree"
+[ "$(git rev-parse --path-format=absolute --git-dir)" = "$(git rev-parse --path-format=absolute --git-common-dir)" ] \
+  || echo "already in a worktree"
 ```
 
 Fetch first, whichever way this goes. The branch is cut from `github/main`, never from local `main`, which
@@ -260,10 +261,11 @@ its story next reads that list, and a plan's guess is worth less to it than the 
 bash .claude/skills/implement-story/scripts/ci.sh .claude/runs/<slug>
 ```
 
-Runs the three gates from `.github/workflows/tests.yml` - `pre-commit run --all-files` (twice, because the
-formatting hooks fail the run they rewrote), `uv run pytest --cov` behind the 100% branch gate and
-`uv run lint-imports` for the import contracts in `pyproject.toml` - plus `migration-numbers.sh`, which no CI
-run can stand in for. Results land in `ci.md`, full output in `ci-logs/`.
+Runs the gates from `.github/workflows/tests.yml` - `uv lock --check` for the lock file CI installs from,
+`pre-commit run --all-files` (twice, because the formatting hooks fail the run they rewrote),
+`uv run pytest --cov` behind the 100% branch gate, `uv run lint-imports` for the import contracts in
+`pyproject.toml` and `yarn build:css` for the stylesheet - plus `migration-numbers.sh`, which no CI run can
+stand in for. Results land in `ci.md`, full output in `ci-logs/`.
 The lint gate covers files the story created but has not staged yet as well - they are marked intent-to-add
 for the run and unmarked afterwards, so the index is left as it was.
 
@@ -275,7 +277,7 @@ the numbers there and in every sibling worktree against this one: a number the b
 failure, a number a neighbour is using is a warning, since that branch may never land and renumbering costs
 nothing. The fix either way is to rename the file and repoint its `dependencies`.
 
-Fix and re-run until all four are green, counting rounds in `ci_attempts`. **The review does not start on a
+Fix and re-run until every gate is green, counting rounds in `ci_attempts`. **The review does not start on a
 red run** - reviewers must not spend wall-clock on findings a linter would have caught for free. If
 coverage is short, read [coverage](../../../docs/patterns/coverage.md): the fix is a test, never
 `# pragma: no cover` and never a lower `fail_under`.
@@ -329,7 +331,8 @@ bash .claude/skills/implement-story/scripts/review-status.sh .claude/runs/<slug>
 Pass the deadline explicitly - the script defaults to 720 and would otherwise measure a `--deadline=900`
 run against the wrong budget, cutting shards short without saying so.
 
-It prints elapsed seconds against the deadline and the per-shard state (`complete`, `partial`, `missing`).
+It prints elapsed seconds against the deadline and the state of every shard file there is (`complete` or
+`partial`). A lens you launched that has no row is missing - compare against the shards in `state.json`.
 Do not poll it on a timer - only look when a notification wakes you, or when you have nothing else to do.
 
 **Never re-read a shard's returned text as the source of truth.** The file is the deliverable. An agent
@@ -407,7 +410,8 @@ habits, how to reach the state a story needs honestly, and what counts as a find
    counted in `content.rounds`. A third means the story's design is wrong in a way more clicking will not
    settle - stop and report.
 6. Re-run `ci.sh`. A content fix that reddens the suite is worse than the bug it fixed.
-7. Stop the server and close the browser, pass or fail:
+7. Stop the server and close your tab, pass or fail - the whole browser only when the Playwright server
+   runs `--isolated`, see [content review](references/content-review.md#teardown):
 
    ```bash
    bash .claude/skills/implement-story/scripts/content-server.sh stop .claude/runs/<slug>
