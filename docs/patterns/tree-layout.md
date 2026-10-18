@@ -43,7 +43,9 @@ parents', 1 for their children's. Where two paths disagree, three rules settle i
   they were entered. A sibling's partner stands next to them, on the side of the partner's own parents
   when those are in the tree too.
 - **Half-siblings** hang under their own couple: the children of each marriage from the gap between that
-  pair, so they stand apart from their half-siblings.
+  pair, so they stand apart from their half-siblings. The bar of each further couple of a unit runs a
+  `BAR_STEP` lower - at most two - so where the children of two marriages stand close, their bars do not
+  run together into one.
 - **A child with one known parent** hangs from that parent. Their bar runs `BAR_STEP` higher than a
   couple's, so a father's son of an unknown mother does not look like the couple's.
 - **Siblings without known parents** - those only a `SiblingPair` connects - hang from a `Placeholder`: a

@@ -365,6 +365,45 @@ def test_layout_draws_the_line_to_a_first_marriages_child_from_between_that_coup
     )
 
 
+def test_layout_runs_the_bar_of_a_second_marriages_children_a_step_lower():
+    johann, hilde, maria, florian, lena = 1, 2, 3, 4, 5
+
+    result = layout(
+        people=[
+            LayoutPerson(id=johann),
+            LayoutPerson(id=hilde),
+            LayoutPerson(id=maria),
+            LayoutPerson(id=florian),
+            LayoutPerson(id=lena),
+        ],
+        partnerships=[PartnerLink(person_a=johann, person_b=hilde), PartnerLink(person_a=johann, person_b=maria)],
+        parent_links=[
+            ParentLink(parent=johann, child=florian),
+            ParentLink(parent=hilde, child=florian),
+            ParentLink(parent=johann, child=lena),
+            ParentLink(parent=maria, child=lena),
+        ],
+        sibling_links=[],
+        home_person_id=lena,
+    )
+
+    _, johann_card, maria_card, _, lena_card = result.cards
+    middle = (johann_card.x + CARD_WIDTH + maria_card.x) / 2
+    child = lena_card.x + CARD_WIDTH / 2
+    bar = ROW - ROW_GAP / 2 + BAR_STEP
+    assert result.lines[2] == Line(
+        kind=LineKind.CHILDREN,
+        path=pen_stroke(
+            segments=[
+                ((middle, CARD_HEIGHT / 2), (middle, bar)),
+                ((middle, bar), (child, bar)),
+                ((child, bar), (child, ROW)),
+            ],
+            seed=zlib.crc32(b"children-1-3"),
+        ),
+    )
+
+
 def test_layout_runs_the_line_to_a_third_partner_lower_behind_the_second():
     johann, hilde, maria, rosa = 1, 2, 3, 4
 
@@ -523,6 +562,22 @@ def test_layout_puts_an_ancestor_above_both_lines_of_different_length_that_meet_
         Card(person_id=maria, x=41, y=2 * ROW, generation=-1),
         Card(person_id=johann, x=205, y=2 * ROW, generation=-1),
         Card(person_id=lena, x=123, y=3 * ROW, generation=0),
+    )
+    bar = ROW - ROW_GAP / 2
+    assert (
+        Line(
+            kind=LineKind.CHILDREN,
+            path=pen_stroke(
+                segments=[
+                    ((152, CARD_HEIGHT / 2), (152, bar)),
+                    ((111, bar), (193, bar)),
+                    ((193, bar), (193, ROW)),
+                    ((111, bar), (111, 2 * ROW)),
+                ],
+                seed=zlib.crc32(b"children-1-2"),
+            ),
+        )
+        in result.lines
     )
 
 

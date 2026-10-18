@@ -680,13 +680,18 @@ class _Tree:
     def _children_lines(self, *, corners: dict[int, tuple[int, int]]) -> tuple[Line, ...]:
         """
         From the parents down to a bar above the children, and from the bar down to each child. A couple's
-        line leaves the line between them, anyone else's the bottom of their cards, with its bar a step higher.
+        line leaves the line between them, anyone else's the bottom of their cards; "_bar_shift" says how high
+        the bar runs.
         """
         lines = []
         for family in self.families:
             children = [(corners[child][0] + CARD_WIDTH / 2, corners[child][1]) for child in family.children]
             (anchor_x, start_y), from_partner_line = self._line_start(family=family, corners=corners)
-            bar_y = min(y for _, y in children) - ROW_GAP / 2 - (0 if from_partner_line else BAR_STEP)
+            bar_y = (
+                min(y for _, y in children)
+                - ROW_GAP / 2
+                + self._bar_shift(family=family, from_partner_line=from_partner_line)
+            )
             bar = sorted({anchor_x, *(x for x, _ in children)})
 
             segments: list[Segment] = [((anchor_x, start_y), (anchor_x, bar_y))]
@@ -695,6 +700,16 @@ class _Tree:
             segments.extend(((x, bar_y), (x, y)) for x, y in children)
             lines.append(Line(kind=LineKind.CHILDREN, path=pen_stroke(segments=segments, seed=_seed(key=family.key))))
         return tuple(lines)
+
+    def _bar_shift(self, *, family: _Family, from_partner_line: bool) -> float:
+        """
+        How far a family's bar runs from halfway between the rows: a step higher where the line does not leave
+        a partner line, and for every further couple of the same unit a step lower - at most two - so the bars
+        of half-siblings never run together into one.
+        """
+        couple = self.couple_of.get(frozenset(family.parents))
+        order = self.unit_of[couple.far].couples.index(couple) if couple else 0
+        return min(order, 2) * BAR_STEP - (0 if from_partner_line else BAR_STEP)
 
     def _line_start(self, *, family: _Family, corners: dict[int, tuple[int, int]]) -> tuple[tuple[float, float], bool]:
         """
