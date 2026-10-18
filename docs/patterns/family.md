@@ -89,7 +89,28 @@ nothing but the importer writes it.
 
 The Ausgangsperson - the person the tree is laid out around (#11) - is stored as
 `TreeSettings.home_person` and read with `readers.tree_settings.home_person()`, which returns `None` while nobody has been chosen. #18, #19 and #20
-read it there; #20 makes it changeable from the person card.
+read it there; #20 makes it changeable from the person card. Until one is chosen, the tree is laid out around
+the person entered first, see [tree layout](tree-layout.md).
+
+## How someone is related to the home person
+
+`domain.relationship.relationship_name(family=…, home_id=…, person_id=…)` names, in German and by the person's
+`sex`, what someone is to the home person: "Urgroßvater", "Großnichte", "Schwägerin", "Cousine 2. Grades". It is
+a pure function over a `FamilyGraph`, which `readers.relationship.family_graph()` loads from the whole tree in
+four queries - so a list names every row from one load (#9).
+
+- **Blood first**, through the nearest common ancestor: the generations up from the home person and from the
+  other person decide the word. Every parent link counts, whatever its `pedigree`, and half-siblings are
+  siblings. A group of explicit siblings shares one unknown parent, so their children are cousins too.
+- **Then the partner**: Ehemann and Ehefrau for a `marriage`, Partner and Partnerin otherwise.
+- **Then by marriage**: the partner of a child, parent or sibling (Schwiegersohn, Stiefvater, Schwager), the
+  parent, child or sibling of a partner (Schwiegermutter, Stieftochter, Schwägerin). Uncles, aunts, nephews and
+  nieces by marriage keep the blood word.
+- **"verwandt"** when no word fits - cousins of different generations, the partner of a grandchild - and
+  `None` for someone not connected to the home person at all.
+
+`X` and `U` take the neutral word where German has one (Elternteil, Kind, Geschwister) and "Onkel oder Tante"
+where it has none. Four generations and more repeat the "Ur": Ururgroßvater, Ururenkel.
 
 ## Familie Huber
 
