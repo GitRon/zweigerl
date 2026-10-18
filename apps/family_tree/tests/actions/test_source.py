@@ -5,6 +5,7 @@ import pytest
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from PIL import Image
+from pypdf import PdfWriter
 
 from apps.common.media import UploadRefusedError
 from apps.family_tree.actions.source import add_source_files, create_source
@@ -12,14 +13,25 @@ from apps.family_tree.models import Person, Source, SourceFile
 from apps.family_tree.tests.factories.person import PersonFactory
 from apps.family_tree.tests.factories.source import SourceFactory
 
-PDF = b"%PDF-1.4 erfundene Geburtsurkunde"
-
 
 @pytest.fixture(autouse=True)
 def media_root(settings, tmp_path) -> Path:
     settings.MEDIA_ROOT = tmp_path
 
     return tmp_path
+
+
+def _pdf() -> bytes:
+    """
+    An invented certificate of one empty page; what "store_upload" strips from a PDF is tested in
+    apps/common.
+    """
+    output = io.BytesIO()
+    writer = PdfWriter()
+    writer.add_blank_page(width=200, height=100)
+    writer.write(output)
+
+    return output.getvalue()
 
 
 def _png() -> bytes:
@@ -54,7 +66,7 @@ def test_create_source_stores_each_file_under_the_ids(media_root):
         title="Taufbuch",
         kind="parish_register",
         description="",
-        files=[SimpleUploadedFile("Taufe Lena Huber.pdf", PDF), SimpleUploadedFile("Seite 2.png", _png())],
+        files=[SimpleUploadedFile("Taufe Lena Huber.pdf", _pdf()), SimpleUploadedFile("Seite 2.png", _png())],
     )
 
     first, second = source.files.all()
@@ -62,7 +74,7 @@ def test_create_source_stores_each_file_under_the_ids(media_root):
         f"sources/{source.pk}/{first.pk}.pdf",
         f"sources/{source.pk}/{second.pk}.png",
     ]
-    assert (media_root / first.file.name).read_bytes() == PDF
+    assert (media_root / first.file.name).read_bytes().startswith(b"%PDF-")
 
 
 @pytest.mark.django_db
@@ -89,7 +101,7 @@ def test_create_source_refusing_a_file_leaves_nothing_behind(media_root):
             title="Taufbuch",
             kind="other",
             description="",
-            files=[SimpleUploadedFile("Urkunde.pdf", PDF), SimpleUploadedFile("Notiz.txt", b"erfunden")],
+            files=[SimpleUploadedFile("Urkunde.pdf", _pdf()), SimpleUploadedFile("Notiz.txt", b"erfunden")],
         )
 
     assert (Source.objects.exists(), list(media_root.rglob("*.pdf"))) == (False, [])
@@ -99,16 +111,16 @@ def test_create_source_refusing_a_file_leaves_nothing_behind(media_root):
 def test_add_source_files_attaches_the_files(media_root):
     source = SourceFactory()
 
-    stored = add_source_files(source_id=source.pk, files=[SimpleUploadedFile("Scan.pdf", PDF)])
+    stored = add_source_files(source_id=source.pk, files=[SimpleUploadedFile("Scan.pdf", _pdf())])
 
     assert list(source.files.all()) == stored
-    assert (media_root / stored[0].file.name).read_bytes() == PDF
+    assert (media_root / stored[0].file.name).read_bytes().startswith(b"%PDF-")
 
 
 @pytest.mark.django_db
 def test_add_source_files_refuses_a_source_that_is_gone():
     with pytest.raises(Source.DoesNotExist, match="Source matching query does not exist"):
-        add_source_files(source_id=404, files=[SimpleUploadedFile("Scan.pdf", PDF)])
+        add_source_files(source_id=404, files=[SimpleUploadedFile("Scan.pdf", _pdf())])
 
 
 @pytest.mark.django_db

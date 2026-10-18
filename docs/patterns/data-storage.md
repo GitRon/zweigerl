@@ -112,7 +112,14 @@ field routes it through `store_upload`, and a review finds it when it does not.
   quantisation tables, so it is not visibly recompressed; one with previews is saved at quality 95.
 - **A TIFF is turned upright and keeps no tags:** Pillow writes no EXIF sub-blocks into a TIFF, so the
   orientation is applied to the pixels and the date taken does not survive. A scan rarely has one.
-- **A PDF is stored as it came.** Its own metadata - author, producer - is not touched yet (#50).
+- **A PDF keeps its pages and nothing else** (#50). It is written again from what each page shows -
+  content, resources, size, rotation - with `pypdf`, and everything around it stays behind: the document
+  information (author, title, subject, keywords, creator, producer and both dates), XMP on the document and
+  on its pages, bookmarks, form fields, page labels, embedded files and scripts. The creation date goes too:
+  for a scan it is the day of the scanning, not of the certificate. A comment or a mark-up on a page stays,
+  without its author and date; a file attachment, a sound, a movie or a link does not. A PDF `pypdf` cannot
+  read, and an encrypted one, raise `UploadRefusedError` rather than being kept as they came. Pictures
+  inside a PDF are not checked for EXIF of their own.
 
 ### The layout
 

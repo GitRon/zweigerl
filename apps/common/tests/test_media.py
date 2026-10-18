@@ -1,9 +1,13 @@
 import io
+import re
 from pathlib import Path
 
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from PIL import ExifTags, Image
+from pypdf import PdfReader, PdfWriter
+from pypdf.annotations import Text
+from pypdf.generic import ArrayObject, DecodedStreamObject, DictionaryObject, NameObject, TextStringObject
 
 from apps.common.media import UploadRefusedError, store_upload
 
@@ -52,6 +56,59 @@ def _tiff_with_tags() -> bytes:
     return output.getvalue()
 
 
+def _pdf(*, pages: int = 1) -> bytes:
+    """
+    An invented certificate carrying everything the upload has to strip - the document information, XMP on
+    the document and on a page, an editor's "PieceInfo", a bookmark, an embedded file, a comment's
+    author and a file attachment - around pages whose content it has to keep.
+    """
+    writer = PdfWriter()
+    for number in range(pages):
+        page = writer.add_blank_page(width=200, height=100)
+        content = DecodedStreamObject()
+        content.set_data(f"BT /F1 12 Tf 10 50 Td (Seite {number + 1}) Tj ET".encode())
+        page[NameObject("/Contents")] = writer._add_object(content)
+    writer.pages[0].rotate(90)
+    writer.add_metadata(
+        {
+            "/Author": "Josef Erfunden",
+            "/Title": "Taufschein Josef Erfunden",
+            "/Creator": "Scanner-App",
+            "/Producer": "Scannerfirma",
+            "/CreationDate": "D:20240501100000",
+        }
+    )
+    xmp = DecodedStreamObject()
+    xmp.set_data(b"<x:xmpmeta><dc:creator>Josef Erfunden</dc:creator></x:xmpmeta>")
+    writer.root_object[NameObject("/Metadata")] = writer._add_object(xmp)
+    writer.pages[0][NameObject("/Metadata")] = writer._add_object(xmp)
+    writer.pages[0][NameObject("/PieceInfo")] = DictionaryObject({NameObject("/Editor"): TextStringObject("Erfunden")})
+    writer.add_outline_item("Josef Erfunden", 0)
+    writer.add_attachment("Josef Erfunden.txt", b"Josef Erfunden")
+    comment = Text(rect=(10, 10, 30, 30), text="Seite 1 ist die Vorderseite")
+    comment[NameObject("/T")] = TextStringObject("Josef Erfunden")
+    writer.add_annotation(page_number=0, annotation=comment)
+    attachment = DictionaryObject(
+        {
+            NameObject("/Type"): NameObject("/Annot"),
+            NameObject("/Subtype"): NameObject("/FileAttachment"),
+            NameObject("/Rect"): ArrayObject(),
+            NameObject("/Contents"): TextStringObject("Anhang"),
+        }
+    )
+    writer.add_annotation(page_number=0, annotation=attachment)
+    output = io.BytesIO()
+    writer.write(output)
+
+    return output.getvalue()
+
+
+def _stored_pdf(*, media_root: Path, name: str) -> tuple[bytes, PdfReader]:
+    content = (media_root / name).read_bytes()
+
+    return content, PdfReader(io.BytesIO(content))
+
+
 def _stored_exif(*, media_root: Path, name: str) -> Image.Exif:
     return Image.open(media_root / name).getexif()
 
@@ -84,14 +141,14 @@ def test_store_upload_replaces_a_file_of_another_kind_at_the_name(media_root):
 
 
 def test_store_upload_replaces_a_file_already_at_the_name(media_root):
-    first = SimpleUploadedFile("urkunde.pdf", b"%PDF-1.4\n% erste Fassung\n%%EOF\n")
-    second = SimpleUploadedFile("urkunde.pdf", b"%PDF-1.4\n% zweite Fassung\n%%EOF\n")
+    first = SimpleUploadedFile("urkunde.pdf", _pdf(pages=1))
+    second = SimpleUploadedFile("urkunde.pdf", _pdf(pages=2))
     store_upload(uploaded_file=first, name="sources/8/3")
 
     name = store_upload(uploaded_file=second, name="sources/8/3")
 
     assert name == "sources/8/3.pdf"
-    assert (media_root / name).read_bytes() == b"%PDF-1.4\n% zweite Fassung\n%%EOF\n"
+    assert len(_stored_pdf(media_root=media_root, name=name)[1].pages) == 2
 
 
 def test_store_upload_removes_the_location_from_a_jpeg(media_root):
@@ -192,13 +249,88 @@ def test_store_upload_refuses_a_scan_with_several_pages(media_root):
         store_upload(uploaded_file=upload, name="sources/1/1")
 
 
-def test_store_upload_keeps_a_pdf_as_it_came(media_root):
-    pdf = b"%PDF-1.4\n% erfundene Urkunde\n%%EOF\n"
-    upload = SimpleUploadedFile("Urkunde Josef Huber.pdf", pdf)
+def test_store_upload_keeps_the_pages_of_a_pdf(media_root):
+    upload = SimpleUploadedFile("Urkunde Josef Erfunden.pdf", _pdf(pages=2))
 
     name = store_upload(uploaded_file=upload, name="sources/1/1")
 
-    assert (media_root / name).read_bytes() == pdf
+    first, second = _stored_pdf(media_root=media_root, name=name)[1].pages
+    assert (first.get_contents().get_data(), first.rotation, first.mediabox) == (
+        b"BT /F1 12 Tf 10 50 Td (Seite 1) Tj ET",
+        90,
+        [0, 0, 200, 100],
+    )
+    assert (second.get_contents().get_data(), second.rotation) == (b"BT /F1 12 Tf 10 50 Td (Seite 2) Tj ET", 0)
+
+
+def test_store_upload_keeps_no_name_anywhere_in_a_pdf(media_root):
+    upload = SimpleUploadedFile("urkunde.pdf", _pdf())
+
+    name = store_upload(uploaded_file=upload, name="sources/1/1")
+
+    assert b"Erfunden" not in _stored_pdf(media_root=media_root, name=name)[0]
+
+
+def test_store_upload_drops_the_document_information_of_a_pdf(media_root):
+    upload = SimpleUploadedFile("urkunde.pdf", _pdf())
+
+    name = store_upload(uploaded_file=upload, name="sources/1/1")
+
+    content, reader = _stored_pdf(media_root=media_root, name=name)
+    assert (reader.metadata, b"Scanner" in content, b"pypdf" in content) == (None, False, False)
+
+
+def test_store_upload_keeps_only_the_pages_of_a_pdf(media_root):
+    upload = SimpleUploadedFile("urkunde.pdf", _pdf())
+
+    name = store_upload(uploaded_file=upload, name="sources/1/1")
+
+    reader = _stored_pdf(media_root=media_root, name=name)[1]
+    assert (set(reader.trailer["/Root"]), set(reader.pages[0])) == (
+        {"/Type", "/Pages"},
+        {"/Type", "/Parent", "/Resources", "/MediaBox", "/Contents", "/Rotate", "/Annots"},
+    )
+
+
+def test_store_upload_keeps_a_comment_in_a_pdf_without_its_author(media_root):
+    upload = SimpleUploadedFile("urkunde.pdf", _pdf())
+
+    name = store_upload(uploaded_file=upload, name="sources/1/1")
+
+    (comment,) = _stored_pdf(media_root=media_root, name=name)[1].pages[0]["/Annots"]
+    comment = comment.get_object()
+    assert (comment["/Subtype"], comment["/Contents"], "/T" in comment) == (
+        "/Text",
+        "Seite 1 ist die Vorderseite",
+        False,
+    )
+
+
+def test_store_upload_refuses_a_pdf_that_does_not_open(media_root):
+    upload = SimpleUploadedFile("urkunde.pdf", b"%PDF-1.4\nerfunden, aber kaputt")
+
+    with pytest.raises(UploadRefusedError, match="PDF lässt sich nicht lesen"):
+        store_upload(uploaded_file=upload, name="sources/1/1")
+
+
+def test_store_upload_refuses_a_pdf_whose_pages_do_not_open(media_root):
+    # The page tree points at a number where its list of pages belongs.
+    broken = re.sub(rb"/Kids \[[^\]]*\]", b"/Kids 5", _pdf())
+    upload = SimpleUploadedFile("urkunde.pdf", broken)
+
+    with pytest.raises(UploadRefusedError, match="PDF lässt sich nicht lesen"):
+        store_upload(uploaded_file=upload, name="sources/1/1")
+
+
+def test_store_upload_refuses_an_encrypted_pdf(media_root):
+    writer = PdfWriter(clone_from=io.BytesIO(_pdf()))
+    writer.encrypt(user_password="erfunden")
+    output = io.BytesIO()
+    writer.write(output)
+    upload = SimpleUploadedFile("urkunde.pdf", output.getvalue())
+
+    with pytest.raises(UploadRefusedError, match="PDF ist verschlüsselt"):
+        store_upload(uploaded_file=upload, name="sources/1/1")
 
 
 def test_store_upload_refuses_a_pdf_that_is_none(media_root):

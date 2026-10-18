@@ -11,6 +11,9 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import UploadedFile
 from PIL import ExifTags, Image, ImageOps, UnidentifiedImageError
+from pypdf import PageObject, PdfReader, PdfWriter
+from pypdf.errors import PyPdfError
+from pypdf.generic import ArrayObject, DictionaryObject, NameObject
 
 # The extension a file is stored under, and the Pillow formats its content may have. A JPEG from many
 # cameras and phones carries preview pictures (CIPA multi-picture) and opens as "MPO"; it is a JPEG all the
@@ -30,6 +33,70 @@ STORED_EXTENSIONS = {"jpg": "jpg", "jpeg": "jpg", "png": "png", "webp": "webp", 
     PDF_EXTENSION: PDF_EXTENSION
 }
 PDF_SIGNATURE = b"%PDF-"
+# What a page of a PDF keeps: what it draws and how big it is. Its XMP, the "PieceInfo" an editor leaves
+# behind, thumbnails and links into a structure that is not copied all stay behind.
+PDF_PAGE_KEYS = {
+    "/Type",
+    "/Resources",
+    "/MediaBox",
+    "/CropBox",
+    "/BleedBox",
+    "/TrimBox",
+    "/ArtBox",
+    "/Contents",
+    "/Rotate",
+    "/UserUnit",
+    "/Annots",
+}
+# The annotations a page keeps: the ones that only mark something up or show a form as filled in. A file
+# attachment, a sound, a movie or a link - which can run an action - does not come along.
+PDF_ANNOTATION_SUBTYPES = {
+    "/Text",
+    "/FreeText",
+    "/Line",
+    "/Square",
+    "/Circle",
+    "/Polygon",
+    "/PolyLine",
+    "/Highlight",
+    "/Underline",
+    "/Squiggly",
+    "/StrikeOut",
+    "/Stamp",
+    "/Caret",
+    "/Ink",
+    "/Widget",
+}
+# What such an annotation keeps: where it sits, what it looks like and the text it shows - not who wrote
+# it, when, or the action and form field behind it.
+PDF_ANNOTATION_KEYS = {
+    "/Type",
+    "/Subtype",
+    "/Rect",
+    "/Contents",
+    "/AP",
+    "/AS",
+    "/F",
+    "/Border",
+    "/BS",
+    "/BE",
+    "/C",
+    "/IC",
+    "/CA",
+    "/DA",
+    "/Q",
+    "/Name",
+    "/QuadPoints",
+    "/InkList",
+    "/Vertices",
+    "/L",
+    "/LE",
+    "/RD",
+}
+# A damaged PDF breaks pypdf in more ways than its own errors - a missing key, an object of the wrong type.
+# Whichever it is, the file is refused rather than kept as it came. "UploadRefusedError" is a ValueError too,
+# which is why nothing inside the "try" raises it.
+_BROKEN_PDF = (PyPdfError, ValueError, KeyError, TypeError, AttributeError, IndexError, RecursionError)
 
 
 class UploadRefusedError(ValueError):
@@ -44,7 +111,7 @@ def store_upload(*, uploaded_file: UploadedFile, name: str) -> str:
     wants it. "name" is the place in the layout without the extension - "photos/17/original" - and the caller
     builds it from ids, never from a person's name; see docs/patterns/data-storage.md, "Photos and scans".
     A file already there is replaced. The original file name is dropped: it often says who is in the
-    picture. Images keep only the date they were taken and their orientation; PDFs are stored as they came.
+    picture. Images keep only the date they were taken and their orientation, PDFs only their pages.
     """
     extension = PurePosixPath(uploaded_file.name or "").suffix.lstrip(".").lower()
     content = uploaded_file.read()
@@ -54,6 +121,7 @@ def store_upload(*, uploaded_file: UploadedFile, name: str) -> str:
     elif extension == PDF_EXTENSION:
         if not content.startswith(PDF_SIGNATURE):
             raise UploadRefusedError("Die Datei endet auf .pdf, ist aber kein PDF.")
+        content = _pages_only(content=content)
     else:
         raise UploadRefusedError("Zweigerl nimmt Fotos und Scans als JPEG, PNG, WebP, TIFF oder PDF.")
 
@@ -107,6 +175,56 @@ def _picture_only(*, content: bytes, allowed_formats: tuple[str, ...]) -> bytes:
     output = io.BytesIO()
     image.save(output, image_format, **options)
     return output.getvalue()
+
+
+def _pages_only(*, content: bytes) -> bytes:
+    """
+    The PDF written again from its pages and nothing else. The document information - author, title,
+    creator, producer, the dates - its XMP, bookmarks, form fields, embedded files and scripts may name a
+    person, a device or a program, so it is not chosen what to drop but what to keep: what each page shows.
+    See docs/patterns/data-storage.md, "Photos and scans".
+    """
+    try:
+        reader = PdfReader(io.BytesIO(content))
+        encrypted = reader.is_encrypted
+    except _BROKEN_PDF as error:
+        raise UploadRefusedError("Das PDF lässt sich nicht lesen.") from error
+    if encrypted:
+        raise UploadRefusedError("Das PDF ist verschlüsselt. Bitte ohne Kennwort speichern und erneut hochladen.")
+
+    try:
+        writer = PdfWriter()
+        for page in reader.pages:
+            writer.add_page(_page_only(page=page))
+        # The writer starts with a document information of its own, naming itself as the producer.
+        writer.metadata = None
+        writer.pdf_header = reader.pdf_header
+        output = io.BytesIO()
+        writer.write(output)
+    except _BROKEN_PDF as error:
+        raise UploadRefusedError("Das PDF lässt sich nicht lesen.") from error
+
+    return output.getvalue()
+
+
+def _page_only(*, page: PageObject) -> PageObject:
+    """
+    The page of the reader cut down, in place, to what PDF_PAGE_KEYS and the two annotation sets keep, before
+    the writer copies it - so what was cut is never copied in the first place.
+    """
+    for key in set(page) - PDF_PAGE_KEYS:
+        del page[key]
+    if "/Annots" in page:
+        annotations = [annotation.get_object() for annotation in page["/Annots"].get_object()]
+        page[NameObject("/Annots")] = ArrayObject(
+            DictionaryObject(
+                {NameObject(key): value for key, value in annotation.items() if key in PDF_ANNOTATION_KEYS}
+            )
+            for annotation in annotations
+            if annotation.get("/Subtype") in PDF_ANNOTATION_SUBTYPES
+        )
+
+    return page
 
 
 def _date_and_orientation(*, exif: Image.Exif) -> Image.Exif:
