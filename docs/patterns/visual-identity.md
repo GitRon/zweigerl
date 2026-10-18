@@ -80,7 +80,7 @@ Georgia and the system sans: it reads, but it is not Zweigerl.
 - **Pictures are real**: photos and scans, pressed plants from a herbarium. Nothing is illustrated, no
   stock icons standing in for people, no emoji.
 - **Hover answers with the ground or the line**, never by moving: an outlined control gets `card` behind
-  it, the filled one a `ink` edge.
+  it, the filled one an `ink` edge.
 - **The focus ring is `forest`, 2px**, on everything the keyboard reaches. It is set once in the base layer.
 
 ## The components
@@ -115,7 +115,7 @@ greyscale. Which tone a reliability state gets is #13's.
 `<c-common.button variant="primary" type="submit">Person hinzufügen</c-common.button>`
 
 **At most one `primary` per screen**, filled `brick` with `birch` text, and it is the thing the
-screen exists for. Everything else is `secondary`: a `ink` outline. With `href` the component draws a
+screen exists for. Everything else is `secondary`: an `ink` outline. With `href` the component draws a
 link that looks the same. A link is never disabled: a control that may refuse is a button. A `disabled` button drops to `ink-muted` on a `card-edge` edge - quieter, still
 readable. At least 44px tall, so a finger finds it too.
 
@@ -132,7 +132,7 @@ outlined into a path, so it renders without the font; the leaf is the moodboard'
 
 | File | What | Where |
 |---|---|---|
-| `favicon.svg` | `ink` "l", `forest` leaf, on `birch` with a `ink` edge | The browser tab |
+| `favicon.svg` | `ink` "l", `forest` leaf, on `birch` with an `ink` edge | The browser tab |
 | `favicon-32.png` | The same, for browsers without SVG favicons | The browser tab |
 | `app-icon.svg` | `birch` "l", `moss` leaf, on `forest` | The source of the PNGs below |
 | `apple-touch-icon.png`, `icon-192.png`, `icon-512.png` | Rendered from `app-icon.svg` | Home screen, `manifest.webmanifest` |

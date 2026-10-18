@@ -7,4 +7,6 @@ from apps.common.tests.html import parse, render_component
 def test_label_renders_every_tone(tone):
     html = render_component(tag=f'<c-common.label text="belegt" tone="{tone}" />', context={})
 
-    assert parse(html).get_text(strip=True) == "belegt"
+    label = parse(html).span
+    assert label.get_text(strip=True) == "belegt"
+    assert f"text-{tone}" in label["class"]

@@ -89,7 +89,7 @@
     }
 
     /*
-     * A link is Loden, underlined. Loden is the colour of where you are and where you can go, so a link
+     * A link is `forest`, underlined. `forest` is the colour of where you are and where you can go, so a link
      * in a sentence and the current entry of a menu say the same thing.
      */
     a {
