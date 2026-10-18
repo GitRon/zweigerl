@@ -1,0 +1,29 @@
+<c-vars person_list search="" />
+{# The people of the sidebar, as "readers.person.person_list" found them for "search". Patched whole by #}
+{# the live search, so the count and the empty text move with it. #}
+<div id="person-list" class="flex min-h-0 flex-1 flex-col gap-2">
+    <p class="flex justify-between text-sm text-ink-muted" aria-live="polite">
+        {% if search %}
+            <span>Treffer</span><span>{{ person_list.entries|length }} von {{ person_list.total }}</span>
+        {% else %}
+            <span>Personen</span><span>{{ person_list.total }}</span>
+        {% endif %}
+    </p>
+    {% if person_list.entries %}
+        <ul class="flex min-h-0 flex-col gap-0.5 overflow-y-auto">
+            {% for entry in person_list.entries %}
+                <li id="person-list-{{ entry.person.pk }}" class="flex items-center gap-3 rounded-md px-2 py-1.5">
+                    <c-common.frame :initials="entry.initials" width="w-7" />
+                    <span class="flex min-w-0 flex-col leading-tight">
+                        <span class="truncate">{{ entry.name }}</span>
+                        <span class="truncate text-sm text-ink-muted">{{ entry.lifespan }}</span>
+                    </span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% elif search %}
+        <p class="py-8 text-center text-ink-muted">Niemand passt zu „{{ search }}“.</p>
+    {% else %}
+        <p class="py-8 text-center text-ink-muted">Jeder Baum fangt mit an Zweigerl an. Mit dir.</p>
+    {% endif %}
+</div>
