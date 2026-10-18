@@ -89,7 +89,8 @@ nothing but the importer writes it.
 
 The Ausgangsperson - the person the tree is laid out around (#11) - is stored as
 `TreeSettings.home_person` and read with `readers.tree_settings.home_person()`, which returns `None` while nobody has been chosen. #18, #19 and #20
-read it there; #20 makes it changeable from the person card.
+read it there; #20 makes it changeable from the person card. Until one is chosen, the tree is laid out around
+the person entered first, see [tree layout](tree-layout.md).
 
 ## Familie Huber
 

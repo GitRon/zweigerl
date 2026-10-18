@@ -45,7 +45,7 @@ The layers contract in `pyproject.toml` fails the build when an import goes the 
 
 What has no database behind it — the German name of a relationship, the layout of the tree, parsing
 "um 1931" — is a pure function in `domain/`, in a module named after its subject (`domain/dates.py`,
-`domain/relationship.py`), called by models, readers or views and tested without the database. An
+`domain/layout.py`), called by models, readers or views and tested without the database. An
 import-linter contract keeps `domain/` from importing models, readers, actions or views.
 
 ## Rules in the database
