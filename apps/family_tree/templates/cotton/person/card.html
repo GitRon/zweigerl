@@ -1,7 +1,8 @@
 <c-vars card />
 {# The person card beside the tree (#12, #13): who was selected there, shown while "$selection" is still them. #}
 {# The head says who they are and what they are to the home person; the tabs, switched by "$tab", hold every #}
-{# fact with its Beleg and everyone directly related. Closing it - the button, or Escape on the canvas - moves #}
+{# fact with its Beleg and everyone directly related; "Verwandte hinzufügen" asks for a new one (#18). #}
+{# Closing it - the button, or Escape on the canvas - moves #}
 {# the address back to the start page, so a reload does not open it again. Below "lg" it lies over the tree #}
 {# instead of beside it - see docs/patterns/responsive-layout.md. #}
 {% url 'family_tree:start-view' as start_url %}
@@ -74,5 +75,8 @@
             <p class="py-8 text-center text-ink-muted">Noch niemand mit dieser Person verbunden.</p>
         {% endif %}
     </section>
-    <c-common.button class="self-start" data-on:click="$selection = 0">Schließen</c-common.button>
+    <div class="flex flex-wrap gap-3">
+        <c-common.button data-on:click="@get('{% url 'family_tree:new-relative-view' pk=card.entry.person.pk %}')">Verwandte hinzufügen</c-common.button>
+        <c-common.button data-on:click="$selection = 0">Schließen</c-common.button>
+    </div>
 </aside>
