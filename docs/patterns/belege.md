@@ -15,7 +15,7 @@ point of the app, and this page will be the one normative description of how it 
 | **Zitat** | The link between an Angabe and a Quelle, carrying the page or place in the source |
 | **Verlässlichkeit** | How sure the Angabe is: *belegt*, *wahrscheinlich* or *überliefert* |
 | **unbelegt** | Derived, never stored: an Angabe marked *belegt* that has no Zitat |
-| **Herkunft** | Which import an Angabe came from, e.g. "PAF Ronny". Not a Beleg: an imported Angabe without its own Quelle stays *unbelegt* (#22, #23) |
+| **Herkunft** | Which import an Angabe came from, e.g. "PAF Ronny". Not a Beleg: an imported Angabe without its own Quelle is marked *belegt* and therefore shows as *unbelegt*, so it stands out (#22, #23) |
 
 ## Decided
 

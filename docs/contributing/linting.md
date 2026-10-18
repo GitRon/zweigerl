@@ -32,8 +32,8 @@ When a function is genuinely one indivisible piece of logic, mark it with `# noq
 `def` line and a comment above saying why. That is the one inline exception this page allows: complexipy
 can only exclude whole paths, not single functions.
 
-Run it locally with `uvx complexipy@8.0.1`, which reads the paths and the limit from `pyproject.toml`.
-`--failed` lists only what is over the limit.
+Run it locally with `uvx pre-commit run complexipy --all-files`, which uses the version pinned in
+`.pre-commit-config.yaml` and reads the paths and the limit from `pyproject.toml`.
 
 ## Import boundaries
 
@@ -61,9 +61,10 @@ registered by dotted path in `custom_rules` under `[tool.boa-restrictor]`, and c
 Zweigerl. `PBR` and `DBR` are reserved for boa-restrictor's own rules and are rejected at load time. `ZBR`
 is registered with ruff via `lint.external` like the other two.
 
-A rule subclasses `boa_restrictor.common.rule.Rule`, sets `RULE_ID` (matching `^[A-Z]+\d+$`, or it can
-never be silenced by a `noqa`) and `RULE_LABEL`, and implements `check()` returning `Occurrence`s built
-with `self._build_occurrence(line_number=...)`. The source tree arrives already parsed. Each rule has its
+A rule subclasses `boa_restrictor.common.rule.Rule`, sets `RULE_ID` and `RULE_LABEL`, and implements
+`check()` returning `Occurrence`s built with `self._build_occurrence(line_number=...)`. `RULE_ID` has to
+match `^[A-Z]+\d+$`: boa-restrictor refuses to load a rule with any other shape, which fails every hook
+run. The source tree arrives already parsed. Each rule has its
 tests under `scripts/tests/linting/`.
 
 | Rule | What |

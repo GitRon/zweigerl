@@ -14,7 +14,7 @@ only renders what a reader returns has one.
 | Level | How many | What |
 |---|---|---|
 | Pure function | one per branch | Call it directly, no database |
-| Action | 1–3 per action | Call it directly; assert what it returns and what changed in the database |
+| Action | one per branch | Call it directly; assert what it returns and what changed in the database |
 | Reader | one per branch | Call it directly; assert what it returns |
 | View | one, plus one per branch the view decides | Status code, context, datastar events |
 | Component | per component | Render, plus one output test per behaviour — see [Components](#components) |

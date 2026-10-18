@@ -79,9 +79,8 @@ upgrade breaking it.
 
 ## Tests
 
-Every component is rendered in a test at its mirror path — see
-[testing strategy](testing-strategy.md#components) for what such a test may assert:
-`apps/common/templates/cotton/common/toast.html` → `apps/common/tests/templates/cotton/common/test_toast.py`.
+Every component is rendered in a test of its own — where it lives and what it may assert are in
+[testing strategy](testing-strategy.md#components).
 
 The render test passes every parameter, so with `FAIL_INVALID_TEMPLATE_VARS` on, a parameter renamed in
 the component but not in the test fails. Once there are enough components that a test per component is no

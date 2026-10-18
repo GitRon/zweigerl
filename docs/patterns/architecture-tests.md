@@ -12,6 +12,7 @@ An allowlist in one of them is part of the rule, not a way around it: every entr
 |---|---|
 | Views call actions and readers, never the other way round | import-linter, see [linting](../contributing/linting.md#import-boundaries) |
 | `apps.common` does not import the domain | import-linter |
+| No app imports the settings package | import-linter |
 | A template variable that does not resolve fails | `FAIL_INVALID_TEMPLATE_VARS`, see [testing strategy](testing-strategy.md#views) |
 
 ## When to write one

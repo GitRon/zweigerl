@@ -122,7 +122,8 @@ because a closed issue is where a decision was made.
 - **Dependency** — say so and say why: *"#5 legt das Datumsfeld fest, deshalb kann #8 vorher nicht
   beginnen."*
 - **Contradiction** — the draft undoes a decision another issue made. That conflict is the issue.
-- **Order** — a dependency on an issue with a higher scope (`mvp` on `v1`) is a finding, see step 1.
+- **Order** — a dependency on an issue with a later scope (`mvp` on `v1` or `v2`) is a finding, see
+  step 1.
 
 ### The prompt
 

@@ -21,8 +21,9 @@ branch" verifiable instead of aspirational.
 Measured: everything under `apps/` and `scripts/` — actions, readers, views, models, pure functions,
 template tags, the linting rules.
 
-Views **are** measured. They are thin enough that the one-test-per-view rule reaches 100% on its own, so
-there is no reason to exempt them.
+Views **are** measured. They are thin enough that one test per view plus one per branch the view decides
+reaches 100% on its own — see [testing strategy](testing-strategy.md#views) — so there is no reason to
+exempt them.
 
 Excluded from measurement, and why:
 

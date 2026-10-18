@@ -24,7 +24,7 @@ set up a case rather than building the related object separately:
 
 ```python
 AngabeFactory(person__vorname="Anna")
-AngabeFactory(zitat=None)  # an Angabe without a source, which shows as "unbelegt"
+AngabeFactory(verlaesslichkeit="belegt", zitat=None)  # marked belegt without a source: shows as "unbelegt"
 ```
 
 ## Fixtures

@@ -21,7 +21,7 @@ temporary directory, network, third-party calls.
 Two boundaries Zweigerl will have in particular:
 
 - **Time.** "Zuletzt gesichert: vor 2 Tagen" and the backup folder's timestamp depend on the clock. Patch
-  `django.utils.timezone.now` where it is used rather than asserting on today.
+  the clock in the module that reads it, see [spelling](#spelling), rather than asserting on today.
 - **Files.** Uploads, imports and backups write files. Point them at pytest's `tmp_path` through
   `override_settings` instead of mocking the writes.
 
@@ -33,8 +33,13 @@ they need no patching.
 Import as `from unittest import mock` and always spell it `mock.patch(...)`, never
 `from unittest.mock import patch`. One consistent spelling across the suite.
 
-Patch the name **where it is used**, not where it is defined:
-`mock.patch("apps.stammbaum.actions.sicherung.timezone.now", return_value=...)`.
+Patch the name **where it is used**, not where it is defined. A module that imports
+`from django.utils.timezone import now` is patched as
+`mock.patch("apps.stammbaum.actions.sicherung.now", return_value=...)`. Patching
+`django.utils.timezone.now` instead moves the clock for everything in the test, session expiry and
+`auto_now` fields included; patching `...sicherung.timezone.now` in a module that imports the
+`timezone` module is the same global patch under a longer name.
 
-Always pass `return_value` when the patched call feeds an expression. A bare `mock.patch` of a function
-whose result is compared or computed with raises `TypeError` on the `MagicMock`.
+Always pass `return_value` when the patched call feeds an expression. Without it the call returns a
+`MagicMock`, and most of what a test does with it passes silently: arithmetic returns another
+`MagicMock` and `==` is simply `False`. Only an ordering comparison (`<`, `>`) raises.
