@@ -14,6 +14,7 @@ apps/
     ├── urls.py
     ├── actions/                 # everything that writes
     ├── readers/                 # everything that reads
+    ├── domain/                  # pure functions: no database, no request
     ├── views/                   # the web interface, one module per screen
     ├── templates/stammbaum/     # pages
     ├── templates/cotton/<topic>/  # components
@@ -43,9 +44,9 @@ The layers contract in `pyproject.toml` fails the build when an import goes the 
 [linting](../contributing/linting.md#import-boundaries).
 
 What has no database behind it — the German name of a relationship, the layout of the tree, parsing
-"um 1931" — is a pure function in a module named after its subject (`verwandtschaft.py`, `baum.py`),
-called by readers or views and tested without the database. The ticket that introduces the first one
-adds its package here.
+"um 1931" — is a pure function in `domain/`, in a module named after its subject (`domain/datum.py`,
+`domain/verwandtschaft.py`), called by models, readers or views and tested without the database. An
+import-linter contract keeps `domain/` from importing models, readers, actions or views.
 
 ## Rules in the database
 

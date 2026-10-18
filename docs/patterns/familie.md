@@ -12,7 +12,7 @@ each.
 | Model | Is | GEDCOM |
 |---|---|---|
 | `Person` | Vornamen, Familienname, Rufname, Geschlecht, Lebensstatus | `INDI` with `NAME`/`GIVN`/`SURN`, `NICK`, `SEX` |
-| `Partnerschaft` | Two people as a couple: Art, Beginn, Ende. The through model of `Person.partner` | `FAM` with `HUSB`/`WIFE`, `MARR`, `DIV` |
+| `Partnerschaft` | Two people as a couple, with its Art. The through model of `Person.partner`. When they married or divorced are [Angaben](belege.md) on it | `FAM` with `HUSB`/`WIFE`; `MARR`, `DIV` |
 | `ElternKind` | One parent and one child, optionally the Partnerschaft the child belongs to, and the Art | `CHIL` in a `FAM`, `PEDI` |
 | `Geschwister` | Two siblings whose shared parents nobody knows | a `FAM` with children and no parents |
 | `Einstellung` | The tree's settings - one row - holding the Ausgangsperson | - |
@@ -24,9 +24,9 @@ such field - "verstorben" is a death record, "lebend" its absence on someone you
 someone born in 1820 without a death record must not land as alive. Whether a person is alive decides what
 may be shown and exported about them, so a guess is worse than "unbekannt".
 
-**Beginn and Ende of a Partnerschaft** are text in GEDCOM DATE syntax for now: `1985`, `ABT 1931`,
-`BET 1950 AND 1952`. A wedding date wants a source like any other fact, so #8 replaces both with the
-structured uncertain date of [Belege](belege.md) and its Zitat.
+**When a couple married or divorced** is not a field of the Partnerschaft but an Angabe on it, "Geheiratet"
+or "Geschieden", with the uncertain date and the Zitate every fact has - see [Belege](belege.md). Until #8
+the Partnerschaft held it as text in `beginn` and `ende`; migration `0003` turned that into Angaben.
 
 ## Children belong to a couple, or to one parent
 
@@ -101,6 +101,6 @@ uv run python manage.py loaddata familie_huber
 
 ## See also
 
-- [Belege](belege.md) - facts, sources and the uncertain date that replaces Beginn and Ende
+- [Belege](belege.md) - facts, sources, citations and the uncertain date, including a couple's marriage
 - [Test data](testing-data.md) - the factories for these models
 - [Where code goes](app-layout.md) - models, readers and the admin at the app root
