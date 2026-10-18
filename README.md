@@ -38,6 +38,8 @@ rather than inferring the conventions from nearby code.
   bus, business rules as database constraints, and what has to sit at the app root
 - [Data storage and privacy](docs/patterns/data-storage.md) — no real family data in the repository, the
   data directory outside it, the login and the lockout
+- [Persons and families](docs/patterns/familie.md) — Person, Partnerschaft, Eltern-Kind and Geschwister after
+  GEDCOM, derived siblings, the Ausgangsperson, the Familie Huber fixture
 - [Belege](docs/patterns/belege.md) — facts, sources and citations, reliability, "unbelegt", uncertain
   dates *(scaffold, #8)*
 - [datastar](docs/patterns/datastar.md) — the pinned version, signals, fragments, pages, CSRF, toasts and

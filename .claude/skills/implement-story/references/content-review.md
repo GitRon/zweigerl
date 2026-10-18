@@ -67,9 +67,12 @@ other than where it was aimed:
 1. Log in, once the login exists.
 2. The start page renders, and `browser_console_messages` shows no error - a broken datastar bundle or a
    script error shows up here first.
-3. Every page the app links to from the start page loads.
-4. Every page the diff touched, whether or not the story mentions it.
-5. **`browser_resize` to 1024x768, then every page the diff touched again.** The laptop is the default
+3. The Familie Huber is there: `/admin/stammbaum/person/` lists fifteen people and Lena Huber's page shows
+   her parents, her partner and her two children. Until the tree has a screen of its own (#11) this is
+   where a story that broke the models or the fixture shows it.
+4. Every page the app links to from the start page loads.
+5. Every page the diff touched, whether or not the story mentions it.
+6. **`browser_resize` to 1024x768, then every page the diff touched again.** The laptop is the default
    width in this project and a narrow window has to stay usable, see
    [responsive layout](../../../../docs/patterns/responsive-layout.md). Nothing in the suite asserts on
    markup, so this is the only gate the convention has. What counts is the page scrolling sideways, a
@@ -82,8 +85,9 @@ story specifies - refusing to delete the starting person is behaviour too.
 
 ## Reaching the state the story needs
 
-Use the app where using it is cheap. Once the invented Familie Huber ships as fixtures (#7), `fresh` loads
-it, and most stories have a family to work on from the first click.
+Use the app where using it is cheap. `fresh` loads the invented Familie Huber
+(`apps/stammbaum/fixtures/familie_huber.json`, fifteen people around Lena Huber, the Ausgangsperson), so most
+stories have a family to work on from the first click. `/admin/` shows all of it.
 
 Where using the app is not cheap, seed the precondition through the shell:
 

@@ -1,0 +1,434 @@
+[
+  {
+    "model": "stammbaum.person",
+    "pk": 1,
+    "fields": {
+      "vornamen": "Josef",
+      "familienname": "Huber",
+      "rufname": "",
+      "geschlecht": "M",
+      "lebensstatus": "verstorben",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.person",
+    "pk": 2,
+    "fields": {
+      "vornamen": "Theresia",
+      "familienname": "Huber",
+      "rufname": "",
+      "geschlecht": "F",
+      "lebensstatus": "verstorben",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.person",
+    "pk": 3,
+    "fields": {
+      "vornamen": "Gertrud",
+      "familienname": "Huber",
+      "rufname": "Gerti",
+      "geschlecht": "F",
+      "lebensstatus": "lebend",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.person",
+    "pk": 4,
+    "fields": {
+      "vornamen": "Franz",
+      "familienname": "Huber",
+      "rufname": "",
+      "geschlecht": "M",
+      "lebensstatus": "verstorben",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.person",
+    "pk": 5,
+    "fields": {
+      "vornamen": "Johann",
+      "familienname": "Huber",
+      "rufname": "",
+      "geschlecht": "M",
+      "lebensstatus": "lebend",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.person",
+    "pk": 6,
+    "fields": {
+      "vornamen": "Maria",
+      "familienname": "Huber",
+      "rufname": "",
+      "geschlecht": "F",
+      "lebensstatus": "lebend",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.person",
+    "pk": 7,
+    "fields": {
+      "vornamen": "Florian",
+      "familienname": "Huber",
+      "rufname": "",
+      "geschlecht": "M",
+      "lebensstatus": "lebend",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.person",
+    "pk": 8,
+    "fields": {
+      "vornamen": "Lukas",
+      "familienname": "Huber",
+      "rufname": "",
+      "geschlecht": "M",
+      "lebensstatus": "lebend",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.person",
+    "pk": 9,
+    "fields": {
+      "vornamen": "Matthias",
+      "familienname": "Huber",
+      "rufname": "",
+      "geschlecht": "M",
+      "lebensstatus": "lebend",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.person",
+    "pk": 10,
+    "fields": {
+      "vornamen": "Katharina",
+      "familienname": "Huber",
+      "rufname": "",
+      "geschlecht": "F",
+      "lebensstatus": "lebend",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.person",
+    "pk": 11,
+    "fields": {
+      "vornamen": "Stefan",
+      "familienname": "Huber",
+      "rufname": "",
+      "geschlecht": "M",
+      "lebensstatus": "lebend",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.person",
+    "pk": 12,
+    "fields": {
+      "vornamen": "Lena",
+      "familienname": "Huber",
+      "rufname": "",
+      "geschlecht": "F",
+      "lebensstatus": "lebend",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.person",
+    "pk": 13,
+    "fields": {
+      "vornamen": "Markus",
+      "familienname": "Brandl",
+      "rufname": "",
+      "geschlecht": "M",
+      "lebensstatus": "lebend",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.person",
+    "pk": 14,
+    "fields": {
+      "vornamen": "Emma",
+      "familienname": "Brandl",
+      "rufname": "",
+      "geschlecht": "F",
+      "lebensstatus": "lebend",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.person",
+    "pk": 15,
+    "fields": {
+      "vornamen": "Jakob",
+      "familienname": "Brandl",
+      "rufname": "",
+      "geschlecht": "M",
+      "lebensstatus": "lebend",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.partnerschaft",
+    "pk": 1,
+    "fields": {
+      "person_a": 1,
+      "person_b": 2,
+      "art": "ehe",
+      "beginn": "",
+      "ende": "",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.partnerschaft",
+    "pk": 2,
+    "fields": {
+      "person_a": 5,
+      "person_b": 6,
+      "art": "ehe",
+      "beginn": "1985",
+      "ende": "",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.partnerschaft",
+    "pk": 3,
+    "fields": {
+      "person_a": 12,
+      "person_b": 13,
+      "art": "lebensgemeinschaft",
+      "beginn": "",
+      "ende": "",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.elternkind",
+    "pk": 1,
+    "fields": {
+      "elternteil": 1,
+      "kind": 3,
+      "partnerschaft": 1,
+      "art": "leiblich",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.elternkind",
+    "pk": 2,
+    "fields": {
+      "elternteil": 2,
+      "kind": 3,
+      "partnerschaft": 1,
+      "art": "leiblich",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.elternkind",
+    "pk": 3,
+    "fields": {
+      "elternteil": 1,
+      "kind": 4,
+      "partnerschaft": 1,
+      "art": "leiblich",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.elternkind",
+    "pk": 4,
+    "fields": {
+      "elternteil": 2,
+      "kind": 4,
+      "partnerschaft": 1,
+      "art": "leiblich",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.elternkind",
+    "pk": 5,
+    "fields": {
+      "elternteil": 1,
+      "kind": 5,
+      "partnerschaft": 1,
+      "art": "leiblich",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.elternkind",
+    "pk": 6,
+    "fields": {
+      "elternteil": 2,
+      "kind": 5,
+      "partnerschaft": 1,
+      "art": "leiblich",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.elternkind",
+    "pk": 7,
+    "fields": {
+      "elternteil": 5,
+      "kind": 8,
+      "partnerschaft": 2,
+      "art": "leiblich",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.elternkind",
+    "pk": 8,
+    "fields": {
+      "elternteil": 6,
+      "kind": 8,
+      "partnerschaft": 2,
+      "art": "leiblich",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.elternkind",
+    "pk": 9,
+    "fields": {
+      "elternteil": 5,
+      "kind": 9,
+      "partnerschaft": 2,
+      "art": "leiblich",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.elternkind",
+    "pk": 10,
+    "fields": {
+      "elternteil": 6,
+      "kind": 9,
+      "partnerschaft": 2,
+      "art": "leiblich",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.elternkind",
+    "pk": 11,
+    "fields": {
+      "elternteil": 5,
+      "kind": 12,
+      "partnerschaft": 2,
+      "art": "leiblich",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.elternkind",
+    "pk": 12,
+    "fields": {
+      "elternteil": 6,
+      "kind": 12,
+      "partnerschaft": 2,
+      "art": "leiblich",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.elternkind",
+    "pk": 13,
+    "fields": {
+      "elternteil": 5,
+      "kind": 7,
+      "partnerschaft": null,
+      "art": "leiblich",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.elternkind",
+    "pk": 14,
+    "fields": {
+      "elternteil": 4,
+      "kind": 10,
+      "partnerschaft": null,
+      "art": "leiblich",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.elternkind",
+    "pk": 15,
+    "fields": {
+      "elternteil": 4,
+      "kind": 11,
+      "partnerschaft": null,
+      "art": "leiblich",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.elternkind",
+    "pk": 16,
+    "fields": {
+      "elternteil": 12,
+      "kind": 14,
+      "partnerschaft": 3,
+      "art": "leiblich",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.elternkind",
+    "pk": 17,
+    "fields": {
+      "elternteil": 13,
+      "kind": 14,
+      "partnerschaft": 3,
+      "art": "leiblich",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.elternkind",
+    "pk": 18,
+    "fields": {
+      "elternteil": 12,
+      "kind": 15,
+      "partnerschaft": 3,
+      "art": "leiblich",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.elternkind",
+    "pk": 19,
+    "fields": {
+      "elternteil": 13,
+      "kind": 15,
+      "partnerschaft": 3,
+      "art": "leiblich",
+      "gedcom_roh": []
+    }
+  },
+  {
+    "model": "stammbaum.einstellung",
+    "pk": 1,
+    "fields": {
+      "ausgangsperson": 12
+    }
+  }
+]

@@ -22,6 +22,7 @@ dev = [
     "beautifulsoup4~=4.13",
     "boa-restrictor~=1.18",
     "django-removals",
+    "factory-boy~=3.3",
     "import-linter~=2.5",
     "pytest~=9.1",
     "pytest-cov~=7.1",
