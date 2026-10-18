@@ -14,4 +14,6 @@ def person_card_view(request: HttpRequest, pk: int) -> DatastarResponse:
     entry = person_card(pk=pk)
     if entry is None:
         raise Http404
-    return DatastarResponse([ServerSentEventGenerator.patch_elements(render_component(request, "person.card", entry=entry))])
+    return DatastarResponse(
+        [ServerSentEventGenerator.patch_elements(render_component(request, "person.card", entry=entry))]
+    )
