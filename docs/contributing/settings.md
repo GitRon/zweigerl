@@ -60,9 +60,8 @@ word, the code uses it: `surname`, `sex`, `pedigree`. The docs may use the Germa
 Beleg, Angabe, Ausgangsperson - in their prose, as long as a name in backticks is the one in the code.
 Invented test data - the Familie Huber, the name of an uploaded file - is data, not code, and stays as it is.
 
-One exception, for now: the colour tokens of the [visual identity](../patterns/visual-identity.md) -
-`loden`, `birkenpapier`, `ziegel`, `tinte` and the rest, and the `tone` of `<c-common.label>` that names
-them - keep the moodboard's names. They are the names of the colours, not words for something in the code.
+The colour tokens too: `forest`, `brick`, `ink` - the moodboard's names stand beside them in
+[visual identity](../patterns/visual-identity.md#the-colours).
 
 ## Logging
 

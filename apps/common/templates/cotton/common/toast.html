@@ -1,7 +1,7 @@
 <c-vars text style="info" />
 {# One toast. It removes itself after five seconds; the area it sits in is in the layout. #}
 <div role="status"
-     class="rounded-md px-4 py-2 text-birkenpapier {% if style == 'success' %}bg-loden{% elif style == 'error' %}bg-ziegel{% else %}bg-tinte{% endif %}"
+     class="rounded-md px-4 py-2 text-birch {% if style == 'success' %}bg-forest{% elif style == 'error' %}bg-brick{% else %}bg-ink{% endif %}"
      data-init="setTimeout(() => el.remove(), 5000)">
     {{ text }}
 </div>
