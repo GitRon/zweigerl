@@ -22,11 +22,7 @@ repos:
       - id: djade
         # 6.0 is the newest target djade knows; the project runs 6.1
         args: [ --target-version, "6.0" ]
-        exclude: |
-          (?x)^(
-            charts/.*
-            |.*\.py
-          )$
+        exclude: \.py$
 
   - repo: https://github.com/ambient-innovation/boa-restrictor
     rev: v1.18.0

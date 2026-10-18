@@ -21,7 +21,8 @@ def is_datastar_request(*, request: HttpRequest) -> bool:
 def render_page(*, request: HttpRequest, template: str, context: dict, url: str) -> HttpResponse:
     """
     Renders a page whole, or - asked by datastar - morphs it into the open one and moves the address bar
-    to "url", so the back button, a reload and a bookmark all land on the same page again.
+    to "url", so a reload and a bookmark land on the same page again. The back button reloads the address
+    it goes back to, see the layout.
     """
     response = render(request, template, context)
 
@@ -29,12 +30,16 @@ def render_page(*, request: HttpRequest, template: str, context: dict, url: str)
         return response
 
     # The address goes into a script element, so it is written as a JavaScript string literal, and "<"
-    # is escaped so that a "</script>" in a query string cannot end the element early.
+    # is escaped so that a "</script>" in a query string cannot end the element early. A request for the
+    # page already open adds no history entry, so the back button does not have to be pressed twice.
     url_literal = json.dumps(url).replace("<", "\\u003c")
+    push_state = (
+        f"if (location.pathname + location.search !== {url_literal}) history.pushState(null, '', {url_literal});"
+    )
 
     return DatastarResponse(
         [
             ServerSentEventGenerator.patch_elements(response.content.decode()),
-            ServerSentEventGenerator.execute_script(f"history.pushState(null, '', {url_literal});"),
+            ServerSentEventGenerator.execute_script(push_state),
         ]
     )

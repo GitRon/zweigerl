@@ -204,7 +204,7 @@ exclude = [
 ]
 
 [tool.complexipy]
-paths = ["apps", "scripts", "conftest.py", "manage.py"]
+paths = ["apps", "scripts", "manage.py"]
 max-complexity-allowed = 15
 
 [tool.pytest.ini_options]

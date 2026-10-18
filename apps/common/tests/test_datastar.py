@@ -53,3 +53,10 @@ def test_render_page_keeps_a_query_from_closing_the_script(datastar_request_with
     body = b"".join(response.streaming_content).decode()
     assert '</script>");' not in body
     assert "\\u003c/script>" in body
+
+
+@pytest.mark.django_db
+def test_render_page_adds_no_history_entry_for_the_page_already_open(datastar_request_with_session):
+    response = render_page(request=datastar_request_with_session, template="stammbaum/start.html", context={}, url="/")
+
+    assert 'if (location.pathname + location.search !== "/")' in b"".join(response.streaming_content).decode()

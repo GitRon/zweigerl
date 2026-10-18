@@ -12,7 +12,9 @@
     {# in the path is the one "datastar-py" is pinned against - see docs/patterns/datastar.md. #}
     <script type="module" src="{% static 'vendor/datastar/1.0.4/datastar.js' %}"></script>
 </head>
-<body class="min-h-screen bg-stone-50 text-stone-900">
+{# "render_page" moves the address bar without loading the page, so going back only changes the address. #}
+{# Loading it is what brings the content along - see docs/patterns/datastar.md, "Pages". #}
+<body class="min-h-screen bg-stone-50 text-stone-900" data-on:popstate__window="window.location.reload()">
 {{ slot }}
 {# Where every toast lands: the ones a redirect left in the session render here, the ones a datastar #}
 {# response sends are appended by "toast_sse". #}
