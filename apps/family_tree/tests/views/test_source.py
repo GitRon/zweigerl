@@ -1,14 +1,14 @@
+import io
 from pathlib import Path
 
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
+from pypdf import PdfWriter
 
 from apps.family_tree.models import Source, SourceFile
 from apps.family_tree.tests.factories.person import PersonFactory
 from apps.family_tree.tests.factories.source import SourceFactory
-
-PDF = b"%PDF-1.4 erfundene Geburtsurkunde"
 
 
 @pytest.fixture(autouse=True)
@@ -16,6 +16,19 @@ def media_root(settings, tmp_path) -> Path:
     settings.MEDIA_ROOT = tmp_path
 
     return tmp_path
+
+
+def _pdf() -> bytes:
+    """
+    An invented certificate of one empty page; what "store_upload" strips from a PDF is tested in
+    apps/common.
+    """
+    output = io.BytesIO()
+    writer = PdfWriter()
+    writer.add_blank_page(width=200, height=100)
+    writer.write(output)
+
+    return output.getvalue()
 
 
 def _post(client, url: str, data: dict) -> str:
@@ -35,7 +48,7 @@ def test_source_create_view_creates_the_source_and_patches_the_list(admin_client
             "title": "Geburtsurkunde",
             "kind": "civil_registry",
             "description": "",
-            "files": [SimpleUploadedFile("a.pdf", PDF)],
+            "files": [SimpleUploadedFile("a.pdf", _pdf())],
         },
     )
 
@@ -86,7 +99,7 @@ def test_source_files_view_attaches_the_files_and_patches_the_list(admin_client)
     body = _post(
         admin_client,
         reverse("family_tree:source-files-view", kwargs={"pk": lena.pk, "source_pk": source.pk}),
-        {"files": [SimpleUploadedFile("Scan.pdf", PDF)]},
+        {"files": [SimpleUploadedFile("Scan.pdf", _pdf())]},
     )
 
     assert source.files.count() == 1
@@ -112,7 +125,7 @@ def test_source_files_view_refuses_a_source_that_is_gone(admin_client):
     body = _post(
         admin_client,
         reverse("family_tree:source-files-view", kwargs={"pk": lena.pk, "source_pk": 404}),
-        {"files": [SimpleUploadedFile("Scan.pdf", PDF)]},
+        {"files": [SimpleUploadedFile("Scan.pdf", _pdf())]},
     )
 
     assert "Diese Quelle ist nicht mehr da." in body
@@ -139,7 +152,7 @@ def test_source_files_view_patches_no_list_for_somebody_not_in_the_tree(admin_cl
     body = _post(
         admin_client,
         reverse("family_tree:source-files-view", kwargs={"pk": 404, "source_pk": source.pk}),
-        {"files": [SimpleUploadedFile("Scan.pdf", PDF)]},
+        {"files": [SimpleUploadedFile("Scan.pdf", _pdf())]},
     )
 
     assert ('id="person-card-source-list"' in body, "Passt. Hängt jetzt an der Quelle." in body) == (False, True)
