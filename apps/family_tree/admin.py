@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.forms.models import BaseInlineFormSet
 
-from apps.family_tree.models import ParentChild, Partnership, Person, SiblingPair, TreeSettings
+from apps.family_tree.models import Citation, Fact, ParentChild, Partnership, Person, SiblingPair, Source, TreeSettings
 
 # Both pair models are found by either person's name.
 PAIR_SEARCH_FIELDS = ("person_a__surname", "person_a__given_names", "person_b__surname", "person_b__given_names")
@@ -52,7 +52,8 @@ class PartnershipAsAInline(admin.TabularInline):
     model = Partnership
     fk_name = "person_a"
     verbose_name_plural = "Partnerschaften"
-    fields = ("person_b", "kind", "start", "end")
+    fields = ("person_b", "kind")
+    show_change_link = True
     autocomplete_fields = ("person_b",)
     extra = 0
 
@@ -65,8 +66,26 @@ class PartnershipAsBInline(PartnershipAsAInline):
 
     fk_name = "person_b"
     verbose_name_plural = "Partnerschaften (als Partner eingetragen)"
-    fields = ("person_a", "kind", "start", "end")
+    fields = ("person_a", "kind")
     autocomplete_fields = ("person_a",)
+    extra = 0
+
+
+class FactInline(admin.TabularInline):
+    """
+    The facts of a person or a couple. Their citations are on the fact's own page, one click away.
+    """
+
+    model = Fact
+    fields = ("kind", "label", "value", "date_kind", "date_1", "date_2", "precision", "reliability")
+    show_change_link = True
+    extra = 0
+
+
+class CitationInline(admin.TabularInline):
+    model = Citation
+    fields = ("source", "page")
+    autocomplete_fields = ("source",)
     extra = 0
 
 
@@ -76,15 +95,16 @@ class PersonAdmin(admin.ModelAdmin):
     list_filter = ("sex", "living_status")
     search_fields = ("given_names", "surname", "call_name")
     fields = ("given_names", "surname", "call_name", "sex", "living_status", "gedcom_raw")
-    inlines = (ParentsInline, ChildrenInline, PartnershipAsAInline, PartnershipAsBInline)
+    inlines = (FactInline, ParentsInline, ChildrenInline, PartnershipAsAInline, PartnershipAsBInline)
 
 
 @admin.register(Partnership)
 class PartnershipAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "kind", "start", "end")
+    list_display = ("__str__", "kind")
     list_filter = ("kind",)
     search_fields = PAIR_SEARCH_FIELDS
     autocomplete_fields = ("person_a", "person_b")
+    inlines = (FactInline,)
 
 
 @admin.register(ParentChild)
@@ -115,3 +135,40 @@ class TreeSettingsAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+@admin.register(Fact)
+class FactAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "person", "partnership", "reliability")
+    list_filter = ("kind", "reliability")
+    search_fields = ("person__surname", "person__given_names", "value", "label")
+    autocomplete_fields = ("person", "partnership")
+    fields = (
+        "person",
+        "partnership",
+        "kind",
+        "label",
+        "value",
+        "date_kind",
+        "date_1",
+        "date_2",
+        "precision",
+        "reliability",
+        "gedcom_raw",
+    )
+    inlines = (CitationInline,)
+
+
+@admin.register(Source)
+class SourceAdmin(admin.ModelAdmin):
+    list_display = ("title", "kind")
+    list_filter = ("kind",)
+    search_fields = ("title", "description")
+    autocomplete_fields = ("people",)
+
+
+@admin.register(Citation)
+class CitationAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "page")
+    search_fields = ("source__title", "page")
+    autocomplete_fields = ("fact", "source")

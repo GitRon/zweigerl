@@ -186,8 +186,6 @@
       "person_a": 1,
       "person_b": 2,
       "kind": "marriage",
-      "start": "",
-      "end": "",
       "gedcom_raw": []
     }
   },
@@ -198,8 +196,6 @@
       "person_a": 5,
       "person_b": 6,
       "kind": "marriage",
-      "start": "1985",
-      "end": "",
       "gedcom_raw": []
     }
   },
@@ -210,8 +206,6 @@
       "person_a": 12,
       "person_b": 13,
       "kind": "cohabitation",
-      "start": "",
-      "end": "",
       "gedcom_raw": []
     }
   },
@@ -429,6 +423,353 @@
     "pk": 1,
     "fields": {
       "home_person": 12
+    }
+  },
+  {
+    "model": "family_tree.source",
+    "pk": 1,
+    "fields": {
+      "title": "Geburtsurkunde",
+      "kind": "civil_registry",
+      "description": "Standesamt Graz, Geburtenbuch Nr. 1989/3471. Nennt beide Eltern und den behandelnden Arzt.",
+      "people": [
+        12
+      ],
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.source",
+    "pk": 2,
+    "fields": {
+      "title": "Gespräch mit Oma Theresia, 2014",
+      "kind": "family_tradition",
+      "description": "Aufgeschriebene Erinnerungen an Lenas Kindheit und den Umzug der Familie von Graz nach Wien. Keine Dokumente angehängt.",
+      "people": [
+        12
+      ],
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.source",
+    "pk": 3,
+    "fields": {
+      "title": "Studienunterlagen",
+      "kind": "other",
+      "description": "TU Wien.",
+      "people": [
+        12
+      ],
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.source",
+    "pk": 4,
+    "fields": {
+      "title": "Heiratseintrag, 1985",
+      "kind": "civil_registry",
+      "description": "Trauung von Johann Huber und Maria Gruber, eingetragen in Graz.",
+      "people": [
+        5,
+        6
+      ],
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.fact",
+    "pk": 1,
+    "fields": {
+      "person": 12,
+      "partnership": null,
+      "kind": "birth",
+      "label": "",
+      "value": "",
+      "date_kind": "exact",
+      "date_1": "1989-03-12",
+      "date_2": null,
+      "precision": "day",
+      "sort_date": "1989-03-12",
+      "reliability": "documented",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.fact",
+    "pk": 2,
+    "fields": {
+      "person": 12,
+      "partnership": null,
+      "kind": "baptism",
+      "label": "",
+      "value": "",
+      "date_kind": "about",
+      "date_1": "1989-04-01",
+      "date_2": null,
+      "precision": "month",
+      "sort_date": "1989-04-01",
+      "reliability": "probable",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.fact",
+    "pk": 3,
+    "fields": {
+      "person": 12,
+      "partnership": null,
+      "kind": "birthplace",
+      "label": "",
+      "value": "Graz, Steiermark",
+      "date_kind": "",
+      "date_1": null,
+      "date_2": null,
+      "precision": "",
+      "sort_date": null,
+      "reliability": "documented",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.fact",
+    "pk": 4,
+    "fields": {
+      "person": 12,
+      "partnership": null,
+      "kind": "occupation",
+      "label": "",
+      "value": "Architektin",
+      "date_kind": "",
+      "date_1": null,
+      "date_2": null,
+      "precision": "",
+      "sort_date": null,
+      "reliability": "documented",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.fact",
+    "pk": 5,
+    "fields": {
+      "person": 12,
+      "partnership": null,
+      "kind": "residence",
+      "label": "",
+      "value": "Wien",
+      "date_kind": "",
+      "date_1": null,
+      "date_2": null,
+      "precision": "",
+      "sort_date": null,
+      "reliability": "documented",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.fact",
+    "pk": 6,
+    "fields": {
+      "person": 5,
+      "partnership": null,
+      "kind": "birth",
+      "label": "",
+      "value": "",
+      "date_kind": "exact",
+      "date_1": "1960-07-02",
+      "date_2": null,
+      "precision": "day",
+      "sort_date": "1960-07-02",
+      "reliability": "documented",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.fact",
+    "pk": 7,
+    "fields": {
+      "person": 5,
+      "partnership": null,
+      "kind": "birthplace",
+      "label": "",
+      "value": "Graz, Steiermark",
+      "date_kind": "",
+      "date_1": null,
+      "date_2": null,
+      "precision": "",
+      "sort_date": null,
+      "reliability": "documented",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.fact",
+    "pk": 8,
+    "fields": {
+      "person": 5,
+      "partnership": null,
+      "kind": "occupation",
+      "label": "",
+      "value": "Bauingenieur",
+      "date_kind": "",
+      "date_1": null,
+      "date_2": null,
+      "precision": "",
+      "sort_date": null,
+      "reliability": "documented",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.fact",
+    "pk": 9,
+    "fields": {
+      "person": 1,
+      "partnership": null,
+      "kind": "birth",
+      "label": "",
+      "value": "",
+      "date_kind": "about",
+      "date_1": "1931-01-01",
+      "date_2": null,
+      "precision": "year",
+      "sort_date": "1931-01-01",
+      "reliability": "probable",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.fact",
+    "pk": 10,
+    "fields": {
+      "person": 1,
+      "partnership": null,
+      "kind": "birthplace",
+      "label": "",
+      "value": "Mariazell",
+      "date_kind": "",
+      "date_1": null,
+      "date_2": null,
+      "precision": "",
+      "sort_date": null,
+      "reliability": "handed_down",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.fact",
+    "pk": 11,
+    "fields": {
+      "person": 1,
+      "partnership": null,
+      "kind": "death",
+      "label": "",
+      "value": "",
+      "date_kind": "exact",
+      "date_1": "2009-11-14",
+      "date_2": null,
+      "precision": "day",
+      "sort_date": "2009-11-14",
+      "reliability": "documented",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.fact",
+    "pk": 12,
+    "fields": {
+      "person": 1,
+      "partnership": null,
+      "kind": "occupation",
+      "label": "",
+      "value": "Uhrmacher",
+      "date_kind": "",
+      "date_1": null,
+      "date_2": null,
+      "precision": "",
+      "sort_date": null,
+      "reliability": "handed_down",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.fact",
+    "pk": 13,
+    "fields": {
+      "person": null,
+      "partnership": 2,
+      "kind": "marriage",
+      "label": "",
+      "value": "",
+      "date_kind": "exact",
+      "date_1": "1985-01-01",
+      "date_2": null,
+      "precision": "year",
+      "sort_date": "1985-01-01",
+      "reliability": "documented",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.citation",
+    "pk": 1,
+    "fields": {
+      "fact": 1,
+      "source": 1,
+      "page": "Nr. 1989/3471",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.citation",
+    "pk": 2,
+    "fields": {
+      "fact": 2,
+      "source": 2,
+      "page": "",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.citation",
+    "pk": 3,
+    "fields": {
+      "fact": 3,
+      "source": 1,
+      "page": "Nr. 1989/3471",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.citation",
+    "pk": 4,
+    "fields": {
+      "fact": 4,
+      "source": 3,
+      "page": "",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.citation",
+    "pk": 5,
+    "fields": {
+      "fact": 7,
+      "source": 4,
+      "page": "",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.citation",
+    "pk": 6,
+    "fields": {
+      "fact": 13,
+      "source": 4,
+      "page": "",
+      "gedcom_raw": []
     }
   }
 ]

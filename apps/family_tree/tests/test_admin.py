@@ -7,11 +7,12 @@ import pytest
 from django.forms import inlineformset_factory
 from django.urls import reverse
 
-from apps.family_tree.admin import ParentsFormSet
-from apps.family_tree.models import ParentChild, Person
+from apps.family_tree.admin import FactInline, ParentsFormSet
+from apps.family_tree.models import Fact, ParentChild, Person
 from apps.family_tree.tests.factories.person import PersonFactory
 from apps.family_tree.tests.factories.tree_settings import TreeSettingsFactory
 
+FactForms = inlineformset_factory(Person, Fact, fk_name="person", fields=FactInline.fields)
 ParentsForms = inlineformset_factory(
     Person, ParentChild, formset=ParentsFormSet, fk_name="child", fields=("parent", "pedigree")
 )
@@ -82,3 +83,25 @@ def test_admin_never_deletes_the_settings(admin_client):
     response = admin_client.get(reverse("admin:family_tree_treesettings_delete", args=[tree_settings.pk]))
 
     assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_fact_inline_refuses_a_marriage_on_a_person_with_a_message():
+    """
+    The inline leaves "person" out of its form, so the constraint is not checked there; "Fact.clean" is what
+    turns the save into a form error instead of a 500.
+    """
+    formset = FactForms(
+        data={
+            "facts-TOTAL_FORMS": "1",
+            "facts-INITIAL_FORMS": "0",
+            "facts-0-kind": "marriage",
+            "facts-0-date_kind": "exact",
+            "facts-0-date_1": "1985-06-01",
+            "facts-0-precision": "day",
+            "facts-0-reliability": "documented",
+        },
+        instance=PersonFactory(),
+    )
+
+    assert formset.errors == [{"kind": ["Heirat und Scheidung gehören zur Partnerschaft, nicht zur Person."]}]

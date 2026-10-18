@@ -40,8 +40,8 @@ rather than inferring the conventions from nearby code.
   data directory outside it, the login and the lockout
 - [Persons and families](docs/patterns/family.md) — `Person`, `Partnership`, `ParentChild` and `SiblingPair` after
   GEDCOM, derived siblings, the home person, the Familie Huber fixture
-- [Belege](docs/patterns/evidence.md) — facts, sources and citations, reliability, "unbelegt", uncertain
-  dates *(scaffold, #8)*
+- [Belege](docs/patterns/evidence.md) — `Fact`, `Source` and `Citation`, reliability, the derived "unbelegt",
+  one value per fact, uncertain dates
 - [datastar](docs/patterns/datastar.md) — the pinned version, signals, fragments, pages, CSRF, toasts and
   when JavaScript of our own is allowed
 - [Template components](docs/patterns/components.md) — a reused or patched template is a cotton
