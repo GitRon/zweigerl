@@ -1,0 +1,4 @@
+<c-vars text tone="tinte" />
+{# The Etikett: a short word on a small paper label, like the one on a herbarium sheet. The tone may #}
+{# underline what the word says, never say it alone - the word is always the meaning. #}
+<span class="inline-block rounded-sm border bg-blatt px-2 py-0.5 text-sm leading-tight font-bold {% if tone == 'loden' %}border-loden text-loden{% elif tone == 'ziegel' %}border-ziegel text-ziegel{% else %}border-tinte text-tinte{% endif %}">{{ text }}</span>
