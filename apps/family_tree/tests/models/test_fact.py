@@ -42,7 +42,7 @@ def test_fact_save_of_some_fields_keeps_the_sort_date_in_step():
 
 
 @pytest.mark.django_db
-def test_fact_save_leaves_an_fact_without_date_unsorted():
+def test_fact_save_leaves_a_fact_without_date_unsorted():
     fact = FactFactory(as_value=True)
 
     assert Fact.objects.get(pk=fact.pk).sort_date is None

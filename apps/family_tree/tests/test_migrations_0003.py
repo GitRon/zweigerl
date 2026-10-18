@@ -86,7 +86,7 @@ def test_migration_keeps_an_unreadable_date_raw(couples_before_8):
     assert raw == [{"tag": "MARR", "date": "im Krieg"}]
 
 
-def test_migration_back_writes_the_dates_into_start_and_ende_again(couples_before_8):
+def test_migration_back_writes_the_dates_into_start_and_end_again(couples_before_8):
     _apps_at(AFTER)
     partnership_model = _apps_at(BEFORE).get_model("family_tree", "Partnership")
 
