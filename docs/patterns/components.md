@@ -37,7 +37,7 @@ word. The folder keeps the names apart.
 | `<c-common.button>` | `apps.common` | A button, `primary` or `secondary`, or with `href` a link drawn as one |
 | `<c-person.sidebar>` | `apps.family_tree` | The sidebar beside the tree: word mark, the search field bound to `$search`, the list (#10) and the link to the settings |
 | `<c-person.list>` | `apps.family_tree` | Every person `readers.person.person_list` found, with frame, name and Lebensdaten; `id="person-list"`, patched by the live search |
-| `<c-person.card>` | `apps.family_tree` | The person card beside the tree (#12, #13): frame, name, Lebensdaten and the relationship to the home person, then the tabs - every fact with its Beleg, and the relatives, each opening their own card; `id="person-card"`, patched when a card is clicked |
+| `<c-person.card>` | `apps.family_tree` | The person card beside the tree (#12, #13): frame, name, Lebensdaten and the relationship to the home person, with the pencil that swaps the head for the form "Name & Status bearbeiten" (#30), then the tabs - every fact with its Beleg, and the relatives, each opening their own card; `id="person-card"`, patched when a card is clicked |
 | `<c-tree.canvas>` | `apps.family_tree` | The tree from `readers.tree.tree`: the zoom buttons and the slot in its toolbar, the scrolling container, the lines, placeholders and cards |
 | `<c-tree.card>` | `apps.family_tree` | One person in the tree at their position; a button that selects them and fetches their person card |
 | `<c-settings.home-person>` | `apps.family_tree` | The choice of the home person on the settings page (#20): every person, the chosen one selected, posted as a form and confirmed with a toast |

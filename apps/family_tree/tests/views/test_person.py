@@ -2,7 +2,9 @@ import pytest
 from django.urls import reverse
 from pytest_django.asserts import assertTemplateUsed
 
+from apps.family_tree.models import Person
 from apps.family_tree.tests.factories.person import PersonFactory
+from apps.family_tree.tests.factories.tree_settings import TreeSettingsFactory
 
 
 @pytest.mark.django_db
@@ -36,3 +38,109 @@ def test_person_view_of_somebody_not_there_is_not_found(admin_client):
     response = admin_client.get(reverse("family_tree:person-view", kwargs={"pk": 404}))
 
     assert response.status_code == 404
+
+
+def _name_form(**changes) -> dict:
+    return {
+        "given_names": "Gertrud",
+        "surname": "Huber",
+        "call_name": "Gerti",
+        "sex": Person.Sex.FEMALE,
+        "living_status": Person.LivingStatus.LIVING,
+        "death_year": "",
+        "search": "",
+        **changes,
+    }
+
+
+@pytest.mark.django_db
+def test_person_name_view_saves_and_patches_card_list_and_tree(admin_client):
+    gerti = PersonFactory(given_names="Gertrud", surname="Hubr")
+    TreeSettingsFactory(home_person=gerti)
+
+    response = admin_client.post(
+        reverse("family_tree:person-name-view", kwargs={"pk": gerti.pk}),
+        _name_form(),
+        headers={"Datastar-Request": "true"},
+    )
+
+    body = b"".join(response.streaming_content).decode()
+    gerti.refresh_from_db()
+    assert (gerti.surname, gerti.call_name) == ("Huber", "Gerti")
+    assert all(
+        part in body
+        for part in (
+            'id="person-card"',
+            '"editing":0',
+            'id="person-list"',
+            f'id="tree-card-{gerti.pk}"',
+            "Passt. Gerti Huber ist gespeichert.",
+        )
+    )
+
+
+@pytest.mark.django_db
+def test_person_name_view_keeps_the_search_running_in_the_list(admin_client):
+    gerti = PersonFactory(given_names="Gertrud", surname="Huber")
+
+    response = admin_client.post(
+        reverse("family_tree:person-name-view", kwargs={"pk": gerti.pk}),
+        _name_form(search="gerti"),
+        headers={"Datastar-Request": "true"},
+    )
+
+    body = b"".join(response.streaming_content).decode()
+    assert f'"matches":[{gerti.pk}]' in body
+
+
+@pytest.mark.django_db
+def test_person_name_view_does_not_patch_a_tree_card_the_tree_does_not_show(admin_client):
+    TreeSettingsFactory()
+    stranger = PersonFactory(given_names="Fremd")
+
+    response = admin_client.post(
+        reverse("family_tree:person-name-view", kwargs={"pk": stranger.pk}),
+        _name_form(),
+        headers={"Datastar-Request": "true"},
+    )
+
+    body = b"".join(response.streaming_content).decode()
+    assert f"tree-card-{stranger.pk}" not in body
+
+
+@pytest.mark.django_db
+def test_person_name_view_refuses_a_death_year_that_is_no_number(admin_client):
+    johann = PersonFactory(given_names="Johann")
+
+    response = admin_client.post(
+        reverse("family_tree:person-name-view", kwargs={"pk": johann.pk}),
+        _name_form(living_status=Person.LivingStatus.DECEASED, death_year="um 2009"),
+        headers={"Datastar-Request": "true"},
+    )
+
+    body = b"".join(response.streaming_content).decode()
+    assert "Das Sterbejahr ist eine Jahreszahl, etwa 1931." in body
+
+
+@pytest.mark.django_db
+def test_person_name_view_answers_a_refusal_with_its_message(admin_client):
+    johann = PersonFactory(given_names="Johann")
+
+    response = admin_client.post(
+        reverse("family_tree:person-name-view", kwargs={"pk": johann.pk}),
+        _name_form(living_status=Person.LivingStatus.DECEASED, death_year="9999"),
+        headers={"Datastar-Request": "true"},
+    )
+
+    body = b"".join(response.streaming_content).decode()
+    assert "Das Sterbejahr ist eine Jahreszahl, höchstens die heurige." in body and 'id="person-card"' not in body
+
+
+@pytest.mark.django_db
+def test_person_name_view_of_somebody_not_there_says_so(admin_client):
+    response = admin_client.post(
+        reverse("family_tree:person-name-view", kwargs={"pk": 404}), _name_form(), headers={"Datastar-Request": "true"}
+    )
+
+    body = b"".join(response.streaming_content).decode()
+    assert "Diese Person ist nicht mehr im Baum." in body

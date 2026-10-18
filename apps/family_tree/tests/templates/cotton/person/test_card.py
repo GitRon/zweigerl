@@ -9,13 +9,18 @@ from apps.family_tree.tests.factories.fact import FactFactory
 from apps.family_tree.tests.factories.person import PersonFactory
 from apps.family_tree.tests.factories.source import SourceFactory
 
-GERTI = PersonListEntry(person=PersonFactory.build(pk=7), name="Gerti Huber", initials="GH", lifespan="1958 –")
+GERTI = PersonListEntry(
+    person=PersonFactory.build(pk=7, given_names="Gertrud", call_name="Gerti", sex="F", living_status="living"),
+    name="Gerti Huber",
+    initials="GH",
+    lifespan="1958 –",
+)
 JOHANN = PersonListEntry(person=PersonFactory.build(pk=3), name="Johann Huber", initials="JH", lifespan="1931 – 2009")
 BIRTH = FactFactory.build(pk=11)
 CITATION = CitationFactory.build(fact=BIRTH, source=SourceFactory.build(title="Taufbuch Mariazell"), page="fol. 12")
 
 
-CARD = PersonCard(entry=GERTI, relationship=None, facts=[], relatives=[], relative_count=0)
+CARD = PersonCard(entry=GERTI, relationship=None, facts=[], relatives=[], relative_count=0, death_recorded=False)
 DOCUMENTED = FactEntry(
     fact=BIRTH, label="Geboren", text="12. März 1958", reliability=None, citations=[CITATION], undocumented=False
 )
@@ -49,7 +54,7 @@ def test_card_moves_the_address_back_to_the_start_page_when_closed():
 def test_card_closes_by_clearing_the_selection():
     html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
 
-    assert parse(html).find("button", string="Schließen")["data-on:click"] == "$selection = 0"
+    assert parse(html).find("button", string="Schließen")["data-on:click"] == "$selection = 0; $editing = 0"
 
 
 def test_card_switches_tabs_with_their_counts():
@@ -122,3 +127,54 @@ def test_card_without_relatives_says_so():
     assert (
         parse(html).find(id="person-card-relatives").get_text().strip() == "Noch niemand mit dieser Person verbunden."
     )
+
+
+def test_card_opens_the_form_for_name_and_status_with_the_pencil():
+    html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
+
+    assert parse(html).find("button", attrs={"aria-label": "Name & Status bearbeiten"})["data-on:click"] == (
+        "$editing = 7; $status = 'living'"
+    )
+
+
+def test_card_form_posts_name_and_status_filled_in():
+    html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
+
+    form = parse(html).find(id="person-card-name")
+    assert (
+        form["data-show"],
+        form["data-on:submit"],
+        form.find("input", attrs={"name": "given_names"})["value"],
+        form.find("input", attrs={"name": "call_name"})["value"],
+        form.find("select", attrs={"name": "sex"}).find("option", selected=True)["value"],
+        form.find("select", attrs={"name": "living_status"}).find("option", selected=True)["value"],
+        form.find("input", attrs={"name": "search"})["data-attr:value"],
+    ) == (
+        "$editing == 7",
+        f"@post('{reverse('family_tree:person-name-view', kwargs={'pk': 7})}', {{contentType: 'form'}})",
+        "Gertrud",
+        "Gerti",
+        "F",
+        "living",
+        "$search",
+    )
+
+
+def test_card_form_asks_for_the_death_year_once_deceased_is_chosen():
+    html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
+
+    year = parse(html).find("input", attrs={"name": "death_year"})
+    assert year.find_parent("label")["data-show"] == "$status == 'deceased'"
+
+
+def test_card_form_does_not_ask_for_a_death_year_already_recorded():
+    html = render_component(tag='<c-person.card :card="card" />', context={"card": replace(CARD, death_recorded=True)})
+
+    assert parse(html).find("input", attrs={"name": "death_year"}) is None
+
+
+def test_card_form_cancels_by_closing_it():
+    html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
+
+    cancel = parse(html).find("button", string="Abbrechen")
+    assert (cancel["type"], cancel["data-on:click"]) == ("reset", "$editing = 0")

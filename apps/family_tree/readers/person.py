@@ -111,6 +111,8 @@ class PersonCard:
     facts: list[FactEntry]
     relatives: list[RelativeGroup]
     relative_count: int
+    # Whether a death fact is recorded, so the form for name and status (#30) does not ask for the year again.
+    death_recorded: bool
 
 
 def person_card(*, pk: int) -> PersonCard | None:
@@ -143,6 +145,7 @@ def person_card(*, pk: int) -> PersonCard | None:
             if members
         ],
         relative_count=sum(len(members) for _, members in groups),
+        death_recorded=any(fact.kind == Fact.Kind.DEATH for fact in person.life_facts),
     )
 
 
