@@ -1,0 +1,23 @@
+<c-vars loose_people />
+{# The "Lose Zweigerl" at the bottom of the sidebar (#19): everyone with no connection to the home person, #}
+{# whom the tree therefore does not draw. Nothing deletes them on its own; each opens their card, where they #}
+{# are connected again or deleted. #}
+{% if loose_people %}
+    <section id="loose-people" aria-labelledby="loose-people-title" class="flex flex-col gap-2 border-t border-card-edge pt-3">
+        <h2 id="loose-people-title" class="flex justify-between text-lg"><span>Lose Zweigerl</span><span class="font-sans text-sm text-ink-muted">{{ loose_people|length }}</span></h2>
+        <p class="text-sm text-ink-muted">Hängen mit der Ausgangsperson nicht zusammen. Verbind sie neu oder lösch sie.</p>
+        <ul class="flex max-h-48 flex-col gap-0.5 overflow-y-auto">
+            {% for entry in loose_people %}
+                <li>
+                    <a href="{% url 'family_tree:person-view' pk=entry.person.pk %}" class="flex items-center gap-3 rounded-md px-2 py-1.5 text-ink no-underline hover:bg-card">
+                        <c-common.frame :initials="entry.initials" width="w-7" />
+                        <span class="flex min-w-0 flex-col leading-tight">
+                            <span class="truncate">{{ entry.name }}</span>
+                            <span class="truncate text-sm text-ink-muted">{{ entry.lifespan }}</span>
+                        </span>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+{% endif %}

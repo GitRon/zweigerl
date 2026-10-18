@@ -1,15 +1,26 @@
 import datetime
 
 import pytest
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils import timezone
 
-from apps.family_tree.actions.person import Relation, add_relative, change_name_and_status, create_person
-from apps.family_tree.models import Fact, ParentChild, Partnership, Person, SiblingPair, TreeSettings
+from apps.family_tree.actions.person import (
+    Relation,
+    add_relative,
+    change_name_and_status,
+    create_person,
+    delete_person,
+    unlink_relative,
+)
+from apps.family_tree.models import Citation, Fact, ParentChild, Partnership, Person, SiblingPair, Source, TreeSettings
+from apps.family_tree.tests.factories.citation import CitationFactory
 from apps.family_tree.tests.factories.fact import FactFactory
 from apps.family_tree.tests.factories.parent_child import ParentChildFactory
 from apps.family_tree.tests.factories.partnership import PartnershipFactory
 from apps.family_tree.tests.factories.person import PersonFactory
+from apps.family_tree.tests.factories.sibling_pair import SiblingPairFactory
+from apps.family_tree.tests.factories.source import SourceFactory
+from apps.family_tree.tests.factories.tree_settings import TreeSettingsFactory
 
 FIELDS = {
     "given_names": "Rosa",
@@ -254,3 +265,90 @@ def test_change_name_and_status_refuses_somebody_not_in_the_tree():
 
     with pytest.raises(Person.DoesNotExist, match="Person matching query does not exist"):
         change_name_and_status(person_id=lena.pk + 1, given_names="", surname="", call_name="", **ALIVE)
+
+
+@pytest.mark.django_db
+def test_delete_person_takes_their_facts_and_citations_and_keeps_sources_and_relatives():
+    johann = PersonFactory(given_names="Johann")
+    marriage = PartnershipFactory(person_a=johann)
+    child_link = ParentChildFactory(parent=johann)
+    CitationFactory(fact=FactFactory(person=johann))
+    CitationFactory(fact=FactFactory(person=None, partnership=marriage, kind=Fact.Kind.MARRIAGE))
+    SourceFactory(people=[johann])
+
+    delete_person(person_id=johann.pk)
+
+    assert (
+        Person.objects.filter(pk=johann.pk).exists(),
+        Fact.objects.exists(),
+        Citation.objects.exists(),
+        Partnership.objects.exists(),
+        Source.objects.count(),
+        set(Person.objects.values_list("pk", flat=True)),
+    ) == (False, False, False, False, 3, {marriage.person_b_id, child_link.child_id})
+
+
+@pytest.mark.django_db
+def test_delete_person_refuses_the_home_person():
+    lena = TreeSettingsFactory().home_person
+
+    with pytest.raises(ValidationError, match="Das ist die Ausgangsperson"):
+        delete_person(person_id=lena.pk)
+    assert Person.objects.filter(pk=lena.pk).exists() is True
+
+
+@pytest.mark.django_db
+def test_delete_person_of_somebody_not_there_raises():
+    with pytest.raises(Person.DoesNotExist, match="Person matching query does not exist"):
+        delete_person(person_id=404)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(("relation", "of_child"), [(Relation.PARENT, True), (Relation.CHILD, False)])
+def test_unlink_relative_removes_the_one_parent_link(relation, of_child):
+    link = ParentChildFactory()
+    other = ParentChildFactory(child=link.child)
+    person, relative = (link.child, link.parent) if of_child else (link.parent, link.child)
+
+    unlink_relative(person_id=person.pk, relation=relation, relative_id=relative.pk)
+
+    assert list(ParentChild.objects.all()) == [other]
+
+
+@pytest.mark.django_db
+def test_unlink_relative_removes_a_partnership_from_either_side_with_its_facts_and_keeps_the_children():
+    partnership = PartnershipFactory()
+    FactFactory(person=None, partnership=partnership, kind=Fact.Kind.MARRIAGE)
+    child_link = ParentChildFactory(parent=partnership.person_a, partnership=partnership)
+
+    unlink_relative(person_id=partnership.person_b_id, relation=Relation.PARTNER, relative_id=partnership.person_a_id)
+
+    child_link.refresh_from_db()
+    assert (Partnership.objects.exists(), Fact.objects.exists(), child_link.partnership) == (False, False, None)
+
+
+@pytest.mark.django_db
+def test_unlink_relative_removes_an_explicit_sibling_pair():
+    pair = SiblingPairFactory()
+
+    unlink_relative(person_id=pair.person_b_id, relation=Relation.SIBLING, relative_id=pair.person_a_id)
+
+    assert SiblingPair.objects.exists() is False
+
+
+@pytest.mark.django_db
+def test_unlink_relative_without_such_a_link_raises():
+    # Siblings through a shared parent: the link is the parent's.
+    link = ParentChildFactory()
+    sibling = ParentChildFactory(parent=link.parent)
+
+    with pytest.raises(ObjectDoesNotExist, match="Keine solche Verbindung"):
+        unlink_relative(person_id=link.child_id, relation=Relation.SIBLING, relative_id=sibling.child_id)
+
+
+@pytest.mark.django_db
+def test_unlink_relative_refuses_an_unknown_relation():
+    link = ParentChildFactory()
+
+    with pytest.raises(ValueError, match="'cousin' is not a valid Relation"):
+        unlink_relative(person_id=link.child_id, relation="cousin", relative_id=link.parent_id)

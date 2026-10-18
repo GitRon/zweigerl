@@ -118,6 +118,28 @@ def test_source_file_inline_never_adds_a_file_past_the_upload(admin_client):
 
 
 @pytest.mark.django_db
+def test_person_admin_explains_that_the_home_person_cannot_be_deleted(admin_client):
+    lena = TreeSettingsFactory(home_person__given_names="Lena", home_person__surname="Huber").home_person
+
+    response = admin_client.get(reverse("admin:family_tree_person_delete", args=[lena.pk]))
+
+    assert (response.context["protected"], response.context["perms_lacking"]) == (
+        ["Lena Huber ist die Ausgangsperson. Wähl erst eine andere Ausgangsperson."],
+        set(),
+    )
+
+
+@pytest.mark.django_db
+def test_person_admin_deletes_anybody_else_as_usual(admin_client):
+    TreeSettingsFactory()
+    johann = PersonFactory()
+
+    response = admin_client.get(reverse("admin:family_tree_person_delete", args=[johann.pk]))
+
+    assert (response.context["protected"], response.context["perms_lacking"]) == ([], set())
+
+
+@pytest.mark.django_db
 def test_photo_admin_never_adds_a_photo_past_the_upload(admin_client):
     response = admin_client.get(reverse("admin:family_tree_photo_add"))
 

@@ -7,16 +7,22 @@ from apps.family_tree.readers.person import (
     CitationChoice,
     FactEntry,
     KindChoice,
+    LinkPreview,
     PersonList,
     PersonListEntry,
+    RelativeEntry,
     RelativeGroup,
     Relatives,
+    deletion_preview,
     fact_entry,
     fact_form,
+    link_preview,
+    loose_people,
     person_card,
     person_entries,
     person_list,
     photos_tab,
+    relative_groups,
     relatives,
     sources_tab,
 )
@@ -291,10 +297,23 @@ def test_person_card_groups_the_relatives_and_counts_them():
         [
             RelativeGroup(
                 title="Eltern",
-                entries=[PersonListEntry(person=johann, name="Johann Huber", initials="JH", lifespan="—")],
+                relation="parent",
+                entries=[
+                    RelativeEntry(
+                        entry=PersonListEntry(person=johann, name="Johann Huber", initials="JH", lifespan="—"),
+                        unlinkable=True,
+                    )
+                ],
             ),
             RelativeGroup(
-                title="Kinder", entries=[PersonListEntry(person=emma, name="Emma Huber", initials="EH", lifespan="—")]
+                title="Kinder",
+                relation="child",
+                entries=[
+                    RelativeEntry(
+                        entry=PersonListEntry(person=emma, name="Emma Huber", initials="EH", lifespan="—"),
+                        unlinkable=True,
+                    )
+                ],
             ),
         ],
         2,
@@ -520,3 +539,184 @@ def test_fact_form_for_a_fact_of_somebody_else_is_none():
     stranger = PersonFactory(given_names="Fremd")
 
     assert fact_form(person_id=stranger.pk, fact_id=birth.pk) is None
+
+
+def _names(entries: list[PersonListEntry]) -> list[str]:
+    return [entry.person.given_names for entry in entries]
+
+
+@pytest.mark.django_db
+def test_relative_groups_offer_unlinking_an_explicit_sibling_but_not_one_through_a_parent():
+    johann = PersonFactory(given_names="Johann")
+    lena = PersonFactory(given_names="Lena")
+    florian = PersonFactory(given_names="Florian")
+    ParentChildFactory(parent=johann, child=lena)
+    ParentChildFactory(parent=johann, child=florian)
+    katharina = PersonFactory(given_names="Katharina")
+    stefan = PersonFactory(given_names="Stefan")
+    SiblingPairFactory(person_a=katharina, person_b=stefan)
+
+    through_parent = relative_groups(person=lena)[-1].entries[0]
+    explicit = relative_groups(person=stefan)[-1].entries[0]
+
+    assert (through_parent.entry.person, through_parent.unlinkable, explicit.entry.person, explicit.unlinkable) == (
+        florian,
+        False,
+        katharina,
+        True,
+    )
+
+
+@pytest.mark.django_db
+def test_deletion_preview_of_somebody_not_there_is_none():
+    assert deletion_preview(pk=404) is None
+
+
+@pytest.mark.django_db
+def test_deletion_preview_counts_what_vanishes_and_the_sources_that_stay():
+    johann = PersonFactory(given_names="Johann")
+    maria = PersonFactory(given_names="Maria")
+    marriage = PartnershipFactory(person_a=johann, person_b=maria)
+    birth = FactFactory(person=johann)
+    CitationFactory(fact=birth)
+    CitationFactory(fact=FactFactory(person=None, partnership=marriage, kind=Fact.Kind.MARRIAGE))
+    FactFactory(person=maria)
+    SourceFactory(people=[johann])
+
+    preview = deletion_preview(pk=johann.pk)
+
+    assert (preview.fact_count, preview.citation_count, preview.source_count) == (2, 2, 3)
+
+
+@pytest.mark.django_db
+def test_deletion_preview_lists_every_link_that_goes():
+    johann = PersonFactory(given_names="Johann")
+    lena = PersonFactory(given_names="Lena")
+    ParentChildFactory(parent=johann, child=lena)
+
+    groups = deletion_preview(pk=johann.pk).relatives
+
+    assert (len(groups), groups[0].title, groups[0].entries[0].entry.person) == (1, "Kinder", lena)
+
+
+@pytest.mark.django_db
+def test_deletion_preview_of_the_home_person_says_so_and_cuts_off_nobody():
+    lena = PersonFactory(given_names="Lena")
+    ParentChildFactory(parent=lena)
+    TreeSettingsFactory(home_person=lena)
+
+    preview = deletion_preview(pk=lena.pk)
+
+    assert (preview.home, preview.cut_off) == (True, [])
+
+
+@pytest.mark.django_db
+def test_deletion_preview_names_whom_the_deletion_cuts_off_from_the_home_person():
+    lena = PersonFactory(given_names="Lena")
+    johann = PersonFactory(given_names="Johann")
+    franz = PersonFactory(given_names="Franz")
+    anna = PersonFactory(given_names="Anna")
+    maria = PersonFactory(given_names="Maria")
+    PersonFactory(given_names="Fremd")
+    ParentChildFactory(parent=johann, child=lena)
+    ParentChildFactory(parent=franz, child=johann)
+    ParentChildFactory(parent=anna, child=johann)
+    ParentChildFactory(parent=maria, child=lena)
+    TreeSettingsFactory(home_person=lena)
+
+    preview = deletion_preview(pk=johann.pk)
+
+    assert (preview.home, _names(preview.cut_off)) == (False, ["Anna", "Franz"])
+
+
+@pytest.mark.django_db
+def test_deletion_preview_without_a_home_person_measures_from_the_person_entered_first():
+    johann = PersonFactory(given_names="Johann")
+    lena = PersonFactory(given_names="Lena")
+    emma = PersonFactory(given_names="Emma")
+    ParentChildFactory(parent=johann, child=lena)
+    ParentChildFactory(parent=lena, child=emma)
+
+    assert (_names(deletion_preview(pk=lena.pk).cut_off), _names(deletion_preview(pk=johann.pk).cut_off)) == (
+        ["Emma"],
+        [],
+    )
+
+
+@pytest.mark.django_db
+def test_deletion_preview_of_the_only_person_cuts_off_nobody():
+    lena = PersonFactory(given_names="Lena")
+
+    assert deletion_preview(pk=lena.pk).cut_off == []
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(("relation", "of_child", "name"), [("parent", True, "Elternteil"), ("child", False, "Kind")])
+def test_link_preview_finds_a_parent_and_a_child_link(relation, of_child, name):
+    link = ParentChildFactory()
+    person, relative = (link.child, link.parent) if of_child else (link.parent, link.child)
+
+    preview = link_preview(pk=person.pk, relation=relation, relative_pk=relative.pk)
+
+    assert (preview.person.person, preview.relative.person, preview.relation_name) == (person, relative, name)
+
+
+@pytest.mark.django_db
+def test_link_preview_of_a_partner_counts_the_couple_facts_from_either_side():
+    partnership = PartnershipFactory()
+    FactFactory(person=None, partnership=partnership, kind=Fact.Kind.MARRIAGE)
+    FactFactory(person=None, partnership=PartnershipFactory(person_a=partnership.person_a), kind=Fact.Kind.MARRIAGE)
+
+    preview = link_preview(pk=partnership.person_b_id, relation="partner", relative_pk=partnership.person_a_id)
+
+    assert (preview.relation_name, preview.couple_fact_count) == ("Partner", 1)
+
+
+@pytest.mark.django_db
+def test_link_preview_finds_an_explicit_sibling():
+    pair = SiblingPairFactory()
+
+    assert link_preview(pk=pair.person_b_id, relation="sibling", relative_pk=pair.person_a_id) == LinkPreview(
+        person=person_entries(person_ids=[pair.person_b_id])[pair.person_b_id],
+        relative=person_entries(person_ids=[pair.person_a_id])[pair.person_a_id],
+        relation="sibling",
+        relation_name="Geschwister",
+        couple_fact_count=0,
+    )
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("relation", ["sibling", "partner", "cousin"])
+def test_link_preview_without_such_a_link_is_none(relation):
+    # Siblings through a shared parent: no link of their own.
+    link = ParentChildFactory()
+    sibling = ParentChildFactory(parent=link.parent)
+
+    assert link_preview(pk=link.child_id, relation=relation, relative_pk=sibling.child_id) is None
+
+
+@pytest.mark.django_db
+def test_loose_people_are_those_with_no_connection_to_the_home_person():
+    lena = PersonFactory(given_names="Lena")
+    ParentChildFactory(parent=PersonFactory(given_names="Johann"), child=lena)
+    franz = PersonFactory(given_names="Franz", surname="Berger")
+    anna = PersonFactory(given_names="Anna", surname="Berger")
+    PartnershipFactory(person_a=franz, person_b=anna)
+    PersonFactory(given_names="Rosa", surname="Auer")
+    TreeSettingsFactory(home_person=lena)
+
+    assert _names(loose_people()) == ["Rosa", "Anna", "Franz"]
+
+
+@pytest.mark.django_db
+def test_loose_people_without_a_home_person_are_measured_from_the_person_entered_first():
+    johann = PersonFactory(given_names="Johann")
+    ParentChildFactory(parent=johann)
+    PersonFactory(given_names="Rosa", surname="Auer")
+
+    assert _names(loose_people()) == ["Rosa"]
+
+
+@pytest.mark.django_db
+def test_loose_people_of_an_empty_tree_are_nobody():
+    assert loose_people() == []

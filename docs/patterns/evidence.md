@@ -64,7 +64,8 @@ attaches more to one: `actions.source.create_source` and `add_source_files`. A f
 admin shows the files of a source but adds none, since a file saved there would keep its original name.
 
 A source that is cited cannot be deleted (`on_delete=PROTECT` on the citation): its facts would quietly
-turn *unbelegt*. A citation goes with its fact.
+turn *unbelegt*. A citation goes with its fact. **A source outlives the person it is filed with** (decided
+18.10.2026, #19): deleting a person takes their facts and the citations of them, never a source or its scans.
 
 ## Unbelegt
 

@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.forms.models import BaseInlineFormSet
+from django.utils.text import capfirst
 
 from apps.family_tree.models import (
     Citation,
@@ -108,6 +109,24 @@ class PersonAdmin(admin.ModelAdmin):
     search_fields = ("given_names", "surname", "call_name")
     fields = ("given_names", "surname", "call_name", "sex", "living_status", "gedcom_raw")
     inlines = (FactInline, ParentsInline, ChildrenInline, PartnershipAsAInline, PartnershipAsBInline)
+
+    def get_deleted_objects(self, objs, request):
+        """
+        The home person is protected by the TreeSettings row, which nobody may delete, so Django would report the
+        PROTECT as a missing permission to delete "Einstellung", next to a link to that row. This says what it is
+        instead (#19).
+        """
+        deleted, model_count, perms_needed, protected = super().get_deleted_objects(objs, request)
+        home_ids = set(TreeSettings.objects.exclude(home_person=None).values_list("home_person", flat=True))
+        homes = [obj for obj in objs if obj.pk in home_ids]
+        if homes:
+            perms_needed.discard(TreeSettings._meta.verbose_name)
+            settings_row = f"{capfirst(TreeSettings._meta.verbose_name)}:"
+            protected = [
+                *(f"{home} ist die Ausgangsperson. Wähl erst eine andere Ausgangsperson." for home in homes),
+                *(item for item in protected if not str(item).startswith(settings_row)),
+            ]
+        return deleted, model_count, perms_needed, protected
 
 
 @admin.register(Partnership)

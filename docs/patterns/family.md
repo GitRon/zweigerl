@@ -85,7 +85,7 @@ and a forbidden row ends in a `ValidationError` with the German message below - 
 | One row of TreeSettings | `treesettings_single_row`, on `id = 1`; the admin offers no second and no delete | "Es gibt nur eine Zeile Einstellungen." |
 | Somebody is on a photo once, and has at most one portrait | `photoperson_once`, `photoperson_one_portrait` - unique on `person` where `is_portrait` | "Eine Person hat höchstens ein Titelbild." |
 | A photo's date is complete, sorted, and has a second date only as a range - as a fact's | `photo_date_complete`, `photo_sort_date_with_date`, `photo_date_2_only_between` | "Ein Aufnahmedatum braucht seine Art und seine Genauigkeit." |
-| The home person cannot be deleted | `on_delete=PROTECT`; choosing another one first is #19 | - |
+| The home person cannot be deleted | `on_delete=PROTECT`, and `actions.person.delete_person` refuses first with a message; the admin says so too (#19) | "Das ist die Ausgangsperson. …" |
 
 What spans several rows no constraint can hold, so it is in `clean()`, which the mixin runs on every save:
 
@@ -119,6 +119,27 @@ person's card. `actions.person.add_relative` writes the person and the one link 
 
 A half-sibling is added as a child of the parent they share. `actions.person.create_person` makes the first person
 of an empty tree the home person.
+
+## Deleting and unlinking
+
+Deleting a person or removing one link never leaves a twig behind unnoticed (#19), and it never deletes anybody
+else:
+
+- **"Löschen" on the card asks first**, in a dialog from `readers.person.deletion_preview`: how many facts vanish -
+  the person's and their partnerships', with the citations of them - how many sources stay (see
+  [Belege](evidence.md)), every link that goes, and who would hang loose. People who would lose their connection
+  to the home person are named in `brick`, and "Löschen" waits for the tick "Ist mir klar: N Personen hängen dann
+  lose" - the view checks the number again, so a tree changed in the meantime asks again.
+  `actions.person.delete_person` deletes; everything that goes with the person goes by `CASCADE`.
+- **The home person is never deleted.** The dialog offers "Andere Ausgangsperson wählen…" instead, the action
+  refuses, and the admin's delete page says she is the home person rather than reporting a missing permission.
+- **"Verbindung lösen"** - the cross beside a relative on the Verwandte tab - removes exactly one row after a short
+  question: the `ParentChild`, the `Partnership` (with the couple's facts; its children keep each parent) or the
+  `SiblingPair`, `actions.person.unlink_relative`. A sibling through a shared parent has no button: their link is
+  the parent's, and that is the one to remove.
+- **Lose Zweigerl** - everyone with no connection to the home person, `readers.person.loose_people` - are never
+  deleted on their own. They stand at the bottom of the sidebar, each linking to their card, to be connected again
+  or deleted. Who is connected is `domain.relationship.connected_people`, the same walk the tree is drawn from.
 
 ## The home person
 
