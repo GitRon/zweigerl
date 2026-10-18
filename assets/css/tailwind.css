@@ -34,22 +34,22 @@
  * utility becomes an element that inherits its colour and still reads. "bg-transparent" and
  * "stroke-current" survive it: they are built into Tailwind rather than read from the palette.
  *
- * The five CI colours carry the moodboard's names. The four after them are the moodboard's own values
- * for the album page: the card a picture sits on, its edge, the initials in an empty frame and the
- * lighter sheet of a card.
+ * The five CI colours come first, English like all code; docs/patterns/visual-identity.md keeps the
+ * moodboard's name beside each. The four after them are the moodboard's own values for the album page:
+ * the card a picture sits on, its edge, the initials in an empty frame and the lighter sheet of a card.
  */
 @theme {
     --color-*: initial;
-    --color-loden: #4a5d3f;
-    --color-birkenpapier: #f2ede3;
-    --color-ziegel: #9e4430;
-    --color-tinte: #2b2a28;
-    --color-moos: #c9a83b;
+    --color-forest: #4a5d3f;
+    --color-birch: #f2ede3;
+    --color-brick: #9e4430;
+    --color-ink: #2b2a28;
+    --color-moss: #c9a83b;
 
-    --color-karton: #e7e0d2;
-    --color-karton-rand: #cfc6b4;
-    --color-tinte-matt: #5e574b;
-    --color-blatt: #fbf8f2;
+    --color-card: #e7e0d2;
+    --color-card-edge: #cfc6b4;
+    --color-ink-muted: #5e574b;
+    --color-sheet: #fbf8f2;
 
     --font-*: initial;
     --font-serif: "Young Serif", Georgia, serif;
@@ -76,8 +76,8 @@
 @layer base {
     /* Preflight already sets "font-sans" and a line height of 1.5 here. */
     html {
-        color: var(--color-tinte);
-        background-color: var(--color-birkenpapier);
+        color: var(--color-ink);
+        background-color: var(--color-birch);
     }
 
     h1,
@@ -89,22 +89,22 @@
     }
 
     /*
-     * A link is Loden, underlined. Loden is the colour of where you are and where you can go, so a link
+     * A link is `forest`, underlined. `forest` is the colour of where you are and where you can go, so a link
      * in a sentence and the current entry of a menu say the same thing.
      */
     a {
-        color: var(--color-loden);
+        color: var(--color-forest);
         text-decoration: underline;
         text-underline-offset: 0.2em;
     }
 
     a:hover {
-        color: var(--color-tinte);
+        color: var(--color-ink);
     }
 
     /* Everything the keyboard lands on says so, in the colour of where you are. */
     :focus-visible {
-        outline: 2px solid var(--color-loden);
+        outline: 2px solid var(--color-forest);
         outline-offset: 2px;
     }
 }

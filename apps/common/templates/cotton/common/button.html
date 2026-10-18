@@ -4,7 +4,7 @@
 {# datastar "data-on:click" or "disabled", lands on the element through "attrs". A link cannot be #}
 {# disabled: a control that may refuse is a button. #}
 {% if href %}
-    <a href="{{ href }}" class="inline-flex min-h-11 items-center justify-center rounded-md border-[1.5px] px-5 font-bold no-underline {% if variant == 'primary' %}border-ziegel bg-ziegel text-birkenpapier hover:border-tinte{% else %}border-tinte text-tinte hover:bg-karton{% endif %} {{ class }}" {{ attrs }}>{{ slot }}</a>
+    <a href="{{ href }}" class="inline-flex min-h-11 items-center justify-center rounded-md border-[1.5px] px-5 font-bold no-underline {% if variant == 'primary' %}border-brick bg-brick text-birch hover:border-ink{% else %}border-ink text-ink hover:bg-card{% endif %} {{ class }}" {{ attrs }}>{{ slot }}</a>
 {% else %}
-    <button type="{{ type }}" class="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-md border-[1.5px] px-5 font-bold disabled:cursor-not-allowed disabled:border-karton-rand disabled:bg-transparent disabled:text-tinte-matt {% if variant == 'primary' %}border-ziegel bg-ziegel text-birkenpapier hover:border-tinte{% else %}border-tinte text-tinte hover:bg-karton{% endif %} {{ class }}" {{ attrs }}>{{ slot }}</button>
+    <button type="{{ type }}" class="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-md border-[1.5px] px-5 font-bold disabled:cursor-not-allowed disabled:border-card-edge disabled:bg-transparent disabled:text-ink-muted {% if variant == 'primary' %}border-brick bg-brick text-birch hover:border-ink{% else %}border-ink text-ink hover:bg-card{% endif %} {{ class }}" {{ attrs }}>{{ slot }}</button>
 {% endif %}
