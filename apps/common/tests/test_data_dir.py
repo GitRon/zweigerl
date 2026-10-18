@@ -26,7 +26,9 @@ def test_data_dir_from_environment_refuses_a_blank_variable(tmp_path):
 
 def test_data_dir_from_environment_refuses_a_directory_that_does_not_exist(tmp_path):
     with pytest.raises(ImproperlyConfigured, match="which does not exist"):
-        data_dir_from_environment(environ={"ZWEIGERL_DATA_DIR": str(tmp_path / "vertippt")}, repo_root=tmp_path / "zweigerl")
+        data_dir_from_environment(
+            environ={"ZWEIGERL_DATA_DIR": str(tmp_path / "vertippt")}, repo_root=tmp_path / "zweigerl"
+        )
 
 
 def test_data_dir_from_environment_refuses_a_file(tmp_path):
