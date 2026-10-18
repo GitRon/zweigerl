@@ -81,14 +81,19 @@ handed over that parameter would put every attempt into one bucket. A locked-out
 **A media file is handed out by one view, behind the login, and by nothing else.** `MEDIA_URL` is
 `/medien/`, which is `apps.common.views.media.media_view`; there is no `static()` for media and no web
 server pointing at `MEDIA_ROOT`. A guessed URL gets the login page, a path that leads out of the media
-directory - `../`, a symlink - gets a 404.
+directory - `../`, a symlink - gets a 404. So does any file of a kind the upload never makes: only JPEG,
+PNG, WebP, TIFF and PDF are handed out, with a fixed content type, so an `.html` or `.svg` that reached the
+directory some other way cannot run as a page of Zweigerl.
 
 Behind nginx (#37), `ZWEIGERL_MEDIA_ACCEL_PREFIX` names an `internal` nginx location mapped to
 `MEDIA_ROOT`, e.g. `/_medien/`. The view still checks the login, then answers with an empty body and
-`X-Accel-Redirect`, and nginx sends the bytes. Unset, Django sends the file itself.
+`X-Accel-Redirect` - the path percent-encoded, since nginx reads it as a URI - and nginx sends the bytes.
+Unset, Django sends the file itself.
 
 **Every upload goes through `apps.common.media.store_upload`** - the files on a source (#15), photos (#16)
-and the pictures a PAF import brings (#24) alike:
+and the pictures a PAF import brings (#24) alike. A `FileField` saved any other way - a plain model form,
+the admin - writes the file under its original name with everything in it, so the ticket that adds a file
+field routes it through `store_upload`, and a review finds it when it does not.
 
 - **Stored under a random name** in `MEDIA_ROOT/<folder>/`, e.g. `fotos/3f2a….jpg`. The original name is
   dropped and kept nowhere: "Taufe Josef Huber 1931.jpg" says who is in the picture.

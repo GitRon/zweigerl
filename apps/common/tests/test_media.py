@@ -20,6 +20,7 @@ def _image_with_exif(*, image_format: str) -> bytes:
     An invented photo carrying everything the upload has to strip, and the date it has to keep.
     """
     exif = Image.Exif()
+    exif[ExifTags.Base.Artist] = "Josef Erfunden"
     exif[ExifTags.Base.Make] = "Kamerafirma"
     exif[ExifTags.Base.Model] = "Modell X"
     exif[ExifTags.Base.Orientation] = 6
@@ -28,6 +29,21 @@ def _image_with_exif(*, image_format: str) -> bytes:
     exif.get_ifd(ExifTags.IFD.GPSInfo)[ExifTags.GPS.GPSLatitude] = (47.0, 30.0, 0.0)
     output = io.BytesIO()
     Image.new("RGB", (16, 8), "green").save(output, image_format, exif=exif)
+
+    return output.getvalue()
+
+
+def _tiff_with_tags() -> bytes:
+    """
+    An invented scan, turned on its side, whose TIFF tags name the scanner and the person who scanned it.
+    Written through "tiffinfo", which is where a TIFF keeps them - Pillow puts no EXIF sub-blocks into one.
+    """
+    output = io.BytesIO()
+    Image.new("RGB", (16, 8), "white").save(
+        output,
+        "TIFF",
+        tiffinfo={ExifTags.Base.Make: "Scannerfirma", ExifTags.Base.Artist: "Josef Erfunden", ExifTags.Base.Orientation: 6},
+    )
 
     return output.getvalue()
 
@@ -82,14 +98,66 @@ def test_store_upload_removes_the_location_from_a_png(media_root):
     assert dict(_stored_exif(media_root=media_root, name=name).get_ifd(ExifTags.IFD.GPSInfo)) == {}
 
 
-def test_store_upload_turns_a_tiff_upright_and_drops_its_tags(media_root):
-    upload = SimpleUploadedFile("scan.tif", _image_with_exif(image_format="TIFF"))
+def test_store_upload_keeps_no_name_from_a_jpeg(media_root):
+    upload = SimpleUploadedFile("foto.jpg", _image_with_exif(image_format="JPEG"))
+
+    name = store_upload(uploaded_file=upload, folder="fotos")
+
+    assert ExifTags.Base.Artist not in _stored_exif(media_root=media_root, name=name)
+
+
+def test_store_upload_drops_the_comment_of_a_jpeg(media_root):
+    output = io.BytesIO()
+    Image.new("RGB", (8, 8)).save(output, "JPEG", comment=b"Taufe Josef Erfunden, Hallstatt")
+    upload = SimpleUploadedFile("foto.jpg", output.getvalue())
+
+    name = store_upload(uploaded_file=upload, folder="fotos")
+
+    assert Image.open(media_root / name).info.get("comment") is None
+
+
+def test_store_upload_takes_a_camera_jpeg_with_previews(media_root):
+    output = io.BytesIO()
+    Image.new("RGB", (16, 8)).save(output, "MPO", save_all=True, append_images=[Image.new("RGB", (4, 2))])
+    upload = SimpleUploadedFile("kamera.jpg", output.getvalue())
+
+    name = store_upload(uploaded_file=upload, folder="fotos")
+
+    assert Image.open(media_root / name).format == "JPEG"
+
+
+def test_store_upload_removes_the_location_from_a_webp(media_root):
+    upload = SimpleUploadedFile("foto.webp", _image_with_exif(image_format="WEBP"))
+
+    name = store_upload(uploaded_file=upload, folder="fotos")
+
+    assert dict(_stored_exif(media_root=media_root, name=name).get_ifd(ExifTags.IFD.GPSInfo)) == {}
+
+
+def test_store_upload_turns_a_tiff_upright(media_root):
+    upload = SimpleUploadedFile("scan.tif", _tiff_with_tags())
 
     name = store_upload(uploaded_file=upload, folder="quellen")
 
-    stored = Image.open(media_root / name)
-    assert stored.size == (8, 16)
-    assert dict(stored.getexif().get_ifd(ExifTags.IFD.GPSInfo)) == {}
+    assert Image.open(media_root / name).size == (8, 16)
+
+
+def test_store_upload_drops_the_tags_of_a_tiff(media_root):
+    upload = SimpleUploadedFile("scan.tif", _tiff_with_tags())
+
+    name = store_upload(uploaded_file=upload, folder="quellen")
+
+    tags = Image.open(media_root / name).getexif()
+    assert (tags.get(ExifTags.Base.Make), tags.get(ExifTags.Base.Artist)) == (None, None)
+
+
+def test_store_upload_refuses_a_scan_with_several_pages(media_root):
+    output = io.BytesIO()
+    Image.new("RGB", (8, 8)).save(output, "TIFF", save_all=True, append_images=[Image.new("RGB", (8, 8))])
+    upload = SimpleUploadedFile("urkunde.tif", output.getvalue())
+
+    with pytest.raises(UploadRefusedError, match="Mehrseitige Scans bitte als PDF"):
+        store_upload(uploaded_file=upload, folder="quellen")
 
 
 def test_store_upload_keeps_a_pdf_as_it_came(media_root):
