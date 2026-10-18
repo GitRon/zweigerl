@@ -97,13 +97,15 @@ field routes it through `store_upload`, and a review finds it when it does not.
 
 - **Stored under a random name** in `MEDIA_ROOT/<folder>/`, e.g. `fotos/3f2a….jpg`. The original name is
   dropped and kept nowhere: "Taufe Josef Huber 1931.jpg" says who is in the picture.
-- **Accepted:** JPEG, PNG, WebP, TIFF and PDF, by extension and by content. Anything else, or a file whose
-  content does not match its extension, raises `UploadRefusedError` with a German message for the form. HEIC
-  from phones is not accepted yet.
-- **Images lose where and with what they were taken:** the GPS block, and the camera's make, model,
-  serial numbers, lens, owner name, software and maker note. XMP and comments are not carried over either.
-  **The date taken stays** - it is what #16 shows - and so does the orientation and the colour profile. A
-  JPEG keeps its quantisation tables, so it is not visibly recompressed.
+- **Accepted:** JPEG (also the camera kind with previews, MPO), PNG, WebP, TIFF and PDF, by extension and
+  by content. Anything else, a file whose content does not match its extension, and a scan with several
+  pages or an animation - only the first frame would survive - raise `UploadRefusedError` with a German
+  message for the form. HEIC from phones is not accepted yet.
+- **An image keeps the picture and nothing about it but two facts:** the date it was taken - which #16
+  shows - and its orientation, plus the colour profile. Everything else is dropped rather than picked
+  out: GPS, camera and lens, serial numbers, the photographer's name, descriptions, copyright, comments,
+  XMP. Whatever a phone or a program writes there next may name a person or a place. A JPEG keeps its
+  quantisation tables, so it is not visibly recompressed; one with previews is saved at quality 95.
 - **A TIFF is turned upright and keeps no tags:** Pillow writes no EXIF sub-blocks into a TIFF, so the
   orientation is applied to the pixels and the date taken does not survive. A scan rarely has one.
 - **A PDF is stored as it came.** Its own metadata - author, producer - is not touched yet.

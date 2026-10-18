@@ -42,7 +42,11 @@ def _tiff_with_tags() -> bytes:
     Image.new("RGB", (16, 8), "white").save(
         output,
         "TIFF",
-        tiffinfo={ExifTags.Base.Make: "Scannerfirma", ExifTags.Base.Artist: "Josef Erfunden", ExifTags.Base.Orientation: 6},
+        tiffinfo={
+            ExifTags.Base.Make: "Scannerfirma",
+            ExifTags.Base.Artist: "Josef Erfunden",
+            ExifTags.Base.Orientation: 6,
+        },
     )
 
     return output.getvalue()
