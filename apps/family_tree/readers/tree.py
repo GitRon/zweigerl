@@ -24,6 +24,8 @@ class TreeCard:
     # The top left corner, see "domain.layout.Card".
     x: int
     y: int
+    # An ancestor in whom two lines of the home person meet - Ahnenschwund (#31).
+    pedigree_collapse: bool = False
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -40,13 +42,16 @@ class Tree:
 def tree() -> Tree:
     """
     The tree as the canvas draws it (#12): the layout of "tree_layout", each card with the name, initials and
-    Lebensdaten of its person.
+    Lebensdaten of its person and whether two of the home person's lines meet in them.
     """
     laid_out = tree_layout()
     entries = person_entries(person_ids=[card.person_id for card in laid_out.cards])
 
     return Tree(
-        cards=[TreeCard(entry=entries[card.person_id], x=card.x, y=card.y) for card in laid_out.cards],
+        cards=[
+            TreeCard(entry=entries[card.person_id], x=card.x, y=card.y, pedigree_collapse=card.pedigree_collapse)
+            for card in laid_out.cards
+        ],
         placeholders=laid_out.placeholders,
         lines=laid_out.lines,
         width=laid_out.width,

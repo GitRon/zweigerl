@@ -40,3 +40,22 @@ def test_card_tells_assistive_technology_whether_it_is_selected():
     )
 
     assert parse(html).find(id="tree-card-7")["data-attr:aria-pressed"] == "String($selection == 7)"
+
+
+def test_card_labels_an_ancestor_in_whom_two_lines_meet():
+    html = render_component(
+        tag='<c-tree.card :card="card" width="140" height="190" />',
+        context={"card": TreeCard(entry=CARD.entry, x=CARD.x, y=CARD.y, pedigree_collapse=True)},
+    )
+
+    page = parse(html)
+    assert page.find(id=page.find(id="tree-card-7")["aria-describedby"]).get_text(strip=True) == "Ahnenschwund"
+
+
+def test_card_without_pedigree_collapse_has_no_label():
+    html = render_component(
+        tag='<c-tree.card :card="card" width="140" height="190" />',
+        context={"card": CARD},
+    )
+
+    assert parse(html).find(id="tree-card-7-collapse") is None

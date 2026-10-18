@@ -180,6 +180,18 @@
     }
   },
   {
+    "model": "family_tree.person",
+    "pk": 16,
+    "fields": {
+      "given_names": "Hildegard",
+      "surname": "Moser",
+      "call_name": "Hilde",
+      "sex": "F",
+      "living_status": "unknown",
+      "gedcom_raw": []
+    }
+  },
+  {
     "model": "family_tree.partnership",
     "pk": 1,
     "fields": {
@@ -206,6 +218,16 @@
       "person_a": 12,
       "person_b": 13,
       "kind": "cohabitation",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.partnership",
+    "pk": 4,
+    "fields": {
+      "person_a": 5,
+      "person_b": 16,
+      "kind": "marriage",
       "gedcom_raw": []
     }
   },
@@ -347,7 +369,7 @@
     "fields": {
       "parent": 5,
       "child": 7,
-      "partnership": null,
+      "partnership": 4,
       "pedigree": "birth",
       "gedcom_raw": []
     }
@@ -414,6 +436,17 @@
       "parent": 13,
       "child": 15,
       "partnership": 3,
+      "pedigree": "birth",
+      "gedcom_raw": []
+    }
+  },
+  {
+    "model": "family_tree.parentchild",
+    "pk": 20,
+    "fields": {
+      "parent": 16,
+      "child": 7,
+      "partnership": 4,
       "pedigree": "birth",
       "gedcom_raw": []
     }
