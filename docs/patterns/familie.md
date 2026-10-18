@@ -50,21 +50,30 @@ and explicit together. Every screen that lists relatives goes through it.
 
 ## The rules, and who holds them
 
-| Rule | Held by |
+Every model inherits `ValidateConstraintsOnSaveMixin`, so `save()` runs `clean()` and the constraints first
+and a forbidden row ends in a `ValidationError` with the German message below - see
+[rules in the database](app-layout.md#rules-in-the-database).
+
+| Rule | Constraint | Message |
+|---|---|---|
+| Geschlecht and Lebensstatus are one of their choices | `person_geschlecht_gueltig`, `person_lebensstatus_gueltig` | "Das Geschlecht ist männlich, weiblich, divers oder unbekannt." |
+| The Art of a Partnerschaft or an ElternKind is one of its choices | `partnerschaft_art_gueltig`, `elternkind_art_gueltig` | "Eine Partnerschaft ist eine Ehe, …" |
+| Nobody is their own partner, parent or sibling | `partnerschaft_nicht_selbst`, `elternkind_nicht_selbst`, `geschwister_nicht_selbst` | "Niemand ist sein eigener Partner." |
+| One Partnerschaft and one Geschwister row per pair, whichever way round | `partnerschaft_einmal_pro_paar`, `geschwister_einmal_pro_paar` - unique on `Least`/`Greatest` of the two, so which of them is `person_a` means nothing | "Diese beiden sind schon ein Paar." |
+| One ElternKind row per parent and child | `elternkind_einmal` | "Diese Eltern-Kind-Verbindung gibt es schon." |
+| One row of Einstellung | `einstellung_nur_eine_zeile`, on `id = 1`; the admin offers no second and no delete | "Es gibt nur eine Zeile Einstellungen." |
+| The Ausgangsperson cannot be deleted | `on_delete=PROTECT`; choosing another one first is #19 | - |
+
+What spans several rows no constraint can hold, so it is in `clean()`, which the mixin runs on every save:
+
+| Rule | In |
 |---|---|
-| Nobody is their own partner, parent or sibling | constraints, and `clean()` with a German message |
-| One Partnerschaft and one Geschwister row per pair, whichever way round | a unique constraint on `Least`/`Greatest` of the two persons - which of them is `person_a` means nothing |
-| One ElternKind row per parent and child | a unique constraint |
 | An ElternKind's Partnerschaft contains its parent | `ElternKind.clean()` |
 | At most two `leiblich` parents | `ElternKind.clean()` against the saved rows, and the admin's `ElternFormSet` for several entered at once |
 | No Geschwister row for people with a shared parent | `Geschwister.clean()`, and `ElternKind.clean()` refuses the shared parent while the row is still there |
-| The Ausgangsperson cannot be deleted | `on_delete=PROTECT`; choosing another one first is #19 |
-| One row of Einstellung | a check constraint on `id = 1`; the admin offers no second and no delete |
 
-A rule a constraint can hold is a constraint, so nothing that writes - the admin, a future action, an
-import - gets around it. What needs a query is in `clean()`, which the admin calls; the actions that write
-these models (#14, #18, #30) call `full_clean()` before saving. `loaddata` calls neither, so the Familie Huber
-fixture is held only by the constraints.
+A name may be empty: GEDCOM allows a person without one, and "the unknown first wife" belongs in the tree.
+`loaddata` writes past `save()`, so the Familie Huber fixture is held by the constraints alone.
 
 ## Raw GEDCOM
 

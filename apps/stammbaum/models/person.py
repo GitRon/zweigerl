@@ -1,9 +1,10 @@
+from ambient_toolbox.mixins.validation import ValidateConstraintsOnSaveMixin
 from django.db import models
 
 from apps.stammbaum.models.gedcom import GedcomRohMixin
 
 
-class Person(GedcomRohMixin):
+class Person(ValidateConstraintsOnSaveMixin, GedcomRohMixin):
     """
     One person in the tree - GEDCOM's INDI. Dates and places are Angaben with their Beleg (#8), not fields here.
     """
@@ -23,7 +24,8 @@ class Person(GedcomRohMixin):
         VERSTORBEN = "verstorben", "verstorben"
         UNBEKANNT = "unbekannt", "unbekannt"
 
-    # GEDCOM NAME /SURN/ with GIVN and NICK
+    # GEDCOM NAME /SURN/ with GIVN and NICK. Every one may be empty: GEDCOM allows a person without a name,
+    # and "the unknown first wife" is a person in the tree.
     vornamen = models.CharField("Vornamen", max_length=200, blank=True)
     familienname = models.CharField("Familienname", max_length=200, blank=True)
     rufname = models.CharField("Rufname", max_length=100, blank=True)
@@ -45,6 +47,20 @@ class Person(GedcomRohMixin):
         verbose_name = "Person"
         verbose_name_plural = "Personen"
         ordering = ("familienname", "vornamen", "pk")
+        constraints = (
+            # The values of the choices above, written out: a migration freezes them anyway, and a nested
+            # Meta cannot see the enclosing class.
+            models.CheckConstraint(
+                condition=models.Q(geschlecht__in=("M", "F", "X", "U")),
+                name="person_geschlecht_gueltig",
+                violation_error_message="Das Geschlecht ist männlich, weiblich, divers oder unbekannt.",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(lebensstatus__in=("lebend", "verstorben", "unbekannt")),
+                name="person_lebensstatus_gueltig",
+                violation_error_message="Der Lebensstatus ist lebend, verstorben oder unbekannt.",
+            ),
+        )
 
     def __str__(self) -> str:
         return " ".join(part for part in (self.vornamen, self.familienname) if part) or "Ohne Namen"

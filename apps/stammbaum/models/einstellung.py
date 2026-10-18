@@ -1,7 +1,8 @@
+from ambient_toolbox.mixins.validation import ValidateConstraintsOnSaveMixin
 from django.db import models
 
 
-class Einstellung(models.Model):
+class Einstellung(ValidateConstraintsOnSaveMixin, models.Model):
     """
     The settings of the one tree an installation holds (#34 brings several): one row, primary key 1.
     For now only the Ausgangsperson, which the tree is laid out around (#11) and which #18, #19 and #20 read.
@@ -24,7 +25,13 @@ class Einstellung(models.Model):
     class Meta:
         verbose_name = "Einstellung"
         verbose_name_plural = "Einstellungen"
-        constraints = (models.CheckConstraint(condition=models.Q(id=1), name="einstellung_nur_eine_zeile"),)
+        constraints = (
+            models.CheckConstraint(
+                condition=models.Q(id=1),
+                name="einstellung_nur_eine_zeile",
+                violation_error_message="Es gibt nur eine Zeile Einstellungen.",
+            ),
+        )
 
     def __str__(self) -> str:
         return "Einstellungen des Stammbaums"

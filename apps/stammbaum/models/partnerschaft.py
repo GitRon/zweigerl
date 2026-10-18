@@ -1,11 +1,11 @@
-from django.core.exceptions import ValidationError
+from ambient_toolbox.mixins.validation import ValidateConstraintsOnSaveMixin
 from django.db import models
 from django.db.models.functions import Greatest, Least
 
 from apps.stammbaum.models.gedcom import GedcomRohMixin
 
 
-class Partnerschaft(GedcomRohMixin):
+class Partnerschaft(ValidateConstraintsOnSaveMixin, GedcomRohMixin):
     """
     Two people as a couple - GEDCOM's FAM with HUSB and WIFE, MARR and DIV. The through model of
     Person.partner. Which of the two is "person_a" means nothing; a pair is stored once either way round.
@@ -35,7 +35,9 @@ class Partnerschaft(GedcomRohMixin):
         verbose_name_plural = "Partnerschaften"
         constraints = (
             models.CheckConstraint(
-                condition=~models.Q(person_a=models.F("person_b")), name="partnerschaft_nicht_selbst"
+                condition=~models.Q(person_a=models.F("person_b")),
+                name="partnerschaft_nicht_selbst",
+                violation_error_message="Niemand ist sein eigener Partner.",
             ),
             # On the pair rather than on the two columns, so B & A is refused once A & B exists.
             models.UniqueConstraint(
@@ -44,14 +46,15 @@ class Partnerschaft(GedcomRohMixin):
                 name="partnerschaft_einmal_pro_paar",
                 violation_error_message="Diese beiden sind schon ein Paar.",
             ),
+            models.CheckConstraint(
+                condition=models.Q(art__in=("ehe", "lebensgemeinschaft", "unbekannt")),
+                name="partnerschaft_art_gueltig",
+                violation_error_message="Eine Partnerschaft ist eine Ehe, eine Lebensgemeinschaft oder unbekannt.",
+            ),
         )
 
     def __str__(self) -> str:
         return f"{self.person_a} & {self.person_b}"
-
-    def clean(self) -> None:
-        if self.person_a_id is not None and self.person_a_id == self.person_b_id:
-            raise ValidationError("Niemand ist sein eigener Partner.")
 
     def enthaelt(self, *, person_id: int) -> bool:
         return person_id in (self.person_a_id, self.person_b_id)

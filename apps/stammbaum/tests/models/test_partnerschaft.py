@@ -16,29 +16,51 @@ def test_partnerschaft_str_names_both():
 
 
 @pytest.mark.django_db
-def test_partnerschaft_clean_refuses_a_person_as_their_own_partner():
+def test_partnerschaft_refuses_a_person_as_their_own_partner_on_save():
     josef = PersonFactory()
 
     with pytest.raises(ValidationError, match="Niemand ist sein eigener Partner"):
-        Partnerschaft(person_a=josef, person_b=josef).clean()
+        PartnerschaftFactory(person_a=josef, person_b=josef)
 
 
 @pytest.mark.django_db
-def test_partnerschaft_is_stored_once_per_pair_whichever_way_round():
-    josef, theresia = PersonFactory.create_batch(2)
-    PartnerschaftFactory(person_a=josef, person_b=theresia)
+def test_partnerschaft_refuses_a_person_as_their_own_partner_in_the_database():
+    josef = PersonFactory()
 
-    with pytest.raises(IntegrityError, match="UNIQUE constraint failed"):
-        PartnerschaftFactory(person_a=theresia, person_b=josef)
+    with pytest.raises(IntegrityError, match="partnerschaft_nicht_selbst"):
+        Partnerschaft.objects.bulk_create([Partnerschaft(person_a=josef, person_b=josef)])
 
 
 @pytest.mark.django_db
-def test_partnerschaft_full_clean_names_a_pair_entered_twice():
-    josef, theresia = PersonFactory.create_batch(2)
-    PartnerschaftFactory(person_a=josef, person_b=theresia)
+def test_partnerschaft_refuses_the_same_pair_the_other_way_round_on_save():
+    partnerschaft = PartnerschaftFactory()
 
     with pytest.raises(ValidationError, match="Diese beiden sind schon ein Paar"):
-        Partnerschaft(person_a=theresia, person_b=josef).full_clean()
+        PartnerschaftFactory(person_a=partnerschaft.person_b, person_b=partnerschaft.person_a)
+
+
+@pytest.mark.django_db
+def test_partnerschaft_refuses_the_same_pair_the_other_way_round_in_the_database():
+    partnerschaft = PartnerschaftFactory()
+
+    with pytest.raises(IntegrityError, match="partnerschaft_einmal_pro_paar"):
+        Partnerschaft.objects.bulk_create(
+            [Partnerschaft(person_a=partnerschaft.person_b, person_b=partnerschaft.person_a)]
+        )
+
+
+@pytest.mark.django_db
+def test_partnerschaft_refuses_an_unknown_kind_on_save():
+    with pytest.raises(ValidationError, match="Ehe, eine Lebensgemeinschaft oder unbekannt"):
+        PartnerschaftFactory(art="verlobt")
+
+
+@pytest.mark.django_db
+def test_partnerschaft_refuses_an_unknown_kind_in_the_database():
+    josef, theresia = PersonFactory.create_batch(2)
+
+    with pytest.raises(IntegrityError, match="partnerschaft_art_gueltig"):
+        Partnerschaft.objects.bulk_create([Partnerschaft(person_a=josef, person_b=theresia, art="verlobt")])
 
 
 @pytest.mark.django_db
