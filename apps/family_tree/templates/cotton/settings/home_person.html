@@ -14,7 +14,7 @@
                         <option value="" selected disabled>Keine gewählt</option>
                     {% endif %}
                     {% for entry in person_list.entries %}
-                        <option value="{{ entry.person.pk }}"{% if entry.person == home_person %} selected{% endif %}>{{ entry.name }}{% if entry.lifespan %} ({{ entry.lifespan }}){% endif %}</option>
+                        <option value="{{ entry.person.pk }}"{% if entry.person == home_person %} selected{% endif %}>{{ entry.name }} ({{ entry.lifespan }})</option>
                     {% endfor %}
                 </select>
             </label>
