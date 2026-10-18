@@ -39,9 +39,9 @@ turned that into facts.
 [data storage](data-storage.md#photos-and-scans) - as JPEG, PNG or WebP; a TIFF or PDF scan is a source's.
 The file is kept as it came: the picture frame shows its middle as 3:4 (`object-cover`) and the lightbox
 the whole picture, so nothing is ever cut off a photo. The date the camera wrote fills in the date it was
-taken, which the tab corrects as day, month and year, each optional from the left, and "ungefähr". One
-photo per person may be their portrait, which every frame of them shows - the card's head, the tree, the
-list - and the first photo of somebody without one becomes it.
+taken, which the tab corrects as German free text, the way a fact's date is entered (#14): "um 1950",
+"vor 1960", "zwischen 1950 und 1955". One photo per person may be their portrait, which every frame of them
+shows - the card's head, the tree, the list - and the first photo of somebody without one becomes it.
 
 **Names and status are corrected on the person card** (#30): the pencil beside the name opens the form
 "Name & Status bearbeiten", saved by `actions.person.change_name_and_status`. Switching to `deceased` asks for

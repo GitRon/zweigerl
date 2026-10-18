@@ -3,6 +3,7 @@ import io
 from pathlib import Path
 
 import pytest
+from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from PIL import ExifTags, Image
 
@@ -162,7 +163,9 @@ def test_set_portrait_refuses_a_photo_the_person_is_not_on():
 def test_describe_photo_saves_what_it_shows_and_when():
     link = PhotoPersonFactory()
 
-    describe_photo(person_id=link.person.pk, photo_id=link.photo.pk, description="  Hochzeit am Hof  ", date=ABOUT_1950)
+    describe_photo(
+        person_id=link.person.pk, photo_id=link.photo.pk, description="  Hochzeit am Hof  ", date=" um 1950 "
+    )
 
     photo = Photo.objects.get(pk=link.photo.pk)
     assert (photo.description, photo.date, photo.sort_date) == (
@@ -176,9 +179,17 @@ def test_describe_photo_saves_what_it_shows_and_when():
 def test_describe_photo_can_forget_the_date():
     link = PhotoPersonFactory(photo=PhotoFactory(about_1950=True))
 
-    describe_photo(person_id=link.person.pk, photo_id=link.photo.pk, description="", date=None)
+    describe_photo(person_id=link.person.pk, photo_id=link.photo.pk, description="", date="")
 
     assert Photo.objects.get(pk=link.photo.pk).date is None
+
+
+@pytest.mark.django_db
+def test_describe_photo_refuses_a_date_that_is_none():
+    link = PhotoPersonFactory()
+
+    with pytest.raises(ValidationError, match=r"„30\.2\.1950“ ist kein gültiges Datum"):
+        describe_photo(person_id=link.person.pk, photo_id=link.photo.pk, description="Am Hof", date="30.2.1950")
 
 
 @pytest.mark.django_db
@@ -186,7 +197,7 @@ def test_describe_photo_refuses_a_photo_no_longer_there():
     lena = PersonFactory()
 
     with pytest.raises(Photo.DoesNotExist, match="Photo matching query does not exist"):
-        describe_photo(person_id=lena.pk, photo_id=404, description="", date=None)
+        describe_photo(person_id=lena.pk, photo_id=404, description="", date="")
 
 
 @pytest.mark.django_db
@@ -195,4 +206,4 @@ def test_describe_photo_refuses_a_photo_the_person_is_not_on():
     other = PhotoPersonFactory()
 
     with pytest.raises(Photo.DoesNotExist, match="Photo matching query does not exist"):
-        describe_photo(person_id=lena.pk, photo_id=other.photo.pk, description="Am Hof", date=None)
+        describe_photo(person_id=lena.pk, photo_id=other.photo.pk, description="Am Hof", date="")

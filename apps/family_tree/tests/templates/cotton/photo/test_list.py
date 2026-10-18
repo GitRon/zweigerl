@@ -1,7 +1,6 @@
 from django.urls import reverse
 
 from apps.common.tests.html import parse, render_component
-from apps.family_tree.domain.dates import DateParts
 from apps.family_tree.readers.person import PhotoEntry, PhotosTab
 from apps.family_tree.tests.factories.person import PersonFactory
 from apps.family_tree.tests.factories.photo import PhotoFactory
@@ -13,8 +12,7 @@ ENTRY = PhotoEntry(
     link=PhotoPersonFactory.build(photo=PhotoFactory.build(pk=5), person=LENA),
     url="/media/photos/5/original.jpg",
     alt="Foto ohne Beschreibung",
-    date_text="",
-    date_parts=DateParts(),
+    date="",
 )
 
 

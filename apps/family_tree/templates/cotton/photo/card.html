@@ -16,7 +16,7 @@
             {% else %}
                 <p class="text-sm text-ink-muted">Noch ohne Beschreibung.</p>
             {% endif %}
-            <p class="text-sm text-ink-muted">{% if entry.date_text %}Aufgenommen {{ entry.date_text }}{% else %}Wann aufgenommen, weiß noch niemand.{% endif %}</p>
+            <p class="text-sm text-ink-muted">{% if entry.date %}Aufgenommen {{ entry.date }}{% else %}Wann aufgenommen, weiß noch niemand.{% endif %}</p>
             {% if not entry.link.is_portrait %}
                 <form data-on:submit="@post('{% url 'family_tree:photo-portrait-view' pk=person.pk photo_pk=entry.link.photo.pk %}', {contentType: 'form'})">
                     {% csrf_token %}
@@ -35,28 +35,11 @@
                 <span class="text-sm">Was ist zu sehen?</span>
                 <textarea name="description" rows="2" placeholder="z. B. Hochzeit am Hof, 2. Reihe links" class="rounded-md border-[1.5px] border-ink bg-sheet px-3 py-2">{{ entry.link.photo.description }}</textarea>
             </label>
-            <fieldset class="flex flex-col gap-1">
-                <legend class="text-sm">Aufgenommen am</legend>
-                <div class="flex gap-2">
-                    <label class="flex w-14 flex-col gap-1">
-                        <span class="text-sm text-ink-muted">Tag</span>
-                        <input name="day" value="{{ entry.date_parts.day }}" inputmode="numeric" maxlength="2" autocomplete="off" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-2">
-                    </label>
-                    <label class="flex w-14 flex-col gap-1">
-                        <span class="text-sm text-ink-muted">Monat</span>
-                        <input name="month" value="{{ entry.date_parts.month }}" inputmode="numeric" maxlength="2" autocomplete="off" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-2">
-                    </label>
-                    <label class="flex w-20 flex-col gap-1">
-                        <span class="text-sm text-ink-muted">Jahr</span>
-                        <input name="year" value="{{ entry.date_parts.year }}" inputmode="numeric" maxlength="4" autocomplete="off" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-2">
-                    </label>
-                </div>
-                <label class="flex min-h-11 items-center gap-2 text-sm">
-                    <input type="checkbox" name="about"{% if entry.date_parts.about %} checked{% endif %}>
-                    <span>ungefähr</span>
-                </label>
-                <span class="text-sm text-ink-muted">Nur das Jahr reicht auch.</span>
-            </fieldset>
+            <label class="flex flex-col gap-1">
+                <span class="text-sm">Aufgenommen</span>
+                <input name="date" value="{{ entry.date }}" autocomplete="off" placeholder="z. B. um 1950" aria-describedby="photo-{{ entry.link.photo.pk }}-date-hint" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
+                <span id="photo-{{ entry.link.photo.pk }}-date-hint" class="text-sm text-ink-muted">Auch ungefähr: um 1950, vor 1960, zwischen 1950 und 1955. Leer, wenn's niemand weiß.</span>
+            </label>
             <c-common.button type="submit" class="self-start">Speichern</c-common.button>
         </form>
     </details>

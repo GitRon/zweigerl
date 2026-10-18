@@ -1,5 +1,12 @@
 from django.urls import path
 
+from apps.family_tree.views.fact import (
+    change_fact_view,
+    create_fact_view,
+    delete_fact_view,
+    edit_fact_view,
+    new_fact_view,
+)
 from apps.family_tree.views.new_person import (
     create_person_view,
     create_relative_view,
@@ -21,6 +28,11 @@ urlpatterns = [
     path("persons/new/", new_person_view, name="new-person-view"),
     path("persons/<int:pk>/", person_view, name="person-view"),
     path("persons/<int:pk>/name/", person_name_view, name="person-name-view"),
+    path("persons/<int:pk>/facts/", create_fact_view, name="create-fact-view"),
+    path("persons/<int:pk>/facts/new/", new_fact_view, name="new-fact-view"),
+    path("persons/<int:pk>/facts/<int:fact_pk>/", change_fact_view, name="change-fact-view"),
+    path("persons/<int:pk>/facts/<int:fact_pk>/edit/", edit_fact_view, name="edit-fact-view"),
+    path("persons/<int:pk>/facts/<int:fact_pk>/delete/", delete_fact_view, name="delete-fact-view"),
     path("persons/<int:pk>/relatives/", create_relative_view, name="create-relative-view"),
     path("persons/<int:pk>/relatives/new/", new_relative_view, name="new-relative-view"),
     path("persons/search/", person_search_view, name="person-search-view"),

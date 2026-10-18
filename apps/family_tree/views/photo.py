@@ -1,5 +1,6 @@
 from datastar_py.consts import ElementPatchMode
 from datastar_py.django import ServerSentEventGenerator, datastar_response
+from django.core.exceptions import ValidationError
 from django.http import HttpRequest
 from django.views.decorators.http import require_POST
 from django_cotton import render_component
@@ -7,7 +8,6 @@ from django_cotton import render_component
 from apps.common.media import UploadRefusedError
 from apps.common.toasts import toast_sse
 from apps.family_tree.actions.photo import add_photos, describe_photo, set_portrait
-from apps.family_tree.domain.dates import DateParts, from_parts
 from apps.family_tree.domain.layout import CARD_HEIGHT, CARD_WIDTH
 from apps.family_tree.models import Person, Photo, PhotoPerson
 from apps.family_tree.readers.person import person_entries, photos_tab
@@ -68,22 +68,17 @@ def photo_describe_view(request: HttpRequest, pk: int, photo_pk: int):
     keeps the form open with what was entered, and says why.
     """
     try:
-        date = from_parts(
-            parts=DateParts(
-                day=request.POST.get("day", ""),
-                month=request.POST.get("month", ""),
-                year=request.POST.get("year", ""),
-                about=request.POST.get("about") == "on",
-            )
+        describe_photo(
+            person_id=pk,
+            photo_id=photo_pk,
+            description=request.POST.get("description", ""),
+            date=request.POST.get("date", ""),
         )
-    except ValueError as error:
-        yield toast_sse(request=request, text=str(error), style="error")
-        return
-
-    try:
-        describe_photo(person_id=pk, photo_id=photo_pk, description=request.POST.get("description", ""), date=date)
     except Photo.DoesNotExist:
         yield toast_sse(request=request, text="Dieses Foto ist nicht mehr da.", style="error")
+        return
+    except ValidationError as error:
+        yield toast_sse(request=request, text=" ".join(error.messages), style="error")
         return
 
     yield from _patch_photos(request=request, pk=pk)

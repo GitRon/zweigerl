@@ -136,7 +136,7 @@ def test_photo_describe_view_saves_and_patches_the_tab(admin_client):
     body = _post(
         admin_client,
         reverse("family_tree:photo-describe-view", kwargs={"pk": link.person.pk, "photo_pk": link.photo.pk}),
-        {"description": "Am Hof", "day": "", "month": "", "year": "1950", "about": "on"},
+        {"description": "Am Hof", "date": "um 1950"},
     )
 
     assert Photo.objects.filter(pk=link.photo.pk, description="Am Hof", date_kind="about").exists() is True
@@ -150,10 +150,13 @@ def test_photo_describe_view_refuses_a_date_that_is_none(admin_client):
     body = _post(
         admin_client,
         reverse("family_tree:photo-describe-view", kwargs={"pk": link.person.pk, "photo_pk": link.photo.pk}),
-        {"description": "Am Hof", "day": "30", "month": "2", "year": "1950"},
+        {"description": "Am Hof", "date": "30.2.1950"},
     )
 
-    assert (Photo.objects.get(pk=link.photo.pk).description, "30.2.1950 ist kein gültiges Datum." in body) == ("", True)
+    assert (Photo.objects.get(pk=link.photo.pk).description, "„30.2.1950“ ist kein gültiges Datum." in body) == (
+        "",
+        True,
+    )
 
 
 @pytest.mark.django_db

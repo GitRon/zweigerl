@@ -3,10 +3,11 @@ from dataclasses import dataclass
 
 from django.db.models import F, Prefetch, Q, QuerySet
 
-from apps.family_tree.domain.dates import DateParts, date_text, lifespan, to_parts
+from apps.family_tree.domain.dates import date_text, lifespan
 from apps.family_tree.domain.names import display_name, initials, matches, sort_key
 from apps.family_tree.domain.relationship import relationship_name
-from apps.family_tree.models import Citation, Fact, Person, PhotoPerson, SiblingPair, Source
+from apps.family_tree.models import Citation, Fact, Partnership, Person, PhotoPerson, SiblingPair, Source
+from apps.family_tree.models.fact import COUPLE_KINDS, CUSTOM, VALUE_KINDS
 from apps.family_tree.readers.evidence import facts, sources
 from apps.family_tree.readers.relationship import family_graph
 from apps.family_tree.readers.tree_settings import home_person
@@ -98,6 +99,8 @@ class FactEntry:
     citations: list[Citation]
     # Marked documented without a citation - "unbelegt", see docs/patterns/evidence.md.
     undocumented: bool
+    # The name of the other partner for a fact of the couple, a marriage (#14); None for the person's own.
+    partner: str | None = None
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -120,9 +123,8 @@ class PhotoEntry:
     link: PhotoPerson
     url: str
     alt: str
-    # When it was taken, as the card says it - "" while nobody knows - and as the form asks for it.
-    date_text: str
-    date_parts: DateParts
+    # When it was taken, as the card writes it and the form reads it back - "" while nobody knows.
+    date: str
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -169,7 +171,7 @@ def person_card(*, pk: int) -> PersonCard | None:
     return PersonCard(
         entry=_entry(person=person),
         relationship=(relationship_name(family=family_graph(), home_id=home.pk, person_id=person.pk) if home else None),
-        facts=[_fact_entry(fact=fact) for fact in facts(person=person)],
+        facts=[_fact_entry(fact=fact, person=person) for fact in facts(person=person)],
         relatives=[
             RelativeGroup(title=title, entries=[entries[relative.pk] for relative in members])
             for title, members in groups
@@ -180,6 +182,16 @@ def person_card(*, pk: int) -> PersonCard | None:
         photos_tab=_photos_tab(person=person),
         death_recorded=any(fact.kind == Fact.Kind.DEATH for fact in person.life_facts),
     )
+
+
+def fact_entry(*, person_id: int, fact_id: int) -> FactEntry | None:
+    """
+    One fact of the person or of one of their partnerships as their card shows it, for asking before it is
+    removed (#14) - or None for a fact that is not theirs or no longer there.
+    """
+    person = Person.objects.filter(pk=person_id).first()
+    fact = facts(person=person).filter(pk=fact_id).first() if person else None
+    return _fact_entry(fact=fact, person=person) if fact else None
 
 
 def sources_tab(*, pk: int) -> SourcesTab | None:
@@ -197,6 +209,99 @@ def _sources_tab(*, person: Person) -> SourcesTab:
         sources=list(sources(person=person).prefetch_related("files")),
         kinds=list(Source.Kind.choices),
     )
+
+
+@dataclass(frozen=True, kw_only=True)
+class KindChoice:
+    value: str
+    label: str
+    # Which fields the form shows for it: "date", "value", "custom" - label, value and date - or "couple", the
+    # partner and the date.
+    fields: str
+
+
+@dataclass(frozen=True, kw_only=True)
+class CitationChoice:
+    source: Source
+    cited: bool
+    # The place in the source, "Stelle"; empty while the source is not cited.
+    page: str
+
+
+@dataclass(frozen=True, kw_only=True)
+class FactForm:
+    person: Person
+    # None for a new fact.
+    fact: Fact | None
+    kind: str
+    fields: str
+    label: str
+    value: str
+    # The date as German text, the way the card writes it and the form reads it back.
+    date: str
+    partner_id: int | None
+    reliability: str
+    # Marriage and divorce only for somebody with a partner, since they go on the partnership.
+    kinds: list[KindChoice]
+    partners: list[PersonListEntry]
+    reliabilities: list[tuple[str, str]]
+    # Every source of the person, each saying whether the fact cites it and where.
+    citations: list[CitationChoice]
+
+    @property
+    def key(self) -> str:
+        # What the form's id and its signal are named after: the fact it edits, or "new".
+        return str(self.fact.pk) if self.fact else "new"
+
+
+def fact_form(*, person_id: int, fact_id: int | None = None) -> FactForm | None:
+    """
+    What the form for a fact on the person card (#14) shows: the fact "fact_id" as it is, or a new birth date
+    without one - or None for a person who is not there, or a fact that is not theirs or theirs no more.
+    """
+    person = Person.objects.filter(pk=person_id).first()
+    if person is None:
+        return None
+    fact = facts(person=person).filter(pk=fact_id).first() if fact_id is not None else None
+    if fact_id is not None and fact is None:
+        return None
+
+    shown = fact or Fact(kind=Fact.Kind.BIRTH)
+    partners = relatives(person=person).partners
+    entries = person_entries(person_ids=[partner.pk for partner in partners])
+    cited = {citation.source_id: citation.page for citation in fact.citations.all()} if fact else {}
+    date = shown.date
+
+    return FactForm(
+        person=person,
+        fact=fact,
+        kind=shown.kind,
+        fields=_fields(kind=shown.kind),
+        label=shown.label,
+        value=shown.value,
+        date=date_text(date=date) if date else "",
+        partner_id=_partner(partnership=shown.partnership, person=person).pk if shown.partnership else None,
+        reliability=shown.reliability,
+        kinds=[
+            KindChoice(value=value, label=label, fields=_fields(kind=value))
+            for value, label in Fact.Kind.choices
+            if partners or value not in COUPLE_KINDS
+        ],
+        partners=[entries[partner.pk] for partner in partners],
+        reliabilities=list(Fact.Reliability.choices),
+        citations=[
+            CitationChoice(source=source, cited=source.pk in cited, page=cited.get(source.pk, ""))
+            for source in sources(person=person)
+        ],
+    )
+
+
+def _fields(*, kind: str) -> str:
+    if kind in COUPLE_KINDS:
+        return "couple"
+    if kind in VALUE_KINDS:
+        return "value"
+    return "custom" if kind == CUSTOM else "date"
 
 
 def photos_tab(*, pk: int) -> PhotosTab | None:
@@ -221,8 +326,7 @@ def _photos_tab(*, person: Person) -> PhotosTab:
                 link=link,
                 url=link.photo.file.url,
                 alt=_alt(description=link.photo.description),
-                date_text=date_text(date=link.photo.date) if link.photo.date else "",
-                date_parts=to_parts(date=link.photo.date),
+                date=date_text(date=link.photo.date) if link.photo.date else "",
             )
             for link in links
         ],
@@ -268,8 +372,9 @@ def _alt(*, description: str) -> str:
     return description or "Foto ohne Beschreibung"
 
 
-def _fact_entry(*, fact: Fact) -> FactEntry:
+def _fact_entry(*, fact: Fact, person: Person) -> FactEntry:
     date = fact.date
+    partner = _partner(partnership=fact.partnership, person=person) if fact.partnership else None
     return FactEntry(
         fact=fact,
         label=fact.label or fact.get_kind_display(),
@@ -280,4 +385,13 @@ def _fact_entry(*, fact: Fact) -> FactEntry:
         ),
         citations=list(fact.citations.all()),
         undocumented=fact.undocumented,
+        partner=(
+            display_name(given_names=partner.given_names, surname=partner.surname, call_name=partner.call_name)
+            if partner
+            else None
+        ),
     )
+
+
+def _partner(*, partnership: Partnership, person: Person) -> Person:
+    return partnership.person_b if partnership.person_a_id == person.pk else partnership.person_a

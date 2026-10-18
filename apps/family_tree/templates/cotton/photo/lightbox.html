@@ -12,7 +12,7 @@
                 {% if entry.link.photo.description %}
                     <span class="whitespace-pre-line">{{ entry.link.photo.description }}</span>
                 {% endif %}
-                <span class="text-sm text-ink-muted">{% if entry.date_text %}Aufgenommen {{ entry.date_text }} · {% endif %}Foto {{ forloop.counter }} von {{ count }}</span>
+                <span class="text-sm text-ink-muted">{% if entry.date %}Aufgenommen {{ entry.date }} · {% endif %}Foto {{ forloop.counter }} von {{ count }}</span>
             </figcaption>
         </figure>
     {% endfor %}

@@ -3,7 +3,6 @@ from dataclasses import replace
 from django.urls import reverse
 
 from apps.common.tests.html import parse, render_component
-from apps.family_tree.domain.dates import DateParts
 from apps.family_tree.readers.person import PhotoEntry
 from apps.family_tree.tests.factories.person import PersonFactory
 from apps.family_tree.tests.factories.photo import PhotoFactory
@@ -15,15 +14,13 @@ ENTRY = PhotoEntry(
     link=PhotoPersonFactory.build(photo=PhotoFactory.build(pk=5, description="Hochzeit am Hof"), person=LENA),
     url="/media/photos/5/original.jpg",
     alt="Hochzeit am Hof",
-    date_text="um 1950",
-    date_parts=DateParts(year="1950", about=True),
+    date="um 1950",
 )
 UNDESCRIBED = replace(
     ENTRY,
     link=PhotoPersonFactory.build(photo=PhotoFactory.build(pk=5), person=LENA, is_portrait=True),
     alt="Foto ohne Beschreibung",
-    date_text="",
-    date_parts=DateParts(),
+    date="",
 )
 
 
@@ -79,13 +76,9 @@ def test_card_describes_the_photo_filled_in():
     assert (
         form["data-on:submit"],
         form.find("textarea").get_text(),
-        form.find("input", attrs={"name": "day"})["value"],
-        form.find("input", attrs={"name": "year"})["value"],
-        form.find("input", attrs={"name": "about"}).has_attr("checked"),
+        form.find("input", attrs={"name": "date"})["value"],
     ) == (
         f"@post('{url}', {{contentType: 'form'}})",
         "Hochzeit am Hof",
-        "",
-        "1950",
-        True,
+        "um 1950",
     )

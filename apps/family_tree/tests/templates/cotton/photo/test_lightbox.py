@@ -1,7 +1,6 @@
 from dataclasses import replace
 
 from apps.common.tests.html import parse, render_component
-from apps.family_tree.domain.dates import DateParts
 from apps.family_tree.readers.person import PhotoEntry
 from apps.family_tree.tests.factories.person import PersonFactory
 from apps.family_tree.tests.factories.photo import PhotoFactory
@@ -13,15 +12,14 @@ WEDDING = PhotoEntry(
     link=PhotoPersonFactory.build(photo=PhotoFactory.build(pk=5, description="Hochzeit am Hof"), person=LENA),
     url="/media/photos/5/original.jpg",
     alt="Hochzeit am Hof",
-    date_text="um 1950",
-    date_parts=DateParts(year="1950", about=True),
+    date="um 1950",
 )
 UNDATED = replace(
     WEDDING,
     link=PhotoPersonFactory.build(photo=PhotoFactory.build(pk=6), person=LENA),
     url="/media/photos/6/original.jpg",
     alt="Foto ohne Beschreibung",
-    date_text="",
+    date="",
 )
 
 

@@ -1,13 +1,14 @@
 from collections.abc import Iterable
 from pathlib import PurePosixPath
 
+from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import UploadedFile
 from django.db import transaction
 from PIL import ExifTags, Image
 
 from apps.common.media import UploadRefusedError, store_upload
-from apps.family_tree.domain.dates import UncertainDate, from_exif
+from apps.family_tree.domain.dates import UncertainDate, from_exif, from_german
 from apps.family_tree.models import Person, Photo, PhotoPerson
 
 # What a browser shows in an <img>. "store_upload" takes TIFF and PDF too, but those are scans and belong to
@@ -63,14 +64,18 @@ def set_portrait(*, person_id: int, photo_id: int) -> PhotoPerson:
     return link
 
 
-def describe_photo(*, person_id: int, photo_id: int, description: str, date: UncertainDate | None) -> Photo:
+def describe_photo(*, person_id: int, photo_id: int, description: str, date: str) -> Photo:
     """
-    Says what a photo of the person shows and when it was taken. Raises "Photo.DoesNotExist" for a photo no
-    longer there, or one the person is not on.
+    Says what a photo of the person shows and when it was taken - "date" is German free text such as "um 1950",
+    read by "domain.dates.from_german", and empty while nobody knows. Raises "Photo.DoesNotExist" for a photo
+    no longer there or one the person is not on, and "ValidationError" for a date that is none.
     """
     photo = Photo.objects.get(pk=photo_id, people=person_id)
     photo.description = description.strip()
-    photo.set_date(date=date)
+    try:
+        photo.set_date(date=from_german(text=date) if date.strip() else None)
+    except ValueError as error:
+        raise ValidationError(str(error)) from error
     photo.save()
 
     return photo
