@@ -1,6 +1,6 @@
 import pytest
 
-from apps.family_tree.domain.relationship import FamilyGraph, relationship_name
+from apps.family_tree.domain.relationship import FamilyGraph, connected_people, relationship_name
 
 # An invented family around Lena, by id. Two people are a couple in PARTNERSHIPS, a child of the two in
 # PARENT_CHILD, and Anna's sister Rosa is an explicit sibling whose parents nobody knows.
@@ -332,3 +332,18 @@ def test_from_links_joins_explicit_siblings_into_one_group():
 
     group = frozenset((1, 2, 3, 4))
     assert graph.parents == {1: {group}, 2: {group}, 3: {group}, 4: {group}}
+
+
+def test_connected_people_walks_parents_partners_and_explicit_siblings():
+    # 1 is the child of 2, whose partner 3 has an explicit sister 4; 5 and 6 are a couple of their own.
+    graph = FamilyGraph.from_links(
+        sex={}, parent_child=[(2, 1)], partnerships=[(2, 3, True), (5, 6, False)], sibling_pairs=[(3, 4)]
+    )
+
+    assert connected_people(family=graph, start_id=1) == {1, 2, 3, 4}
+
+
+def test_connected_people_of_someone_without_links_is_them_alone():
+    graph = FamilyGraph.from_links(sex={}, parent_child=[(2, 1)], partnerships=[], sibling_pairs=[])
+
+    assert connected_people(family=graph, start_id=7) == {7}
