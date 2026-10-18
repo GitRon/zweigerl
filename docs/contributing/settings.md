@@ -3,6 +3,11 @@
 - `apps/config/settings.py` — the application settings.
 - `apps/config/settings_test.py` — the test settings, pointed at by `[tool.pytest.ini_options]` in
   `pyproject.toml`. It only swaps the password hasher for a fast one.
+- `apps/config/settings_smoke.py` — used when a browser drives the app for the content review of
+  [`/implement-story`](../../.claude/skills/implement-story/SKILL.md). Identical to the application
+  settings except for the database, which comes from `SMOKE_DB_PATH` so a smoke run uses a throwaway file
+  instead of the development data. Nothing else is relaxed: a content review is only worth its wall-clock
+  if the app under the browser is the real one.
 
 Where the database, the media and the secret key come from is the subject of
 [data storage](../patterns/data-storage.md).

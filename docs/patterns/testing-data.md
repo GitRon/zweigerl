@@ -30,7 +30,8 @@ AngabeFactory(verlaesslichkeit="belegt", zitat=None)  # marked belegt without a 
 ## Fixtures
 
 The Familie Huber from the mockup arrives with #7 as fixtures under `apps/stammbaum/fixtures/`, for
-development and for the browser run of `/implement-story` (#29). **Tests do not load them.** A test that
+development and for the browser run of
+[`/implement-story`](../../.claude/skills/implement-story/SKILL.md). **Tests do not load them.** A test that
 asserts against the Hubers asserts against data it did not write down, and breaks when someone adds a
 cousin. Build what the test needs with factories.
 
