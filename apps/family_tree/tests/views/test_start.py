@@ -20,3 +20,12 @@ def test_start_view_lists_everybody(admin_client):
     response = admin_client.get(reverse("family_tree:start-view"))
 
     assert response.context["person_list"].entries[0].person == lena
+
+
+@pytest.mark.django_db
+def test_start_view_draws_the_tree(admin_client):
+    lena = PersonFactory(given_names="Lena")
+
+    response = admin_client.get(reverse("family_tree:start-view"))
+
+    assert response.context["tree"].cards[0].entry.person == lena

@@ -3,7 +3,15 @@ import datetime
 import pytest
 
 from apps.family_tree.models import Fact, Person
-from apps.family_tree.readers.person import PersonList, PersonListEntry, Relatives, person_list, relatives
+from apps.family_tree.readers.person import (
+    PersonList,
+    PersonListEntry,
+    Relatives,
+    person_card,
+    person_entries,
+    person_list,
+    relatives,
+)
 from apps.family_tree.tests.factories.fact import FactFactory
 from apps.family_tree.tests.factories.parent_child import ParentChildFactory
 from apps.family_tree.tests.factories.partnership import PartnershipFactory
@@ -126,3 +134,27 @@ def test_person_list_asks_for_the_death_date_of_somebody_dead():
     FactFactory(person=theresia, date_1=datetime.date(1934, 1, 1))
 
     assert person_list(search="").entries[0].lifespan == "1934 – ?"
+
+
+@pytest.mark.django_db
+def test_person_entries_describes_only_the_people_asked_for():
+    lena = PersonFactory(given_names="Lena", surname="Huber")
+    PersonFactory(given_names="Fremd")
+
+    assert person_entries(person_ids=[lena.pk]) == {
+        lena.pk: PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan="—")
+    }
+
+
+@pytest.mark.django_db
+def test_person_card_describes_the_person():
+    lena = PersonFactory(given_names="Lena", surname="Huber", living_status=Person.LivingStatus.LIVING)
+    FactFactory(person=lena, date_1=datetime.date(1989, 3, 12))
+    PersonFactory(given_names="Fremd")
+
+    assert person_card(pk=lena.pk) == PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan="1989 –")
+
+
+@pytest.mark.django_db
+def test_person_card_of_somebody_not_there_is_none():
+    assert person_card(pk=404) is None

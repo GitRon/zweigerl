@@ -1,14 +1,57 @@
+from dataclasses import dataclass
+
 from django.db.models import Min, Q
 
 from apps.family_tree.domain.layout import (
+    CARD_HEIGHT,
+    CARD_WIDTH,
     LayoutPerson,
+    Line,
     ParentLink,
     PartnerLink,
+    Placeholder,
     SiblingLink,
     TreeLayout,
     layout,
 )
 from apps.family_tree.models import Fact, ParentChild, Partnership, Person, SiblingPair, TreeSettings
+from apps.family_tree.readers.person import PersonListEntry, person_entries
+
+
+@dataclass(frozen=True, kw_only=True)
+class TreeCard:
+    entry: PersonListEntry
+    # The top left corner, see "domain.layout.Card".
+    x: int
+    y: int
+
+
+@dataclass(frozen=True, kw_only=True)
+class Tree:
+    cards: list[TreeCard]
+    placeholders: tuple[Placeholder, ...]
+    lines: tuple[Line, ...]
+    width: int
+    height: int
+    card_width: int = CARD_WIDTH
+    card_height: int = CARD_HEIGHT
+
+
+def tree() -> Tree:
+    """
+    The tree as the canvas draws it (#12): the layout of "tree_layout", each card with the name, initials and
+    Lebensdaten of its person.
+    """
+    laid_out = tree_layout()
+    entries = person_entries(person_ids=[card.person_id for card in laid_out.cards])
+
+    return Tree(
+        cards=[TreeCard(entry=entries[card.person_id], x=card.x, y=card.y) for card in laid_out.cards],
+        placeholders=laid_out.placeholders,
+        lines=laid_out.lines,
+        width=laid_out.width,
+        height=laid_out.height,
+    )
 
 
 def tree_layout() -> TreeLayout:

@@ -90,6 +90,38 @@ def person_view(request, pk):
 
 `is_datastar_request(request=...)` tells the two apart where a view needs to on its own.
 
+## The tree and its canvas
+
+The tree (#12) is the one screen that is bigger than the window. Fabian's repository has no example of a
+canvas, so its patterns are written down here: the signals follow his counter example, the selection of a
+card his contacts example.
+
+- **Moving is scrolling.** The tree sits in a container with `overflow: auto` (`<c-tree.canvas>`), so the
+  trackpad, the mouse wheel, touch and - with `tabindex="0"` on the container - the arrow keys move it
+  without a line of script. Dragging with the mouse held down would need one and is its own ticket.
+- **Zoom is a signal and a transform.** `$zoom` starts at `1`, and the buttons change it in an inline
+  expression clamped to 25 % - 200 %: `$zoom = Math.min(2, $zoom + 0.25)`. The drawing gets
+  `data-style:transform="'scale(' + $zoom + ')'"` with its origin at the top left, and the element around
+  it gets the scaled width and height through `data-style:width` and `data-style:height`, so the scroll
+  range shrinks and grows with the tree. Nothing goes to the server: zoom is view state.
+- **A card is a button that selects.** A click sets `$selection` to the person's id and fetches their person
+  card in the same expression: `$selection = 7; @get('/persons/7/card/')`. The card reads the signal back
+  for its frame (`data-class`) and for `aria-pressed` (`data-attr:aria-pressed`); the person card is
+  patched into `#person-card` and shows itself with `data-show="$selection == 7"`, so closing it - the
+  button or Escape - is setting `$selection = 0`.
+- **The search reaches the tree as signals.** Besides patching the list, the search answers with
+  `patch_signals({"filtered": ..., "matches": [...]})`: the ids of the hits, and whether a search is running
+  at all. Each card fades with `$filtered && !$matches.includes(7)` and is outlined with
+  `$filtered && $matches.includes(7)`. The server decides who matches, once, for the list and the tree;
+  the browser never filters by itself.
+- **Positions are inline styles.** Where a card stands comes from [the layout](tree-layout.md) in whole
+  pixels and is written as `style="left: …px; top: …px"`; the lines are one SVG under the cards. They are
+  data, not design, so they are no exception to [visual identity](visual-identity.md).
+
+`data-class` and `data-style` take the class or property name after the colon in lower case only, so a
+class with a colon or a slash in it goes into the object form instead:
+`data-class="{'outline-2 outline-ink': $filtered}"`. The object form is also what Tailwind's scanner sees.
+
 ## CSRF
 
 Django's CSRF protection stays on. Two ways through it, depending on where the request starts:
