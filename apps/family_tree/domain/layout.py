@@ -755,13 +755,16 @@ def _across_rows(*, corners: dict[int, tuple[int, int]], pair: tuple[int, int]) 
         start_x, end_x, side = upper_x, lower_x + CARD_WIDTH, -PARTNER_GAP / 2
     out_x, in_x = start_x + side, end_x - side
     start_y, across_y, end_y = upper_y + CARD_HEIGHT / 2, lower_y - ROW_GAP / 4, lower_y + CARD_HEIGHT / 2
-    return [
+    segments = [
         ((start_x, start_y), (out_x, start_y)),
         ((out_x, start_y), (out_x, across_y)),
         ((out_x, across_y), (in_x, across_y)),
         ((in_x, across_y), (in_x, end_y)),
         ((in_x, end_y), (end_x, end_y)),
     ]
+    # Where the lower one stands a card and a gap beside the upper, the way across has no length, and a pen
+    # stroke needs one.
+    return [(start, end) for start, end in segments if start != end]
 
 
 def _partner_line(*, pair: tuple[int, int], segments: list[Segment]) -> Line:

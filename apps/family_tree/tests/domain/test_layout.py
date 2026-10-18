@@ -637,6 +637,37 @@ def test_layout_steps_a_line_to_a_partner_to_the_left_out_of_the_left_side():
     assert result.lines[0].path.startswith("M 172 ")
 
 
+def test_layout_leaves_out_the_way_across_of_a_stepped_line_where_it_has_no_length():
+    """
+    Xaver married Rosa and later her daughter Vroni, who stands a card and a gap beside Rosa: the stepped line
+    comes straight down the gap, and a segment without length would break the pen stroke.
+    """
+    xaver, rosa, vroni = 1, 2, 3
+
+    result = layout(
+        people=[LayoutPerson(id=xaver), LayoutPerson(id=rosa), LayoutPerson(id=vroni)],
+        partnerships=[PartnerLink(person_a=xaver, person_b=rosa), PartnerLink(person_a=xaver, person_b=vroni)],
+        parent_links=[ParentLink(parent=rosa, child=vroni)],
+        sibling_links=[],
+        home_person_id=xaver,
+    )
+
+    gap = CARD_WIDTH + PARTNER_GAP / 2
+    upper, across, lower = CARD_HEIGHT / 2, 2 * ROW - ROW_GAP / 4 - ROW, ROW + CARD_HEIGHT / 2
+    assert result.lines[1] == Line(
+        kind=LineKind.PARTNERS,
+        path=pen_stroke(
+            segments=[
+                ((CARD_WIDTH, upper), (gap, upper)),
+                ((gap, upper), (gap, across)),
+                ((gap, across), (gap, lower)),
+                ((gap, lower), (CARD_WIDTH + PARTNER_GAP, lower)),
+            ],
+            seed=zlib.crc32(b"partners-1-2"),
+        ),
+    )
+
+
 def test_layout_hangs_the_children_of_partners_in_two_rows_from_their_stepped_line():
     josef, johann, franz, anna, emma, vroni = 1, 2, 3, 4, 5, 6
 
