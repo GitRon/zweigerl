@@ -8,8 +8,29 @@ beforehand:
 
 ```bash
 uv sync                                  # creates .venv and installs everything, dev group included
+```
+
+## The data directory and the key
+
+The family data does not live in the project: the database and the media go into a directory outside the
+repository, and Zweigerl refuses to start without one - see [data storage](../patterns/data-storage.md).
+Create the directory in an encrypted area, then name it and a secret key in `.env`, which git ignores:
+
+```bash
+mkdir -p /path/to/encrypted/zweigerl-daten
+cp .env.example .env                     # set ZWEIGERL_DATA_DIR and DJANGO_SECRET_KEY
+uv run python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+```
+
+A variable set in the shell wins over `.env`. The suite and the browser run of `/implement-story` need
+neither: their settings bring their own.
+
+## Running the app
+
+```bash
 uv run python manage.py migrate
-uv run python manage.py runserver
+uv run python manage.py createsuperuser  # every page is behind the login
+uv run python manage.py runserver        # binds 127.0.0.1 - keep it that way
 ```
 
 ## Frontend assets

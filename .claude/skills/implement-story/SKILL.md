@@ -104,9 +104,15 @@ nearby code.
 ## Parallel runs
 
 One story, one worktree - Phase 0 creates it. Nearly everything a run touches is per-checkout that way:
-the branch, the run directory, `db.sqlite3`, the smoke database inside `content/`, and the port, which
-`content-server.sh` probes upward from the default rather than assuming it is free. Three things still
+the branch, the run directory, the smoke database inside `content/` with its own data directory, and the
+port, which `content-server.sh` probes upward from the default rather than assuming it is free. The suite
+and the smoke server bring their own data directory, so a worktree needs no `.env`. Three things still
 reach across.
+
+**The development database is not per-checkout.** It lives in the data directory `.env` names, outside
+every worktree - see [data storage](../../../docs/patterns/data-storage.md). Never run `manage.py migrate`
+against it from a story's branch: an unmerged migration applied to the real family data cannot be taken
+back by switching branches. The story's migrations are exercised by the suite and the smoke database.
 
 **The browser is shared across the whole machine.** `@playwright/mcp` gives every server started without
 `--isolated` the same daemon browser, so two content reviews land in one Chrome: one of them sees the
