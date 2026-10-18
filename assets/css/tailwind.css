@@ -5,12 +5,110 @@
  * "source(none)" switches off automatic source detection, which makes the "@source" below the only
  * thing deciding what gets scanned. Left automatic, Tailwind walks the whole repository and matches
  * class names out of running prose in the docs, so the stylesheet would grow with every doc written.
- *
- * Plain Tailwind for now: Zweigerl's own colours and typefaces arrive as theme tokens with the visual
- * identity (#4). Until then the screens use the default palette.
  */
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/preflight.css" layer(base);
 @import "tailwindcss/utilities.css" source(none);
 
+/*
+ * The three typefaces, self-hosted from fontsource and only at the weights something sets. Tailwind
+ * inlines these and leaves their "url(./files/...)" as written, so the font files have to sit in
+ * "static/dist/files/" beside the compiled sheet - "assets/copy-fonts.mjs" puts them there.
+ *
+ * Young Serif is cut in 400 only. A heading asking for bold would get a faux bold the browser smears
+ * together, which is why the base layer below sets headings to 400 rather than leaving them to inherit.
+ */
+@import "@fontsource/young-serif/400.css";
+@import "@fontsource/atkinson-hyperlegible/400.css";
+@import "@fontsource/atkinson-hyperlegible/700.css";
+@import "@fontsource/reenie-beanie/400.css";
+
 @source "../../apps";
+
+/*
+ * Zweigerl's visual identity, as theme tokens - see docs/patterns/visual-identity.md for what each value
+ * may be spent on.
+ *
+ * "--color-*: initial" is the enforcement: it drops Tailwind's own palette, so "bg-stone-50" or
+ * "text-white" stops compiling and there is no quiet way to bring in a hue nobody chose. A stray colour
+ * utility becomes an element that inherits its colour and still reads. "transparent" and "current" are
+ * put back because they name a behaviour rather than a colour.
+ *
+ * The five CI colours carry the moodboard's names. The four after them are the moodboard's own values
+ * for the album page: the card a picture sits on, its edge, the initials in an empty frame and the
+ * lighter sheet of a card.
+ */
+@theme {
+    --color-*: initial;
+    --color-transparent: transparent;
+    --color-current: currentColor;
+
+    --color-loden: #4a5d3f;
+    --color-birkenpapier: #f2ede3;
+    --color-ziegel: #9e4430;
+    --color-tinte: #2b2a28;
+    --color-moos: #c9a83b;
+
+    --color-karton: #e7e0d2;
+    --color-karton-rand: #cfc6b4;
+    --color-tinte-matt: #5e574b;
+    --color-blatt: #fbf8f2;
+
+    --font-*: initial;
+    --font-serif: "Young Serif", Georgia, serif;
+    --font-sans: "Atkinson Hyperlegible", "Segoe UI", sans-serif;
+    --font-hand: "Reenie Beanie", "Comic Sans MS", cursive;
+
+    /* Paper corners, not app corners: the moodboard rounds nothing by more than 4px. */
+    --radius-*: initial;
+    --radius-sm: 2px;
+    --radius-md: 3px;
+    --radius-lg: 4px;
+
+    /* Matt, without a gradient and without a shadow: a page in an album lies flat. */
+    --shadow-*: initial;
+    --inset-shadow-*: initial;
+    --drop-shadow-*: initial;
+    --text-shadow-*: initial;
+}
+
+/*
+ * The page itself. Preflight strips the browser's typography, so without this every heading reads as
+ * body text and every link as a word.
+ */
+@layer base {
+    html {
+        color: var(--color-tinte);
+        background-color: var(--color-birkenpapier);
+        font-family: var(--font-sans);
+        line-height: 1.5;
+    }
+
+    h1,
+    h2,
+    h3 {
+        font-family: var(--font-serif);
+        font-weight: 400;
+        line-height: 1.15;
+    }
+
+    /*
+     * A link is Loden, underlined. Loden is the colour of where you are and where you can go, so a link
+     * in a sentence and the current entry of a menu say the same thing.
+     */
+    a {
+        color: var(--color-loden);
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+    }
+
+    a:hover {
+        color: var(--color-tinte);
+    }
+
+    /* Everything the keyboard lands on says so, in the colour of where you are. */
+    :focus-visible {
+        outline: 2px solid var(--color-loden);
+        outline-offset: 2px;
+    }
+}
