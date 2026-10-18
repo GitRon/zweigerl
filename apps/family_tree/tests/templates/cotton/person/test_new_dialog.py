@@ -18,6 +18,12 @@ def test_new_dialog_opens_itself_and_goes_away_when_closed():
     assert (dialog["data-init"], dialog["data-on:close"]) == ("el.showModal()", "el.remove()")
 
 
+def test_new_dialog_keeps_escape_from_closing_the_card_behind_it():
+    html = render_component(tag=TAG, context={"relations": [], **CHOICES})
+
+    assert parse(html).find("dialog")["data-on:keydown"] == "evt.key == 'Escape' && evt.stopPropagation()"
+
+
 def test_new_dialog_posts_the_form_to_its_url():
     html = render_component(tag=TAG, context={"relations": [], **CHOICES})
 
