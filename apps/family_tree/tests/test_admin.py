@@ -160,12 +160,12 @@ def test_source_admin_deletes_through_the_action_so_the_files_go(admin_client, d
 
 @pytest.mark.django_db
 def test_source_admin_deletes_a_selection_through_the_action(admin_client, django_capture_on_commit_callbacks):
-    scans = [SourceFileFactory(), SourceFileFactory()]
+    first, second = SourceFileFactory(), SourceFileFactory()
 
     with django_capture_on_commit_callbacks() as callbacks:
         admin_client.post(
             reverse("admin:family_tree_source_changelist"),
-            {"action": "delete_selected", "post": "yes", "_selected_action": [scan.source.pk for scan in scans]},
+            {"action": "delete_selected", "post": "yes", "_selected_action": [first.source.pk, second.source.pk]},
         )
 
     assert (Source.objects.exists(), len(callbacks)) == (False, 2)
@@ -183,12 +183,12 @@ def test_photo_admin_deletes_through_the_action_so_the_file_goes(admin_client, d
 
 @pytest.mark.django_db
 def test_photo_admin_deletes_a_selection_through_the_action(admin_client, django_capture_on_commit_callbacks):
-    photos = [PhotoFactory(), PhotoFactory()]
+    first, second = PhotoFactory(), PhotoFactory()
 
     with django_capture_on_commit_callbacks() as callbacks:
         admin_client.post(
             reverse("admin:family_tree_photo_changelist"),
-            {"action": "delete_selected", "post": "yes", "_selected_action": [photo.pk for photo in photos]},
+            {"action": "delete_selected", "post": "yes", "_selected_action": [first.pk, second.pk]},
         )
 
     assert (Photo.objects.exists(), len(callbacks)) == (False, 2)

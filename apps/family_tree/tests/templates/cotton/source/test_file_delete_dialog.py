@@ -11,7 +11,9 @@ TAG = '<c-source.file-delete-dialog :deletion="deletion" :url="url" />'
 @pytest.mark.django_db
 def test_file_delete_dialog_names_the_file_and_posts_the_removal():
     scan = SourceFileFactory(source__title="Taufbuch", file="sources/3/7.pdf")
-    url = reverse("family_tree:delete-source-file-view", kwargs={"pk": 7, "source_pk": scan.source.pk, "file_pk": scan.pk})
+    url = reverse(
+        "family_tree:delete-source-file-view", kwargs={"pk": 7, "source_pk": scan.source.pk, "file_pk": scan.pk}
+    )
 
     page = parse(
         render_component(tag=TAG, context={"deletion": SourceFileDeletion(source_file=scan, number=2), "url": url})

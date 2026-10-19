@@ -435,7 +435,6 @@ def test_delete_on_commit_deletes_the_files_once_committed(media_root, django_ca
     with django_capture_on_commit_callbacks() as callbacks:
         delete_on_commit(names=["a.pdf", "already gone.pdf"])
     still_there = (media_root / "a.pdf").exists()
-    for callback in callbacks:
-        callback()
+    callbacks[0]()
 
     assert (still_there, (media_root / "a.pdf").exists()) == (True, False)

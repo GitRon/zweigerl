@@ -219,7 +219,9 @@ def test_delete_source_view_of_a_cited_source_says_why_it_stays(admin_client):
 
     body = _post(
         admin_client,
-        reverse("family_tree:delete-source-view", kwargs={"pk": citation.fact.person.pk, "source_pk": citation.source.pk}),
+        reverse(
+            "family_tree:delete-source-view", kwargs={"pk": citation.fact.person.pk, "source_pk": citation.source.pk}
+        ),
         {},
     )
 
@@ -264,7 +266,8 @@ def test_delete_source_file_view_removes_it_closes_the_dialog_and_patches_the_li
     body = _post(
         admin_client,
         reverse(
-            "family_tree:delete-source-file-view", kwargs={"pk": lena.pk, "source_pk": scan.source.pk, "file_pk": scan.pk}
+            "family_tree:delete-source-file-view",
+            kwargs={"pk": lena.pk, "source_pk": scan.source.pk, "file_pk": scan.pk},
         ),
         {},
     )
