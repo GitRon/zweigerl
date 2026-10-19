@@ -66,6 +66,15 @@ admin shows the files of a source but adds none, since a file saved there would 
 A source that is cited cannot be deleted (`on_delete=PROTECT` on the citation): its facts would quietly
 turn *unbelegt*. A citation goes with its fact. **A source outlives the person it is filed with** (decided
 18.10.2026, #19): deleting a person takes their facts and the citations of them, never a source or its scans.
+A source left filed with nobody and cited by nothing is no longer on any card; the admin is where it is found
+then, and deleted if nobody wants it.
+
+**A source is deleted, and a scan removed, by hand** (#72): "Quelle löschen" on its entry in the Quellen tab,
+and the button beside each of its files, each behind a short question - `actions.source.delete_source` and
+`delete_source_file`, which the admin uses too. The question before a cited source names the facts citing it
+(`readers.evidence.source_deletion`) and offers no "Löschen"; the action refuses it all the same, with a
+`ValidationError`. The files go with their rows, see
+[data storage](data-storage.md#when-a-file-goes).
 
 ## Unbelegt
 

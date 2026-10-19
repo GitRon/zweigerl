@@ -3,6 +3,8 @@ from django.core.exceptions import ValidationError
 from django.forms.models import BaseInlineFormSet
 from django.utils.text import capfirst
 
+from apps.family_tree.actions.photo import delete_photo
+from apps.family_tree.actions.source import delete_source
 from apps.family_tree.models import (
     Citation,
     Fact,
@@ -214,6 +216,15 @@ class SourceAdmin(admin.ModelAdmin):
     autocomplete_fields = ("people",)
     inlines = (SourceFileInline,)
 
+    # Through the action, so the scans go with the source (#72). The admin refuses a cited source itself
+    # before it gets here.
+    def delete_model(self, request, obj):
+        delete_source(source_id=obj.pk)
+
+    def delete_queryset(self, request, queryset):
+        for source in queryset:
+            delete_source(source_id=source.pk)
+
 
 class PhotoPersonInline(admin.TabularInline):
     model = PhotoPerson
@@ -239,6 +250,14 @@ class PhotoAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
+
+    # Through the action, so the file goes with the photo (#72). A photo is deleted only here.
+    def delete_model(self, request, obj):
+        delete_photo(photo_id=obj.pk)
+
+    def delete_queryset(self, request, queryset):
+        for photo in queryset:
+            delete_photo(photo_id=photo.pk)
 
 
 @admin.register(Citation)

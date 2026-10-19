@@ -28,6 +28,12 @@
             {% if preview.source_count %}
                 <p>{{ preview.source_count }} Quelle{{ preview.source_count|pluralize:"n" }} von {{ name }} bleib{{ preview.source_count|pluralize:"t,en" }} erhalten, mitsamt den Scans.</p>
             {% endif %}
+            {% if preview.photo_count %}
+                <p>{{ preview.photo_count }} Foto{{ preview.photo_count|pluralize:"s" }} von {{ name }} bleib{{ preview.photo_count|pluralize:"t,en" }} erhalten.</p>
+            {% endif %}
+            {% if preview.source_count or preview.photo_count %}
+                <p class="text-sm text-ink-muted">Was dann an niemandem mehr hängt, findest du in der Verwaltung.</p>
+            {% endif %}
             {% if preview.relatives %}
                 <div class="flex flex-col gap-1">
                     <h3 class="text-lg">Diese Verbindungen fallen weg</h3>

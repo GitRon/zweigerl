@@ -148,6 +148,24 @@ media/
   no photos and no sources. An action that adds such a file writes its row first, so the id exists, and
   stores the file inside the same transaction - a refused upload then leaves no row behind.
 
+### When a file goes
+
+**A file goes with its row, and only once the row is gone for good** (#72). The action that deletes a source,
+one of its files or a photo deletes the rows first and hands the file names to
+`apps.common.media.delete_on_commit`, which deletes them in `transaction.on_commit`: a rollback keeps the rows
+and their files together, and a committed deletion leaves no file nobody sees - nor one `media_view` would
+still hand out under its old URL. The directory `sources/<id>/` or `photos/<id>/` stays behind empty.
+
+- **Every deletion of such a row goes through its action** - `delete_source`, `delete_source_file`,
+  `delete_photo` - the admin's too: `SourceAdmin` and `PhotoAdmin` override `delete_model` and
+  `delete_queryset`. There is no `post_delete` signal; no cascade reaches a file's row without one of these
+  actions, since deleting a person takes neither their sources nor their photos. A ticket that adds such a
+  cascade adds the files to its action as well.
+- **Photos and sources outlive the people they belong to** (decided 18.10.2026 for sources in #19, 19.10.2026
+  for photos in #72). Deleting a person takes their facts and their links, and the question before it says
+  what stays. A photo or a source that then belongs to nobody is on no card any more and is reachable only in
+  the admin, where it can be deleted. A photo is deleted *only* there; the person card has no "Foto löschen".
+
 ## Running it
 
 Run the development server as it starts, on **127.0.0.1**. `runserver 0.0.0.0` puts the family on the
