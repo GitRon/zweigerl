@@ -37,7 +37,7 @@ rather than inferring the conventions from nearby code.
 - [Where code goes](docs/patterns/app-layout.md) — the two apps, actions and readers instead of a message
   bus, business rules as database constraints, and what has to sit at the app root
 - [Data storage and privacy](docs/patterns/data-storage.md) — no real family data in the repository, the
-  data directory outside it, the login and the lockout
+  data directory outside it, the login and the lockout, photos and scans, backups
 - [Persons and families](docs/patterns/family.md) — `Person`, `Partnership`, `ParentChild` and `SiblingPair` after
   GEDCOM, derived siblings, the home person, the Familie Huber fixture
 - [Belege](docs/patterns/evidence.md) — `Fact`, `Source` and `Citation`, reliability, the derived "unbelegt",

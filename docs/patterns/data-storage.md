@@ -167,6 +167,37 @@ still hand out under its old URL. The directory `sources/<id>/` or `photos/<id>/
   what stays. A photo or a source that then belongs to nobody is on no card any more and is reachable only in
   the admin, where it can be deleted. A photo is deleted *only* there; the person card has no "Foto löschen".
 
+## Backups
+
+**`manage.py backup` writes one consistent copy of everything a person entered into a new folder** (#27),
+in the backup folder of the settings - `TreeSettings.backup_dir`, which the settings page edits with #33 - or
+in the one `--target` names, an external disk for instance:
+
+```
+<backup folder>/
+└── 2026-10-19_143012/       # local time, to the second
+    ├── zweigerl.sqlite3     # the database, through VACUUM INTO
+    ├── zweigerl.sql         # the same state as SQL text, readable without SQLite
+    ├── zweigerl.ged         # the GEDCOM export of everybody, see gedcom.md
+    └── media/               # the media directory as it is
+```
+
+- **A copy, not a file copied while the app writes.** `VACUUM INTO` writes a consistent database even while
+  the app keeps running, which a copy of `zweigerl.sqlite3` with its `-wal` and `-shm` beside it is not. The
+  SQL dump is read from that copy, so both say the same.
+- **A folder, not a zip** (decided 18.10.2026, #27): unchanged media can become hardlinks to the previous
+  backup (#40), restic or a synced vault only move what changed (#39), and a single photo opens without
+  Zweigerl. One file to take along is an export, the `.gedzip` of #36.
+- **Never half a backup.** The folder is written as `<stamp>.incomplete/` and renamed once everything is in
+  it. A folder with that suffix is never a backup - not for "Zuletzt gesichert" in #33 either - and the next
+  run names any it finds. It deletes none of them, and no old backup: a backup deletes nothing.
+- **Refused, with a German message**, when no folder is set, when it does not exist - a disk that is not
+  plugged in must not become an empty folder in its place - when it lies inside the data directory or the
+  repository, or cannot be written.
+- `actions.backup.create_backup` does the work, and the command and #33's button call exactly it. It takes the
+  GEDCOM text from its caller, since an action does not call a reader, and has to run outside a transaction:
+  SQLite refuses `VACUUM` inside one.
+
 ## Running it
 
 Run the development server as it starts, on **127.0.0.1**. `runserver 0.0.0.0` puts the family on the
@@ -180,4 +211,4 @@ browser run and anything pasted into an issue.
 ## Related
 
 - Serving media only to someone logged in: #21
-- Backups of the data directory: #27, #33; off-site: #39
+- Backups: the command #27, see [Backups](#backups); the button #33; off-site: #39
