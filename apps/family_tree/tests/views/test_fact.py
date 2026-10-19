@@ -50,6 +50,7 @@ def test_create_fact_view_saves_and_patches_card_list_and_tree(admin_client):
         for part in (
             'id="person-card"',
             'id="person-list"',
+            'id="loose-people"',
             f'id="tree-card-{lena.pk}"',
             "Passt. Die Angabe ist gespeichert.",
         )

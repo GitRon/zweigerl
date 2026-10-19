@@ -73,10 +73,26 @@ def test_person_name_view_saves_and_patches_card_list_and_tree(admin_client):
             'id="person-card"',
             '"editing":0',
             'id="person-list"',
+            'id="loose-people"',
             f'id="tree-card-{gerti.pk}"',
             "Passt. Gerti Huber ist gespeichert.",
         )
     )
+
+
+@pytest.mark.django_db
+def test_person_name_view_patches_the_new_name_into_the_loose_twigs(admin_client):
+    TreeSettingsFactory()
+    gerti = PersonFactory(given_names="Gertrud", surname="Hubr")
+
+    response = admin_client.post(
+        reverse("family_tree:person-name-view", kwargs={"pk": gerti.pk}),
+        _name_form(),
+        headers={"Datastar-Request": "true"},
+    )
+
+    events = b"".join(response.streaming_content).decode().split("\n\n")
+    assert "Gerti Huber" in next(event for event in events if 'id="loose-people"' in event)
 
 
 @pytest.mark.django_db

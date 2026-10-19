@@ -18,5 +18,13 @@ def test_loose_lists_each_twig_with_a_link_to_their_card():
     ) == (True, reverse("family_tree:person-view", kwargs={"pk": 9}), True)
 
 
-def test_loose_without_twigs_shows_nothing():
-    assert parse(render_component(tag=TAG, context={"loose_people": []})).find(id="loose-people") is None
+def test_loose_without_twigs_stays_in_the_page_hidden_and_empty():
+    section = parse(render_component(tag=TAG, context={"loose_people": []})).find(id="loose-people")
+
+    assert (section.has_attr("hidden"), section.get_text(strip=True)) == (True, "")
+
+
+def test_loose_with_twigs_is_shown():
+    section = parse(render_component(tag=TAG, context={"loose_people": [ROSA]})).find(id="loose-people")
+
+    assert section.has_attr("hidden") is False
