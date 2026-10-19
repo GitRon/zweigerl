@@ -6,6 +6,7 @@ from apps.family_tree.views.delete import (
     delete_person_view,
     unlink_view,
 )
+from apps.family_tree.views.export import gedcom_export_view
 from apps.family_tree.views.fact import (
     change_fact_view,
     create_fact_view,
@@ -68,4 +69,5 @@ urlpatterns = [
     path("persons/<int:pk>/photos/<int:photo_pk>/", photo_describe_view, name="photo-describe-view"),
     path("settings/", tree_settings_view, name="tree-settings-view"),
     path("settings/home-person/", home_person_view, name="home-person-view"),
+    path("export/gedcom/", gedcom_export_view, name="gedcom-export-view"),
 ]

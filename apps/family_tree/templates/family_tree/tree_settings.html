@@ -5,6 +5,7 @@
             <a href="{% url 'family_tree:start-view' %}" class="self-start">Zurück zum Stammbaum</a>
             <h1 class="text-4xl">Einstellungen</h1>
             <c-settings.home-person :person_list="person_list" :home_person="home_person" />
+            <c-settings.export />
         </main>
     </div>
 </c-common.layout>
