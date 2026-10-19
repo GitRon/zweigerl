@@ -1,0 +1,6 @@
+{# The GEDCOM export (#26): a plain link, since a download changes nothing on the page. #}
+<section id="export" class="flex max-w-xl flex-col gap-3">
+    <h2 class="text-2xl">Export</h2>
+    <p class="text-ink-muted">Der ganze Stammbaum als GEDCOM-Datei: alle Personen und Familien mit ihren Angaben, Quellen und Zitaten. Fast jedes Ahnenprogramm kann sie lesen. Fotos und Scans sind darin genannt, aber nicht mitgepackt.</p>
+    <c-common.button href="{% url 'family_tree:gedcom-export-view' %}" class="self-start">GEDCOM herunterladen</c-common.button>
+</section>

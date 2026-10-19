@@ -101,8 +101,9 @@ A name may be empty: GEDCOM allows a person without one, and "the unknown first 
 ## Raw GEDCOM
 
 Every model but `TreeSettings` has `gedcom_raw`, a JSON list of the records an import brought along that
-Zweigerl does not understand, so an export can write them back (#22, #26). Nothing in Zweigerl reads it, and
-nothing but the importer writes it.
+Zweigerl does not understand, so the export writes them back (#22, #26). Each is one GEDCOM structure,
+`{"tag", "value", "children"}` - see [GEDCOM](gedcom.md#raw-gedcom) for the shape and where it is written.
+Nothing in Zweigerl reads it but the export, and nothing but the importer writes it.
 
 ## Adding people
 

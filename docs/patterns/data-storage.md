@@ -138,7 +138,8 @@ media/
   to say, and the export sorts by person.
 - **No name, date or place in a path.** A path ends up in logs, in URLs, in the browser history and in the
   file list of a backup (#39), and a name that changes - corrected, or after a wedding - would have to move
-  files. Readable names are written by the export (#26), from the data as it is then.
+  files. The GEDCOM export (#26) names the files by these paths too; readable names are for the export that
+  packs the files with it (#36), from the data as it is then.
 - **Paths are English**: `photos`, `sources`, `original`.
 - **A path can be guessed from an id**, which is harmless while everyone logged in sees the whole family.
   A ticket that hides people from some accounts has to check that in `media_view` too. A replaced file

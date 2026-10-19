@@ -34,7 +34,7 @@ The prose uses the German terms of genealogy; a name in backticks is the one in 
 
 **A birth date and a birthplace are two facts**, each with its own reliability and its own citations: the
 date may come from the birth certificate while the place is only what grandmother said. GEDCOM puts both
-into one `BIRT` with `DATE` and `PLAC`; the import (#22) splits it, the export (#26) joins it again.
+into one `BIRT` with `DATE` and `PLAC`; the import (#22) splits it, the export (#26) joins it again - see [GEDCOM](gedcom.md#facts).
 
 | `kind` | Carries | Belongs to | GEDCOM |
 |---|---|---|---|

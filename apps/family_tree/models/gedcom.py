@@ -3,8 +3,9 @@ from django.db import models
 
 class GedcomRawMixin(models.Model):
     """
-    What a GEDCOM import brought along that Zweigerl does not understand, kept so an export can write it
-    back. A list of the raw records as the importer read them (#22); nothing in Zweigerl reads it.
+    What a GEDCOM import brought along that Zweigerl does not understand, kept so the export writes it back
+    (#22, #26): a list of GEDCOM structures {"tag", "value", "children"} - see docs/patterns/gedcom.md, "Raw
+    GEDCOM". Nothing in Zweigerl but the export reads it.
     """
 
     gedcom_raw = models.JSONField(

@@ -58,6 +58,7 @@ word. The folder keeps the names apart.
 | `<c-source.new>` | `apps.family_tree` | The form for a new source in the Quellen tab, folded in a `<details>`: title, kind, Zitat, scans and PDFs |
 | `<c-tree.canvas>` | `apps.family_tree` | The tree from `readers.tree.tree`: the zoom buttons and the slot in its toolbar, the scrolling container, the lines, placeholders and cards |
 | `<c-tree.card>` | `apps.family_tree` | One person in the tree at their position; a button that selects them and fetches their person card |
+| `<c-settings.export>` | `apps.family_tree` | The GEDCOM export on the settings page (#26): what the file holds, and the link that downloads it |
 | `<c-settings.home-person>` | `apps.family_tree` | The choice of the home person on the settings page (#20): every person, the chosen one selected, posted as a form and confirmed with a toast |
 
 What each of the last four looks like, and when a screen may use which, is
