@@ -111,8 +111,9 @@ gave the dates migration `0003` kept (`{"tag": "MARR", "date": "im Krieg"}`) thi
 
 ## Not yet
 
-- **A round trip** - the anonymised PAF file (#32) imported (#22), exported and compared - is #22's test; until
-  then the export is tested against invented rows.
+- **A round trip** - the anonymised PAF file imported (#22), exported and compared - is #22's test; until then
+  the export is tested against invented rows. The file and how it is made are in
+  [test data](testing-data.md#the-paf-file).
 - **GEDCOM 7 with the media packed in** is `.gedzip`, #36.
 
 ## See also

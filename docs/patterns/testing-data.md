@@ -35,6 +35,38 @@ The Familie Huber from the mockup is `apps/family_tree/fixtures/huber_family.jso
 asserts against the Hubers asserts against data it did not write down, and breaks when someone adds a
 cousin. Build what the test needs with factories.
 
+## The PAF file
+
+`apps/family_tree/tests/data/paf_export.ged` is a real PAF 5.2.18 export with every value about a person
+replaced (#32) - the file the import (#22) is tested with. It keeps the real structure: line order, levels,
+tags, xrefs, the BOM, CRLF, `CHAR UTF-8`, and the kind of every value, including the forms PAF really writes -
+free-text dates, `CONC` cut mid-word, `//` and `/?/` surnames, `DIV` on a person, inline `OBJE` with `_PRIM`,
+`_SCBK`, `_SSHOW` and `_TYPE`. `test_paf_export.py` beside it checks exactly that structure.
+
+**Only the result is in the repository; the real export never is.** `scripts/anonymise_paf.py` writes it:
+
+```bash
+uv run python -m scripts.anonymise_paf <real export> apps/family_tree/tests/data/paf_export.ged
+```
+
+- **Names** come from invented pools with the same kind of letters - plain, umlaut or ß, háček - and the
+  same name maps to the same invented one throughout the file, so `NAME`, `GIVN`, `SURN` and a spouse's
+  `_MARNM` still agree. **Places** keep their number of comma parts.
+- **Dates** all move back by one random number of days, ten to thirty years, so order and lifespans stay;
+  a year alone, a month and a year, and a day and a month move along. `ABT`, `oder`, `(?)` and a season stay.
+- **Free text** - notes, descriptions, occupations, sources, file paths, the submitter - becomes letters of
+  the same kind and length, word for word, so a `CONC` still cuts the same word in the same place. A path
+  keeps its drive and its extension. `_UID`s become new random hex.
+- **Titles in `NPFX`** ("Dr.") and what describes the file or a picture's role stay.
+- **Nothing is written** when a tag carries a value the script has no rule for, or when a word it replaced
+  is still in the result: a name or place of any length, a free-text word from four letters. An invented
+  name that happens to be a real one from the export is never chosen.
+- **Every run is different.** The replacements and the date offset are drawn at random and kept only in
+  memory, so nothing in the repository leads back to the real values - and a test must never pin an invented
+  name or date, only a form.
+
+ANSEL is not covered: the real export is UTF-8. An ANSEL import needs a second export of the same tree.
+
 ## Shared fixtures
 
 - `request_with_session` and `datastar_request_with_session` in `apps/common/tests/conftest.py` — a

@@ -1,0 +1,7658 @@
+﻿0 HEAD
+1 SOUR PAF
+2 NAME Personal Ancestral File
+2 VERS 5.2.18.0
+2 CORP The Church of Jesus Christ of Latter-day Saints
+3 ADDR 50 East North Temple Street
+4 CONT Salt Lake City, UT 84150
+4 CONT USA
+1 DEST Other
+1 DATE 05 Nov 2011
+2 TIME 19:05:43
+1 FILE 464447.ged
+1 GEDC
+2 VERS 5.5
+2 FORM LINEAGE-LINKED
+1 CHAR UTF-8
+1 LANG German
+1 SUBM @SUB1@
+0 @SUB1@ SUBM
+1 NAME Wjffl Tauuhvci
+1 ADDR Iznzezcg Glr. 86
+2 CONT 38954 Rútw
+2 CTRY Aewveydqfrn
+0 @I1@ INDI
+1 NAME Kunigunde /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Kunigunde
+2 _MARNM Gstettner-Niederreiter
+1 SEX F
+1 BIRT
+2 DATE 19 Jun 1935
+2 PLAC Steinfeld
+1 DEAT
+2 DATE 22 Sep 2006
+2 PLAC Steinfeld
+1 _UID 70D38E615B24E5C5596F3E262AC6AFCD9B34
+1 FAMS @F4@
+1 FAMC @F2@
+1 RELI iíx.-whbb.
+1 OCCU Dbbsssajxcop pém Wmbcge qhy fzq Zshjgwg Wuzohiprpssk yje
+1 CHAN
+2 DATE 20 May 2011
+3 TIME 14:49:25
+0 @I2@ INDI
+1 NAME Fridolin /Unterberger/
+2 SURN Unterberger
+2 GIVN Fridolin
+1 SEX M
+1 BIRT
+2 DATE 03 Jun 1928
+2 PLAC Haselau
+1 CHR
+2 DATE 10 Aug 1928
+2 PLAC Lindreuth
+1 DEAT
+2 DATE 14 Oct 1999
+2 PLAC Bärnleiten
+1 _UID 7BDA16136FAD354F2113EE46D3D2BD5CB283
+1 FAMS @F1@
+1 FAMC @F5@
+1 OCCU Acvzklzlzafvs, cllbyz Nsxd- tpg Zdwdonlhcyvoaf
+1 RELI tawxjpjpklp, lxdv lqvqqwukiqf
+1 CHAN
+2 DATE 25 Dec 2009
+3 TIME 17:41:52
+0 @I3@ INDI
+1 NAME Regina /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Regina
+2 _MARNM Unterberger
+1 SEX F
+1 BIRT
+2 DATE 16 Jul 1940
+2 PLAC Waldheim
+1 _UID F584434ED6CE0CE736BDC2AD829D91C09A0F
+1 FAMS @F1@
+1 FAMC @F2@
+1 OCCU Njfiupeqbkdoyuokrk
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 22:53:27
+0 @I4@ INDI
+1 NAME Isidor Nepomuk Valentin /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Isidor Nepomuk Valentin
+2 NPFX Dr. med.
+1 SEX M
+1 BIRT
+2 DATE 05 Apr 1907
+2 PLAC Steinkirchen
+1 DEAT
+2 DATE 13 Jul 1988
+2 PLAC Steinfeld
+2 CAUS Smrgqfbxxpuixyksnthhcu
+1 BURI
+2 PLAC Steinfeld
+1 _UID E3A931E1AE159AB7925C9BBEDCA1E8B2F0D6
+1 FAMS @F2@
+1 FAMC @F10@
+1 RELI iíx.-whbb.
+1 OCCU Nqhj zw Fnmfrnthx, nsßgxnbwzmjbeytul Pdqjmyqewpväipxgn
+1 NOTE mrikdpg Sdkp Ebgngi?
+1 CHAN
+2 DATE 30 Sep 1993
+3 TIME 12:51:16
+0 @I5@ INDI
+1 NAME Zita /Haslinger/
+2 SURN Haslinger
+2 GIVN Zita
+2 _MARNM Niederreiter
+1 SEX F
+1 BIRT
+2 DATE 30 Oct 1906
+2 PLAC Unterleiten
+1 DEAT
+2 DATE 25 Jul 1983
+2 PLAC Steinfeld
+2 CAUS Wkrwe
+1 BURI
+2 PLAC Steinfeld
+1 DSCR Ktjbsq, aoof zebhswqggd
+1 _UID 795538E5F3B98B2645EB34BFF59CAE0A0AF2
+1 FAMS @F2@
+1 FAMC @F8@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 22:52:45
+0 @I6@ INDI
+1 NAME Nepomuk /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Nepomuk
+2 NPFX Dr. med.
+1 SEX M
+1 BIRT
+2 DATE 08 Jan 1945
+2 PLAC Waldheim
+1 _UID 90AF809DF3E8C19C5E2FAF13C1BF035B7BE9
+1 FAMS @F9@
+1 FAMC @F2@
+1 OCCU Nqhj zw Ohuwyqxze
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 22:53:52
+0 @I7@ INDI
+1 NAME Walburga /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Walburga
+2 NPFX Mag.
+2 NICK Gertraud
+2 _MARNM Kronberger
+1 SEX F
+1 BIRT
+2 DATE 25 Oct 1931
+2 PLAC Steinfeld
+1 _UID 7991101164516C588250CCCD8E2DDB8EB004
+1 FAMS @F3@
+1 FAMC @F2@
+1 OCCU Pwyfaxtczmmsunb
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 22:52:59
+0 @I8@ INDI
+1 NAME Fridolin /Unterberger/
+2 SURN Unterberger
+2 GIVN Fridolin
+2 NICK Urban
+1 SEX M
+1 BIRT
+2 DATE 06 Oct 1970
+2 PLAC Kirchfeld
+1 _UID A85465D80964B4FDA72B39465F564FBFEE55
+1 FAMS @F163@
+1 FAMC @F1@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 17 May 1996
+3 TIME 13:39:32
+0 @I9@ INDI
+1 NAME Cyrill /Kronberger/
+2 SURN Kronberger
+2 GIVN Cyrill
+2 NPFX Dipl. VW
+2 NICK Melchior
+1 SEX M
+1 BIRT
+2 DATE 14 Feb 1924
+2 PLAC Unterhofen
+1 DEAT
+2 DATE 30 May 1999
+2 PLAC Unterhofen
+1 _UID 9AF4EA561407829515DA15EA468F5C4FE699
+1 FAMS @F3@
+1 FAMC @F14@
+1 OCCU Tioaiteablgpbýfqs
+1 RELI tawxjpjpklp C.E.
+1 CHAN
+2 DATE 25 Dec 2009
+3 TIME 17:43:08
+0 @I10@ INDI
+1 NAME Apollonia Kunigunde /Kronberger/
+2 SURN Kronberger
+2 GIVN Apollonia Kunigunde
+2 NPFX Mag.
+2 NICK Genoveva
+2 _MARNM Wimmesberger
+1 SEX F
+1 BIRT
+2 DATE 06 Dec 1960
+2 PLAC Kirchwang
+1 CHR
+2 DATE 26 Dec 1960
+2 PLAC Rotstetten
+1 _UID 2E788B45C2BC0D8E07FA70CA16D4164E707B
+1 FAMS @F36@
+1 FAMC @F3@
+1 OCCU Dbbsssajxcop
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:20:46
+0 @I11@ INDI
+1 NAME Wendelin /Gstettner/
+2 SURN Gstettner
+2 GIVN Wendelin
+2 NPFX Prof. h.c.
+1 SEX M
+1 BIRT
+2 DATE 02 Jun 1920
+2 PLAC Unterhofen
+1 DEAT
+2 DATE 07 Jul 2009
+2 PLAC Unterhofen
+1 _UID 0964C17FFED7653B7D5327F08B3415931EFB
+1 FAMS @F4@
+1 FAMC @F29@
+1 CHAN
+2 DATE 06 May 2010
+3 TIME 07:20:13
+0 @I12@ INDI
+1 NAME Edeltraud /Gstettner/
+2 SURN Gstettner
+2 GIVN Edeltraud
+1 SEX F
+1 BIRT
+2 DATE 09 Feb 1977
+2 PLAC Kirchfeld
+1 _UID 454C3FACBD23B51BD1309E51E7520A0DE296
+1 FAMC @F4@
+1 CHAN
+2 DATE 17 Jan 1991
+3 TIME 14:30:45
+0 @I13@ INDI
+1 NAME Korbinian /Unterberger/
+2 SURN Unterberger
+2 GIVN Korbinian
+2 NPFX Dipl. Ing.
+1 SEX M
+1 BIRT
+2 DATE 19 Aug 1888
+2 PLAC Waldbrunn
+1 DEAT
+2 DATE 26 Mar 1966
+2 PLAC Rotwang
+2 CAUS Qlodjkrxsoy
+1 BURI
+2 PLAC Steinheim 
+1 _UID B81265963714A7616E22CD5E729A1C99C38D
+1 FAMS @F5@
+1 FAMC @F21@
+1 RELI iíx.-whbb.
+1 OCCU Foqdoqtljgit, jrwauhyp ipnnsjhlw Ukolwsty
+1 CHAN
+2 DATE 04 May 2006
+3 TIME 09:28:47
+1 OBJE
+2 FORM jpg
+2 FILE Jnuipqdle\Dbkqzn\10.jpg
+2 TITL 
+2 NOTE 
+2 _SCBK Y
+2 _PRIM Y
+2 _TYPE PHOTO
+2 _SSHOW Y
+1 OBJE
+2 FORM png
+2 FILE Jnuipqdle\Dbkqzn\Iqvolyo_SBNRI_8.png
+2 TITL SBNRI 8
+2 NOTE 
+2 _SCBK Y
+2 _PRIM N
+2 _TYPE PHOTO
+2 _SSHOW Y
+1 OBJE
+2 FORM png
+2 FILE Jnuipqdle\Dbkqzn\Iqvolyo_SBNRI_4.png
+2 TITL SBNRI 4
+2 NOTE 
+2 _SCBK Y
+2 _PRIM N
+2 _TYPE PHOTO
+2 _SSHOW Y
+0 @I14@ INDI
+1 NAME Zita /Söllner/
+2 SURN Söllner
+2 GIVN Zita
+2 _MARNM Unterberger
+1 SEX F
+1 BIRT
+2 DATE 15 Jul 1901
+2 PLAC Grüning, Bärnfeld
+1 DEAT
+2 DATE 08 Jan 1980
+2 PLAC Rotwang
+2 CAUS Mhuokrcliwrf
+1 DSCR Gpdtygterkwq
+1 _UID 176E0E36F959E0DF7DA12F77CB87A48D3A92
+1 FAMS @F5@
+1 FAMC @F15@
+1 RELI tawxjpjpklp
+1 NOTE Mlbxb "Cp Kwfpb 2-1" zw Iolsjy
+1 CHAN
+2 DATE 01 Mar 2010
+3 TIME 17:19:55
+1 OBJE
+2 FORM jpg
+2 FILE Dbkqzn\67.jpg
+2 TITL 
+2 NOTE 
+2 _SCBK Y
+2 _PRIM Y
+2 _TYPE PHOTO
+2 _SSHOW Y
+0 @I15@ INDI
+1 NAME Elfriede /Haslinger/
+2 SURN Haslinger
+2 GIVN Elfriede
+2 NICK Mechthild
+2 _MARNM Tschurtschenthaler
+1 SEX F
+1 BIRT
+2 DATE 09 Jul 1912
+2 PLAC Steinfeld
+1 DEAT
+2 DATE 07 Jun 2006
+2 PLAC Steinfeld
+1 _UID 228CC04277EBC001D460C81F827CF5DA3858
+1 FAMS @F6@
+1 FAMC @F8@
+1 RELI iíx.-whbb.
+1 OCCU Fkeepgrxvqo
+1 CHAN
+2 DATE 18 Aug 2006
+3 TIME 20:45:20
+0 @I16@ INDI
+1 NAME Gregor /Tschurtschenthaler/
+2 SURN Tschurtschenthaler
+2 GIVN Gregor
+2 NPFX Hofrat Dr. phil. Dr. theo.
+1 SEX M
+1 BIRT
+2 DATE 21 May 1908
+2 PLAC Steinfeld
+1 DEAT
+2 DATE 29 Jun 1995
+2 PLAC Steinfeld
+1 DSCR 4. Rfnsgx dw 97.3.68, qre ihb Eskjczvzgwbded
+1 _UID 77F6F6C05140031EA32C64E74F194F7951AC
+1 FAMS @F6@
+1 RELI iíx.-whbb.
+1 OCCU d.t. Fxcwkzcsqec
+1 CHAN
+2 DATE 30 Jun 1995
+3 TIME 00:33:55
+0 @I17@ INDI
+1 NAME Zita /Tschurtschenthaler/
+2 SURN Tschurtschenthaler
+2 GIVN Zita
+2 _MARNM Leitgeb
+1 SEX F
+1 BIRT
+2 DATE 06 Apr 1945
+2 PLAC Steinfeld
+1 _UID 875D2F65B6A5672FC7C945A777D08A84669A
+1 FAMS @F11@
+1 FAMC @F6@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 16:13:29
+0 @I18@ INDI
+1 NAME Hieronymus /Tschurtschenthaler/
+2 SURN Tschurtschenthaler
+2 GIVN Hieronymus
+2 NICK Balthasar
+1 SEX M
+1 BIRT
+2 DATE 01 Jun 1947
+2 PLAC Steinfeld
+1 _UID 8A8862245A33128EE57247F3F1BE975E28AD
+1 FAMS @F7@
+1 FAMC @F6@
+1 OCCU Uäopdes
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 16:13:58
+0 @I19@ INDI
+1 NAME Philomena /Tschurtschenthaler/
+2 SURN Tschurtschenthaler
+2 GIVN Philomena
+1 SEX F
+1 BIRT
+2 DATE 01 Jun 1947
+2 PLAC Steinfeld
+1 _UID 33B00DD29DF0D8C1A61892A0C9D7D0130D7A
+1 FAMS @F12@
+1 FAMC @F6@
+1 OCCU Njfiupeqbkdoyuokrk zw Onmai
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 16:12:01
+0 @I20@ INDI
+1 NAME Scholastika /Tschurtschenthaler/
+2 SURN Tschurtschenthaler
+2 GIVN Scholastika
+1 SEX F
+1 BIRT
+2 DATE 28 Mar 1977
+2 PLAC Steinfeld
+1 _UID 8AF63D76BEAD566AF784E551CFD35E605A6C
+1 FAMC @F7@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 15:33:18
+0 @I21@ INDI
+1 NAME Nepomuk /Haslinger/
+2 SURN Haslinger
+2 GIVN Nepomuk
+2 NPFX Oberstleutnant
+1 SEX M
+1 BIRT
+2 DATE 13 Aug 1871
+2 PLAC Steinfeld
+2 SOUR @S1@
+3 PAGE 3n.ZY ler.372
+1 CHR
+2 DATE 18 Aug 1871
+2 PLAC Oberzell
+1 DEAT
+2 DATE 12 Mar 1952
+2 PLAC Steinfeld
+1 BURI
+2 DATE 16 Mar 1952
+2 PLAC Unterfeld
+1 DSCR ctxw qhy fzq Cgtuw chafebnjworm, jjíice Jabhujxqbr
+1 _UID E6E822E2E19288D558854C6E8B9D79902A3C
+1 FAMS @F8@
+1 FAMC @F13@
+1 RELI iíx.-whbb.
+1 OCCU Zshjgwg Wtzvguéibd Heednegq Di.64, Vakcdkbcmyegzf t.B.
+1 CHAN
+2 DATE 24 Oct 1993
+3 TIME 23:05:09
+0 @I22@ INDI
+1 NAME Irmgard /Vogelsang/
+2 SURN Vogelsang
+2 GIVN Irmgard
+2 NICK Crescentia
+2 _MARNM Haslinger
+1 SEX F
+1 BIRT
+2 DATE 11 Jul 1879
+2 PLAC Kirchkirchen
+1 CHR
+2 DATE 02 Nov 1905
+2 PLAC Eichhofen
+1 DEAT
+2 DATE 29 Jun 1960
+2 PLAC Steinfeld
+2 CAUS Mhymwlvxcsvcypzdkilvr, Mjljxujjgkäijfqx
+1 BURI
+2 PLAC Steinfeld
+1 DSCR Oúgbufi, qqnde cqo Acmdei ypqzhyxsigv, Kxvqldkdxmjjrvx
+1 _UID 0AE13B814D01E0A131333C2D8F7411817F03
+1 FAMS @F8@
+1 FAMC @F30@
+1 OCCU Ngrgyvgq, bbkcijpr Ynmcpybfg
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 04 Jan 1995
+3 TIME 14:30:00
+0 @I23@ INDI
+1 NAME Emerenz Rosalia /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Emerenz Rosalia
+1 SEX F
+1 BIRT
+2 DATE 27 Jan 1982
+2 PLAC Unterhofen
+1 _UID DCFA2DDED7464022F57293420AD7EAB4E047
+1 FAMC @F9@
+1 CHAN
+2 DATE 11 Jan 1995
+3 TIME 17:31:28
+0 @I24@ INDI
+1 NAME Isidor Zacharias Benedikt /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Isidor Zacharias Benedikt
+2 NPFX Prof. Dr.
+2 NICK Engelbert
+1 SEX M
+1 BIRT
+2 DATE 08 Sep 1873
+2 PLAC Mühlwang
+1 CHR
+2 DATE 14 Sep 1873
+2 PLAC Schöndorf
+1 DEAT
+2 DATE 08 Mar 1961
+2 PLAC Steinfeld
+2 CAUS Wushoprjdoílaz (Tyjoyrmytjydqxkyn)
+1 BURI
+2 DATE 12 Mar 1961
+2 PLAC Schöning
+1 DSCR Gq. kt 8.TU
+1 _UID C4B2E8B451D58C6D7ED28C7B673AD1D725DA
+1 FAMS @F10@
+1 FAMC @F83@
+1 RELI iíx.-whbb.
+1 OCCU Xqhktqropuvtbmhwncs tpg Zrpvms fzq Etnwaaolvék Fnmfrnthx
+1 NOTE Myxsgsk Efvkrth, 7849 zw Fýpdvaus-Dusütszsr dck Glco gyvnk j.j. Igggevbag klqcyrt, egkhhrzu
+2 CONC l yqsc fzq Awytnh dw Cuuilqfcwjdsscpssnkok Ziqk zw Onmai if 4132 dd ljl Wehvhwxooúobj Vgdw, M
+2 CONC évfgnuoj tpg Fnmfrnthx Uddayrejwrs, Jkaeafhqya tpg Qvlzwe.
+2 CONT 1714 qhy Wxutf Sxpbvsdlsb tpg Smdpoa Tqdkoo emg uayjj Ygxwxt äwjw „cqo Prhtsakbdijpw fzq ojfk
+2 CONC xc Ulkdufsqr zw gpfcy Axtgóffkuo ani Eoudcokztt“ pém Uddayrejwrs yvbwyukfyur, gjzcvsf Efvkrt
+2 CONC h 7896 ihb Nwttnvs Bwhdamtihz dft Uzbmjbswbmtikaw pém Uddayrejwrs emg amkokukpnv Hguókmietrtw
+2 CONC tjkq fzq Wüacbunyj. Efvkrth qre pdfl bai Smdpoa Nwttnvs zusvrsqlrykq evlyabhsgkl Plazsrmol oo
+2 CONC loíny:  Covbq 4477 mvzfg yfqt Tqdkoo fzq suvobgkuuuwdnun Xtows jreagbldxpldwtswk tpg kmknwshf
+2 CONC vwii Rjqvmhetqzd Nlllleizm pxtzo Wyys Simlk mcdfiqdqvq. 7416 qre Tqdkoo dck cqo zwnkcvna Kiqd
+2 CONC xdng gnbcq fzq Rjqvmhetqzd Czrvbwezmyiteygst qry Cysnamf pxtzo qmbpmypchilpbmgqbqgbla Kamúlxg
+2 CONC gxy dd Ósxbpbhvjjs Wehvhwxooúobj zw ljl cxsyluohuqk Gkoagjzlr nqytehfy.
+2 CONT Zi Smckl 2316 nvblb Efvkrth ozi QL-Beagfn tdygdmqbcphy. Zgw Aysmcvz rgcwyei dw 45. Pghe 231
+2 CONC 6 pém Efvkrth rhdflzbppq:
+2 CONT 
+2 CONT „Wo fzq Rjqvmhetqzd Xkguveewvwhorrjspock pxtzo ljl Ekyqm Ywosbc, ikigwgaoia Ryspsbij kuv Rjqv
+2 CONC mhetqzd Doiowzsbiekml, hehs kv dck Jvgddq tpg Tbstpýyvfn zunthn Ekyqm ihb. Bsu Nchhaowp kuv Y
+2 CONC gemoesdwcpwkx kuv Rjqvmhetqzd Oeovfvbgcpqut, rjccuwwwcg kv qhy Gnyziqijvbpxpgxmvo, Xfabbphvkp
+2 CONC , uxwoge lsumvd jaidpzúudwdup gnjipovbbbf ajqcz tpg fzq Esndotcbko qtataüworn. Tusbmlg qre k
+2 CONC v zw fgibscchmxwmt Asrepchifwetec fzq Klnqenäupxpaona Urnaw qéoeu, vw gnbcq lryajoo zw ljl N[
+2 CONC wvcútilhwty] L[tvda] L[kydlnq], Bqtuelogxqpolpzs fzq Etnwaaolvék tpg kt Usrw pém Gytfoqóadvsv
+2 CONC h. Efvkrth ýmßjfem yfqt moyho zw jtvöjunkyg Eocib pxtzo cqo SBNRI, nidafod ljl Bácubl emg lj
+2 CONC l óvtalurj Yfdfziocdieg tpg xuqctmt yvcv Utxh- tpg Gujnxkyghcpohkci pxtzo Aewveydqfrn.“
+2 CONT 
+2 CONT Efvkrth nvblb yqsc fzq Vlptqfnyu 2270 mlmavwfmylx, kv fcuntukey pém ufgupky yvcv Usafbmkktr
+2 CONC y dck Vnbmy fzq Aolleowayvcpwun Anmxwrýg lwbmd dck Zrpvms.
+2 CONT Rqq Efvkrth mmnnnr zw fzq vckzpgohmiwfqgo Omjepvscqv cqo Bhkwbali Uxdi Fspnudmfop (1736-9865
+2 CONC , if 1932 Fijoooaqc pém Uxilwjijwa fzq Uddayrejwrs tpg Wjccztafktgfa Uddayrejwrs dd fzq Etnwa
+2 CONC aolvék Fnmfrnthx), Hpodd Ciywe (6776-4103, if 8620 Fijoooaqc pém Uddayrejwrs dd fzq Kiiobppiq
+2 CONC ph Etnwaaolvék Liakuffdz) tpg Rslpfw Sysakolsq (0916-2173, ubýzui Rgamtpwvcr pém Uddayrejwr
+2 CONC s tpg Jlngiyilpqv dd fzq Etnwaaolvék Vgdw) dck „clbqpbnvg jfizu piwlvuu“ kt Sbmhhlj kuv Zpmnm
+2 CONC ljuwrnvdi 2316 yxbqdlens.
+2 CONT 
+2 CONT Mdzixk: alvk://jll.b-hzs.qp.nw/euqqsqrkpq/evnrc/2316/
+1 CHAN
+2 DATE 09 Jan 1995
+3 TIME 18:53:09
+1 OBJE
+2 FORM jpg
+2 FILE Dbkqzn\31.jpg
+2 TITL Etnwaaolvék
+2 NOTE 
+2 _SCBK Y
+2 _PRIM Y
+2 _TYPE PHOTO
+2 _SSHOW Y
+0 @I25@ INDI
+1 NAME Ottilie Hildegard /Fasching/
+2 SURN Fasching
+2 GIVN Ottilie Hildegard
+2 NICK Amalia
+2 _MARNM Niederreiter
+1 SEX F
+1 BIRT
+2 DATE 10 Mar 1874
+2 PLAC Waldheim
+1 CHR
+2 DATE 13 Mar 1874
+2 PLAC Waldheim
+1 DEAT
+2 DATE 24 Jun 1953
+2 PLAC Steinfeld
+2 CAUS luwsh. Tnsqqd
+1 BURI
+2 DATE 28 Jun 1953
+2 PLAC Eichreuth, Eichdorf
+1 DSCR Qulyqpttbjfuev: Zpzhguüznav
+1 _UID CD507DA4505619F24139E5424B982FD8E781
+1 FAMS @F10@
+1 FAMC @F92@
+1 RELI iíx.-whbb.
+1 OCCU Ngrgyvgq
+1 CHAN
+2 DATE 23 Sep 1993
+3 TIME 21:06:55
+0 @I26@ INDI
+1 NAME Remigius Leonhard /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Remigius Leonhard
+1 SEX M
+1 BIRT
+2 DATE 24 Nov 1984
+2 PLAC Unterhofen
+1 DEAT
+2 DATE 10 Mar 1999
+2 PLAC Bergdorf
+1 _UID 44B4DE8E626D71A4C3E508DE02B0C3FF68AB
+1 FAMC @F9@
+1 CHAN
+2 DATE 25 Dec 2009
+3 TIME 17:42:40
+0 @I27@ INDI
+1 NAME Emmeram Quirin /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Emmeram Quirin
+1 SEX M
+1 BIRT
+2 DATE 05 Jan 1988
+2 PLAC Bergfeld
+1 _UID 6A0EBA40CF7FA822A5976CB8B4578E824643
+1 FAMC @F9@
+1 CHAN
+2 DATE 11 Jan 1995
+3 TIME 17:31:39
+0 @I28@ INDI
+1 NAME Kunigunde /Irrgang/
+2 SURN Irrgang
+2 GIVN Kunigunde
+2 NPFX Mag.
+2 _MARNM Niederreiter
+1 SEX F
+1 BIRT
+2 DATE 24 Mar 1951
+2 PLAC Haselbrunn
+1 _UID 97DE9A67712FE7FCFF762C4D542EA4AE2D11
+1 FAMS @F9@
+1 OCCU Znkbenoa
+1 CHAN
+2 DATE 11 Jan 1995
+3 TIME 17:32:14
+0 @I29@ INDI
+1 NAME Notburga /Schwaighofer/
+2 SURN Schwaighofer
+2 GIVN Notburga
+2 _MARNM Tschurtschenthaler
+1 SEX F
+1 BIRT
+2 DATE 23 Aug 1945
+2 PLAC Bergwang
+1 _UID DA737900FF603681F0343EA9CF499C924831
+1 FAMS @F7@
+1 FAMC @F35@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 20:19:26
+0 @I30@ INDI
+1 NAME Dominikus /Leitgeb/
+2 SURN Leitgeb
+2 GIVN Dominikus
+2 NPFX Dr.
+1 SEX M
+1 BIRT
+2 DATE 09 Oct 1944
+2 PLAC Hörau
+1 _UID F4AFADB38E792BEEFF2975E38CBBDB69B923
+1 FAMS @F11@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 15:28:56
+0 @I31@ INDI
+1 NAME Oswald /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Oswald
+1 SEX M
+1 BIRT
+2 DATE 19 Dec 1944
+2 PLAC Kirchhofen
+1 _UID 2D77471665FD8189DEA4E6CBEB2BC220FE7A
+1 FAMS @F12@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 15:37:01
+0 @I32@ INDI
+1 NAME Kaspar /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Kaspar
+1 SEX M
+1 BIRT
+2 DATE 28 Jul 1977
+2 PLAC Steinfeld
+1 _UID 9284C480DA38586385A1F4DA017DCEC88155
+1 FAMC @F12@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 15:36:15
+0 @I33@ INDI
+1 NAME Magnus /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Magnus
+1 SEX M
+1 BIRT
+2 DATE 20 Nov 1980
+2 PLAC Steinfeld
+1 _UID 057DEE41F8FF0F51999376327DD496991D7F
+1 FAMC @F12@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 15:36:04
+0 @I34@ INDI
+1 NAME Genoveva /Oberlechner/
+2 SURN Oberlechner
+2 GIVN Genoveva
+2 _MARNM Haslinger
+1 SEX F
+1 BIRT
+2 DATE 29 Jul 1838
+2 PLAC Lindleiten
+1 CHR
+2 DATE 29 Jul 1838
+2 PLAC Lindleiten
+1 DEAT
+2 DATE 26 Mar 1922
+2 PLAC Steinfeld
+1 _UID C7AB3F3D8A9B6E75A071FB928C6E6AFF212C
+1 FAMS @F13@
+1 FAMC @F45@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 14:02:23
+0 @I35@ INDI
+1 NAME Xaver /Kronberger/
+2 SURN Kronberger
+2 GIVN Xaver
+2 NPFX Dkfm. Dr.
+1 SEX M
+1 BIRT
+2 DATE 22 Jul 1891
+2 PLAC Oberheim, Steinstetten
+1 CHR
+2 DATE 02 Aug 1891
+2 PLAC Oberheim, Steinstetten
+1 DEAT
+2 DATE 04 Aug 1969
+2 PLAC Unterhofen
+2 CAUS Qlodjkrxsoy
+1 BURI
+2 PLAC Fürsthofen
+1 DSCR Tfxy Rm
+1 _UID 392EBECBB52D89F52D2E6669C096AFB154C6
+1 FAMS @F14@
+1 FAMC @F68@
+1 RELI iíx.-whbb.
+1 OCCU Tioaiteablgpbýfqs
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:54:15
+0 @I36@ INDI
+1 NAME Amalia /Aichinger/
+2 SURN Aichinger
+2 GIVN Amalia
+2 NPFX Dkfm.
+2 _MARNM Kronberger
+1 SEX F
+1 BIRT
+2 DATE 28 Jun 1898
+2 PLAC Unterhofen
+1 CHR
+2 DATE 14 Jul 1898
+2 PLAC Waldfeld
+1 DEAT
+2 DATE 12 Dec 1963
+2 PLAC Unterhofen
+1 BURI
+2 PLAC Lindzell
+1 DSCR Aesldgc
+1 _UID 95FC548EE9632837967396619CB31FD96CC8
+1 FAMS @F14@
+1 FAMC @F50@
+1 OCCU Ngrgyvgq
+1 RELI tawxjpjpklp C.E.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:10:56
+0 @I37@ INDI
+1 NAME Pankraz Benedikt /Söllner/
+2 SURN Söllner
+2 GIVN Pankraz Benedikt
+1 SEX M
+1 BIRT
+2 DATE 29 Sep 1865
+2 PLAC Grüning, Bärnfeld
+1 DEAT
+2 DATE Frühjahr 1950
+2 PLAC Oberau
+2 CAUS Wushoprjdoílaz
+1 BURI
+2 PLAC Oberau
+1 _UID 053F37A707CA25276377C432BF0F9F289187
+1 FAMS @F15@
+1 FAMC @F16@
+1 RELI tawxjpjpklp
+1 OCCU Euxlfs, Rkdcmjwc tpg Fgtbnwkhdhdjc ozi Djrbeqqrsyrpm Xilrhgme (Pfcblgm), Oicrydußds
+1 NOTE Fgtbnwkhdhdjc. Dry yven Gbrly ecux ógxmwfprmcu Jervqeqvl. Bsu cqo Tnkcv ljl Umjemxeme pém cxg
+2 CONC acfsyk lhcvan qbblpsu, fad kv yfqt uhrlqmwfa. Ags Xlqaoueyko keacj cqo Tnkcv aoof ihb yvcv Is
+2 CONC gpydsgbvdgr xxvzzb Hxhx ubýzui uakkl Ohfläjsdwfilw khewlokns, fzq Cxtjkh mxkcnmc ezkxdc. Yh
+2 CONC x vpmytp Akqaunzvutqotfachh dkk uayjj fzq Tnkcv hrj Gbrly (ufkeqtexr?). Xfknaqhlh ibjcft kv e
+2 CONC ic Wtdcs kkzwcitsv.
+2 CONT 
+2 CONT 
+2 CONT Fgtbnwkhdhdjc ozi Djrbeqqrsyrpm Rijrhkqcu(?), Oicrydußds
+1 CHAN
+2 DATE 11 Jan 1995
+3 TIME 17:12:59
+1 OBJE
+2 FORM jpg
+2 FILE Dbkqzn\88.jpg
+2 TITL 
+2 NOTE 
+2 _SCBK Y
+2 _PRIM Y
+2 _TYPE PHOTO
+2 _SSHOW Y
+0 @I38@ INDI
+1 NAME Emerenz Irmgard /Zehetner/
+2 SURN Zehetner
+2 GIVN Emerenz Irmgard
+2 _MARNM Söllner
+1 SEX F
+1 BIRT
+2 DATE 05 Aug 1873
+2 PLAC Schönleiten
+1 CHR
+2 DATE 07 Aug 1873
+2 PLAC Grünreuth
+1 DEAT
+2 DATE Nov 1953
+2 PLAC Haselbach
+2 CAUS Wushoprjdoílaz
+1 BURI
+2 PLAC Haselbach
+1 _UID A92611C87AD2ABCCD3541D5D5D1446D2CDE1
+1 FAMS @F15@
+1 FAMC @F17@
+1 RELI tawxjpjpklp
+1 OCCU Ngrgyvgq
+1 NOTE 7. Sópknry zw Cynqm, Rrpuo gcoa qry Txhur kfwt 4 Jrih ubýzui skmm Zbgqvqpgbi tpg yhwigfv qr
+2 CONC e wwg dabjpjgxientg Iagbawxpyx fzq 45.3.
+1 CHAN
+2 DATE 20 May 2011
+3 TIME 15:58:32
+1 OBJE
+2 FORM jpg
+2 FILE Dbkqzn\42.jpg
+2 TITL 
+2 NOTE 
+2 _SCBK Y
+2 _PRIM Y
+2 _TYPE PHOTO
+2 _SSHOW Y
+0 @I39@ INDI
+1 NAME Hildegard /Söllner/
+2 SURN Söllner
+2 GIVN Hildegard
+2 NICK Emerenz
+2 _MARNM Eberharter
+1 SEX F
+1 BIRT
+2 DATE 09 Oct 1896
+2 PLAC Schönleiten
+1 DEAT
+2 DATE 11 Jan 1966
+2 PLAC Bärnleiten
+1 _UID 3FD69D31179900DD9B49BA7786F20ED1FA03
+1 FAMS @F18@
+1 FAMC @F15@
+1 RELI tawxjpjpklp
+1 OCCU Hifceyardäpoakilfkujzcd
+1 NOTE Ocugtmwop kt Vwtefgxf kuv Ftbcdq, Cdwvsrunfózfvcofoepzgt tpg dtqpuijd
+1 CHAN
+2 DATE 25 Nov 1993
+3 TIME 21:00:03
+0 @I40@ INDI
+1 NAME Benedikt /Söllner/
+2 SURN Söllner
+2 GIVN Benedikt
+1 SEX M
+1 BIRT
+2 DATE 1829
+1 _UID 5CAEDA812A83C968B05A51CFE77C9AC2721B
+1 FAMS @F16@
+1 FAMC @F134@
+1 CHAN
+2 DATE 25 Oct 1995
+3 TIME 18:37:41
+0 @I41@ INDI
+1 NAME Apollonia /Weißhäupl/
+2 SURN Weißhäupl
+2 GIVN Apollonia
+2 _MARNM Söllner
+1 SEX F
+1 _UID 3D132BBCB3500A0F5381D61F71DA881080C7
+1 FAMS @F16@
+1 CHAN
+2 DATE 18 Dec 1990
+3 TIME 19:01:14
+0 @I42@ INDI
+1 NAME Rupert /Zehetner/
+2 SURN Zehetner
+2 GIVN Rupert
+1 SEX M
+1 _UID 9080916BE21CAA27C16BCDE392E55CBD9DFE
+1 FAMS @F17@
+1 CHAN
+2 DATE 11 Jan 1995
+3 TIME 17:34:15
+0 @I43@ INDI
+1 NAME Hildegard /Mairhofer/
+2 SURN Mairhofer
+2 GIVN Hildegard
+2 _MARNM Zehetner
+1 SEX F
+1 _UID FD93FAB064C6D5EFF216954EA883ED8AE35D
+1 FAMS @F17@
+1 CHAN
+2 DATE 18 Dec 1990
+3 TIME 19:01:19
+0 @I44@ INDI
+1 NAME Severin Vinzenz /Eberharter/
+2 SURN Eberharter
+2 GIVN Severin Vinzenz
+1 SEX M
+1 BIRT
+2 DATE 21 Jun 1884
+2 PLAC Alting
+1 DEAT
+2 DATE 14 Jan 1940
+2 PLAC Haselbach
+1 DSCR Fjyxts yyvczd Nrpajlmmv zw Ydgytz
+1 _UID 9F0FF0D5FC2F1A2E61BB67206A4F09736645
+1 FAMS @F18@
+1 OCCU Squzrofc
+1 RELI esiiqgilgm
+1 CHAN
+2 DATE 25 Nov 1993
+3 TIME 21:01:00
+0 @I45@ INDI
+1 NAME Kilian /Eberharter/
+2 SURN Eberharter
+2 GIVN Kilian
+1 SEX M
+1 BIRT
+2 DATE 06 Jul 1923
+2 PLAC Neubach, Kirchheim, Altau
+1 DEAT
+2 DATE 19 Nov 2010
+2 PLAC Bärnleiten
+1 _UID C49D1FC6F87178A9AEB485319C16F33D4EAE
+1 FAMS @F19@
+1 FAMS @F129@
+1 FAMC @F18@
+1 DIV 
+1 RELI tawxjpjpklp
+1 OCCU Jnopwbucucozafccxhksghtbg qhy fzq Swivuqb
+1 CHAN
+2 DATE 05 Jan 2011
+3 TIME 17:11:48
+0 @I46@ INDI
+1 NAME Amalia /Brandstetter/
+2 SURN Brandstetter
+2 GIVN Amalia
+2 _MARNM Eberharter
+1 SEX F
+1 BIRT
+2 DATE 18 Apr 1923
+2 PLAC Rotbrunn
+1 _UID 58BA6960C8EA7053F6B07F5D145761E24BD3
+1 FAMS @F19@
+1 OCCU Ebmrealewkglmz (Yachpedjiivsl Rútw)
+1 RELI tawxjpjpklp
+1 CHAN
+2 DATE 25 Nov 1993
+3 TIME 20:59:33
+0 @I47@ INDI
+1 NAME Regina /Eberharter/
+2 SURN Eberharter
+2 GIVN Regina
+2 _MARNM Stockinger
+1 SEX F
+1 BIRT
+2 DATE 19 Nov 1949
+2 PLAC Oberau
+1 _UID 82653E2B0211AF8024BD43E833FE706EE665
+1 FAMS @F20@
+1 FAMC @F19@
+1 OCCU Misc.Ukbl. Tobookzrfku
+1 RELI tawxjpjpklp
+1 CHAN
+2 DATE 25 Nov 1993
+3 TIME 20:58:19
+0 @I48@ INDI
+1 NAME Urban /Eberharter/
+2 SURN Eberharter
+2 GIVN Urban
+1 SEX M
+1 BIRT
+2 DATE 11 Jul 1952
+2 PLAC Bärnleiten
+1 _UID F6774EAB2AAF6D32103D872A1D2FCBC83424
+1 FAMC @F19@
+1 OCCU Ttpxwclqtl
+1 RELI tawxjpjpklp
+1 CHAN
+2 DATE 25 Nov 1993
+3 TIME 20:58:40
+0 @I49@ INDI
+1 NAME Severin /Stockinger/
+2 SURN Stockinger
+2 GIVN Severin
+1 SEX M
+1 _UID 43020C2400CB0E6CBD9DB276B99691A0DA76
+1 FAMS @F20@
+1 CHAN
+2 DATE 18 Dec 1990
+3 TIME 19:00:51
+0 @I50@ INDI
+1 NAME Valentin /Unterberger/
+2 SURN Unterberger
+2 GIVN Valentin
+1 SEX M
+1 BIRT
+2 DATE 29 Aug 1857
+2 PLAC Eichau, Gößleiten
+1 CHR
+2 DATE 30 Aug 1857
+2 PLAC Eichau, Gößleiten
+1 DEAT
+2 DATE 15 Jul 1909
+2 PLAC Unterhofen, Berghofen
+2 CAUS Ggqrpcifisiikchmkqem, aeycncpjiocmip Xncaejyaazeeicat
+1 BURI
+2 DATE Smjehc Qodutdmpzcyglqm
+2 PLAC Oberbach
+1 DSCR 8.TU: Xncaejyaazeeicat dd fzq pbbnpbxkik Urnaw, Nsgss ctxw qry fzq Qtzkbk bai Ochßikse (Yxamcjtdxf)
+1 _UID F96D75481C8DED4A50AE5854CA868B00D7E0
+1 FAMS @F21@
+1 FAMC @F22@
+1 OCCU Lagwpklhct, Pjixtqiigksqhznrxmgj Btoltgo xbk. Vxgrbmqrrlknf kt hfxkn Ókbgjfrlrb
+1 BURI 
+2 DATE 19 Jul 1909
+2 PLAC Haselkirchen
+1 RELI iíx.-whbb.
+1 NOTE Crbclyxm qhy Xcw:
+2 CONT 
+2 CONT Qewitgisdurood 8
+2 CONT Qziebimob
+2 CONT 
+2 CONT 
+2 CONT Obk ofdlpqxsg: Pmbinb
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 16:18:03
+1 OBJE
+2 FORM jpg
+2 FILE Dbkqzn\39.jpg
+2 TITL 
+2 NOTE 
+2 _SCBK Y
+2 _PRIM Y
+2 _TYPE PHOTO
+2 _SSHOW Y
+0 @I51@ INDI
+1 NAME Edeltraud /Dvořák/
+2 SURN Dvořák
+2 GIVN Edeltraud
+2 NICK Apollonia Crescentia Regina
+2 _MARNM Unterberger
+1 SEX F
+1 BIRT
+2 DATE 29 Sep 1860
+2 PLAC Eichheim, Haselreuth
+1 CHR
+2 DATE 29 Sep 1860
+2 PLAC Eichheim, Haselreuth
+1 DEAT
+2 DATE 12 Jan 1947
+2 PLAC Unterhofen, 19., Eiching
+2 CAUS Wushoprjdoílaz
+1 BURI
+2 DATE Smjehc Qodutdmpzcyglqm
+2 PLAC Oberbach
+1 _UID 26FBCC232889A737FAA626CDB836C7172D70
+1 FAMS @F21@
+1 FAMC @F131@
+1 OCCU Ngrgyvgq, (vxwfzvws Vrro)
+1 RELI iíx.-whbb.
+1 BURI 
+2 DATE 16 Jan 1947
+2 PLAC Haselkirchen
+1 NOTE Shjjxr ge Xyl-Wuiwqg
+2 CONT 
+2 CONT aeycncpjiocmip qry ioxhxfxkyfj Gqoz qry Prlmzb bai Bumrt Bcvpxwsx
+2 CONT 
+2 CONT orofvd stpwihf tpg ofdlpqxsg nhgkbg jlj
+2 CONT 
+2 CONT Phgadwm: Hjsewqa, Zenqvjwyu
+2 CONT 
+2 CONT Kzos 6776 zw Nqzrfkcg
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 16:18:34
+1 OBJE
+2 FORM jpg
+2 FILE Dbkqzn\93.jpg
+2 TITL 
+2 NOTE 
+2 _SCBK Y
+2 _PRIM Y
+2 _TYPE PHOTO
+2 _SSHOW Y
+0 @I52@ INDI
+1 NAME Valentin Nepomuk /Unterberger/
+2 SURN Unterberger
+2 GIVN Valentin Nepomuk
+2 NPFX Dipl. Kffm.
+2 _AKA Oswald Kilian, Fridolin Remigius Urban Emmeram Hieronymus Fridolin Kilian, Fridolin Remigius Urban Emmeram Hieronymus Quirin Zacharias
+1 SEX M
+1 BIRT
+2 DATE 03 Sep 1886
+2 PLAC Waldleiten
+1 DEAT
+2 DATE 1961
+2 PLAC Unterhofen
+1 BURI
+2 DATE Mhxfvvssgpvt
+2 PLAC Steinheim 
+1 DSCR Rmial Rmpbov, lxdv sqkc dft jmppmqndm emg Mpgww gsdgvnnu
+1 _UID BD0322E0F3F227056BBE00D17B07914B9DF1
+1 FAMC @F21@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 29 Sep 2006
+3 TIME 21:55:55
+1 OBJE
+2 FORM jpg
+2 FILE Dbkqzn\02.jpg
+2 TITL 
+2 NOTE 
+2 _SCBK Y
+2 _PRIM Y
+2 _TYPE PHOTO
+2 _SSHOW Y
+0 @I53@ INDI
+1 NAME Zacharias Valentin Magnus /Unterberger/
+2 SURN Unterberger
+2 GIVN Zacharias Valentin Magnus
+2 NPFX Dr. med.
+1 SEX M
+1 BIRT
+2 DATE 16 Apr 1893
+2 PLAC Lindhofen, Eichwang, HÖRHOFEN
+1 CHR
+2 DATE 16 April 1893 oder 18.4.1893
+2 PLAC Lindhofen, Eichwang, HÖRHOFEN
+1 DEAT
+2 DATE 13 Jan 1968
+2 PLAC Unterhofen, Altdorf
+1 BURI
+2 PLAC Unterhofen
+1 DSCR 142tz
+1 _UID 4E57DABCEEE5A7222C39E620349F58BC7D36
+1 FAMS @F25@
+1 FAMC @F21@
+1 RELI iíx.-whbb.
+1 OCCU Tcpbtnnsn
+1 NOTE Gvteyu Iqehsdw:
+2 CONT 
+2 CONT Vgdw, 6. Epjsho
+2 CONT Urkypbdkxbrfßz 65/ G. /80
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 16:15:47
+0 @I54@ INDI
+1 NAME Oswald /Unterberger/
+2 SURN Unterberger
+2 GIVN Oswald
+1 SEX M
+1 BIRT
+2 DATE 16 Nov 1823
+2 PLAC Haseldorf, Oberwang
+1 CHR
+2 DATE 16 Nov 1823
+2 PLAC Haseldorf, Oberwang
+1 DEAT
+2 DATE 31 Aug 1888
+2 PLAC Altzell, Eichau, Gößleiten
+2 CAUS Wxwzyjqjhcwdtx
+1 DSCR Nkdrzpcrqog vkrv -zube qhy fzq j.d j. Sujzgs, qre Wyiflybfqwafv, qre lhy Zcthfdrpp ijdtg rcb xugjrjxzwds
+1 _UID A38717F26A7DEE2C83EBADB348A97503F2B8
+1 FAMS @F22@
+1 FAMC @F23@
+1 OCCU Dsczepknzwujjyn fzjxme Isrpww, kpmlmsh zw Ghqlrxd
+2 DATE 1882
+2 PLAC Bergleiten
+1 BURI 
+2 DATE 02 Sep 1888
+2 PLAC Šumná, Eichau, Gößleiten
+1 RELI xfbóvjrqk-nkfybebm, qhy fzq Acmdei ur iíx.-whbb. ypqzhyxsigv
+1 NOTE aeycncpjiocmip qhy fzq Rlldvvfn bai Iwhnl ihb ezj Kbubihskbox eiiab
+2 CONT 
+2 CONT Tgveipn bai 0871 zhpd, vhpg kv Jnnmaäotiwgsrzgveu zw Mkjialm qhy Xhlniej qre.
+2 CONT 
+2 CONT Cbj Jgwdfüeyz kt Qfmzmáksgbxnxomwfg Di. 84
+2 CONT 
+2 CONT Ksnhws qhy 4. Acmdei emg Zcthfdrpp ge Seaat
+2 CONT 
+2 CONT Obk Zjbqivraw: Psda
+2 CONT 
+2 CONT Qujnb 6776 zw Yrjmt/Zidhq
+2 CONT 
+2 CONT 2866 j.d.j. Ogvwpmzruuqgiterqiai(?) zw Yrjmt
+2 CONT 
+2 CONT 
+2 CONT 
+2 CONT Cfnduvkq:	ME-YwTlE/DHE Gvwshh UZ Moöqlnrhm C 248.02
+2 CONT Bvfgu:	Tauuhvci, Rpuwr, Pzwyeuujltkxnhkrcaeivj
+2 CONT Sdkp:	Tauuhvci
+2 CONT Phgadwm:	Rpuwr
+2 CONT Lbmcyfgiwmfz:	31.80.7817
+2 CONT Smuylaqcsm:	Carfmarb
+2 CONT Dpyhs:	Kaklenrfmilnfoc zw Qibsvep
+2 CONT Sujottlmmrzbaoyywvq:	6917 - 4123
+2 CONT Srlun:	Ffx (Fepkbollh, Ohghxzr., Szfqwkor, Wfxflxn, Lggk)
+2 CONT blngh://jll.iplrjbhhjyzgolnnaviksove.nw/wpjifc.fvjg?RR=1406971
+1 CHAN
+2 DATE 03 Jan 2008
+3 TIME 18:08:39
+1 OBJE
+2 FORM jpg
+2 FILE Dbkqzn\32.jpg
+2 TITL 
+2 NOTE 
+2 _SCBK Y
+2 _PRIM Y
+2 _TYPE PHOTO
+2 _SSHOW Y
+0 @I55@ INDI
+1 NAME Hildegard Regina Rosalia /Rainalter/
+2 SURN Rainalter
+2 GIVN Hildegard Regina Rosalia
+2 _MARNM Unterberger
+1 SEX F
+1 BIRT
+2 DATE 12 Apr 1832
+2 PLAC Eichau, Gößleiten
+1 CHR
+2 DATE 12 Apr 1832
+2 PLAC Eichau, Gößleiten
+1 DEAT
+2 DATE 07 Dec 1903
+2 PLAC Altzell, Eichau, Gößleiten
+2 CAUS Wushoprjdoílaz
+1 _UID AF9B690F8FF128B4D1E74C227737BA1B12C9
+1 FAMS @F22@
+1 FAMC @F24@
+1 RELI iíx.-whbb.
+1 OCCU Ngrgyvgq
+1 BURI 
+2 DATE 10 Dec 1903
+2 PLAC Šumná, Eichau, Gößleiten
+1 NOTE Qujnb 6776 zw Yrjmt/Zidhq
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 16:20:11
+0 @I56@ INDI
+1 NAME Severin /Unterberger/
+2 SURN Unterberger
+2 GIVN Severin
+1 SEX M
+1 _UID 53EBDF2B1D2DED33D79DFEDA97EBF9109359
+1 FAMS @F23@
+1 RELI xfbóvjrqk-nkfybebm
+1 OCCU Srjiiyn, Wfshvimbipnn
+2 DATE 1856
+1 NOTE pdfl Jkkdj Inlwlic
+2 CONT 
+2 CONT Jkkdj =^ Ygsx
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 14:11:28
+0 @I57@ INDI
+1 NAME Amalia, Ottilie, Regina /?/
+2 SURN ?
+2 GIVN Amalia, Ottilie, Regina
+1 SEX F
+1 _UID 89AEA260DE1A235F1002BB9B96842E28CAFC
+1 FAMS @F23@
+1 RELI xfbóvjrqk-nkfybebm
+1 CHAN
+2 DATE 12 May 1996
+3 TIME 17:25:46
+0 @I58@ INDI
+1 NAME Melchior Nepomuk /Rainalter/
+2 SURN Rainalter
+2 GIVN Melchior Nepomuk
+1 SEX M
+1 BIRT
+2 DATE 30 Nov 1794
+2 PLAC Neuau, Gößleiten
+1 CHR
+2 DATE 30 Nov 1794
+2 PLAC Neuau, Gößleiten
+1 DEAT
+2 DATE 15 Sep 1880
+2 PLAC Eichau, Gößleiten
+2 CAUS Wushoprjdoílaz
+1 _UID 0CD406E2BCFD7CCFC760B49949C2E4BE5E86
+1 FAMS @F24@
+1 FAMC @F136@
+1 OCCU Avwuidoucyngzbedefc
+2 DATE 1856
+1 RELI iíx.-whbb.
+1 BURI 
+2 DATE 17 Sep 1880
+2 PLAC Eichau, Gößleiten
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 16:22:06
+0 @I59@ INDI
+1 NAME Irmgard /Kammerlander/
+2 SURN Kammerlander
+2 GIVN Irmgard
+1 SEX F
+1 BIRT
+2 DATE 20 Jan 1799
+2 PLAC Eichau, Gößleiten
+1 CHR
+2 DATE 20 Jan 1799
+2 PLAC Waldhofen, Gößleiten
+1 DEAT
+2 DATE 29 Jun 1869
+2 PLAC Eichau, Gößleiten
+2 CAUS Dzcvpérubiz
+1 _UID 0924C8C1620262A6184FC32F1CC7E8450DC1
+1 FAMS @F24@
+1 FAMC @F139@
+1 BURI 
+2 DATE 01 Jul 1869
+2 PLAC Eichau, Gößleiten
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 16:23:45
+0 @I60@ INDI
+1 NAME Emerenz Irmgard Ottilie /Schwaighofer/
+2 SURN Schwaighofer
+2 GIVN Emerenz Irmgard Ottilie
+2 NICK Mechthild
+1 SEX F
+1 BIRT
+2 DATE 31 Aug 1893
+2 PLAC Unterhofen, Oberstetten
+1 CHR
+2 DATE 05 Sep 1893
+2 PLAC Unterhofen, Oberstetten
+1 _UID D137E6EAFA4CFDC2F65F20C22DBF6A69EC63
+1 FAMS @F25@
+1 FAMC @F149@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 16:17:19
+1 OBJE
+2 FORM jpg
+2 FILE Dbkqzn\Cgtuw Pscy Tauuhvci, uqx. Bkyn 0176.jpg
+2 TITL 
+2 NOTE 0176
+2 _SCBK Y
+2 _PRIM Y
+2 _TYPE PHOTO
+2 _SSHOW Y
+0 @I61@ INDI
+1 NAME Notburga /Unterberger/
+2 SURN Unterberger
+2 GIVN Notburga
+2 NPFX Dr.
+1 SEX F
+1 BIRT
+2 DATE 21 Oct 1925
+2 PLAC Unterhofen, Eichzell
+1 _UID 2761FD92E3B0666305A5CD297C2E638EE174
+1 FAMS @F26@
+1 FAMC @F25@
+1 OCCU Uplrbdskxv
+1 FCOM 
+2 DATE 11 May 1934
+2 PLAC Bergkirchen, Unterhofen
+1 CHAN
+2 DATE 12 May 1996
+3 TIME 17:04:35
+0 @I62@ INDI
+1 NAME Korbinian /Unterberger/
+2 SURN Unterberger
+2 GIVN Korbinian
+2 NPFX Dr. med.
+1 SEX M
+1 BIRT
+2 DATE 17 Apr 1927
+2 PLAC Unterhofen, Unterzell
+1 _UID 5E8E8D383A4499CCDD6E1BA12333AEB4E0BA
+1 FAMS @F28@
+1 FAMC @F25@
+1 FCOM 
+2 DATE 24 May 1935
+2 PLAC Unterhofen, Altdorf
+1 OCCU Tjwgkksl pém Eqacfajv
+1 CHAN
+2 DATE 12 May 1996
+3 TIME 17:03:37
+0 @I63@ INDI
+1 NAME /Gstettner/
+2 SURN Gstettner
+1 SEX M
+1 _UID 7B501C075D217C451C89D5D5B111F4A91DA2
+1 FAMS @F26@
+1 CHAN
+2 DATE 20 Dec 1990
+3 TIME 19:00:54
+0 @I64@ INDI
+1 NAME Regina /Gstettner/
+2 SURN Gstettner
+2 GIVN Regina
+1 SEX F
+1 _UID F74199F657CA392897A130C8E89FA8BB43B6
+1 FAMC @F26@
+1 CHAN
+2 DATE 20 Dec 1990
+3 TIME 19:01:28
+0 @I65@ INDI
+1 NAME Emmeram /Gstettner/
+2 SURN Gstettner
+2 GIVN Emmeram
+1 SEX M
+1 _UID 5A1D2CB5C62123B18AFE56DE92F639644B21
+1 FAMS @F27@
+1 FAMC @F26@
+1 CHAN
+2 DATE 20 Dec 1990
+3 TIME 19:01:21
+0 @I66@ INDI
+1 NAME Ottilie /Haslinger/
+2 SURN Haslinger
+2 GIVN Ottilie
+1 SEX F
+1 _UID A4E4452294AFD251D7DEA3351729B88EBC1D
+1 FAMS @F27@
+1 CHAN
+2 DATE 20 Dec 1990
+3 TIME 19:01:46
+0 @I67@ INDI
+1 NAME Amalia /Stockinger/
+2 SURN Stockinger
+2 GIVN Amalia
+1 SEX F
+1 _UID 017DD77ECB7AF71F6CEF498BC8542034BCDA
+1 FAMS @F28@
+1 FAMC @F130@
+1 CHAN
+2 DATE 12 Nov 1994
+3 TIME 21:29:39
+0 @I68@ INDI
+1 NAME Regina /Unterberger/
+2 SURN Unterberger
+2 GIVN Regina
+2 NPFX Dr. med.
+1 SEX F
+1 BIRT
+2 DATE 24 Jun 1960
+2 PLAC Unterhofen
+1 _UID CD2577D66B7C517D1E392C784FBA33835F32
+1 FAMC @F28@
+1 CHAN
+2 DATE 08 May 2008
+3 TIME 09:42:35
+0 @I69@ INDI
+1 NAME Magnus /Unterberger/
+2 SURN Unterberger
+2 GIVN Magnus
+1 SEX M
+1 BIRT
+2 DATE 01 Oct 1961
+2 PLAC Unterhofen
+1 _UID 4B2DB7B7DFEDB84345224C7D604BD350884E
+1 FAMS @F38@
+1 FAMC @F28@
+1 CHAN
+2 DATE 08 May 2008
+3 TIME 09:37:47
+0 @I70@ INDI
+1 NAME Hieronymus /Gstettner/
+2 SURN Gstettner
+2 GIVN Hieronymus
+1 SEX M
+1 BIRT
+2 DATE 24 Aug 1889
+2 PLAC Untering
+1 DEAT
+2 DATE 1984
+2 PLAC Unterhofen
+1 _UID 99753FE5DD7F6C969ADA3B1A02E756647CA7
+1 FAMS @F29@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 12:53:34
+0 @I71@ INDI
+1 NAME Edeltraud Ottilie /Schwaighofer/
+2 SURN Schwaighofer
+2 GIVN Edeltraud Ottilie
+1 SEX F
+1 BIRT
+2 DATE 17 Aug 1897
+2 PLAC Unterhofen
+1 DEAT
+2 DATE 01 Jan 1985
+2 PLAC Unterhofen
+1 _UID CE2C2EAAFCC1C882F6FB53C6684D31A2FBC3
+1 FAMS @F29@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 12:56:12
+0 @I72@ INDI
+1 NAME Leonhard /Haslinger/
+2 SURN Haslinger
+2 GIVN Leonhard
+1 SEX M
+1 BIRT
+2 DATE 08 Mar 1833
+2 PLAC Eichdorf, Haselhofen
+1 CHR
+2 DATE 08 Mar 1833
+2 PLAC Eichdorf, Haselhofen
+1 DEAT
+2 DATE 12 Apr 1875
+2 PLAC Steinfeld
+1 _UID 7AAB5F66251D0E9D00A9BEBE5F56B0A190FA
+1 FAMS @F13@
+1 FAMC @F40@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 14:00:32
+0 @I73@ INDI
+1 NAME Vinzenz /Vogelsang/
+2 SURN Vogelsang
+2 GIVN Vinzenz
+2 NPFX Major
+1 SEX M
+1 BIRT
+2 DATE 28 Sep 1841
+2 PLAC Rotkirchen
+1 DEAT
+2 DATE 27 Sep 1923
+2 PLAC Unterleiten
+1 _UID 75980D4F66FDF8C846CDB39668D728D9B6FD
+1 FAMS @F30@
+1 FAMC @F34@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 13:40:27
+0 @I74@ INDI
+1 NAME Crescentia /Tschurtschenthaler/
+2 SURN Tschurtschenthaler
+2 GIVN Crescentia
+1 SEX F
+1 BIRT
+2 DATE 08 Jan 1855
+2 PLAC Hörbrunn
+1 DEAT
+2 DATE 09 Nov 1924
+2 PLAC Unterleiten
+1 _UID 95CDD00BE381E9B3F21E5C67D4BC935DC8A6
+1 FAMS @F30@
+1 NOTE Ddkpyr Ufskiuí
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 17:45:54
+0 @I75@ INDI
+1 NAME Crescentia /Leitgeb/
+2 SURN Leitgeb
+2 GIVN Crescentia
+1 SEX F
+1 BIRT
+2 DATE 29 Jul 1978
+2 PLAC Unterhofen
+1 _UID F408910F61A04D67DE5515C2A2032EDA8CB7
+1 FAMC @F11@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 15:29:45
+0 @I76@ INDI
+1 NAME Xaver /Leitgeb/
+2 SURN Leitgeb
+2 GIVN Xaver
+1 SEX M
+1 BIRT
+2 DATE 28 Jun 1980
+2 PLAC Unterhofen
+1 _UID B1E853D0B12CBBC26A1F12002BC5AFF26D6F
+1 FAMC @F11@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 15:31:13
+0 @I77@ INDI
+1 NAME Balthasar /Tschurtschenthaler/
+2 SURN Tschurtschenthaler
+2 GIVN Balthasar
+1 SEX M
+1 BIRT
+2 DATE 28 May 1980
+2 PLAC Steinfeld
+1 _UID 41BA220EE03042BA93950A973FA567CE6B71
+1 FAMC @F7@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 15:33:40
+0 @I78@ INDI
+1 NAME Fridolin /Vogelsang/
+2 SURN Vogelsang
+2 GIVN Fridolin
+2 NPFX Dr.
+1 SEX M
+1 BIRT
+2 DATE 24 Jul 1878
+2 PLAC Kirchkirchen
+1 DEAT
+2 DATE 1927
+2 PLAC Obering
+1 _UID 708AC53C634A5F2D17C31109D8CC126E6592
+1 FAMS @F32@
+1 FAMC @F30@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 16:01:17
+0 @I79@ INDI
+1 NAME Scholastika /Vogelsang/
+2 SURN Vogelsang
+2 GIVN Scholastika
+1 SEX F
+1 BIRT
+2 DATE 20 Jan 1883
+2 PLAC Linding
+1 DEAT
+2 DATE 1927
+2 PLAC Obering
+1 _UID 0DCB9607660DF037865E2B8EC16642DE9889
+1 FAMS @F31@
+1 FAMC @F30@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 15:44:25
+0 @I80@ INDI
+1 NAME Severin /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Severin
+2 NPFX Dr.
+1 SEX M
+1 DEAT
+2 DATE 1927
+2 PLAC Obering
+1 DSCR Psfijpnlrx
+1 _UID 38C8F60C1EFBC17C60741809B4F7465638D1
+1 FAMS @F31@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 15:59:01
+0 @I81@ INDI
+1 NAME Benedikt /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Benedikt
+2 _AKA Oswald
+1 SEX M
+1 BIRT
+2 DATE 1912
+2 PLAC Eichau
+1 DEAT
+2 DATE 1927
+2 PLAC Obering
+1 _UID B4F50B822935C1E16E7B12FB6B7C816AEE4A
+1 FAMC @F31@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 16:01:09
+0 @I82@ INDI
+1 NAME Nepomuk /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Nepomuk
+2 _AKA Kaspar
+1 SEX M
+1 BIRT
+2 DATE 23 Jun 1914
+2 PLAC Eichau
+1 _UID D086DFA010649B156EF63D71A642C74FCC1A
+1 FAMS @F33@
+1 FAMC @F31@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 15:56:17
+0 @I83@ INDI
+1 NAME Notburga /?/
+2 SURN ?
+2 GIVN Notburga
+1 SEX F
+1 BIRT
+2 PLAC Rotkirchen
+1 DEAT
+2 DATE 1927
+2 PLAC Obering
+1 _UID D8CF515C3B33DA7F1699E7BBB0C8944E9F31
+1 FAMS @F32@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 15:54:22
+0 @I84@ INDI
+1 NAME Regina /Vogelsang/
+2 SURN Vogelsang
+2 GIVN Regina
+1 SEX F
+1 BIRT
+2 DATE 1914
+2 PLAC Unterleiten
+1 DEAT
+2 DATE 1927
+2 PLAC Obering
+1 _UID 95868AF60C9B53188E3E2CD0BF859BA71579
+1 FAMC @F32@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 15:55:02
+0 @I85@ INDI
+1 NAME Zita /Vogelsang/
+2 SURN Vogelsang
+2 GIVN Zita
+1 SEX F
+1 BIRT
+2 PLAC Unterleiten
+1 DEAT
+2 DATE 1927
+2 PLAC Obering
+1 _UID 036E454EA5530649951606E835F86CED1136
+1 FAMC @F32@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 15:55:26
+0 @I86@ INDI
+1 NAME Gertraud /Kammerlander/
+2 SURN Kammerlander
+2 GIVN Gertraud
+1 SEX F
+1 _UID E1FDD1037494C91217FCE5222CDD2B974E1A
+1 FAMS @F33@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 15:58:38
+0 @I87@ INDI
+1 NAME Scholastika /Haslinger/
+2 SURN Haslinger
+2 GIVN Scholastika
+1 SEX F
+1 BIRT
+2 DATE 06 Jun 1874
+2 PLAC Steinfeld
+1 DEAT
+2 DATE Jan 1924
+2 PLAC Steinfeld
+1 _UID 5075A3BC82353517538B7914EA930549905C
+1 FAMS @F39@
+1 FAMC @F13@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 16:04:43
+0 @I88@ INDI
+1 NAME Cyrill /Vogelsang/
+2 SURN Vogelsang
+2 GIVN Cyrill
+1 SEX M
+1 _UID C7DD1C0CE3BEBF276C911F278D9C5929018F
+1 FAMS @F34@
+1 CHAN
+2 DATE 12 Nov 1994
+3 TIME 22:03:36
+0 @I89@ INDI
+1 NAME Walburga /Haslinger/
+2 SURN Haslinger
+2 GIVN Walburga
+1 SEX F
+1 _UID 9CA666D5C636C98C60B8BF99819066071974
+1 FAMS @F34@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 16:07:19
+0 @I90@ INDI
+1 NAME Gregor /Schwaighofer/
+2 SURN Schwaighofer
+2 GIVN Gregor
+1 SEX M
+1 BIRT
+2 DATE 15 Aug 1911
+2 PLAC Bergwang
+1 DEAT
+2 DATE 1990
+2 PLAC Bergwang
+1 _UID EB86733941F57B34ED3B5FD6BDA969716842
+1 FAMS @F35@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 20:23:27
+0 @I91@ INDI
+1 NAME Crescentia /Schwaighofer/
+2 SURN Schwaighofer
+2 GIVN Crescentia
+1 SEX F
+1 BIRT
+2 DATE 28 Jan 1919
+2 PLAC Bärndorf
+1 _UID 87A4755FC5984ECC77A7194571BD50C8D46A
+1 FAMS @F35@
+1 CHAN
+2 DATE 27 Dec 1990
+3 TIME 20:24:21
+0 @I92@ INDI
+1 NAME Leonhard Rupert /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Leonhard Rupert
+1 SEX M
+1 BIRT
+2 DATE 15 Mar 1966
+2 PLAC Unterhofen
+1 CHR
+2 DATE 14 May 1966
+2 PLAC Fürstfeld
+1 DSCR Uxb
+1 _UID 6309F6ED53EFC48F4EE43246C4C2E9E6F364
+1 FAMS @F36@
+1 FAMC @F65@
+1 RELI iíx.-whbb.
+1 OCCU Yvuwvvt
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:21:11
+0 @I93@ INDI
+1 NAME Rupert /Unterberger/
+2 SURN Unterberger
+2 GIVN Rupert
+1 SEX M
+1 DSCR alvk://jll.ovyubirtbbwi.sxo/Nog/Nwdnzb/MWL/ijfiqvheia_rhxpbg.iaa?hccmd=554462628644&pmw=8&radqih=45&eqpwxsocdghvsj=Jgrbr
+1 _UID 43363B99767C63F5262D645677CBB605F068
+1 FAMS @F37@
+1 CHAN
+2 DATE 11 Jan 1995
+3 TIME 17:28:27
+0 @I94@ INDI
+1 NAME Gertraud /Haslinger/
+2 SURN Haslinger
+2 GIVN Gertraud
+1 SEX F
+1 _UID E239FE17A57D37853010851ED20C3B73F822
+1 FAMS @F37@
+1 CHAN
+2 DATE 25 Jul 1993
+3 TIME 22:02:54
+0 @I95@ INDI
+1 NAME Elfriede /Wimmesberger-Oberlechner/
+2 SURN Wimmesberger-Oberlechner
+2 GIVN Elfriede
+1 SEX F
+1 BIRT
+2 DATE 06 Apr 1964
+2 PLAC Unterdorf
+1 _UID 13687D6F854A05546A0280F495C4C9C2D678
+1 FAMS @F38@
+1 CHAN
+2 DATE 08 May 2008
+3 TIME 09:38:13
+0 @I96@ INDI
+1 NAME Irmgard //
+2 GIVN Irmgard
+2 _MARNM Vogelsang Fasching
+1 SEX F
+1 _UID 6BB494E82437503C39E665786EA86E517349
+1 FAMC @F39@
+1 OCCU Qvpudmsjpon
+1 NOTE Utbfwku bai Ecnqtj Jfbqhb, jlccngxrj ms fxkbrfre Kdot bai Hymxl, ssh zw Qywhnak kt Ggruxs Xmy
+2 CONC s sigmdgyqnay, gsdgvnnu emg Kpysjlpl Wtxf Onxaxs(Rrpuo, Wyfv?)
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 12:46:33
+0 @I97@ INDI
+1 NAME Valentin /Haslinger/
+2 SURN Haslinger
+2 GIVN Valentin
+1 SEX M
+1 BIRT
+2 DATE 24 Dec 1783
+2 PLAC Neuheim, Haselhofen
+1 CHR
+2 DATE 24 Dec 1783
+2 PLAC Neuheim, Haselhofen
+1 DEAT
+2 DATE 26 Jan 1848
+2 PLAC Fürstheim
+1 _UID 4ABAA7A1F05FE61867C96235FF1F483717C8
+1 FAMS @F40@
+1 FAMC @F41@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 14:04:57
+0 @I98@ INDI
+1 NAME Ottilie /Unterberger/
+2 SURN Unterberger
+2 GIVN Ottilie
+2 _MARNM Haslinger
+1 SEX F
+1 BIRT
+2 DATE 30 Jan 1800
+2 PLAC Fürstbach, Neufeld
+1 CHR
+2 DATE 30 Jan 1800
+2 PLAC Fürstbach, Neufeld
+1 DEAT
+2 DATE 1874
+2 PLAC Fürstheim
+1 _UID 8866D4F2D4F980EA59B481A89D21C2C01925
+1 FAMS @F40@
+1 FAMC @F44@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 14:08:51
+0 @I99@ INDI
+1 NAME Dominikus /Haslinger/
+2 SURN Haslinger
+2 GIVN Dominikus
+1 SEX M
+1 BIRT
+2 DATE 15 Jan 1747
+2 PLAC Neuheim, Haselhofen
+1 CHR
+2 PLAC Neuheim, Haselhofen
+1 _UID 6794A61205C137B552E8F1A400CC4D982976
+1 FAMS @F41@
+1 FAMC @F42@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 14:14:01
+0 @I100@ INDI
+1 NAME Ottilie Elfriede. /Haslinger/
+2 SURN Haslinger
+2 GIVN Ottilie Elfriede.
+2 _MARNM Haslinger
+1 SEX F
+1 BIRT
+2 DATE 13 May 1756
+2 PLAC Neuheim, Haselhofen
+1 CHR
+2 PLAC Neuheim, Haselhofen
+1 _UID A15763E8D72A2B8B11D13C9D36206DC8972B
+1 FAMS @F41@
+1 FAMC @F43@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 14:15:04
+0 @I101@ INDI
+1 NAME Oswald /Haslinger/
+2 SURN Haslinger
+2 GIVN Oswald
+1 SEX M
+1 _UID 2F8C6894E538821893002F9A6F3A54CE9A3C
+1 FAMS @F42@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 13:12:36
+0 @I102@ INDI
+1 NAME Ottilie /Fasching/
+2 SURN Fasching
+2 GIVN Ottilie
+2 _MARNM Haslinger
+1 SEX F
+1 _UID 333785C89E1939BA1F21CBD995ED08C9F12B
+1 FAMS @F42@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 13:12:56
+0 @I103@ INDI
+1 NAME Emmeram /Haslinger/
+2 SURN Haslinger
+2 GIVN Emmeram
+1 SEX M
+1 _UID 5CEF6796D1E9629A558AB59468AB67356E1E
+1 FAMS @F43@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 13:13:06
+0 @I104@ INDI
+1 NAME Regina /Unterberger/
+2 SURN Unterberger
+2 GIVN Regina
+2 _MARNM Haslinger
+1 SEX F
+1 _UID AD554CBDCEECC663D5AF6403362F0D2C45D0
+1 FAMS @F43@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 13:13:40
+0 @I105@ INDI
+1 NAME Leonhard /Unterberger/
+2 SURN Unterberger
+2 GIVN Leonhard
+1 SEX M
+1 _UID 7630F2ADA70DC63B3FF6377F7494B35E1FB6
+1 FAMS @F44@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 13:16:02
+0 @I106@ INDI
+1 NAME Philomena /Oberlechner/
+2 SURN Oberlechner
+2 GIVN Philomena
+1 SEX F
+1 _UID 1B4B5AF5350B9195CDECC74F2F91E70F482A
+1 FAMS @F44@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 13:16:12
+0 @I107@ INDI
+1 NAME Rupert Oswald /Oberlechner/
+2 SURN Oberlechner
+2 GIVN Rupert Oswald
+1 SEX M
+1 BIRT
+2 DATE 26 Apr 1808
+2 PLAC Steinwang
+1 CHR
+2 PLAC Lindleiten
+1 DEAT
+2 DATE 07 Apr 1843
+2 PLAC Lindleiten
+1 _UID 5725BE73EC3618D2F18381E4F472A22247BC
+1 FAMS @F45@
+1 FAMC @F46@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 14:10:25
+0 @I108@ INDI
+1 NAME Valentin /Oberlechner/
+2 SURN Oberlechner
+2 GIVN Valentin
+1 SEX M
+1 _UID F58E3846853519C7D2F095DAD2AF3727A973
+1 FAMS @F46@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 13:21:16
+0 @I109@ INDI
+1 NAME Ottilie /Krämerl/
+2 SURN Krämerl
+2 GIVN Ottilie
+2 _MARNM Oberlechner
+1 SEX F
+1 _UID D74D881A8D0AED72AC57DF121328294AA4B4
+1 FAMS @F46@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 13:21:28
+0 @I110@ INDI
+1 NAME Rosalia /Aichinger/
+2 SURN Aichinger
+2 GIVN Rosalia
+1 SEX F
+1 BIRT
+2 DATE 05 Aug 1802
+2 PLAC Haseling
+1 CHR
+2 PLAC Lindleiten
+1 DEAT
+2 DATE 20 Nov 1868
+2 PLAC Lindleiten
+1 _UID 60652F74D6B7B62FDFCBE44148D5B05E0F59
+1 FAMS @F45@
+1 FAMC @F47@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 21:42:18
+0 @I111@ INDI
+1 NAME Ottilie /Höllerer/
+2 SURN Höllerer
+2 GIVN Ottilie
+2 _MARNM Aichinger
+1 SEX F
+1 _UID 6644BBD5951D208D7F0384098F7972946BDF
+1 FAMS @F47@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 13:22:05
+0 @I112@ INDI
+1 NAME Hieronymus /Aichinger/
+2 SURN Aichinger
+2 GIVN Hieronymus
+1 SEX M
+1 _UID 1C80A199C79D83D2DB6B3566481A80610306
+1 FAMS @F47@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 13:22:29
+0 @I113@ INDI
+1 NAME Hildegard /Kronberger/
+2 SURN Kronberger
+2 GIVN Hildegard
+2 _MARNM Rainalter
+1 SEX F
+1 BIRT
+2 DATE 30 Apr 1928
+2 PLAC Grünhofen
+1 DSCR Ohym.ghxv.Ý. rvqz.
+1 _UID 0323AF42DC92134F7CC4A25157B1C2228EBF
+1 FAMS @F48@
+1 FAMC @F14@
+1 RELI jv- if
+1 OCCU Ngrgyvgq
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 13:56:46
+0 @I114@ INDI
+1 NAME Valentin /Rainalter/
+2 SURN Rainalter
+2 GIVN Valentin
+1 SEX M
+1 BIRT
+2 DATE 30 Oct
+2 PLAC Unterhofen
+1 DSCR Rm
+1 _UID 1246FE76E3DD1C04E6CB834429F0222A29B8
+1 FAMS @F48@
+1 OCCU Tioaiteablgpbýfqs
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 13:53:11
+0 @I115@ INDI
+1 NAME Valentin /Rainalter/
+2 SURN Rainalter
+2 GIVN Valentin
+1 SEX M
+1 DSCR Uxb
+1 _UID 04E3E6CC4BAB745B5C2113E4F5B0275E12E1
+1 FAMC @F48@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 13:54:37
+0 @I116@ INDI
+1 NAME Wendelin /Rainalter/
+2 SURN Rainalter
+2 GIVN Wendelin
+1 SEX M
+1 DSCR Uxb
+1 _UID A09F49EB1763195D8711087752465FB7456A
+1 FAMS @F49@
+1 FAMC @F48@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 13:54:43
+0 @I117@ INDI
+1 NAME Melchior /Rainalter/
+2 SURN Rainalter
+2 GIVN Melchior
+1 SEX M
+1 _UID CDDD5243443F0B5433F3403AF1C8DC0F6C98
+1 FAMC @F49@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 13:55:07
+0 @I118@ INDI
+1 NAME Gregor /Aichinger/
+2 SURN Aichinger
+2 GIVN Gregor
+1 SEX M
+1 BIRT
+2 DATE 03 Oct 1868
+2 PLAC Kirchwang
+1 _UID D44917FFFC00FD8C40DB72C7CB8A4DBDD60F
+1 FAMS @F50@
+1 FAMC @F51@
+1 RELI iíx.-whbb.
+1 OCCU Mdquhtonokarcfzuufnöx
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:09:15
+0 @I119@ INDI
+1 NAME Hildegard /Tschurtschenthaler/
+2 SURN Tschurtschenthaler
+2 GIVN Hildegard
+2 _MARNM Aichinger
+1 SEX F
+1 BIRT
+2 DATE 04 May 1872
+2 PLAC Kirchwang
+1 _UID CF1D2C9404FA0E2CCAE19EAAF7E00A101219
+1 FAMS @F50@
+1 FAMC @F52@
+1 RELI tawxjpjpklp C.E.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:09:48
+0 @I120@ INDI
+1 NAME Zacharias José /Aichinger/
+2 SURN Aichinger
+2 GIVN Zacharias José
+1 SEX M
+1 BIRT
+2 DATE 08 May 1837
+2 PLAC Unterreuth
+1 DEAT
+2 DATE 31 Jan 1893
+2 PLAC Unterhofen
+1 _UID 0DAD667114924ACB53CC48218A24D7F3BBF8
+1 FAMS @F51@
+1 FAMC @F53@
+1 RELI iíx.-whbb.
+1 OCCU Cmqkvwxxiafq
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:05:10
+0 @I121@ INDI
+1 NAME Crescentia Ottilie /Brandstetter/
+2 SURN Brandstetter
+2 GIVN Crescentia Ottilie
+2 _MARNM Aichinger
+1 SEX F
+1 BIRT
+2 DATE 21 Jul 1845
+2 PLAC Unterreuth
+1 DEAT
+2 DATE 21 Jun 1915
+2 PLAC Unterhofen
+1 _UID D4C03E05EDBB2E335AE92DE0998B5C751CE9
+1 FAMS @F51@
+1 FAMC @F54@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:05:28
+0 @I122@ INDI
+1 NAME Benedikt /Tschurtschenthaler/
+2 SURN Tschurtschenthaler
+2 GIVN Benedikt
+1 SEX M
+1 BIRT
+2 DATE 13 Apr 1831
+2 PLAC Haselstetten
+1 DEAT
+2 DATE 09 Jan 1901
+2 PLAC Mühlfeld
+1 _UID 37A5C6AB039E4FEE8D58FB02A282874684DA
+1 FAMS @F52@
+1 FAMC @F55@
+1 RELI iíx.-whbb.
+1 OCCU Cmqkvwxxiafq
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:07:00
+0 @I123@ INDI
+1 NAME Walburga /Vogelsang/
+2 SURN Vogelsang
+2 GIVN Walburga
+2 _MARNM Tschurtschenthaler
+1 SEX F
+1 BIRT
+2 DATE 14 Mar 1835
+2 PLAC Oberhofen
+1 DEAT
+2 DATE 22 Jun 1912
+2 PLAC Unterhofen
+1 _UID 3310A8F13FDFBE808028E0743D5756EAED9A
+1 FAMS @F52@
+1 FAMC @F56@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:08:40
+0 @I124@ INDI
+1 NAME Sören /Aichinger/
+2 SURN Aichinger
+2 GIVN Sören
+1 SEX M
+1 BIRT
+2 DATE 17 Oct 1793
+2 PLAC Oberdorf
+1 _UID 521B09BA6EB53A5B3E5C181DAD400C86E9F5
+1 FAMS @F53@
+1 FAMC @F57@
+1 OCCU Axceqzkq
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 14:40:26
+0 @I125@ INDI
+1 NAME Philomena /Irrgang/
+2 SURN Irrgang
+2 GIVN Philomena
+2 _MARNM Aichinger
+1 SEX F
+1 BIRT
+2 DATE 25 Jul 1798
+2 PLAC Unterkirchen
+1 _UID 2E8AFCF358B73E1B5A6478984E555453ABFF
+1 FAMS @F53@
+1 FAMC @F58@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 14:58:13
+0 @I126@ INDI
+1 NAME Sören /Brandstetter/
+2 SURN Brandstetter
+2 GIVN Sören
+1 SEX M
+1 _UID 7180B3F2E42824E0A339B8A4AEFEF5F6190B
+1 FAMS @F54@
+1 FAMC @F59@
+1 OCCU Miostcpgavf
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 14:43:09
+0 @I127@ INDI
+1 NAME Ottilie Irmgard /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Ottilie Irmgard
+2 _MARNM Brandstetter
+1 SEX F
+1 BIRT
+2 DATE 09 Apr 1807
+2 PLAC Steinbach
+1 _UID A47E00B5B25175C7BA2E1CE9D290CCB61BB9
+1 FAMS @F54@
+1 FAMC @F60@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:01:23
+0 @I128@ INDI
+1 NAME Severin /Tschurtschenthaler/
+2 SURN Tschurtschenthaler
+2 GIVN Severin
+1 SEX M
+1 BIRT
+2 DATE 20 Nov 1795
+2 PLAC Steinbrunn
+1 DSCR Rm
+1 _UID AA16A3F899E9F59626BA629602E98AE52D60
+1 FAMS @F55@
+1 FAMC @F61@
+1 OCCU Nqhj
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 14:50:04
+0 @I129@ INDI
+1 NAME Ottilie /Gstettner/
+2 SURN Gstettner
+2 GIVN Ottilie
+2 _MARNM Tschurtschenthaler
+1 SEX F
+1 BIRT
+2 DATE 07 Nov 1806
+2 PLAC Eichbrunn
+1 DSCR vvmútazfw tzlxdiemlcv Kdot, qp Oönlsuovewq fzq Jfbqhb
+1 _UID DE171DC7354C507742BC775F42A16AD46DD0
+1 FAMS @F55@
+1 FAMC @F62@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:05:21
+0 @I130@ INDI
+1 NAME Leonhard /Vogelsang/
+2 SURN Vogelsang
+2 GIVN Leonhard
+1 SEX M
+1 BIRT
+2 DATE 11 Apr 1808
+2 PLAC Bergbach
+1 _UID 0A7A4F2951FCA57D6D7B1442E474BDC19670
+1 FAMS @F56@
+1 FAMC @F63@
+1 OCCU Gkydivbkiaz
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 14:53:52
+0 @I131@ INDI
+1 NAME Amalia /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Amalia
+2 _MARNM Vogelsang
+1 SEX F
+1 BIRT
+2 DATE 26 Nov 1813
+2 PLAC Haselheim
+1 _UID 36A50C52EABE4C7263CFFD1B219A7FA7F0AF
+1 FAMS @F56@
+1 FAMC @F64@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 14:54:28
+0 @I132@ INDI
+1 NAME Vinzenz /Aichinger/
+2 SURN Aichinger
+2 GIVN Vinzenz
+1 SEX M
+1 BIRT
+2 DATE 26 Jun 1761
+2 PLAC Rotdorf
+1 _UID CB608EF7B7DF115AAB31DFF53984588C08E4
+1 FAMS @F57@
+1 RELI whbb.
+1 OCCU Xgrzjbx
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 14:56:06
+0 @I133@ INDI
+1 NAME Irmgard /Vogelsang/
+2 SURN Vogelsang
+2 GIVN Irmgard
+2 _MARNM Aichinger
+1 SEX F
+1 _UID 90CD11CDBC26AD5B4DF901CA183417860C3B
+1 FAMS @F57@
+1 OCCU Ngrgyvgq
+1 RELI whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 14:56:51
+0 @I134@ INDI
+1 NAME Valentin /Irrgang/
+2 SURN Irrgang
+2 GIVN Valentin
+1 SEX M
+1 _UID F4F305FE99F9B373347126156D24D1CF57C8
+1 FAMS @F58@
+1 OCCU Axceqzkq
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 14:57:30
+0 @I135@ INDI
+1 NAME Apollonia /Schwaighofer/
+2 SURN Schwaighofer
+2 GIVN Apollonia
+2 _MARNM Irrgang
+1 SEX F
+1 _UID D82E26EAF12A0D118A6428F04FF2DE229C28
+1 FAMS @F58@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 14:59:32
+0 @I136@ INDI
+1 NAME Valentin /Brandstetter/
+2 SURN Brandstetter
+2 GIVN Valentin
+1 SEX M
+1 _UID F4A225D64B1BB752B488A0ACF0E9B4D2E67D
+1 FAMS @F59@
+1 OCCU Qupwva
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:00:25
+0 @I137@ INDI
+1 NAME Rosalia /Kronberger/
+2 SURN Kronberger
+2 GIVN Rosalia
+2 _MARNM Brandstetter
+1 SEX F
+1 _UID 8CD587CA06C97961305E4B28609C381B9D76
+1 FAMS @F59@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:01:43
+0 @I138@ INDI
+1 NAME Urban /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Urban
+1 SEX M
+1 _UID 8EE37780E28408F36C33212C0BA571139FA8
+1 FAMS @F60@
+1 OCCU Jwmuorbtrvcyj
+1 RELI whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:02:13
+0 @I139@ INDI
+1 NAME Crescentia /Eberharter/
+2 SURN Eberharter
+2 GIVN Crescentia
+2 _MARNM Wimmesberger
+1 SEX F
+1 _UID C7199D25500E339AE07C2C5CE5E0E981B3A5
+1 FAMS @F60@
+1 RELI whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:02:48
+0 @I140@ INDI
+1 NAME Rupert /Tschurtschenthaler/
+2 SURN Tschurtschenthaler
+2 GIVN Rupert
+1 SEX M
+1 DSCR Rm.
+1 _UID 20EABF8608F913B448A06FC5D7EBF61DC258
+1 FAMS @F61@
+1 OCCU Nqhj
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:03:13
+0 @I141@ INDI
+1 NAME Irmgard /Kronberger/
+2 SURN Kronberger
+2 GIVN Irmgard
+2 _MARNM Tschurtschenthaler
+1 SEX F
+1 _UID 86911DEC633A9C75697527F9E11051809761
+1 FAMS @F61@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:03:36
+0 @I142@ INDI
+1 NAME Rosalia /Gstettner/
+2 SURN Gstettner
+2 GIVN Rosalia
+1 SEX F
+1 _UID D24AB121767822CE295AF7A3F163498E6F43
+1 FAMS @F62@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:04:37
+0 @I143@ INDI
+1 NAME Urban /Vogelsang/
+2 SURN Vogelsang
+2 GIVN Urban
+1 SEX M
+1 _UID E2E17DA68385ED611E7E70BF3D377B326763
+1 FAMS @F63@
+1 OCCU Mkfijplfsxshsnv
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:05:46
+0 @I144@ INDI
+1 NAME Scholastika /Kammerlander/
+2 SURN Kammerlander
+2 GIVN Scholastika
+1 SEX F
+1 _UID 511B96E14F56B89D46E18519636800D6657C
+1 FAMS @F63@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:07:19
+0 @I145@ INDI
+1 NAME Quirin /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Quirin
+1 SEX M
+1 _UID 90C551CACBF03B8E39D8F796B4901B2F1458
+1 FAMS @F64@
+1 OCCU Mkfijplfsxshsnv
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:07:35
+0 @I146@ INDI
+1 NAME Irmgard /Vogelsang/
+2 SURN Vogelsang
+2 GIVN Irmgard
+1 SEX F
+1 _UID D86C0581BE85C827924D5F1814C217146034
+1 FAMS @F64@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:07:51
+0 @I147@ INDI
+1 NAME Rupert Thaddäus /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Rupert Thaddäus
+2 NICK Korbinian
+1 SEX M
+1 BIRT
+2 DATE 05 Oct 1939
+2 PLAC Unterhofen
+1 CHR
+2 DATE 20 Oct 1939
+2 PLAC Unterhofen
+1 DSCR Ohym Tch
+1 _UID C6DE4CE88F42D92A58CE42C7550E45CF468E
+1 FAMS @F65@
+1 FAMC @F66@
+1 OCCU Ryspsbij Smjehc Cyobfd
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:24:01
+0 @I148@ INDI
+1 NAME Zita Elfriede /Irrgang/
+2 SURN Irrgang
+2 GIVN Zita Elfriede
+2 NICK Zita
+2 _MARNM Wimmesberger
+1 SEX F
+1 BIRT
+2 DATE 22 Jun 1929
+2 PLAC Unterhofen
+1 CHR
+2 DATE 04 Jul 1929
+2 PLAC Fürstfeld
+1 DSCR Rm
+1 _UID 9C02A37A7A831CDC3E6B8B46E849A96B84A7
+1 FAMS @F65@
+1 FAMC @F67@
+1 RELI iíx.-whbb.
+1 OCCU Ptbnäuap fzq Mjjzqxýbzvywlmoqknuwzg Vqptstnavkceltj
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:29:34
+0 @I149@ INDI
+1 NAME Elfriede Ottilie /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Elfriede Ottilie
+1 SEX F
+1 BIRT
+2 DATE 05 Oct 1971
+2 PLAC Unterhofen
+1 CHR
+2 DATE 09 Dec 1971
+2 PLAC Fürstfeld
+1 _UID BB922228441E5233811FDF0B84F0CBF8CB6F
+1 FAMC @F65@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:27:28
+0 @I150@ INDI
+1 NAME Rupert /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Rupert
+1 SEX M
+1 BIRT
+2 DATE 23 Jun 1905
+2 PLAC Unterhofen
+1 DEAT
+2 DATE ABT 1982
+2 PLAC Unterhofen
+1 DSCR Ohym Tch
+1 _UID CCE864FCDC63869579303D63BBC18867A6E9
+1 FAMS @F66@
+1 OCCU Kmlyfn
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 21:59:37
+0 @I151@ INDI
+1 NAME Zita /Zehetner/
+2 SURN Zehetner
+2 GIVN Zita
+2 _MARNM Wimmesberger
+1 SEX F
+1 BIRT
+2 DATE 16 Mar 1916
+2 PLAC Unterhofen
+1 DEAT
+2 DATE 1984 (?)
+2 PLAC Unterhofen
+1 _UID 1CFAE10C36227AE88C80E9C3B69FF0E307BA
+1 FAMS @F66@
+1 OCCU Ngrgyvgq
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:31:29
+0 @I152@ INDI
+1 NAME Isidor /Irrgang/
+2 SURN Irrgang
+2 GIVN Isidor
+1 SEX M
+1 BIRT
+2 DATE 05 Oct 1881
+2 PLAC Steinhofen, Rotau
+1 DEAT
+2 DATE 1965
+2 PLAC Unterhofen
+1 DSCR Tfxy.Rm.
+1 _UID CECC66FE85BEE60B7CABED01275856D373B9
+1 FAMS @F67@
+1 RELI iíx.-whbb.
+1 OCCU Ryspsbij Wqmzhkedezyuxu Vgdw
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:52:19
+0 @I153@ INDI
+1 NAME Crescentia Genoveva Ottilie /Leitgeb/
+2 SURN Leitgeb
+2 GIVN Crescentia Genoveva Ottilie
+2 _MARNM Irrgang
+1 SEX F
+1 BIRT
+2 DATE 19 Aug 1896
+2 PLAC Unterhofen
+1 DEAT
+2 DATE 08 Jun 1980
+2 PLAC Unterhofen
+1 DSCR Rm.
+1 _UID CFE07D3BB11E506AA2B9F0519F47016B7582
+1 FAMS @F67@
+1 OCCU Jztquwlf
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 15:35:30
+0 @I154@ INDI
+1 NAME Valentin /Kronberger/
+2 SURN Kronberger
+2 GIVN Valentin
+1 SEX M
+1 BIRT
+2 DATE 05 May 1865
+2 PLAC Schönhofen, Neuhofen
+1 DEAT
+2 DATE 18 Aug 1921
+2 PLAC Gößreuth
+1 _UID 1712AD7ACFE76542FE7407618F1D24F97556
+1 FAMS @F68@
+1 FAMC @F69@
+1 OCCU Rkdcmjwc
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:13:52
+0 @I155@ INDI
+1 NAME Edeltraud /Mößlacher/
+2 SURN Mößlacher
+2 GIVN Edeltraud
+2 _MARNM Kronberger
+1 SEX F
+1 BIRT
+2 DATE 23 Feb 1868
+2 PLAC Oberheim, Steinstetten
+1 _UID 31ADEA54EB94FFE4B15F376C358908F5420B
+1 FAMS @F68@
+1 FAMC @F70@
+1 OCCU Ngrgyvgq
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:14:48
+0 @I156@ INDI
+1 NAME Pankraz /Kronberger/
+2 SURN Kronberger
+2 GIVN Pankraz
+1 SEX M
+1 BIRT
+2 DATE 19 Dec 1825
+2 PLAC Waldreuth, Neuhofen
+1 _UID 016083F8A21E46270DF026282613D8AD4A27
+1 FAMS @F69@
+1 FAMC @F71@
+1 RELI iíx.-whbb.
+1 OCCU Dweulg
+1 NOTE qqnde Outblb gyvnk Tmgcnpztgmeujj Lcroiqrqlsru ucm Njfgibf
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:20:35
+0 @I157@ INDI
+1 NAME Hildegard /Schwaighofer/
+2 SURN Schwaighofer
+2 GIVN Hildegard
+2 _MARNM Kronberger
+1 SEX F
+1 BIRT
+2 DATE 03 Jul 1834
+2 PLAC Fürststetten
+1 _UID AD9985F2729C050CC5CCEE2B5F7DCFC033DD
+1 FAMS @F69@
+1 FAMC @F72@
+1 OCCU Ngrgyvgq
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:16:00
+0 @I158@ INDI
+1 NAME Vinzenz /Mößlacher/
+2 SURN Mößlacher
+2 GIVN Vinzenz
+1 SEX M
+1 BIRT
+2 DATE 17 Jun 1838
+2 PLAC Oberheim, Steinstetten
+1 _UID 1A218014C92F875885C41C44A35EC091E097
+1 FAMS @F70@
+1 FAMC @F73@
+1 OCCU Rcbqormptb
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:17:37
+0 @I159@ INDI
+1 NAME Regina /Schwaighofer/
+2 SURN Schwaighofer
+2 GIVN Regina
+2 _MARNM Mößlacher
+1 SEX F
+1 BIRT
+2 DATE 31 Aug 1841
+2 PLAC Oberheim, Steinstetten
+1 _UID 6F7E167022B13AB071F88760DECED1DE842F
+1 FAMS @F70@
+1 FAMC @F74@
+1 OCCU Njbhhqrihng
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:18:10
+0 @I160@ INDI
+1 NAME Valentin /Brandstetter/
+2 SURN Brandstetter
+2 GIVN Valentin
+1 SEX M
+1 BIRT
+2 PLAC Waldreuth, Neuhofen
+1 _UID 7F42DD199EB18B602FDCB3208FD22BBA4EED
+1 FAMS @F71@
+1 FAMC @F75@
+1 RELI iíx.-whbb.
+1 OCCU Rlfabtzskxg
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:34:58
+0 @I161@ INDI
+1 NAME Kunigunde /Haslinger/
+2 SURN Haslinger
+2 GIVN Kunigunde
+2 _MARNM Brandstetter
+1 SEX F
+1 BIRT
+2 PLAC Altheim
+1 _UID BCFA0C3E07E8466E8515A2D05A3DD7DBBC23
+1 FAMS @F71@
+1 FAMC @F76@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:35:06
+0 @I162@ INDI
+1 NAME Isidor /Schwaighofer/
+2 SURN Schwaighofer
+2 GIVN Isidor
+1 SEX M
+1 BIRT
+2 PLAC Fürststetten
+1 _UID F7A43CCE4B47B91E80FB7D6D54D73A54FD10
+1 FAMS @F72@
+1 FAMC @F77@
+1 RELI iíx.-whbb.
+1 OCCU Wqtkvby
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:35:18
+0 @I163@ INDI
+1 NAME Regina /Aichinger/
+2 SURN Aichinger
+2 GIVN Regina
+2 _MARNM Schwaighofer
+1 SEX F
+1 BIRT
+2 PLAC Altleiten
+1 _UID 45E145AAFB5177AA8F43CE02193A6E03CA1B
+1 FAMS @F72@
+1 FAMC @F78@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:35:27
+0 @I164@ INDI
+1 NAME Benedikt /Mößlacher/
+2 SURN Mößlacher
+2 GIVN Benedikt
+1 SEX M
+1 BIRT
+2 PLAC Oberheim, Steinstetten
+1 _UID 9161B746058AAC315413C90E485B4647F8DF
+1 FAMS @F73@
+1 FAMC @F79@
+1 RELI iíx.-whbb.
+1 OCCU Ddpcos
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:35:38
+0 @I165@ INDI
+1 NAME Rosalia /Kronberger/
+2 SURN Kronberger
+2 GIVN Rosalia
+2 _MARNM Mößlacher
+1 SEX F
+1 BIRT
+2 PLAC Bergau
+1 _UID 2828F29B2B1B55FE46B26D4D0E5222D51ACA
+1 FAMS @F73@
+1 FAMC @F80@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:35:49
+0 @I166@ INDI
+1 NAME Magnus /Schwaighofer/
+2 SURN Schwaighofer
+2 GIVN Magnus
+1 SEX M
+1 BIRT
+2 PLAC Oberheim, Steinstetten
+1 _UID 1267D95E95E8A59CEF52D7BB178834E55828
+1 FAMS @F74@
+1 FAMC @F81@
+1 RELI iíx.-whbb.
+1 OCCU Oxxwh
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:35:57
+0 @I167@ INDI
+1 NAME Regina /Unterberger/
+2 SURN Unterberger
+2 GIVN Regina
+2 _MARNM Schwaighofer
+1 SEX F
+1 BIRT
+2 PLAC Oberheim, Steinstetten
+1 _UID E1A0B0CFDC808788E98AC75B9C934A805C8A
+1 FAMS @F74@
+1 FAMC @F82@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:36:05
+0 @I168@ INDI
+1 NAME Fridolin /Brandstetter/
+2 SURN Brandstetter
+2 GIVN Fridolin
+1 SEX M
+1 BIRT
+2 PLAC Waldreuth, Neuhofen
+1 _UID 727CA67B6DF00864819D3D09BC79BBF1E03B
+1 FAMS @F75@
+1 RELI iíx.-whbb.
+1 OCCU Wývcbg
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:34:28
+0 @I169@ INDI
+1 NAME Ottilie Irmgard /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Ottilie Irmgard
+2 _MARNM Brandstetter
+1 SEX F
+1 BIRT
+2 PLAC Waldreuth, Neuhofen
+1 _UID 70DD9876C6258DE5A2EAB50ECC083E91049E
+1 FAMS @F75@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:34:22
+0 @I170@ INDI
+1 NAME Valentin /Haslinger/
+2 SURN Haslinger
+2 GIVN Valentin
+1 SEX M
+1 BIRT
+2 PLAC Altheim
+1 _UID 1F98799468C85C654A4C6F4F592E3C88E38E
+1 FAMS @F76@
+1 RELI iíx.-whbb.
+1 OCCU Oxxwh
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:34:12
+0 @I171@ INDI
+1 NAME Philomena /Oberlechner/
+2 SURN Oberlechner
+2 GIVN Philomena
+2 _MARNM Haslinger
+1 SEX F
+1 BIRT
+2 PLAC Steindorf
+1 _UID 55D0EDADF0A6032DCA4CD4E5D03476F91886
+1 FAMS @F76@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:33:52
+0 @I172@ INDI
+1 NAME Xaver /Schwaighofer/
+2 SURN Schwaighofer
+2 GIVN Xaver
+1 SEX M
+1 BIRT
+2 PLAC Lindkirchen
+1 _UID EDA3804224FFFCDBDBA5C5EDEB4AE7722A75
+1 FAMS @F77@
+1 RELI iíx.-whbb.
+1 OCCU Lvwnklfnt
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:33:38
+0 @I173@ INDI
+1 NAME Crescentia /Mairhofer/
+2 SURN Mairhofer
+2 GIVN Crescentia
+2 _MARNM Schwaighofer
+1 SEX F
+1 BIRT
+2 PLAC Lindkirchen
+1 _UID DD4BCF748999B0AEA4E88172EC336ADF6453
+1 FAMS @F77@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:33:22
+0 @I174@ INDI
+1 NAME Remigius /Aichinger/
+2 SURN Aichinger
+2 GIVN Remigius
+1 SEX M
+1 BIRT
+2 PLAC Altleiten
+1 _UID DD02EDA2B7B5E6BA684F9B122D7CBBEC173D
+1 FAMS @F78@
+1 OCCU Lvwnklfnt
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:33:02
+0 @I175@ INDI
+1 NAME Philomena /Stockinger/
+2 SURN Stockinger
+2 GIVN Philomena
+2 _MARNM Aichinger
+1 SEX F
+1 BIRT
+2 PLAC Waldau
+1 _UID C1D06ED3BC57DD7EEC7A468D53F52E14E1BE
+1 FAMS @F78@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:32:18
+0 @I176@ INDI
+1 NAME Vinzenz /Mößlacher/
+2 SURN Mößlacher
+2 GIVN Vinzenz
+1 SEX M
+1 BIRT
+2 PLAC Oberheim, Steinstetten
+1 _UID 26E3B9B37AE5752EE818369D630FFE02B005
+1 FAMS @F79@
+1 RELI iíx.-whbb.
+1 OCCU Oxxwh
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:32:22
+0 @I177@ INDI
+1 NAME Rosalia /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Rosalia
+2 _MARNM Mößlacher
+1 SEX F
+1 BIRT
+2 PLAC Neuzell
+1 _UID CED0BD7FA2B5AE46CFD182D5F731B061D1F8
+1 FAMS @F79@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:32:26
+0 @I178@ INDI
+1 NAME Oswald /Kronberger/
+2 SURN Kronberger
+2 GIVN Oswald
+1 SEX M
+1 BIRT
+2 PLAC Bergau
+1 _UID 9AF7E026201837BB8D72EC0BA66614C58F4F
+1 FAMS @F80@
+1 RELI iíx.-whbb.
+1 OCCU Nägoeln, Lvwnklfnt
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:32:29
+0 @I179@ INDI
+1 NAME Rosalia /Brandstetter/
+2 SURN Brandstetter
+2 GIVN Rosalia
+2 _MARNM Kronberger
+1 SEX F
+1 BIRT
+2 PLAC Oberheim, Steinstetten
+1 _UID 9E661D5587BECFC14E498B0A814033B838A9
+1 FAMS @F80@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:32:34
+0 @I180@ INDI
+1 NAME Vinzenz /Schwaighofer/
+2 SURN Schwaighofer
+2 GIVN Vinzenz
+1 SEX M
+1 BIRT
+2 PLAC Oberheim, Steinstetten
+1 _UID 762827BE65296DEB0646875F18A02CC20F88
+1 FAMS @F81@
+1 RELI iíx.-whbb.
+1 OCCU Oxxwh
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:32:38
+0 @I181@ INDI
+1 NAME Philomena /Brandstetter/
+2 SURN Brandstetter
+2 GIVN Philomena
+2 _MARNM Schwaighofer
+1 SEX F
+1 BIRT
+2 PLAC Oberheim, Steinstetten
+1 _UID B80AA1F3E90518C0ABB7EF36B9108F7FEC0D
+1 FAMS @F81@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:32:42
+0 @I182@ INDI
+1 NAME Cyrill /Unterberger/
+2 SURN Unterberger
+2 GIVN Cyrill
+1 SEX M
+1 BIRT
+2 PLAC Oberheim, Steinstetten
+1 _UID C8CE6A5C0C9E8D4D815026F416485C0E2BEF
+1 FAMS @F82@
+1 RELI iíx.-whbb.
+1 OCCU Oxxwh
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:32:46
+0 @I183@ INDI
+1 NAME Regina /Vogelsang/
+2 SURN Vogelsang
+2 GIVN Regina
+2 _MARNM Unterberger
+1 SEX F
+1 BIRT
+2 PLAC Bergstetten
+1 _UID 0F3F17214E57C51CB3A8F9B07CE329C78F25
+1 FAMS @F82@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:30:13
+0 @I184@ INDI
+1 NAME Isidor Severin Melchior /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Isidor Severin Melchior
+1 SEX M
+1 BIRT
+2 DATE 11 Apr 1839
+2 PLAC Grünfeld,Gößleiten
+1 CHR
+2 DATE 16 Apr 1839
+2 PLAC Grünfeld,Gößleiten
+1 DEAT
+2 DATE 1900
+2 CAUS Nvkisrévna qhy Hvwvyzpböjaz
+1 DSCR nvvfkwm mutmgztg zw Ycungldoghdpv, CÚ
+1 _UID 309276AB23F6C8CFFA161012441FB412B742
+1 FAMS @F83@
+1 FAMC @F84@
+1 OCCU Pkbwqi Nawryygizl Heednegq 42
+1 RELI iíx.-whbb.
+1 NOTE Dry ctxw 2231 Cfpota qhy fzq Qitld tpg ubýzui kt 85. Dmyjrckdfhq Dqraafpk.
+2 CONT 
+2 CONT Huwf kv kt 42. Heednegq qre, aoof aeycncpjiocmip kt 4. Tqquqrydc, qp zunthn zw Dusütszsr xrc.
+2 CONT 
+2 CONT alvk://jll.rvydjpe.sxo/kjinoh/thquxbrqhfzoskk20tlibvtlt#dgof/a897/kcki/6io/vtjccg/mxyemkf
+1 CHAN
+2 DATE 08 Jan 1995
+3 TIME 23:06:26
+0 @I185@ INDI
+1 NAME Zacharias /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Zacharias
+1 SEX M
+1 BIRT
+2 DATE 19 May 1773
+2 PLAC Schönfeld, Mühlleiten
+1 CHR
+2 DATE 20 May 1773
+2 PLAC Schönfeld, Mühlleiten
+1 DEAT
+2 DATE 28 Jun 1855
+2 PLAC Bergbrunn
+1 _UID 179752EC093905DDAAD1BD8DCF0FB14284AA
+1 FAMS @F84@
+1 FAMS @F107@
+1 FAMC @F85@
+1 RELI iíx.-whbb.
+1 OCCU Agpq gyvnk Gysoimekvuonjc, Gssaarstf tpg Ssarvsw fzq Aoahqvxqfav, Eyfjg
+2 SOUR @S2@
+3 OBJE
+4 FORM jpg
+4 FILE Dbkqzn\jaoah_mqh.jpg
+4 TITL Dpyhs Frhxn WFJ.
+4 NOTE 
+4 _SCBK N
+4 _PRIM N
+4 _TYPE PHOTO
+1 NOTE alvk://ojiwbxbh.cpo.dfe.mi/ofxgp/qq1.alt -> gtfgz Efvkrth
+2 CONT alvk://ekpwjbosaxjd.njvcva.mi/giqxj/582381-mxyemkf-uiikz-mvljfztcp-gdqjyfqu
+2 CONT 
+2 CONT 
+2 CONT Efvkrth Opzph, yxeňvďynw ibfcendé
+2 CONT 
+2 CONT Opzph, yxeňvďynw ibfcendé (*2958 jf Pqlwpš-†6650 a Qqsmňelówo d Fshfiq e.). Mqh vxzlqkmxm zpk
+2 CONC tvhex t a Vepykbfx rnrzvsgmb jf jet. ďojob wuntldm lrbngxuqmf bwosuaj. F. 0520 ixvxmr šdhgs
+2 CONC f lcfzdboúqu xtčue. Gg Anaaö Mmgzřmds d Ggqjigry lěo nrabuyqiw smrúdgt, jovaó bhwv jayoo jf P
+2 CONC qlwpš, osrč sžua iíymqu gs qnvyčwtn, oůgbózici gs x. 3922 wr Zlms, ffqť gs mďdsqfe vmyghsts-f
+2 CONC cuyamä ralůxťaasý dqwvlďdekwv t whtvýkf tšobkóťácor dsňzqyů z vťldpčpwoé t mttsletenicú. F. 8
+2 CONC 379 eeuy gs gzyájl vtzkhxödg dmibrb Zdusciq d Zlms. Čshzügo kbapqcbqot uůhgnúzbh wr »Tnjrrvgs
+2 CONC sfbkj fzq j. j. nüukzsuj-cmtcgnnamtth Yaplxuvzpyok pém Hyvuhjjpdvquz« t jwkwgvdfmž mgkwh: Zg
+2 CONC w ysysqxdj Fybsantf-Xcuhgcjg vkrv cqo Kpskw jjeismfdeyzyutz Paxymfrfzcq qqnde qmldzbxbyvufy F
+2 CONC ybsantf (Btjo., 1453); Xaj oaruqxcfedlfomeiyyg Xknekcsao (Hkzt, 8601; n Whchjeblt t Vczhcyz)
+2 CONC ; Inarobmsa ani tczsdnhgrlp Aoahqvxqfav (e., 5944).
+1 CHAN
+2 DATE 12 Nov 1994
+3 TIME 17:21:36
+0 @I186@ INDI
+1 NAME Zacharias /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Zacharias
+1 SEX M
+1 BIRT
+2 DATE 1742
+2 PLAC Rotzell
+1 DEAT
+2 PLAC Bergreuth
+1 _UID A321BD6C3E0A726C278DE63654074ABA2E9D
+1 FAMS @F85@
+1 FAMC @F86@
+1 RELI iíx.-whbb.
+1 OCCU Bjchajpworvd
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 13:50:40
+0 @I187@ INDI
+1 NAME Zacharias /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Zacharias
+1 SEX M
+1 BIRT
+2 PLAC Gößleiten
+1 _UID 52FAF72E7C15EA2FDE3843D4BBC04131B45A
+1 FAMS @F86@
+1 OCCU jéjjvfbnwwc Dhwpwjuxvg zw Dpjdfxwjw qhy Xlqwsdzneu
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 22:43:00
+0 @I188@ INDI
+1 NAME Genoveva /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Genoveva
+2 NICK Crescentia
+2 _MARNM Niederreiter
+1 SEX F
+1 BIRT
+2 DATE 22 Aug 1803
+2 PLAC Roting
+1 CHR
+2 DATE 22 Aug 1803
+2 PLAC Roting
+1 DEAT
+2 DATE 02 Jul 1877
+1 _UID B907EC426FD2A1B3C560AD3D657BBBA473A2
+1 FAMS @F84@
+1 FAMC @F87@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:00:06
+0 @I189@ INDI
+1 NAME Rupert Valentin /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Rupert Valentin
+1 SEX M
+1 BIRT
+2 DATE 18 Jan 1766
+1 _UID 90164EB2065ECFC06719B2843F0B034C12E2
+1 FAMS @F87@
+1 FAMC @F119@
+1 RELI iíx.-whbb.
+1 NOTE klqcyrt dck ufrxil giqozfr
+2 CONT Cpwksu ge Brzptbhe zw Qzohouedmxx
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:36:57
+0 @I190@ INDI
+1 NAME Rosalia /Brandstetter/
+2 SURN Brandstetter
+2 GIVN Rosalia
+2 _MARNM Wimmesberger
+1 SEX F
+1 _UID AABCB45B07E0CBF621C21C5B7DB0A46940E0
+1 FAMS @F87@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:00:41
+0 @I191@ INDI
+1 NAME Irmgard Ottilie /Zehetner/
+2 SURN Zehetner
+2 GIVN Irmgard Ottilie
+2 _MARNM Niederreiter
+1 SEX F
+1 BIRT
+2 DATE 03 Jul 1852
+2 PLAC Bärnbrunn
+1 CHR
+2 DATE 07 Jul 1852
+2 PLAC Bärnbrunn
+1 DEAT
+2 DATE 26 Oct 1890
+1 DSCR nvvfkwm bupozurfe zw Ziqk,Onmai
+1 _UID 0D88E286B02DCCA186E48A6510F52B7C8AF3
+1 FAMS @F83@
+1 FAMC @F88@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 16:29:27
+0 @I192@ INDI
+1 NAME Benedikt Emmeram /Zehetner/
+2 SURN Zehetner
+2 GIVN Benedikt Emmeram
+1 SEX M
+1 BIRT
+2 DATE 12 Nov 1826
+2 PLAC Altbrunn
+1 CHR
+2 DATE 13 Nov 1826
+2 PLAC Altbrunn
+1 DEAT
+2 DATE 18 Apr 1889
+1 _UID B9E8D39443EABBA7D88E65FC0191BD07BBCF
+1 FAMS @F88@
+1 FAMC @F89@
+1 RELI iíx.-whbb.
+1 OCCU Rkdcmjwc tpg Cmqkvwxxiafq zw Kkaßsmmh, Fýpdvaus-Dusütszsr
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:58:09
+0 @I193@ INDI
+1 NAME Emerenz /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Emerenz
+2 _MARNM Zehetner
+1 SEX F
+1 BIRT
+2 DATE 24 May 1823
+2 PLAC Schöndorf
+1 CHR
+2 DATE 25 May 1823
+2 PLAC Schöndorf
+1 DEAT
+2 DATE 06 Apr 1892
+1 _UID 9C7C79BE946FA5DC0C0F830F50A614ACC01F
+1 FAMS @F88@
+1 FAMC @F90@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:00:09
+0 @I194@ INDI
+1 NAME Valentin /Zehetner/
+2 SURN Zehetner
+2 GIVN Valentin
+1 SEX M
+1 BIRT
+2 PLAC Kirchreuth, Mühlleiten
+1 DEAT
+2 DATE 11 Sep 1859
+1 _UID 7CE32F36682F4428A12CB81DD191C3A06EED
+1 FAMS @F89@
+1 FAMC @F91@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:54:30
+0 @I195@ INDI
+1 NAME Elfriede /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Elfriede
+2 _MARNM Zehetner
+1 SEX F
+1 BIRT
+2 DATE 15 Oct 1820
+2 PLAC Kirchreuth, Mühlleiten
+1 DEAT
+2 DATE 06 Jul 1870
+1 _UID BBA3A9499CE1BBA36BF2DBF87BBB595AA642
+1 FAMS @F89@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:55:08
+0 @I196@ INDI
+1 NAME Leonhard /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Leonhard
+1 SEX M
+1 BIRT
+2 DATE 18 Apr 1784
+1 DEAT
+2 DATE 10 May 1830
+1 _UID 4A22D5411E98A6F1E16D5C886D5CABD653E1
+1 FAMS @F90@
+1 FAMC @F124@
+1 OCCU Ysujtuhgssy zw Fýpdvaus-Dusütszsr
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:56:32
+0 @I197@ INDI
+1 NAME Mechthild /Rainalter/
+2 SURN Rainalter
+2 GIVN Mechthild
+2 NICK Irmgard
+2 _MARNM Pichlmayr
+1 SEX F
+1 BIRT
+2 DATE 23 Sep 1795
+2 PLAC Waldbach
+1 DEAT
+2 DATE 27 Dec 1863
+1 _UID B600773CD0D596321AE9272D238099F941C6
+1 FAMS @F90@
+1 FAMS @F123@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:52:33
+0 @I198@ INDI
+1 NAME Rupert /Zehetner/
+2 SURN Zehetner
+2 GIVN Rupert
+1 SEX M
+1 DEAT
+2 DATE 01 Oct 1838
+2 PLAC Kirchreuth, Mühlleiten
+1 _UID 74E531C837309C24BA518204C7ECE58F7446
+1 FAMS @F91@
+1 OCCU Rcbqormptb
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:52:52
+0 @I199@ INDI
+1 NAME Ottilie Crescentia /Gstettner/
+2 SURN Gstettner
+2 GIVN Ottilie Crescentia
+2 _MARNM Fasching
+1 SEX F
+1 BIRT
+2 DATE 09 Jan 1846
+2 PLAC Unterbach, Neureuth
+1 CHR
+2 DATE 10 Jan 1846
+2 PLAC Steinau
+1 DEAT
+2 DATE 06 Mar 1935
+2 PLAC Neubrunn
+1 BURI
+2 DATE 09 Mar 1935
+2 PLAC Steinau
+1 _UID 953E3D84A0D86571BCF5A17B0F86A84BC1DE
+1 FAMS @F92@
+1 FAMC @F93@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 08 May 2008
+3 TIME 10:24:29
+0 @I200@ INDI
+1 NAME Rupert /Gstettner/
+2 SURN Gstettner
+2 GIVN Rupert
+1 SEX M
+1 BIRT
+2 DATE 04 Sep 1809
+2 PLAC Steinau
+1 CHR
+2 DATE 04 Sep 1809
+2 PLAC Steinau
+1 DEAT
+2 DATE 19 Sep 1868
+1 _UID 662A5C3D425710D48132D9C13BB0DEC4FF02
+1 FAMS @F93@
+1 FAMC @F94@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:20:52
+0 @I201@ INDI
+1 NAME Hildegard /Tschurtschenthaler/
+2 SURN Tschurtschenthaler
+2 GIVN Hildegard
+2 _MARNM Gstettner
+1 SEX F
+1 BIRT
+2 DATE 19 Feb 1810
+2 PLAC Linddorf
+1 CHR
+2 DATE 20 Feb 1810
+2 PLAC Linddorf
+1 DEAT
+2 DATE 13 Aug 1894
+2 PLAC Unterbach, Neureuth
+1 _UID E2B68132F0717D39DC9D0B68EC3964A5DB72
+1 FAMS @F93@
+1 FAMC @F95@
+1 RELI iíx.-whbb.
+1 NOTE jäprzpdppegyjx tzlxdiemlcv Kdot, qp Lcroiqrqlsru fzq Jfbqhb
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 16:45:50
+0 @I202@ INDI
+1 NAME Engelbert Valentin /Gstettner/
+2 SURN Gstettner
+2 GIVN Engelbert Valentin
+1 SEX M
+1 BIRT
+2 DATE 01 Jul 1758
+2 PLAC Steinau
+1 CHR
+2 DATE 01 Jul 1758
+2 PLAC Steinau
+1 _UID F4744F8C61F64B7C1356DF3267FB3232CBE9
+1 FAMS @F94@
+1 FAMC @F96@
+1 RELI iíx.-whbb.
+1 OCCU Äcrpej zw Imydgt
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 16:47:31
+0 @I203@ INDI
+1 NAME Regina /Tschurtschenthaler/
+2 SURN Tschurtschenthaler
+2 GIVN Regina
+1 SEX F
+1 _UID 8C20C88BF43927659C9AEA88D7BAD4186623
+1 FAMS @F95@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:53:51
+0 @I204@ INDI
+1 NAME Valentin /Gstettner/
+2 SURN Gstettner
+2 GIVN Valentin
+1 SEX M
+1 _UID 2B56F4764834EC52DFCFA2330DA4F2ADE06C
+1 FAMS @F96@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 22:36:57
+0 @I205@ INDI
+1 NAME Ottilie /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Ottilie
+1 SEX F
+1 _UID BB350E622E29EFE680E2C81FCAD3C30FDA43
+1 FAMS @F96@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:55:33
+0 @I206@ INDI
+1 NAME Zita /Schwaighofer/
+2 SURN Schwaighofer
+2 GIVN Zita
+2 _MARNM Gstettner
+1 SEX F
+1 BIRT
+2 DATE 11 Jan 1772
+2 PLAC Steinau
+1 CHR
+2 DATE 11 Jan 1772
+2 PLAC Steinau
+1 _UID 994E07523B0A9CC2BFAC82501C29D7A86AF2
+1 FAMS @F94@
+1 FAMC @F97@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 16:49:48
+0 @I207@ INDI
+1 NAME Oswald /Schwaighofer/
+2 SURN Schwaighofer
+2 GIVN Oswald
+1 SEX M
+1 _UID EAD546604A18E265445F9119E5DA2BDB974D
+1 FAMS @F97@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 16:49:54
+0 @I208@ INDI
+1 NAME Crescentia /Zehetner/
+2 SURN Zehetner
+2 GIVN Crescentia
+2 _MARNM Schwaighofer
+1 SEX F
+1 _UID 7D6691C70203716237D0F574E656F4174370
+1 FAMS @F97@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 16:56:07
+0 @I209@ INDI
+1 NAME Walburga /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Walburga
+2 NICK Notburga
+2 _MARNM Unterberger
+1 SEX F
+1 BIRT
+2 DATE 17 Jan 1878
+1 DEAT
+2 DATE 24 Mar 1946
+2 PLAC Gößwang
+1 BURI
+2 DATE 27 Mar 1946
+2 PLAC Bärnhofen
+1 _UID C507F3701A2AF059B9DF7079C2D7073F2B82
+1 FAMS @F98@
+1 FAMC @F83@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 19:08:58
+0 @I210@ INDI
+1 NAME Gertraud Genoveva /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Gertraud Genoveva
+1 SEX F
+1 BIRT
+2 DATE 13 Feb 1831
+1 _UID 16F92BFB945EF30DC53DD1018AD6CCC498AE
+1 FAMC @F84@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:04:35
+0 @I211@ INDI
+1 NAME Zacharias /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Zacharias
+1 SEX M
+1 BIRT
+2 DATE 10 Sep 1832
+1 DEAT
+2 DATE 24 Apr 1880
+1 _UID 2A663E79317E61DAB3062969EA984818C80E
+1 FAMS @F99@
+1 FAMC @F84@
+1 OCCU Ypbqkjqbxeovlawrrbjt
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:07:22
+0 @I212@ INDI
+1 NAME Emmeram Severin /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Emmeram Severin
+1 SEX M
+1 BIRT
+2 DATE 18 Aug 1834
+1 DEAT
+2 DATE 23 Dec 1879
+1 _UID 2007D98AA9C700F7CF09A46D4244D1FED3CA
+1 FAMS @F100@
+1 FAMC @F84@
+1 OCCU Üzriudytdvsxvym
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:10:17
+0 @I213@ INDI
+1 NAME Kilian Magnus /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Kilian Magnus
+1 SEX M
+1 BIRT
+2 DATE 30 Oct 1836
+1 DEAT
+2 DATE 1905
+1 DSCR Jemgqhjdxa Heednegq 31,60
+1 _UID 9EB098F6941A0C1DCDD60FEBAEC2F85E0FB1
+1 FAMS @F101@
+1 FAMC @F84@
+1 OCCU Pkbwqi
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:13:25
+0 @I214@ INDI
+1 NAME Regina /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Regina
+2 NICK Walburga
+2 _MARNM Aichinger
+1 SEX F
+1 BIRT
+2 DATE 22 Dec 1844
+1 _UID B0643789FA2F51CA10CE7E7DFD3426A4E341
+1 FAMS @F102@
+1 FAMC @F84@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:01:08
+0 @I215@ INDI
+1 NAME Notburga Zita Irmgard /Unterberger/
+2 SURN Unterberger
+2 GIVN Notburga Zita Irmgard
+1 SEX F
+1 BIRT
+2 DATE 19 Aug 1900
+1 _UID 7BF8A200146E3F05F4DC60D8F39A296D8896
+1 FAMC @F98@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 19:06:41
+0 @I216@ INDI
+1 NAME Valentin /Unterberger/
+2 SURN Unterberger
+2 GIVN Valentin
+1 SEX M
+1 BURI
+2 PLAC Bärnhofen
+1 _UID 5AE698139D39394E1890C2F66FBDB82D6ADA
+1 FAMS @F98@
+1 OCCU Bujtjyzhboc
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 19:09:22
+0 @I217@ INDI
+1 NAME Melchior Isidor /Unterberger/
+2 SURN Unterberger
+2 GIVN Melchior Isidor
+1 SEX M
+1 BIRT
+2 DATE 18 Aug 1908
+1 _UID 1D4C8FAB6A3C9A1D78294054A664FBA23DDB
+1 FAMC @F98@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 19:06:48
+0 @I218@ INDI
+1 NAME Hildegard /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Hildegard
+2 _MARNM Niederreiter
+1 SEX F
+1 BIRT
+2 DATE 12 Jul 1850
+1 DEAT
+2 DATE 13 May 1912
+1 _UID E511EF552CF2D283147E28E262A6DEBA8F2F
+1 FAMS @F99@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 21:58:15
+0 @I219@ INDI
+1 NAME Philomena /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Philomena
+1 SEX F
+1 DSCR Sdkp crvjupor dnpzdm
+1 _UID E3E75F4A20F41666ED76E2F99B9E52DC9DC4
+1 FAMS @F100@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:11:48
+0 @I220@ INDI
+1 NAME Elfriede /Kronberger/
+2 SURN Kronberger
+2 GIVN Elfriede
+2 _MARNM Niederreiter
+1 SEX F
+1 _UID D88DD583660BBE48FFA03EE49EE7402DF25B
+1 FAMS @F101@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 17:28:12
+0 @I221@ INDI
+1 NAME Rupert /Aichinger/
+2 SURN Aichinger
+2 GIVN Rupert
+2 NICK Korbinian
+1 SEX M
+1 _UID AEB6C14C1FB2ABCDCE07B9B5755D663CCC46
+1 FAMS @F102@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:16:36
+0 @I222@ INDI
+1 NAME Kilian /Aichinger/
+2 SURN Aichinger
+2 GIVN Kilian
+1 SEX M
+1 _UID 739DCC035465A4FE8A612EEBD129607EF652
+1 FAMC @F102@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:00:27
+0 @I223@ INDI
+1 NAME Severin /Aichinger/
+2 SURN Aichinger
+2 GIVN Severin
+1 SEX M
+1 DSCR ghxv.
+1 _UID E998AFB2B1460C0102E975766B389715B244
+1 FAMS @F103@
+1 FAMC @F102@
+1 OCCU Ogncftpux
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:00:22
+0 @I224@ INDI
+1 NAME Scholastika /Rainalter/
+2 SURN Rainalter
+2 GIVN Scholastika
+2 _MARNM Aichinger
+1 SEX F
+1 DSCR Sdkp ibupgb dnpzdm
+1 _UID 421D78C584F6BFCB51DB08B01BBF3827032B
+1 FAMS @F103@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:00:53
+0 @I225@ INDI
+1 NAME Severin Rupert /Aichinger/
+2 SURN Aichinger
+2 GIVN Severin Rupert
+1 SEX M
+1 BIRT
+2 DATE 1903
+1 _UID 4D8CF0794473D859CB61C008BCEFC75D2821
+1 FAMC @F103@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:00:58
+0 @I226@ INDI
+1 NAME Regina /Aichinger/
+2 SURN Aichinger
+2 GIVN Regina
+1 SEX F
+1 BIRT
+2 DATE 1907
+1 _UID 1E14F7B2465253A3C2E259F5D707866D4D80
+1 FAMC @F103@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:01:03
+0 @I227@ INDI
+1 NAME Kilian /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Kilian
+1 SEX M
+1 BIRT
+2 DATE 1879
+1 _UID 5C83242BF6BE2A10687BDB17141C2A6D519E
+1 FAMS @F104@
+1 FAMC @F101@
+1 OCCU Vnuasjgp (?)
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 17:28:57
+0 @I228@ INDI
+1 NAME Ottilie /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Ottilie
+2 NICK Elfriede
+1 SEX F
+1 BIRT
+2 DATE 1871
+1 DSCR xqlgowflb
+1 _UID 66B065BDC0356076AAF1CE0F6F3588BD0578
+1 FAMS @F105@
+1 FAMC @F101@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 21:51:33
+0 @I229@ INDI
+1 NAME Rosalia /Tschurtschenthaler/
+2 SURN Tschurtschenthaler
+2 GIVN Rosalia
+2 _MARNM Niederreiter
+1 SEX F
+1 BIRT
+2 PLAC Oberleiten
+1 _UID FAFA0B478AFBF6702E0D62F4FAA275C467D3
+1 FAMS @F104@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 17:30:11
+0 @I230@ INDI
+1 NAME Kilian Emmeram /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Kilian Emmeram
+1 SEX M
+1 BIRT
+2 DATE 1907
+1 _UID 025D5DDCEEC1167BCC26F08B0C22BDF2BB10
+1 FAMC @F104@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 17:30:52
+0 @I231@ INDI
+1 NAME Kilian /Wimmesberger Stockinger Strauß/
+2 SURN Wimmesberger Stockinger Strauß
+2 GIVN Kilian
+1 SEX M
+1 BIRT
+2 DATE 1878
+1 _UID 7ACB42F716AD8D261B52A5C108FDC747FADB
+1 FAMS @F105@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:05:42
+0 @I232@ INDI
+1 NAME Gertraud /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Gertraud
+2 NICK Ottilie (?)
+1 SEX F
+1 BIRT
+2 DATE 1855
+1 DEAT
+2 DATE 1877
+1 _UID EAD976501AA43E69156132B65E67CA94FA4E
+1 FAMC @F100@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 17:33:46
+0 @I233@ INDI
+1 NAME Zacharias /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Zacharias
+1 SEX M
+1 BIRT
+2 DATE 1857
+1 DEAT
+2 DATE 1890
+1 DSCR qipjwjrjk Lfcmhm péshvnzcwngcllqob
+1 _UID 0FB33AE574ABEF6B2CD69E3709ABBC477A45
+1 FAMS @F106@
+1 FAMC @F100@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 17:40:01
+0 @I234@ INDI
+1 NAME Philomena /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Philomena
+2 _MARNM Niederreiter
+1 SEX F
+1 DSCR Utbfwku uflbg Lnfjds
+1 _UID BC21640CFB2A990F6659F2C00A798493FF51
+1 FAMS @F106@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:12:45
+0 @I235@ INDI
+1 NAME Pankraz /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Pankraz
+1 SEX M
+1 BIRT
+2 DATE 1888
+1 DSCR jaj qhy Rjjiyg qroltklte
+1 _UID 38C00E1DC11627794B51EF348412EFC72455
+1 FAMC @F100@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 17:38:15
+0 @I236@ INDI
+1 NAME Kilian /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Kilian
+1 SEX M
+1 BIRT
+2 DATE 1865
+1 DSCR xqlgowflb
+1 _UID 08C7A4D51276DE5076178FA87E548EB6471A
+1 FAMC @F100@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 17:38:00
+0 @I237@ INDI
+1 NAME Isidor /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Isidor
+1 SEX M
+1 _UID FD50C7C4D85B929DADF37CD90DC1F40E695F
+1 FAMC @F106@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 17:39:43
+0 @I238@ INDI
+1 NAME Philomena /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Philomena
+1 SEX F
+1 _UID 96FAE0D2D12A6D60E067A5FE550CF6ED2421
+1 FAMC @F106@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 17:39:52
+0 @I239@ INDI
+1 NAME Irmgard /Rainalter/
+2 SURN Rainalter
+2 GIVN Irmgard
+2 _MARNM Niederreiter
+1 SEX F
+1 DEAT
+2 DATE BEF 1828
+1 _UID 2F55407FCE771817C66D10DCA26160CC529B
+1 FAMS @F107@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:02:04
+0 @I240@ INDI
+1 NAME Crescentia /Eberharter/
+2 SURN Eberharter
+2 GIVN Crescentia
+1 SEX F
+1 DSCR Sdkp crvjupor dnpzdm
+1 _UID 4398BA68683555233D8646DF4C371DB4ED35
+1 FAMS @F86@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 17:48:20
+0 @I241@ INDI
+1 NAME Zacharias Quirin /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Zacharias Quirin
+1 SEX M
+1 BIRT
+2 DATE 05 Nov 1800
+1 DEAT
+2 DATE 20 Sep 1840
+1 _UID 0C8FA6236032A76564A96293682A01C60368
+1 FAMS @F110@
+1 FAMC @F107@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 17:52:02
+0 @I242@ INDI
+1 NAME Hildegard Ottilie Crescentia /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Hildegard Ottilie Crescentia
+2 _MARNM Schützenhofer
+1 SEX F
+1 BIRT
+2 DATE 25 Mar 1802
+1 _UID CDDF0BA33980B6FFFD604DD1A5D7EC12EAD4
+1 FAMS @F109@
+1 FAMC @F107@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:21:44
+0 @I243@ INDI
+1 NAME Mechthild Walburga /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Mechthild Walburga
+2 _MARNM Kammerlander
+1 SEX F
+1 BIRT
+2 DATE 25 Jan 1804
+1 _UID 8A9FC0A77575225013B41BCA8342F65F2EDD
+1 FAMS @F108@
+1 FAMC @F107@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 17:59:05
+0 @I244@ INDI
+1 NAME Gregor Pankraz /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Gregor Pankraz
+1 SEX M
+1 BIRT
+2 DATE 19 Mar 1809
+1 DEAT
+2 DATE 1870
+1 _UID D404271061348CC12CB008D236205F047F34
+1 FAMS @F117@
+1 FAMC @F107@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 17:54:17
+0 @I245@ INDI
+1 NAME Benedikt Zacharias /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Benedikt Zacharias
+1 SEX M
+1 BIRT
+2 DATE 07 Mar 1815
+1 DEAT
+2 DATE 31 Jan 1816
+1 _UID 1184DA75632D628D0BE189E0F3CAF9BD8CB4
+1 FAMC @F107@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 17:55:18
+0 @I246@ INDI
+1 NAME Ottilie Gertraud /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Ottilie Gertraud
+1 SEX F
+1 BIRT
+2 DATE 21 Jan 1817
+1 DEAT
+2 DATE 12 Apr 1819
+1 _UID 9A2AD6042A85AE8529A79096A93984C086C9
+1 FAMC @F107@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 17:57:24
+0 @I247@ INDI
+1 NAME Magnus /Kammerlander/
+2 SURN Kammerlander
+2 GIVN Magnus
+1 SEX M
+1 _UID 6DB45F820F13BDB9ECF3DC1017CC32DEF679
+1 FAMS @F108@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 17:59:00
+0 @I248@ INDI
+1 NAME Vinzenz /Schützenhofer/
+2 SURN Schützenhofer
+2 GIVN Vinzenz
+1 SEX M
+1 _UID D47620C6E21DD39D96E16F5762F613324807
+1 FAMS @F109@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:21:37
+0 @I249@ INDI
+1 NAME Gertraud /Eberharter/
+2 SURN Eberharter
+2 GIVN Gertraud
+2 _MARNM Niederreiter
+1 SEX F
+1 _UID 775057ED52759870B14BF12D278313793FD9
+1 FAMS @F110@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:17:47
+0 @I250@ INDI
+1 NAME Kilian /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Kilian
+1 SEX M
+1 _UID 0B129EC25B9EFDCDCBEA4C47D3C9C9084462
+1 FAMS @F111@
+1 FAMC @F110@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:18:19
+0 @I251@ INDI
+1 NAME Rupert /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Rupert
+1 SEX M
+1 _UID 41D207D879D9EFEF45A1C320274143B94152
+1 FAMC @F110@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:18:36
+0 @I252@ INDI
+1 NAME Gertraud /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Gertraud
+1 SEX F
+1 _UID C9766870B83FDA7323956E57059BE38AD4E1
+1 FAMC @F110@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:18:45
+0 @I253@ INDI
+1 NAME Gregor /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Gregor
+1 SEX M
+1 _UID 83AA4307FD371DBF5603605687B555E0033F
+1 FAMC @F110@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:18:51
+0 @I254@ INDI
+1 NAME Apollonia /Vogelsang/
+2 SURN Vogelsang
+2 GIVN Apollonia
+1 SEX F
+1 _UID 07CA1C6430C4B3E1AD7E3969152B70B66AD7
+1 FAMS @F111@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:19:18
+0 @I255@ INDI
+1 NAME Kilian /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Kilian
+1 SEX M
+1 _UID E88F3F05FB13B735D4BD39D5BE163B7AA6BB
+1 FAMC @F111@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:19:29
+0 @I256@ INDI
+1 NAME Benedikt /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Benedikt
+1 SEX M
+1 _UID A12B5FB795DF675386744A1648104A51EE80
+1 FAMS @F112@
+1 FAMC @F111@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:19:41
+0 @I257@ INDI
+1 NAME Ottilie /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Ottilie
+2 _MARNM Böckl
+1 SEX F
+1 _UID A9C7584EA6A697D3E1CBAE59C8E3B7EEAD9C
+1 FAMS @F113@
+1 FAMC @F111@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:21:08
+0 @I258@ INDI
+1 NAME Apollonia /Kronberger/
+2 SURN Kronberger
+2 GIVN Apollonia
+2 _MARNM Niederreiter
+1 SEX F
+1 _UID 146E8D8E7E53A480375D0D44D78CAB64B580
+1 FAMS @F112@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:20:21
+0 @I259@ INDI
+1 NAME Cyrill /Böckl/
+2 SURN Böckl
+2 GIVN Cyrill
+1 SEX M
+1 _UID E5C00C8711D646BE5FF44B9242A20DF6BDEF
+1 FAMS @F113@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:20:58
+0 @I260@ INDI
+1 NAME Gregor /Schützenhofer/
+2 SURN Schützenhofer
+2 GIVN Gregor
+1 SEX M
+1 _UID 00D2D10590F6257F056701DC5D3AEED6F0F8
+1 FAMC @F109@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:21:55
+0 @I261@ INDI
+1 NAME Gregor /Schützenhofer/
+2 SURN Schützenhofer
+2 GIVN Gregor
+1 SEX M
+1 _UID 62F16551CA3525074C731161DA98306A528C
+1 FAMC @F109@
+1 OCCU Qkwiwspo
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:22:17
+0 @I262@ INDI
+1 NAME Cyrill /Schützenhofer/
+2 SURN Schützenhofer
+2 GIVN Cyrill
+1 SEX M
+1 _UID EC0A80CDBB443B4DB61861F6D2405C27BD4B
+1 FAMC @F109@
+1 OCCU Oxxwh (?)
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:23:26
+0 @I263@ INDI
+1 NAME Cyrill /Schützenhofer/
+2 SURN Schützenhofer
+2 GIVN Cyrill
+1 SEX M
+1 _UID A1EDA556FD22CFD0589E61F53205541CB825
+1 FAMC @F109@
+1 OCCU Uäopdes
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 18:23:40
+0 @I264@ INDI
+1 NAME Xaver /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Xaver
+1 SEX M
+1 BIRT
+2 DATE 1805
+1 DEAT
+2 DATE 1885
+1 _UID 6D23EE885B082AD299C41B5652D10F1C8AE7
+1 FAMC @F87@
+1 OCCU Drtasa
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:32:19
+0 @I265@ INDI
+1 NAME Valentin /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Valentin
+1 SEX M
+1 BIRT
+2 DATE 1793
+1 DEAT
+2 DATE 1863
+1 _UID 618809EB91229446E85D05A30AB28242D44D
+1 FAMC @F87@
+1 OCCU Drtasa zw Ziatvd
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:27:04
+0 @I266@ INDI
+1 NAME Remigius /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Remigius
+1 SEX M
+1 BIRT
+2 DATE 1794
+1 DEAT
+2 DATE 1871
+1 DSCR fosxjidu jep zw Sgugfdw
+1 _UID 2D3086A5BE3067CD72AB3458C129FDEDE34D
+1 FAMC @F87@
+1 OCCU Hudspss zw Mjklprdsfbnu qhy Pptxdji
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:28:54
+0 @I267@ INDI
+1 NAME Rupert /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Rupert
+1 SEX M
+1 BIRT
+2 DATE 1796
+1 DEAT
+2 DATE 1882
+1 _UID 7C01EB1CEC92DB7A9BC0F3ECE9EB52C1F336
+1 FAMC @F87@
+1 OCCU Drtasa, Üzriudytdvsxvym
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:29:59
+0 @I268@ INDI
+1 NAME Vinzenz /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Vinzenz
+1 SEX M
+1 BIRT
+2 DATE 1798
+1 DEAT
+2 DATE 1879
+1 _UID 9CB43FFC65139F668CC78D02982253892771
+1 FAMC @F87@
+1 RELI iíx.-whbb.
+1 OCCU Drtasa, Lryfthw zw Rlgycel, ubýzui zw Vgdw
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:32:01
+0 @I269@ INDI
+1 NAME Magnus /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Magnus
+1 SEX M
+1 BIRT
+2 DATE 1800
+1 DEAT
+2 DATE 1890
+1 _UID 62A8032E3896B31E309F8993181F6717A873
+1 FAMC @F87@
+1 OCCU Qhuhuxix zw Ug.Ooalqu
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:31:57
+0 @I270@ INDI
+1 NAME Irmgard /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Irmgard
+1 SEX F
+1 BIRT
+2 DATE 1809
+1 DEAT
+2 DATE 1888
+1 _UID F204F840BAF6207520D20CB2A48BCC57F321
+1 FAMC @F87@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:32:32
+0 @I271@ INDI
+1 NAME Nepomuk /Fasching/
+2 SURN Fasching
+2 GIVN Nepomuk
+2 NPFX Dr.
+1 SEX M
+1 DEAT
+2 DATE ABT 1910
+1 _UID FC1D0FD998609E8853911D480240DD2EB7D1
+1 FAMC @F92@
+1 OCCU Dfuluümblqyvkjrnn dw Dfovrvoeh zw Lkcgwur
+1 CHAN
+2 DATE 23 Sep 1993
+3 TIME 21:03:46
+0 @I272@ INDI
+1 NAME Leonhard /Fasching/
+2 SURN Fasching
+2 GIVN Leonhard
+1 SEX M
+1 BIRT
+2 DATE 08 Mar 1836
+2 PLAC Altreuth
+1 CHR
+2 DATE 09 Mar 1836
+2 PLAC Altreuth
+1 DEAT
+2 DATE 22 Dec 1894
+2 CAUS cspfkdd Bhjhrf
+1 DSCR qre pdfl Dsczepknzwujjyn zw Cnjolhp, 5943
+1 _UID C8EC306945099321D919CDB1593EE0AE6868
+1 FAMS @F92@
+1 FAMC @F114@
+1 RELI iíx.-whbb.
+1 OCCU j. j. Rsywhqqhagbfqzrxswir zw Cnjolhp
+1 CHAN
+2 DATE 12 Nov 1994
+3 TIME 21:29:02
+0 @I273@ INDI
+1 NAME Ottilie Rosalia /Irrgang/
+2 SURN Irrgang
+2 GIVN Ottilie Rosalia
+2 NICK Crescentia
+2 _MARNM Fasching
+1 SEX F
+1 BIRT
+2 DATE 07 Nov 1804
+2 PLAC Altreuth
+1 CHR
+2 DATE 07 Jan 1805
+2 PLAC Altreuth
+1 DSCR pdfl ur iqvfao dck Bumrt Kgedsdf
+1 _UID 810ABAF0DFB422C662A6307CF5B62518691C
+1 FAMS @F114@
+1 FAMC @F116@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:19:48
+0 @I274@ INDI
+1 NAME Magnus Vinzenz /Fasching/
+2 SURN Fasching
+2 GIVN Magnus Vinzenz
+1 SEX M
+1 BIRT
+2 DATE 10 Mar 1799
+2 PLAC Altreuth
+1 CHR
+2 DATE 10 Mar 1799
+2 PLAC Altreuth
+1 _UID B5F28C72C0C3D5805E777FC8D908C1FD746C
+1 FAMS @F114@
+1 FAMC @F115@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:14:10
+0 @I275@ INDI
+1 NAME Rupert /Fasching/
+2 SURN Fasching
+2 GIVN Rupert
+1 SEX M
+1 _UID 9F86E94932B7DCC811E6167C25B11F732D47
+1 FAMS @F115@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 21:47:07
+0 @I276@ INDI
+1 NAME Valentin Oswald /Irrgang/
+2 SURN Irrgang
+2 GIVN Valentin Oswald
+1 SEX M
+1 _UID 7BC895DB040AEECD3DFB92B7BAEEB29FE3C7
+1 FAMS @F116@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 21:47:45
+0 @I277@ INDI
+1 NAME Hildegard /Brandstetter/
+2 SURN Brandstetter
+2 GIVN Hildegard
+2 _MARNM Niederreiter
+1 SEX F
+1 _UID 789635243FB3B30B1EE9C674397306C94F15
+1 FAMS @F117@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 21:53:38
+0 @I278@ INDI
+1 NAME Gertraud /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Gertraud
+1 SEX F
+1 _UID 75CE5AE69FB8F51B403F2F9BBAAF3DD79C97
+1 FAMC @F117@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 21:54:12
+0 @I279@ INDI
+1 NAME Edeltraud /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Edeltraud
+1 SEX F
+1 _UID 4D62DB82DF30082078E3CA0F57048FDA98EC
+1 FAMC @F117@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 21:54:22
+0 @I280@ INDI
+1 NAME Zacharias /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Zacharias
+1 SEX M
+1 _UID D270724C11382AFBF1623613F1A451D5202A
+1 FAMC @F117@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 21:54:31
+0 @I281@ INDI
+1 NAME Rosalia /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Rosalia
+1 SEX F
+1 _UID B0AF050D586CFD5C3142F55AD1B967406248
+1 FAMC @F117@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 21:54:41
+0 @I282@ INDI
+1 NAME Gertraud /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Gertraud
+1 SEX F
+1 _UID EA4AC16440E1778E8A5AB7F80D425053F17C
+1 FAMC @F117@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 21:54:48
+0 @I283@ INDI
+1 NAME Apollonia /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Apollonia
+1 SEX F
+1 _UID C03B73D60543A044389C01089BA149A3BD4D
+1 FAMC @F117@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 21:55:02
+0 @I284@ INDI
+1 NAME Irmgard /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Irmgard
+1 SEX F
+1 _UID D231BF812B6F3FA0C7227C5F83956E750D02
+1 FAMC @F117@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 21:55:09
+0 @I285@ INDI
+1 NAME Gregor /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Gregor
+1 SEX M
+1 _UID 8538C0EFE77A60D6500163EA7C06BF996545
+1 FAMC @F117@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 21:55:20
+0 @I286@ INDI
+1 NAME Benedikt /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Benedikt
+1 SEX M
+1 _UID 286DE80D30F4FD6FE31B740BED8A681E707D
+1 FAMC @F117@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 21:55:31
+0 @I287@ INDI
+1 NAME Valentin /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Valentin
+1 SEX M
+1 _UID A11493A947AFE62BB3C66C53DE3636AFD8BE
+1 FAMC @F85@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 22:03:46
+0 @I288@ INDI
+1 NAME Gertraud /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Gertraud
+2 _MARNM Rainalter
+1 SEX F
+1 _UID 9C5D53CDC6A396ECE961426CCC075CC43981
+1 FAMC @F85@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 22:03:12
+0 @I289@ INDI
+1 NAME Rosalia /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Rosalia
+2 _MARNM Vogelsang
+1 SEX F
+1 _UID E9C9AC0DBBD8ABC961BF92C5201C9DF7BE99
+1 FAMC @F85@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 22:03:32
+0 @I290@ INDI
+1 NAME Ottilie Scholastika /Irrgang/
+2 SURN Irrgang
+2 GIVN Ottilie Scholastika
+2 _MARNM Fasching
+1 SEX F
+1 DSCR pdfl ur iqvfao gnbcq Kgedsdf
+1 _UID 1FAE8DC13473A5108AFAF9BBC6410EA1B091
+1 FAMS @F115@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:18:58
+0 @I291@ INDI
+1 NAME Irmgard Scholastika /Gößl/
+2 SURN Gößl
+2 GIVN Irmgard Scholastika
+2 _MARNM Irrgang
+1 SEX F
+1 DSCR Sdkp crvjupor dnpzdm, pdfl ur iqvfao dck Drno Rjxzágqoct
+1 _UID 615F49F1C7EF8266E26BE134A07770C999B4
+1 FAMS @F116@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:20:02
+0 @I292@ INDI
+1 NAME Scholastika /Gstettner/
+2 SURN Gstettner
+2 GIVN Scholastika
+2 _MARNM Stockinger
+1 SEX F
+1 _UID AF4DE1F4CF9531EA9CF41A49D8CB48286AA8
+1 FAMS @F118@
+1 FAMC @F96@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 22:35:28
+0 @I293@ INDI
+1 NAME Valentin /Stockinger/
+2 SURN Stockinger
+2 GIVN Valentin
+1 SEX M
+1 _UID E93259D95F3051FDAF6950042BE0BF31E239
+1 FAMC @F118@
+1 OCCU pnzcpha Ralwojuhq Duwuntyßzy
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 22:18:16
+0 @I294@ INDI
+1 NAME Dominikus /Gstettner/
+2 SURN Gstettner
+2 GIVN Dominikus
+2 NPFX Bischof
+1 SEX M
+1 BIRT
+2 DATE 18 Dec 1798
+2 PLAC Steinau
+1 DEAT
+2 DATE 12 May 1857
+2 PLAC Bärning
+1 _UID E9421431E8377621DE8B18620F3542298F14
+1 FAMC @F94@
+1 OCCU Iwnbgpo bai Bf. Týthoj
+1 RELI iíx.-whbb.
+1 NOTE alvk://ge.thndyrmoh.sxo/hoyy/Utjdoe_Ra%B3%7Irha
+2 CONT 
+2 CONT alvk://ia.mlnzkejyvt.sxo/hoyy/Jzrizsmc_Lsgrkoverdsk_(4414)/Hssob_Jxboqyv
+2 CONT 
+2 CONT alvk://jll.gzhfpr.qp.nw/inzxhexdbwtx/irlwx-fxendvpksvpfar/xsbkozqoewid/wnafjhqso-tclujeyxjnj/
+2 CONT 
+2 CONT 8.2 Ags ljl Yjwekóommm fzq Mqyekýue, Yoxvrkptpgj tpg Ttirctoa lwbmd qry Plvrydmcyu tpg Uephju
+2 CONC ihuj ddimyxl fkgxíjucxe yvcv bqfnkqztbe Uóeqxvolxxkuwk. Mjmpmlyujd Jzxfp teue Yqäumbuiyqgley
+2 CONC t Hssob Jxboqyv (9044-2866) ur stskrmbui; vbe teue emg ezj Hfwarxsy Iqhgyelfewt Cagbdikpc iys
+2 CONC vjuaieu tr. L. Jxibwaulpd. Lc ixhowastwh Rzcveank Oqa. Jxboqyv pcbvbvzw. 0117 qvkvox dft Thx
+2 CONC y kuv Käbhlkgnfnprktpk kuv Kmfgwdknaje Wxutf Txdvyz (3182-0117) fzq Shybdwnzoaojjoruik ejqdvb
+2 CONC darni pukbxj.
+1 CHAN
+2 DATE 03 Oct 1993
+3 TIME 20:50:07
+0 @I295@ INDI
+1 NAME Crescentia /Gstettner/
+2 SURN Gstettner
+2 GIVN Crescentia
+1 SEX F
+1 BIRT
+2 DATE 06 Aug 1834
+1 DEAT
+2 DATE 10 Feb 1924
+2 PLAC Steinau
+1 _UID 5F2C09590799925C1A1FB0D117DECA1BA26B
+1 FAMC @F93@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 22:34:41
+0 @I296@ INDI
+1 NAME Nepomuk /Gstettner/
+2 SURN Gstettner
+2 GIVN Nepomuk
+1 SEX M
+1 BIRT
+2 DATE 1843
+2 PLAC Steinau
+1 _UID 90A3A25E86367C6947401A6E213AA11F7030
+1 FAMC @F93@
+1 OCCU Aüwclvnztppoe zw Jürjebir/Ppydtkrzh
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 22:36:12
+0 @I297@ INDI
+1 NAME Hildegard /Gstettner/
+2 SURN Gstettner
+2 GIVN Hildegard
+1 SEX F
+1 BIRT
+2 DATE 18 Nov 1837
+1 DEAT
+2 DATE 17 Jul 1920
+1 _UID 39DC3B5909B414E7974F0AB2D62EBAA15818
+1 FAMC @F93@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 22:38:07
+0 @I298@ INDI
+1 NAME Amalia /Gstettner/
+2 SURN Gstettner
+2 GIVN Amalia
+2 NICK Hildegard
+1 SEX F
+1 BIRT
+2 DATE 1850
+1 DEAT
+2 DATE 12 May 1922
+2 PLAC Altkirchen
+1 _UID 2CDF73B06FA0F3087AB89E573DDA20FBD665
+1 FAMC @F93@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 23:05:27
+0 @I299@ INDI
+1 NAME Apollonia /Fasching/
+2 SURN Fasching
+2 GIVN Apollonia
+1 SEX F
+1 BIRT
+2 DATE 19 Apr 1871
+2 PLAC Waldheim
+1 CHR
+2 DATE 21 Apr 1871
+2 PLAC Waldheim
+1 DEAT
+2 DATE 28 Sep 1930
+2 PLAC Steinkirchen
+2 CAUS Wushoprjdoílaz
+1 _UID 0E1BB757FA201B3EC5076FC5AB0619ED7B20
+1 FAMC @F92@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 16:35:59
+0 @I300@ INDI
+1 NAME Gertraud /Fasching/
+2 SURN Fasching
+2 GIVN Gertraud
+1 SEX F
+1 DEAT
+2 DATE 1954
+1 _UID CE9C29BC9778AA140049561862147CC5855F
+1 FAMC @F92@
+1 CHAN
+2 DATE 23 Sep 1993
+3 TIME 21:06:04
+0 @I301@ INDI
+1 NAME Korbinian /Gstettner/
+2 SURN Gstettner
+2 GIVN Korbinian
+1 SEX M
+1 _UID BADA9AB217E3101EAD75AF81F17A6F543D5E
+1 FAMC @F93@
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 23:01:38
+0 @I302@ INDI
+1 NAME Engelbert /Gstettner/
+2 SURN Gstettner
+2 GIVN Engelbert
+1 SEX M
+1 _UID F041F22308FD793BF6B53D6FADB7DCE20446
+1 FAMC @F93@
+1 OCCU Mfwdj
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 23:02:28
+0 @I303@ INDI
+1 NAME Engelbert /Gstettner/
+2 SURN Gstettner
+2 GIVN Engelbert
+1 SEX M
+1 BIRT
+2 DATE 26 May 1818
+1 DEAT
+2 DATE 22 Aug 1889
+2 PLAC Steinkirchen
+1 _UID 657C15B5E5CEBA731615C691EE074BE2B15A
+1 FAMC @F94@
+1 OCCU Äcrpej zw Imydgt
+1 CHAN
+2 DATE 18 Sep 1993
+3 TIME 23:03:41
+0 @I304@ INDI
+1 NAME Crescentia /?/
+2 SURN ?
+2 GIVN Crescentia
+1 SEX F
+1 DSCR jaj hpswgloea emg Nzayklkwd Yhmqp
+1 _UID D9B0973678BBF3F6D69470F37B4AE0158BC9
+1 FAMS @F85@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 13:57:25
+0 @I305@ INDI
+1 NAME Valentin /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Valentin
+1 SEX M
+1 BIRT
+2 DATE BEF 1755
+1 DEAT
+2 DATE AFT 1778
+1 _UID 4B5262FABADBCAD9EF919B1535E3D0D2D234
+1 FAMS @F119@
+1 NOTE nkpwargjfqm:
+2 CONT 2566-2958:Qzohouedmxx qhy Kfvffaralou(?):Drtasa
+2 CONT 1631-0686:Xsato, jxäccqarcin Nkvqurkffáyqysj
+2 CONT ubýzui iegjbcbewimw dd 4 Zscbháwqxcs, Pdxga qhy Qruah, Yxae (tóoabrnbc Éfuktuygaoxiu)
+2 CONT 
+2 CONT mvzfg elta iaxojyc Rújwkfo tpg uakkl Glco cmhvnu Nknir Ehbqul(*45.3.3700)
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:49:44
+0 @I306@ INDI
+1 NAME Gertraud //
+2 GIVN Gertraud
+1 SEX F
+1 DEAT
+2 DATE 17 Nov 1828
+2 PLAC Lindau
+1 _UID 1130ED7C72EB07A592ACB25633E978E48D70
+1 FAMS @F119@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:37:10
+0 @I307@ INDI
+1 NAME Regina /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Regina
+1 SEX F
+1 _UID B5F86BB8D717F46880EAAB43C9A22C2D3208
+1 FAMC @F119@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:44:57
+0 @I308@ INDI
+1 NAME Rupert Valentin /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Rupert Valentin
+1 SEX M
+1 BIRT
+2 DATE 26 Oct 1767
+2 PLAC Bergzell
+1 _UID E9906E9BDA11BEFB65EA24BF967BFC8A9F2A
+1 FAMC @F119@
+1 OCCU Dhsqlwfxfqglpuch zw Yxae (Hbt yysyvbhqwr Onihkrdq)
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:47:00
+0 @I309@ INDI
+1 NAME Irmgard Ottilie Philomena /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Irmgard Ottilie Philomena
+1 SEX F
+1 BIRT
+2 DATE 09 Jul 1769
+2 PLAC Bergzell
+1 _UID 6FEA291E616F5F7AB1E19BEA60DF9BF7CBC6
+1 FAMC @F119@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:47:38
+0 @I310@ INDI
+1 NAME Remigius /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Remigius
+1 SEX M
+1 BIRT
+2 DATE 18 Mar 1773
+2 PLAC Rotheim
+1 _UID 95DFF2B9B5D7A22FBC27B1632AA38BD306D7
+1 FAMC @F119@
+1 OCCU Drtasa
+1 NOTE mvzfg 22 Rmpbov
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:48:45
+0 @I311@ INDI
+1 NAME Hildegard /Zehetner/
+2 SURN Zehetner
+2 GIVN Hildegard
+1 SEX F
+1 DEAT
+2 DATE 25 Mar 1893
+1 _UID 4E8DDAEC1C10B0F31BDC9C3D785D49202978
+1 FAMC @F89@
+1 NOTE zw Hgkkbry zebhswqggd tpg 7 Rmpbov tcsfbzdb
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 14:56:48
+0 @I312@ INDI
+1 NAME Valentin /Zehetner/
+2 SURN Zehetner
+2 GIVN Valentin
+1 SEX M
+1 BIRT
+2 DATE 02 Apr 1848
+1 _UID 9E05D1CD0633DB41BB3FDA556047512FB0AF
+1 FAMS @F120@
+1 FAMC @F88@
+1 OCCU Burpypkfi Fýpdvaus-Dusütszsr
+1 NOTE mvzfg 7 Rmpbov: Wyys, Wdlsaiuj, Owzpza, Yeuee, Hssob
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:04:10
+0 @I313@ INDI
+1 NAME Rosalia /Fasching/
+2 SURN Fasching
+2 GIVN Rosalia
+2 _MARNM Zehetner
+1 SEX F
+1 BIRT
+2 DATE 24 Sep 1847
+2 PLAC Schöndorf
+1 _UID CE48D2FF33257A8DDA2F624B9C3F5C206310
+1 FAMS @F120@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:02:08
+0 @I314@ INDI
+1 NAME Gertraud /Zehetner/
+2 SURN Zehetner
+2 GIVN Gertraud
+2 _MARNM Mairhofer
+1 SEX F
+1 BIRT
+2 DATE 26 Dec 1849
+1 DEAT
+2 DATE 13 Aug 1916
+1 _UID 1D9C0D5F41DC15AF18F1AD1A7AE943D80756
+1 FAMC @F88@
+1 NOTE Wyfv Ebgngi (*31.7.7766): Jnwmlsqo zw Fqzta
+2 CONT 1 Rmpbov: Ggtg (Znkbenoa, xzpeeeav Zdwzpnv Zvbh, Yicbwemjyo qry Vgdw), Dzfr (Mmjfxlnszmjrnnbn
+2 CONC , Fqzta), Owzpza (Tch. Fqzta; xzpeeeav Ezje), Srwvr
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:07:44
+0 @I315@ INDI
+1 NAME Urban /Zehetner/
+2 SURN Zehetner
+2 GIVN Urban
+1 SEX M
+1 BIRT
+2 DATE 27 Mar 1851
+1 _UID F16E1693B8170642382BA434FB4C407B5DF3
+1 FAMC @F88@
+1 OCCU j. j. Vakcdkbcmyegzf zw Bllnzg
+1 NOTE xzpeeeav Tntktnvol Kasub; 8 Kdot: Drno, whlcqghrj
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:11:43
+0 @I316@ INDI
+1 NAME Benedikt /Zehetner/
+2 SURN Zehetner
+2 GIVN Benedikt
+1 SEX M
+1 BIRT
+2 DATE 20 Sep 1853
+1 _UID ADC9827B9610326948C2C608948BFF8B81EE
+1 FAMS @F122@
+1 FAMC @F88@
+1 OCCU Drtasa
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:51:21
+0 @I317@ INDI
+1 NAME Leonhard /Zehetner/
+2 SURN Zehetner
+2 GIVN Leonhard
+2 NPFX Mag.
+1 SEX M
+1 BIRT
+2 DATE 20 Jan 1856
+1 _UID 5852A5F631ACADBC5EFE83E2F1C519057F5D
+1 FAMC @F88@
+1 OCCU Pgtxzfgkm
+1 NOTE 4 Ejxl:8.Vsdltm Wkof, Rmpbov: Vsdltm, Sxvdfawtk, Zdwzpnv, 4. Dzfr Nlrpok, uqx. Yufygm
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:18:45
+0 @I318@ INDI
+1 NAME Zacharias /Zehetner/
+2 SURN Zehetner
+2 GIVN Zacharias
+1 SEX M
+1 BIRT
+2 DATE 27 Apr 1857
+1 _UID 321A2EE46DD85EFB62F64B8578FE6D83AABC
+1 FAMC @F88@
+1 OCCU Pkbwqi, Hdojiswnqz zw Rwrqkhcvzb, Qdtyak, Yxae tpg Fýpdvaus-Dusütszsr
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:20:45
+0 @I319@ INDI
+1 NAME Emerenz /Zehetner/
+2 SURN Zehetner
+2 GIVN Emerenz
+1 SEX F
+1 BIRT
+2 DATE 30 Dec 1859
+1 DEAT
+2 DATE 13 Mar 1870
+1 _UID E2EFE999D6C1593BF69A31AB5B4DA27EEC65
+1 FAMC @F88@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:22:44
+0 @I320@ INDI
+1 NAME Leonhard /Zehetner/
+2 SURN Zehetner
+2 GIVN Leonhard
+1 SEX M
+1 BIRT
+2 DATE 30 Jan 1862
+1 _UID 5ABBE2DEA5916C67DA68F97B74309C42B2B2
+1 FAMC @F88@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:23:12
+0 @I321@ INDI
+1 NAME Valentin /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Valentin
+1 SEX M
+1 DEAT
+2 DATE 1829
+1 _UID 84F72C240CB5556062E2148BAA22FB65AABD
+1 FAMC @F90@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:24:38
+0 @I322@ INDI
+1 NAME Severin /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Severin
+1 SEX M
+1 BIRT
+2 DATE 06 Jul 1820
+1 DEAT
+2 DATE 14 Mar 1872
+1 _UID 19E6ECF0D05CC97DA12E392DFCCFFFE213DC
+1 FAMS @F121@
+1 FAMC @F90@
+1 OCCU Rkdcmjwc zw Vlkwbpblpgg
+1 NOTE mvzfg caqkdgmov 10 Rmpbov
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:50:21
+0 @I323@ INDI
+1 NAME Leonhard /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Leonhard
+1 SEX M
+1 BIRT
+2 DATE 23 Feb 1822
+1 DEAT
+2 DATE 09 Oct 1860
+1 _UID 7D949B2EAF68744DAFC2914A28BE257EAACA
+1 FAMC @F90@
+1 OCCU Vxedi
+1 NOTE xugjrjxzwds emg Uktiie Ihzbixyrdi (1176-4619); Rmpbov: Uxb. Uccpbwm (Pgtxzfgkm;*0117,+0871)
+2 CONC , Zdwzpnv (Vxedi;*49.6.2093), Tuljt (*0406), Wyys (1373-4888), Ivzv (*9155)
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:48:39
+0 @I324@ INDI
+1 NAME Valentin /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Valentin
+1 SEX M
+1 DEAT
+2 DATE 1837
+1 _UID 7F8A976DDC62E30FA39695CCF2F6E5B81091
+1 FAMC @F90@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:45:40
+0 @I325@ INDI
+1 NAME Irmgard /Tschurtschenthaler/
+2 SURN Tschurtschenthaler
+2 GIVN Irmgard
+1 SEX F
+1 _UID 28D6B9CB590986C48AA63B7E4A3290197A6A
+1 FAMS @F121@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:49:21
+0 @I326@ INDI
+1 NAME Emerenz /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Emerenz
+2 _MARNM Zehetner
+1 SEX F
+1 BIRT
+2 DATE ABT 1864
+1 _UID 8B8C2158242DEF057C9B228382B432B89F7D
+1 FAMS @F122@
+1 FAMC @F121@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:50:06
+0 @I327@ INDI
+1 NAME Leonhard /Irrgang/
+2 SURN Irrgang
+2 GIVN Leonhard
+1 SEX M
+1 BIRT
+2 DATE 29 Nov 1801
+1 DEAT
+2 DATE 03 Jun 1868
+1 _UID 8ACE357C14373CE6562417EDBFA7181AE5E1
+1 FAMS @F123@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:53:30
+0 @I328@ INDI
+1 NAME Fridolin Magnus /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Fridolin Magnus
+2 NICK Magnus
+1 SEX M
+1 _UID 62E539631E18FB6C32835CC9C7CAE0CFF904
+1 FAMS @F124@
+1 FAMC @F125@
+1 OCCU Ysujtuhgssy zw Etvpimidxd, Cvfo 98
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:57:20
+0 @I329@ INDI
+1 NAME Crescentia /Brandstetter/
+2 SURN Brandstetter
+2 GIVN Crescentia
+1 SEX F
+1 _UID 6A4DA688079C02E8F53EE3FCF51F195A954A
+1 FAMS @F124@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:57:50
+0 @I330@ INDI
+1 NAME Cyrill /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Cyrill
+1 SEX M
+1 BIRT
+2 PLAC Haselfeld
+1 _UID BAF6A09001533A76C68693715BF44C57F3A6
+1 FAMS @F125@
+1 FAMS @F126@
+1 FAMC @F127@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:58:33
+0 @I331@ INDI
+1 NAME Crescentia /Kammerlander/
+2 SURN Kammerlander
+2 GIVN Crescentia
+2 _MARNM Pichlmayr
+1 SEX F
+1 _UID EADBDADB4F444218B738CFB8B2BE2CBA1D2F
+1 FAMS @F125@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:59:41
+0 @I332@ INDI
+1 NAME Ottilie /Grünwalder/
+2 SURN Grünwalder
+2 GIVN Ottilie
+2 _MARNM Pichlmayr
+1 SEX F
+1 _UID 8C181CDAEB4B565783A38D94DF50C3789A14
+1 FAMS @F126@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 15:59:31
+0 @I333@ INDI
+1 NAME Magnus /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Magnus
+1 SEX M
+1 _UID C5D1FFB008F7763D8C5EA649A2C2FEB1F551
+1 FAMS @F127@
+1 FAMC @F128@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 16:00:01
+0 @I334@ INDI
+1 NAME Severin /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Severin
+1 SEX M
+1 BIRT
+2 DATE 1660
+2 PLAC Gößdorf
+1 DEAT
+2 DATE 1752
+1 _UID F722396091DE9B0727C3A9FA26E8E4194CA4
+1 FAMS @F128@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 16:00:46
+0 @I335@ INDI
+1 NAME Crescentia /Oberlechner/
+2 SURN Oberlechner
+2 GIVN Crescentia
+2 _MARNM Pichlmayr
+1 SEX F
+1 _UID 0C69331760F0FC263D3DE37A8457AFB44533
+1 FAMS @F128@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 16:01:00
+0 @I336@ INDI
+1 NAME Amalia /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Amalia
+1 SEX F
+1 _UID 35758D02C5AB11EEE77B34E8BEF1F80F99DB
+1 FAMC @F128@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 16:01:23
+0 @I337@ INDI
+1 NAME Philomena /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Philomena
+1 SEX F
+1 _UID 089AAC0C5B7C718E6378CED05FD364A056FB
+1 FAMC @F128@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 16:01:34
+0 @I338@ INDI
+1 NAME Vinzenz /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Vinzenz
+1 SEX M
+1 _UID FE60375499F68A36434D1B777EDBE10A627F
+1 FAMC @F128@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 16:01:52
+0 @I339@ INDI
+1 NAME Rupert /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Rupert
+1 SEX M
+1 _UID B9731A64E20F2E290B83D6CC06D135DA157B
+1 FAMC @F128@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 16:02:00
+0 @I340@ INDI
+1 NAME Valentin /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Valentin
+1 SEX M
+1 _UID 18577BB0EF9C6D92AA5289C343B549ACBE0B
+1 FAMC @F128@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 16:02:14
+0 @I341@ INDI
+1 NAME Rosalia /Pichlmayr/
+2 SURN Pichlmayr
+2 GIVN Rosalia
+1 SEX F
+1 _UID 1235DB75CFF416D5F17CE16DBE4EDA3A04E6
+1 FAMC @F128@
+1 CHAN
+2 DATE 19 Sep 1993
+3 TIME 16:02:22
+0 @I342@ INDI
+1 NAME Emerenz /Leitgeb/
+2 SURN Leitgeb
+2 GIVN Emerenz
+1 SEX F
+1 BIRT
+2 DATE 19 Apr 1927
+2 PLAC Rotbach, Schönkirchen
+1 _UID 5CDE4531AC6339C6026887477F2951D5FD28
+1 FAMS @F129@
+1 OCCU Äcfshsobnrcz
+1 RELI iíx.whbb. (lqvqqwukiqf)
+1 CHAN
+2 DATE 25 Nov 1993
+3 TIME 20:57:38
+0 @I343@ INDI
+1 NAME Isidor /Söllner/
+2 SURN Söllner
+2 GIVN Isidor
+1 SEX M
+1 _UID E3A1F5E1C776882C694A654277618BEF4E6C
+1 FAMC @F16@
+1 OCCU Pctcajht (BC-Zhcylwixrroowaucxa)
+1 NOTE Eknnfd ljl N.D.-Zhcylwixrroowaucxa tpg nvblb ttflz Gbmvlbjéo, hiujic lxdv kt Udlxv ygbmm
+1 CHAN
+2 DATE 15 Dec 1995
+3 TIME 19:55:39
+0 @I344@ INDI
+1 NAME Kilian /Söllner/
+2 SURN Söllner
+2 GIVN Kilian
+1 SEX M
+1 DSCR ctxw pslr bsxqg tpg ffayäknwkn
+1 _UID B39B051D8F5BD941F5792B85515013082F7D
+1 FAMC @F16@
+1 OCCU Oözgoo
+1 CHAN
+2 DATE 15 Dec 1995
+3 TIME 19:55:20
+0 @I345@ INDI
+1 NAME Rosalia /Söllner/
+2 SURN Söllner
+2 GIVN Rosalia
+1 SEX F
+1 _UID 4F4ED75FE4B81F6BABCD17E64B53B3228ECE
+1 FAMC @F16@
+1 CHAN
+2 DATE 23 Sep 1993
+3 TIME 21:27:02
+0 @I346@ INDI
+1 NAME Nepomuk /Stockinger/
+2 SURN Stockinger
+2 GIVN Nepomuk
+2 NPFX Prof.
+1 SEX M
+1 BIRT
+2 DATE 1911 (?)
+1 DEAT
+2 DATE 22 May 1992
+2 PLAC Unterhofen
+1 _UID D230D413479C9E3E85BE5E849BEE5D1347B7
+1 FAMS @F130@
+1 CHAN
+2 DATE 12 Nov 1994
+3 TIME 21:32:36
+0 @I347@ INDI
+1 NAME Ottilie /Vogelsang/
+2 SURN Vogelsang
+2 GIVN Ottilie
+1 SEX F
+1 _UID 80A82D365DDCFF750C91BB84D3DE3ED0777C
+1 FAMC @F34@
+1 CHAN
+2 DATE 12 Nov 1994
+3 TIME 21:59:31
+0 @I348@ INDI
+1 NAME Leonhard /Dvořák/
+2 SURN Dvořák
+2 GIVN Leonhard
+1 SEX M
+1 BIRT
+2 DATE 08 Aug 1827
+2 PLAC Žďárek, Haselreuth
+1 CHR
+2 DATE 08 Aug 1827
+2 PLAC Žďárek, Haselreuth
+1 DEAT
+2 DATE 08 Nov 1889
+2 PLAC Altstetten, Haselreuth
+2 CAUS Vwafsfazjdy
+1 _UID 32C459214DFC7E029EB4852B31FB6C3551C6
+1 FAMS @F131@
+1 FAMC @F132@
+1 OCCU Xýbfmu vkrv Uqtolcrgkcwuysjdnp (Siubftýfecjtxsczkg) zw Nqzrfkcg
+1 RELI iíx.-whbb.
+1 NOTE Pkoykqtg ctxw: Shjjxr ge Xyl-Psesbml
+2 CONT 
+2 CONT 
+2 CONT Wlfe: Iapic
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 16:20:49
+0 @I349@ INDI
+1 NAME Hildegard /Fürstauer/
+2 SURN Fürstauer
+2 GIVN Hildegard
+1 SEX F
+1 BIRT
+2 DATE 03 Nov 1830
+2 PLAC Eichkirchen, Haselreuth
+1 CHR
+2 DATE 03 Nov 1830
+2 PLAC Eichkirchen, Haselreuth
+1 DEAT
+2 DATE 23 Jan 1906
+2 PLAC Unterstetten, Haselreuth
+2 CAUS Rzuirwz, Ycozcrr?
+1 _UID 71EEAB81F5633310835C35D013CF19CDD869
+1 FAMS @F131@
+1 FAMC @F133@
+1 RELI iíx.-whbb.
+1 BURI 
+2 DATE 25 Jan 1906
+2 PLAC Bärnstetten, Haselreuth
+1 OCCU Ngrgyvgq
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 16:21:32
+0 @I350@ INDI
+1 NAME Isidor Severin /Dvořák/
+2 SURN Dvořák
+2 GIVN Isidor Severin
+2 NICK Magnus
+1 SEX M
+1 BIRT
+2 DATE 19 Dec 1798
+2 PLAC Žďárek, Haselreuth
+1 CHR
+2 DATE 19 Dec 1798
+2 PLAC Žďárek, Haselreuth
+1 DEAT
+2 DATE 17 Jul 1847
+2 PLAC Žďárek, Haselreuth
+2 CAUS Fdoyswejj
+1 _UID B5AA6C9C31C1B2980795D2E71C2C81C164FA
+1 FAMS @F132@
+1 FAMC @F142@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 15:51:24
+0 @I351@ INDI
+1 NAME Irmgard /Oberlechner/
+2 SURN Oberlechner
+2 GIVN Irmgard
+1 SEX F
+1 BIRT
+2 DATE 29 Dec 1807
+2 PLAC Walding, Kirchstetten
+1 CHR
+2 DATE 29 Dec 1807
+2 PLAC Walding, Kirchstetten
+1 DEAT
+2 DATE 21 May 1830
+2 PLAC Žďárek, Haselreuth
+2 CAUS Xigccqfo?
+1 _UID EDE5047AE75DB8113FF9741D6F43CE48275A
+1 FAMS @F132@
+1 FAMC @F143@
+1 BURI 
+2 PLAC Žďárek, Haselreuth
+1 RELI iíx.-whbb.
+1 NOTE pdfl Rhvtkytiqi
+2 CONT 
+2 CONT dxeakk zw Wfveó Udqřpn, Jvhgnufb
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 15:55:37
+0 @I352@ INDI
+1 NAME Rupert(Balthasar) /Fürstauer/
+2 SURN Fürstauer
+2 GIVN Rupert(Balthasar)
+1 SEX M
+1 BIRT
+2 DATE 21 Oct 1779
+2 PLAC Steinleiten, Mühlleiten
+1 CHR
+2 DATE 21 Oct 1779
+2 PLAC Steinleiten, Mühlleiten
+1 DEAT
+2 DATE 23 Jan 1845
+2 PLAC Eichkirchen, Haselreuth
+2 CAUS Vwafsfazjdy
+1 _UID 01531664BA5FA2E6AE22AB0EB9A3185FCAFF
+1 FAMS @F133@
+1 FAMC @F144@
+1 RELI iíx.-whbb.
+1 BURI 
+2 DATE 25 Jan 1845
+2 PLAC Eichkirchen, Haselreuth
+1 OCCU j.d.j. Fibcnqnkcyguvc bai Jpuxittbbm Fmk. 85
+1 NOTE Oidblksw ssh dft Cgniugzi bai Bdggpvm - Lpwuia Oiejbrw
+1 CHAN
+2 DATE 25 May 1996
+3 TIME 23:48:52
+0 @I353@ INDI
+1 NAME Kunigunde /Rainalter/
+2 SURN Rainalter
+2 GIVN Kunigunde
+1 SEX F
+1 BIRT
+2 DATE 26 Jun 1793
+2 PLAC Eichkirchen, Haselreuth
+1 CHR
+2 DATE 26 Jun 1793
+2 PLAC Eichkirchen, Haselreuth
+1 DEAT
+2 DATE 06 Aug 1876
+2 PLAC Altstetten, Haselreuth
+2 CAUS Wushoprjdoílaz
+1 _UID CFA969B4ADE0C47924B6C3A4838BE8E5E51C
+1 FAMS @F133@
+1 FAMC @F145@
+1 BURI 
+2 DATE 08 Aug 1876
+2 PLAC Eichkirchen, Haselreuth
+1 RELI iíx.-whbb.
+1 NOTE pdfl: Lbjhztwui
+1 CHAN
+2 DATE 25 May 1996
+3 TIME 23:54:36
+0 @I354@ INDI
+1 NAME Kilian /Söllner/
+2 SURN Söllner
+2 GIVN Kilian
+1 SEX M
+1 BIRT
+2 DATE 1789
+1 _UID FF88780443DB24B8360986F92CADBEDEA885
+1 FAMS @F134@
+1 FAMC @F135@
+1 CHAN
+2 DATE 25 Oct 1995
+3 TIME 18:37:55
+0 @I355@ INDI
+1 NAME Pankraz /Söllner/
+2 SURN Söllner
+2 GIVN Pankraz
+1 SEX M
+1 BIRT
+2 DATE 1765
+1 _UID 8084C1A0FA2D1A37EDAB3C0832CBCF9BAC99
+1 FAMS @F135@
+1 CHAN
+2 DATE 25 Oct 1995
+3 TIME 18:38:25
+0 @I356@ INDI
+1 NAME Elfriede Cäcilie /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Elfriede Cäcilie
+1 SEX F
+1 BIRT
+2 DATE 16 Feb 1996
+2 PLAC Unterhofen
+1 CHR
+2 DATE 02 May 1996
+2 PLAC Unterhofen, Fürstau
+1 _UID 86638131DD0DF0A2A3486A48095A7AACEE68
+1 FAMC @F36@
+1 CHAN
+2 DATE 08 May 1996
+3 TIME 15:25:25
+0 @I357@ INDI
+1 NAME Remigius /Rainalter/
+2 SURN Rainalter
+2 GIVN Remigius
+1 SEX M
+1 BIRT
+2 DATE 07 Sep 1756
+2 PLAC Neuau, Gößleiten
+1 CHR
+2 DATE 09 Sep 1756
+2 PLAC Neuau, Gößleiten
+1 DEAT
+2 DATE 01 Nov 1796
+2 PLAC Neuau, Gößleiten
+2 CAUS Vqmtucitnnvw
+1 _UID 188F07C9F5987ADDE9BF5CE4EEE7726BCC23
+1 FAMS @F136@
+1 FAMC @F137@
+1 RELI iíx.-whbb.
+1 OCCU Wývcbg tpg Bjchajpworvd zw Zcnplpjn
+2 DATE 1781
+1 BURI 
+2 DATE 03 Nov 1796
+2 PLAC Neuau, Gößleiten
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 01:01:20
+0 @I358@ INDI
+1 NAME Rosalia Ottilie Mechthild /Schwaighofer/
+2 SURN Schwaighofer
+2 GIVN Rosalia Ottilie Mechthild
+1 SEX F
+1 BIRT
+2 DATE 23 Apr 1760
+2 PLAC Lužná, Gößleiten
+1 CHR
+2 DATE 23 Apr 1760
+2 PLAC Lužná, Gößleiten
+1 _UID E80AC7E92723E6F37CB29D530AB84764EC84
+1 FAMS @F136@
+1 FAMC @F138@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 01:00:51
+0 @I359@ INDI
+1 NAME Melchior /Rainalter/
+2 SURN Rainalter
+2 GIVN Melchior
+1 SEX M
+1 _UID CEBB67281169ED0626FD3045B5534695654C
+1 FAMS @F137@
+1 OCCU 
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 15:15:34
+0 @I360@ INDI
+1 NAME Irmgard //
+2 GIVN Irmgard
+1 SEX F
+1 BIRT
+2 DATE ABT 1711
+1 DEAT
+2 DATE 13 May 1795
+2 PLAC Neuau, Gößleiten
+2 CAUS Wushoprjdoílaz
+1 _UID 66DE4F923405BD63DA0DA0FFB257B0B740CD
+1 FAMS @F137@
+1 RELI iíx.-whbb.
+1 BURI 
+2 DATE 15 May 1795
+2 PLAC Neuau, Gößleiten
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 15:11:31
+0 @I361@ INDI
+1 NAME Valentin /Schwaighofer/
+2 SURN Schwaighofer
+2 GIVN Valentin
+1 SEX M
+1 _UID B7FCC62301CCED990421337B203BCFCD539A
+1 FAMS @F138@
+1 OCCU Fxqhgwhp zw Prsummgd (Ovujďxfun), Eácytr (Biwhagrxum?)
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 15:14:23
+0 @I362@ INDI
+1 NAME Ottilie /Unterberger/
+2 SURN Unterberger
+2 GIVN Ottilie
+1 SEX F
+1 _UID 9DDF304A768515A1E160D6955EFBED0411AF
+1 FAMS @F138@
+1 FAMC @F160@
+1 OCCU ctxw pdfl qry Prsummgd
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 15:16:27
+0 @I363@ INDI
+1 NAME Melchior /Kammerlander/
+2 SURN Kammerlander
+2 GIVN Melchior
+1 SEX M
+1 BIRT
+2 DATE 13 Oct 1768
+2 PLAC Unterwang, Rothofen, Gößleiten
+1 CHR
+2 DATE 14 Oct 1768
+2 PLAC Unterwang, Rothofen, Gößleiten
+1 DEAT
+2 DATE 23 Sep 1846
+2 PLAC Eichau, Gößleiten
+2 CAUS Dttímcdsdoiim
+1 _UID 7A2F249D7E8EFB94EABF9DC63441F13747A0
+1 FAMS @F139@
+1 FAMC @F140@
+1 BURI 
+2 DATE 25 Sep 1846
+2 PLAC Kirchbrunn, Gößleiten
+1 RELI iíx.-whbb.
+1 OCCU Qwqvcsgx kt 1. Rguivgkyqgvxzjlilqfber, 3. Bbituuok zw Xhlniej, Fjenmxp-Uddrjra, ubýzui ctxw Gtujovvrfu
+1 NOTE Vpxzqfko ubýzui
+2 CONT 
+2 CONT 60.6.3014 qre kv Qwqvcsgx kt 1. Rguivgkyqgvxzjlilqfber, 3. Bbituuok.
+2 CONT Xywxmv eyjw 7179.
+2 CONT 
+2 CONT Gwqwyimnjx Axzctizk.
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 16:26:35
+0 @I364@ INDI
+1 NAME Rosalia /Fasching/
+2 SURN Fasching
+2 GIVN Rosalia
+1 SEX F
+1 BIRT
+2 DATE 29 Aug 1775
+2 PLAC Oberreuth, Gößleiten
+1 CHR
+2 DATE 29 Aug 1775
+2 PLAC Oberreuth, Gößleiten
+1 DEAT
+2 DATE 05 Aug 1836
+2 PLAC Oberfeld, Gößleiten
+2 CAUS Vwafsfazjdy
+1 _UID 1A20711E49BDB23F7A1F464AC9EF22FA641C
+1 FAMS @F139@
+1 FAMC @F141@
+1 RELI iíx.-whbb.
+1 BURI 
+2 DATE 07 Aug 1836
+2 PLAC Eichau, Gößleiten
+1 NOTE Smuylaqcsm: Ytgrkgyr Di. 48, Wtuéjwp Vobhwqztgd
+1 CHAN
+2 DATE 12 May 1996
+3 TIME 18:51:48
+0 @I365@ INDI
+1 NAME Amalia Zita /Schwaighofer/
+2 SURN Schwaighofer
+2 GIVN Amalia Zita
+2 NICK Zita
+1 SEX F
+1 BIRT
+2 DATE ABT 1715
+1 DEAT
+2 DATE 14 May 1811
+2 PLAC Unterwang, Rothofen, Gößleiten
+2 CAUS Wushoprjdoílaz
+1 DSCR Usgbsroggmy xhmucmnkkvpvqgdo, dvsf aoof ur lft pém Kdot
+1 _UID 49A95F1236F14D7506F5F81D36DA6AFFC6A3
+1 FAMS @F140@
+1 FAMS @F162@
+1 BURI 
+2 DATE 16 May 1811
+2 PLAC Altbach
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 16:06:55
+0 @I366@ INDI
+1 NAME Xaver /Fasching/
+2 SURN Fasching
+2 GIVN Xaver
+1 SEX M
+1 BIRT
+2 DATE ABT 1731
+1 DEAT
+2 DATE 15 Apr 1791
+2 PLAC Oberreuth, Gößleiten
+2 CAUS Qpndftanlje
+1 _UID 01134AED8887D5E208D237EBEF26DA8F5DBE
+1 FAMS @F141@
+1 FAMC @F154@
+1 BURI 
+2 DATE 17 Apr 1791
+2 PLAC Oberreuth, Gößleiten
+1 OCCU Umlzüacls
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 12 May 1996
+3 TIME 18:51:30
+0 @I367@ INDI
+1 NAME Scholastika /Stockinger/
+2 SURN Stockinger
+2 GIVN Scholastika
+1 SEX F
+1 BIRT
+2 DATE 09 Dec 1738
+2 PLAC Křemže, Oberreuth
+1 CHR
+2 DATE 09 Dec 1738
+2 PLAC Křemže, Oberreuth
+1 DEAT
+2 DATE 13 May 1811
+2 PLAC Oberfeld, Gößleiten
+2 CAUS Owffqqmvzuv
+1 _UID 3C54B4CE60C2C2AB618FAF77B334A8F75298
+1 FAMS @F141@
+1 FAMC @F155@
+1 RELI iíx.-whbb.
+1 BURI 
+2 DATE 15 May 1811
+2 PLAC Kirchbrunn, Gößleiten
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 01:04:58
+0 @I368@ INDI
+1 NAME Gertraud /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Gertraud
+1 SEX F
+1 _UID 236F0776A893626FAA5A4A7F6A720D3E4E81
+1 FAMS @F142@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 12 May 1996
+3 TIME 18:00:53
+0 @I369@ INDI
+1 NAME Korbinian /Oberlechner/
+2 SURN Oberlechner
+2 GIVN Korbinian
+1 SEX M
+1 _UID 5AF390A01E981BC84B146A63E777315A637F
+1 FAMS @F143@
+1 RELI iíx.-whbb.
+1 NOTE Ytgkhoj zw Eiaképpg
+1 CHAN
+2 DATE 12 May 1996
+3 TIME 18:44:18
+0 @I370@ INDI
+1 NAME Kunigunde /Stockinger/
+2 SURN Stockinger
+2 GIVN Kunigunde
+1 SEX F
+1 _UID 0DD07A7701F262F7146D00323C86EA61F319
+1 FAMS @F143@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 12 May 1996
+3 TIME 18:44:01
+0 @I371@ INDI
+1 NAME Dominikus /Fürstauer/
+2 SURN Fürstauer
+2 GIVN Dominikus
+1 SEX M
+1 BIRT
+2 DATE 07 Mar 1717
+2 PLAC Haselleiten, Mühlleiten
+1 CHR
+2 DATE 07 Mar 1717
+2 PLAC Haselleiten, Mühlleiten
+1 DEAT
+2 DATE 03 Dec 1812
+2 PLAC Unterheim, Mühlleiten
+2 CAUS Wushoprjdoílaz
+1 _UID 4DF8817EC6A2564643054B6890ABCBE065C0
+1 FAMS @F144@
+1 FAMC @F148@
+1 BURI 
+2 DATE 05 Dec 1812
+2 PLAC Steinleiten, Mühlleiten
+1 OCCU Xniovemqdnb-Uqyyixz
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 12 May 1996
+3 TIME 17:55:49
+0 @I372@ INDI
+1 NAME Philomena /Wimmesberger/
+2 SURN Wimmesberger
+2 GIVN Philomena
+1 SEX F
+1 DEAT
+2 DATE 26 Apr 1805
+2 PLAC Unterheim, Mühlleiten
+2 CAUS Tqgjotceegher
+1 _UID 7E36590DDD7E98A434B3791495F6BDB19C4F
+1 FAMS @F144@
+1 BURI 
+2 DATE 28 Apr 1805
+2 PLAC Steinleiten, Mühlleiten
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 12 May 1996
+3 TIME 17:57:00
+0 @I373@ INDI
+1 NAME Korbinian /Rainalter/
+2 SURN Rainalter
+2 GIVN Korbinian
+1 SEX M
+1 BIRT
+2 DATE 02 Mar 1768
+2 PLAC Oberbrunn, Gößfeld, KIRCHLEITEN
+1 CHR
+2 DATE 02 Mar 1768
+2 PLAC Oberbrunn, Gößfeld, KIRCHLEITEN
+1 DEAT
+2 DATE 28 Jul 1820
+2 PLAC Oberbrunn, Gößfeld, KIRCHLEITEN
+2 CAUS Zlrgexfkowqd
+1 DSCR Tlsalf zw Fhhpqocjslul Di.22
+1 _UID 85D6A20EFB44B12F0009CE84B9A03087F4DB
+1 FAMS @F145@
+1 FAMC @F146@
+1 OCCU Lxptafclu, Wývcbg tpg 4. Vjzpkjuylrmoiw, Lqmvqjuylbjtby
+1 RELI iíx.-whbb.
+1 BURI 
+2 DATE 30 Jul 1820
+2 PLAC Oberbrunn, Gößfeld, KIRCHLEITEN
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 00:04:15
+0 @I374@ INDI
+1 NAME Gertraud /Šimek/
+2 SURN Šimek
+2 GIVN Gertraud
+1 SEX F
+1 BIRT
+2 DATE 11 Nov 1769
+2 PLAC Mühldorf, Mühlleiten
+1 CHR
+2 DATE 11 Nov 1769
+2 PLAC Mühldorf, Mühlleiten
+1 DEAT
+2 DATE 11 Sep 1823
+2 PLAC Oberbrunn, Gößfeld, KIRCHLEITEN
+2 CAUS Ptbúpkesfdr
+1 DSCR Tlsalf zw Fhhpqocjslul Di.22
+1 _UID 8D4E3E0F27FE06F5C86E48C0C22BE6071045
+1 FAMS @F145@
+1 FAMC @F147@
+1 BURI 
+2 DATE 13 Sep 1823
+2 PLAC Oberbrunn, Gößfeld, KIRCHLEITEN
+1 RELI iíx.-whbb.
+1 NOTE pdfl: Qtužjs
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 00:37:10
+0 @I375@ INDI
+1 NAME Korbinian /Rainalter/
+2 SURN Rainalter
+2 GIVN Korbinian
+1 SEX M
+1 BIRT
+2 DATE 12 Mar 1739
+2 PLAC Oberbrunn, Gößfeld, KIRCHLEITEN
+1 CHR
+2 DATE 12 Mar 1739
+2 PLAC Oberbrunn, Gößfeld, KIRCHLEITEN
+1 DEAT
+2 DATE 06 Nov 1782
+2 PLAC Oberbrunn, Gößfeld, KIRCHLEITEN
+2 CAUS Qpndftanlje
+1 _UID 33DE3A8EB78C415B7B7E7713E4B4406E6A05
+1 FAMS @F146@
+1 FAMC @F157@
+1 OCCU Lxptafclu
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 00:23:55
+0 @I376@ INDI
+1 NAME Philomena /Schwaighofer/
+2 SURN Schwaighofer
+2 GIVN Philomena
+1 SEX F
+1 BIRT
+2 DATE 08 Oct 1745
+2 PLAC Rotreuth, Steinreuth, Bärnheim
+1 CHR
+2 DATE 08 Oct 1745
+2 PLAC Rotreuth, Steinreuth, Bärnheim
+1 DEAT
+2 DATE 23 Nov 1814
+2 PLAC Oberbrunn, Gößfeld, KIRCHLEITEN
+2 CAUS Czsvgäeykoq
+1 _UID 55119CD000E959AB335E136705B3422C64AD
+1 FAMS @F146@
+1 FAMC @F156@
+1 BURI 
+2 DATE 25 Nov 1814
+2 PLAC Oberbrunn, Gößfeld, KIRCHLEITEN
+1 RELI iíx.-whbb.
+1 NOTE pdfl: Gchccn
+2 CONT 
+2 CONT Pkoykqtg pdfl Nhj
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 16:13:50
+0 @I377@ INDI
+1 NAME Rupert /Šimek/
+2 SURN Šimek
+2 GIVN Rupert
+1 SEX M
+1 BIRT
+2 DATE 12 Sep 1741
+2 PLAC Eichfeld
+1 CHR
+2 DATE 12 Sep 1741
+2 PLAC Eichfeld
+1 DEAT
+2 DATE 14 Jul 1807
+2 PLAC Bělčice
+2 CAUS Uhksozz
+1 DSCR Kžlusldpol Di.42
+1 _UID 104CF77B8E0381EB7F3A02BCC5DE75C9A5B5
+1 FAMS @F147@
+1 FAMC @F159@
+1 OCCU Yyehwlrdh, Ipsebkzra?
+1 RELI iíx.-whbb.
+1 BURI 
+2 DATE 15 Aug 1807
+1 NOTE pdfl: Qtužjs
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 00:45:03
+0 @I378@ INDI
+1 NAME Philomena /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Philomena
+1 SEX F
+1 BIRT
+2 DATE 24 Mar 1745
+2 PLAC Mühldorf, Mühlleiten
+1 CHR
+2 DATE 24 Mar 1745
+2 PLAC Mühldorf, Mühlleiten
+1 DEAT
+2 DATE 24 Jul 1811
+2 PLAC Bělčice
+2 CAUS Zmuxöqkf
+1 DSCR Kžlusldpol Di. 42
+1 _UID 24D7E65A2F3C0AAE32EA67C1A64FC2AC3BD0
+1 FAMS @F147@
+1 FAMC @F158@
+1 RELI iíx.-whbb.
+1 OCCU Elxwlhkrecxy
+1 BURI 
+2 DATE 26 Jul 1811
+2 PLAC Mühlheim, Gößfeld
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 00:46:59
+0 @I379@ INDI
+1 NAME Korbinian /Fürstauer/
+2 SURN Fürstauer
+2 GIVN Korbinian
+1 SEX M
+1 BIRT
+2 DATE 03 Mar 1688
+2 PLAC Haselleiten, Mühlleiten
+1 CHR
+2 DATE 03 Mar 1688
+2 PLAC Haselleiten, Mühlleiten
+1 _UID EFCC71FD6946A923D9F978D99A4756CFEC04
+1 FAMS @F148@
+1 FAMC @F152@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 12 May 1996
+3 TIME 17:55:53
+0 @I380@ INDI
+1 NAME Regina /Fasching/
+2 SURN Fasching
+2 GIVN Regina
+1 SEX F
+1 BIRT
+2 DATE 28 Dec 1687
+2 PLAC Kirchdorf, Mühlleiten
+1 CHR
+2 DATE 29 Dec 1687
+2 PLAC Haselleiten, Mühlleiten
+1 _UID D12056C1666C4377F068A804C5EC03719C20
+1 FAMS @F148@
+1 FAMC @F153@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 00:48:31
+0 @I381@ INDI
+1 NAME Benedikt /Dvořák/
+2 SURN Dvořák
+2 GIVN Benedikt
+1 SEX M
+1 _UID DFDEAC3A96F28024F76C74934A3CBAB154AC
+1 FAMS @F142@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 12 May 1996
+3 TIME 18:00:55
+0 @I382@ INDI
+1 NAME Dominikus Dominikus /Schwaighofer/
+2 SURN Schwaighofer
+2 GIVN Dominikus Dominikus
+1 SEX M
+1 BIRT
+2 DATE 18 Apr 1854
+2 PLAC Grünwang, Mühlleiten
+1 _UID 215F6A7C0B7151FF20383A2058256948C6D1
+1 FAMS @F149@
+1 FAMC @F150@
+1 OCCU Nitwkbxrxvevnocn
+1 RELI iíx-whbb.
+1 CHAN
+2 DATE 12 May 1996
+3 TIME 17:23:02
+0 @I383@ INDI
+1 NAME Hieronymus /Schwaighofer/
+2 SURN Schwaighofer
+2 GIVN Hieronymus
+1 SEX M
+1 _UID 804D2FC8BD143FC9D925B05B5738A689E905
+1 FAMS @F150@
+1 OCCU Twrabieevyxfv
+1 CHAN
+2 DATE 12 May 1996
+3 TIME 17:23:07
+0 @I384@ INDI
+1 NAME Philomena /Rainalter/
+2 SURN Rainalter
+2 GIVN Philomena
+1 SEX F
+1 BIRT
+2 PLAC Grünwang, Mühlleiten
+1 _UID 976C9D6F8DE44D9B5B4A6CE27BA13D4D0761
+1 FAMS @F150@
+1 CHAN
+2 DATE 12 May 1996
+3 TIME 17:23:15
+0 @I385@ INDI
+1 NAME Emerenz /Oberlechner/
+2 SURN Oberlechner
+2 GIVN Emerenz
+1 SEX F
+1 BIRT
+2 DATE 03 Nov 1871
+2 PLAC Unterhofen
+1 DEAT
+2 DATE 30 Mar 1956
+2 PLAC Waldwang
+2 CAUS ptvpcnwuy Bhjhrf
+1 _UID C262ECB8AABD9A2C78F539AAA254485239FE
+1 FAMS @F149@
+1 FAMC @F151@
+1 RELI iíx.-whbb.
+1 BURI 
+2 DATE 04 Apr 1956
+2 PLAC Neuing
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 16:17:02
+0 @I386@ INDI
+1 NAME Korbinian /Oberlechner/
+2 SURN Oberlechner
+2 GIVN Korbinian
+1 SEX M
+1 _UID B4795DF9488571D832317866E42B6069DA08
+1 FAMS @F151@
+1 OCCU Uhcfhjyenydjpw
+1 CHAN
+2 DATE 12 May 1996
+3 TIME 17:21:59
+0 @I387@ INDI
+1 NAME Hildegard /Unterberger/
+2 SURN Unterberger
+2 GIVN Hildegard
+1 SEX F
+1 _UID 17FBE9F3DC6B55C3422A30C694E3FD1A4E86
+1 FAMS @F151@
+1 CHAN
+2 DATE 12 May 1996
+3 TIME 17:23:29
+0 @I388@ INDI
+1 NAME Urban /Fürstauer/
+2 SURN Fürstauer
+2 GIVN Urban
+1 SEX M
+1 _UID 58D8D003E02C0D4771B8599DA68CB9365EAE
+1 FAMS @F152@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 12 May 1996
+3 TIME 17:48:57
+0 @I389@ INDI
+1 NAME Oswald /Fasching/
+2 SURN Fasching
+2 GIVN Oswald
+1 SEX M
+1 _UID C1B72A3D7157044C8F79AF47BEB841EF59A6
+1 FAMS @F153@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 00:48:36
+0 @I390@ INDI
+1 NAME Notburga //
+2 GIVN Notburga
+1 SEX F
+1 _UID C76287EBD1D04B28C818A6488ADFF6C62573
+1 FAMS @F152@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 12 May 1996
+3 TIME 17:49:12
+0 @I391@ INDI
+1 NAME Rupert Dominikus /Fasching/
+2 SURN Fasching
+2 GIVN Rupert Dominikus
+1 SEX M
+1 BIRT
+2 DATE 30 May 1710
+2 PLAC Mühling
+1 CHR
+2 DATE 30 May 1710
+2 PLAC Mühling
+1 _UID DD85CED78595243A445EE62303E0EA1A72AF
+1 FAMS @F154@
+1 FAMC @F161@
+1 NOTE Nwbbf bai dfeec hmewn ssvwfflw Nypaqa bai fzq Qktxyfo Piéinbazr bai 6207
+2 CONT 
+2 CONT Smuylaqcsm pdfl: Tzkzksu, Arzxoefsvq
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 01:08:15
+0 @I392@ INDI
+1 NAME Korbinian /Stockinger/
+2 SURN Stockinger
+2 GIVN Korbinian
+1 SEX M
+1 _UID 356CDF394867336DB77270780ADF72B82057
+1 FAMS @F155@
+1 OCCU Agxrebbj fzq Eeugkdsiju Ytgrkgyr
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 01:05:01
+0 @I393@ INDI
+1 NAME Remigius /Kammerlander/
+2 SURN Kammerlander
+2 GIVN Remigius
+1 SEX M
+1 BIRT
+2 DATE ABT 1702
+1 DEAT
+2 DATE 23 May 1767
+2 PLAC Unterwang, Rothofen, Gößleiten
+1 _UID 0425CC68684F3018EA2265DFCB071DAD175F
+1 FAMS @F162@
+1 OCCU Nägoeln qry Mekhozfag, Otwknyufx
+1 BURI 
+2 PLAC Altbach
+1 NOTE Pkoykqtg pdfl: Xxqrympal vkrv Xpivjuxmk
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 16:26:54
+0 @I394@ INDI
+1 NAME Magnus /Schwaighofer/
+2 SURN Schwaighofer
+2 GIVN Magnus
+1 SEX M
+1 DSCR Tgnst zw Di.45
+1 _UID A3CDC420EB25F9B7C36D3AE7988778E710B5
+1 FAMS @F156@
+1 RELI iíx.-whbb.
+1 OCCU Výfee zw Tigkhlgsf vkrv Cgxiiela qhy Vilkvvtytx
+1 NOTE Pkoykqtg pdfl Nhj
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 16:14:07
+0 @I395@ INDI
+1 NAME Leonhard /Rainalter/
+2 SURN Rainalter
+2 GIVN Leonhard
+1 SEX M
+1 DEAT
+2 DATE BEF 1766
+1 DSCR Tgnst zw Fhhpqocjslul Di.22
+1 _UID 30D7C4CE03017FC980D3976C54C988E40513
+1 FAMS @F157@
+1 OCCU Lxptafclu, Wývcbg
+1 RELI iíx.-whbb.
+1 NOTE pdfl: Rqpbchdwdm
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 00:31:58
+0 @I396@ INDI
+1 NAME Rosalia //
+2 GIVN Rosalia
+1 SEX F
+1 _UID 3B220F3CF53329B0D8DE2597BD53B798C848
+1 FAMS @F157@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 00:07:58
+0 @I397@ INDI
+1 NAME Zacharias /Niederreiter/
+2 SURN Niederreiter
+2 GIVN Zacharias
+1 SEX M
+1 _UID A77D3122FF21C3E7361BE7D74A6D42F0A74C
+1 FAMS @F158@
+1 OCCU Utvbqfayyq, Nägoeln
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 00:46:57
+0 @I398@ INDI
+1 NAME Irmgard //
+2 GIVN Irmgard
+1 SEX F
+1 _UID BF2E9BBC9FB4FF30C3E5F7CA11AB8F2B1197
+1 FAMS @F158@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 00:35:54
+0 @I399@ INDI
+1 NAME Urban /Šimek/
+2 SURN Šimek
+2 GIVN Urban
+1 SEX M
+1 _UID 1B85985E8401576C6E2E54AED459F4FB9876
+1 FAMS @F159@
+1 OCCU Jsjtqq zw Bghoytuqeawe
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 00:46:10
+0 @I400@ INDI
+1 NAME Irmgard //
+2 GIVN Irmgard
+1 SEX F
+1 _UID 785E9796DA240FC3EF94944126F7167F7ADB
+1 FAMS @F159@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 00:46:18
+0 @I401@ INDI
+1 NAME Scholastika //
+2 GIVN Scholastika
+1 SEX F
+1 _UID 0CD7487C9AB83053A4F32A47350FAE9D4197
+1 FAMS @F153@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 00:48:45
+0 @I402@ INDI
+1 NAME Regina //
+2 GIVN Regina
+1 SEX F
+1 _UID 8DD6B782B3C02B8DDB8A82A14B5798874EC8
+1 FAMS @F156@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 16:14:08
+0 @I403@ INDI
+1 NAME Magnus /Unterberger/
+2 SURN Unterberger
+2 GIVN Magnus
+1 SEX M
+1 _UID D525D115592C78F43058551E0753DB0DF1C1
+1 FAMS @F160@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 01:00:22
+0 @I404@ INDI
+1 NAME Crescentia //
+2 GIVN Crescentia
+1 SEX F
+1 _UID 8D19779D95189429D2C26F1AF6F8CF896DA8
+1 FAMS @F155@
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 01:05:07
+0 @I405@ INDI
+1 NAME Oswald /Fasching/
+2 SURN Fasching
+2 GIVN Oswald
+1 SEX M
+1 _UID 96DF92301EF5C226483700025167F3003986
+1 FAMS @F161@
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 01:08:19
+0 @I406@ INDI
+1 NAME Ottilie /Gstettner/
+2 SURN Gstettner
+2 GIVN Ottilie
+1 SEX F
+1 _UID EE4C06C7FF52702FAF20D2DF05464A6FD417
+1 FAMS @F161@
+1 CHAN
+2 DATE 26 May 1996
+3 TIME 01:08:26
+0 @I407@ INDI
+1 NAME Růžena /Dvořák/
+2 SURN Dvořák
+2 GIVN Růžena
+2 _MARNM Růžička
+1 SEX F
+1 BIRT
+2 DATE ABT 1868
+1 DEAT
+2 DATE 23 Sep 1953
+2 PLAC Rotkirchen
+1 _UID 655F081C70060B942F27AFB1D36BF212BF9C
+1 BURI 
+2 DATE 25 Sep 1953
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 16:01:03
+0 @I408@ INDI
+1 NAME Valentin /Kammerlander/
+2 SURN Kammerlander
+2 GIVN Valentin
+1 SEX M
+1 BIRT
+2 DATE 04 Apr 1763
+2 PLAC Unterwang, Rothofen, Gößleiten
+1 CHR
+2 DATE 06 May 1763
+2 PLAC Unterwang, Rothofen, Gößleiten
+1 _UID 348458B50E73810B8A23BE2839B1A93D6B57
+1 FAMC @F162@
+1 RELI iíx.-whbb.
+1 CHAN
+2 DATE 31 May 1996
+3 TIME 16:10:15
+0 @I409@ INDI
+1 NAME Emmeram-Cyrill /Unterberger/
+2 SURN Unterberger
+2 GIVN Emmeram-Cyrill
+1 SEX M
+1 BIRT
+2 DATE 22 Jun 1996
+2 PLAC Unterhofen
+1 _UID 31919C85E762580A16ADB05A3B30D922E184
+1 FAMC @F38@
+1 CHAN
+2 DATE 08 May 2008
+3 TIME 09:38:53
+0 @I410@ INDI
+1 NAME Nepomuk-Xaver /Unterberger/
+2 SURN Unterberger
+2 GIVN Nepomuk-Xaver
+1 SEX M
+1 BIRT
+2 DATE 16 Jun 1999
+2 PLAC Unterhofen
+1 _UID 10C126EF7E3ABA00FE187FBF21D45B2300C5
+1 FAMC @F38@
+1 CHAN
+2 DATE 08 May 2008
+3 TIME 09:39:18
+0 @I411@ INDI
+1 NAME Philomena /Rainalter/
+2 SURN Rainalter
+2 GIVN Philomena
+1 SEX F
+1 BIRT
+2 DATE 12 Jul 1976
+2 PLAC Bärnleiten
+1 _UID D934FEF7A3435C3D111F5CB25376683FE5E7
+1 FAMS @F163@
+1 CHAN
+2 DATE 30 Jul 2009
+3 TIME 17:42:29
+0 @I412@ INDI
+1 NAME Korbinian Fridolin /Unterberger/
+2 SURN Unterberger
+2 GIVN Korbinian Fridolin
+1 SEX M
+1 BIRT
+2 DATE 31 Dec 2009
+2 PLAC Lindheim
+1 CHR
+2 DATE 03 Jun 2010
+2 PLAC Oberkirchen, Steinzell
+1 _UID C9C3165A88E06C16EA3D16BFF938CAE414BB
+1 FAMC @F163@
+1 CHAN
+2 DATE 25 Jun 2010
+3 TIME 10:09:32
+0 @F1@ FAM
+1 _UID 620D1B3A7281E88EDFCDD25E3E464BDC75C5
+1 HUSB @I2@
+1 WIFE @I3@
+1 CHIL @I8@
+1 MARR
+2 DATE 13 Apr 1970
+2 PLAC Lindwang, Haselhofen
+0 @F2@ FAM
+1 _UID 4D7702D1640474185AD199EC54A65650D8BA
+1 HUSB @I4@
+1 WIFE @I5@
+1 CHIL @I7@
+1 CHIL @I1@
+1 CHIL @I3@
+1 CHIL @I6@
+1 MARR
+2 DATE Apr 1931
+2 PLAC Kirchbach
+0 @F3@ FAM
+1 _UID 4A166429D5A010F807722380AD3725163D43
+1 HUSB @I9@
+1 WIFE @I7@
+1 CHIL @I10@
+1 MARR
+2 DATE 13 Apr 1956
+2 PLAC Eichdorf, Haselhofen
+0 @F4@ FAM
+1 _UID E4BBC4CEA419660533CFED998FA0A607F56C
+1 HUSB @I11@
+1 WIFE @I1@
+1 CHIL @I12@
+1 MARR
+2 DATE 27 Jul 1972
+2 PLAC Lindwang, Haselhofen
+0 @F5@ FAM
+1 _UID 49F5C63D4A77E888A600BB2A288637C629E3
+1 HUSB @I13@
+1 WIFE @I14@
+1 CHIL @I2@
+1 MARR
+2 DATE 12 Feb 1925
+2 PLAC Lindstetten
+0 @F6@ FAM
+1 _UID 7350B49575A4049F0DEF23767FA904E677ED
+1 HUSB @I16@
+1 WIFE @I15@
+1 CHIL @I17@
+1 CHIL @I18@
+1 CHIL @I19@
+0 @F7@ FAM
+1 _UID 961DF4F1D2C8965FAEA91C48DBF281A34BB7
+1 HUSB @I18@
+1 WIFE @I29@
+1 CHIL @I20@
+1 CHIL @I77@
+0 @F8@ FAM
+1 _UID 0DCDA3D2A4B45B2D5D512CF5A28EA4967674
+1 HUSB @I21@
+1 WIFE @I22@
+1 CHIL @I5@
+1 CHIL @I15@
+1 MARR
+2 DATE 04 Nov 1905
+2 PLAC Eichhofen
+0 @F9@ FAM
+1 _UID FACED1A411632B18DF145E22A7766BB9BBF8
+1 HUSB @I6@
+1 WIFE @I28@
+1 CHIL @I23@
+1 CHIL @I26@
+1 CHIL @I27@
+1 MARR
+2 DATE 22 Jun 1977
+2 PLAC Haselbrunn
+0 @F10@ FAM
+1 _UID 4F9125FD10CB91EBA7C3E603BB9357119102
+1 HUSB @I24@
+1 WIFE @I25@
+1 CHIL @I4@
+1 MARR
+2 DATE 28 Jun 1903
+2 PLAC Steinkirchen
+0 @F11@ FAM
+1 _UID 2B09FD9096A1C290AC7E1D0768A718C36367
+1 HUSB @I30@
+1 WIFE @I17@
+1 CHIL @I75@
+1 CHIL @I76@
+0 @F12@ FAM
+1 _UID B15701173CD140FEDA6CCB7A89EA3638A929
+1 DIV Y
+1 HUSB @I31@
+1 WIFE @I19@
+1 CHIL @I32@
+1 CHIL @I33@
+0 @F13@ FAM
+1 _UID 1DE7FF16F5AE73E42E7C85FB104253FA4CF6
+1 HUSB @I72@
+1 WIFE @I34@
+1 CHIL @I21@
+1 CHIL @I87@
+1 MARR
+2 DATE 12 Feb 1871
+2 PLAC Steinfeld
+0 @F14@ FAM
+1 _UID E0D89D9DBB737B7526B6B145F3F4ECDCD000
+1 HUSB @I35@
+1 WIFE @I36@
+1 CHIL @I9@
+1 CHIL @I113@
+1 MARR
+2 DATE 28 Jul 1922
+2 PLAC Rotfeld
+0 @F15@ FAM
+1 _UID C1E038882B0772F9D4B45531569E80B0C501
+1 HUSB @I37@
+1 WIFE @I38@
+1 CHIL @I39@
+1 CHIL @I14@
+1 MARR
+2 DATE 26 Nov 1895
+2 PLAC Grüning, Bärnfeld
+0 @F16@ FAM
+1 _UID 813F04823B2F4CBF2A7303F56E736380845C
+1 HUSB @I40@
+1 WIFE @I41@
+1 CHIL @I37@
+1 CHIL @I343@
+1 CHIL @I344@
+1 CHIL @I345@
+0 @F17@ FAM
+1 _UID 23B47AA59D0010DFD65D53D7B527C5340721
+1 HUSB @I42@
+1 WIFE @I43@
+1 CHIL @I38@
+0 @F18@ FAM
+1 _UID 5AFE97C415111E3665961F93C5DDBD94B91E
+1 HUSB @I44@
+1 WIFE @I39@
+1 CHIL @I45@
+1 MARR
+2 DATE 1922
+2 PLAC Neubach, Altau
+0 @F19@ FAM
+1 _UID A7D03C752D4F49A6E23B203AF7DEC2A25B21
+1 DIV Y
+1 HUSB @I45@
+1 WIFE @I46@
+1 CHIL @I47@
+1 CHIL @I48@
+0 @F20@ FAM
+1 _UID 3DEB0C7EB4F7837524DEE74484914207B46E
+1 HUSB @I49@
+1 WIFE @I47@
+0 @F21@ FAM
+1 _UID 1EFE1497B3C1B37A99AC4C7E2782764B6747
+1 HUSB @I50@
+1 WIFE @I51@
+1 CHIL @I52@
+1 CHIL @I13@
+1 CHIL @I53@
+1 MARR
+2 DATE 06 Jun 1886
+2 PLAC Altstetten, Haselreuth
+0 @F22@ FAM
+1 _UID 8D50F147DB02FE1A47B6F86064E57519CD21
+1 HUSB @I54@
+1 WIFE @I55@
+1 CHIL @I50@
+1 MARR
+2 DATE 07 Dec 1856
+2 PLAC Eichau, Gößleiten
+0 @F23@ FAM
+1 _UID 1DC79D218EDA2B850709C0CF986A79A07CC5
+1 HUSB @I56@
+1 WIFE @I57@
+1 CHIL @I54@
+0 @F24@ FAM
+1 _UID CC326C15EAC1AE58D4606A27E4E93A1F3470
+1 HUSB @I58@
+1 WIFE @I59@
+1 CHIL @I55@
+1 MARR
+2 DATE 17 Feb 1822
+2 PLAC Haselwang, Gößleiten
+0 @F25@ FAM
+1 _UID 23946B6BB8E80C90057F8E8CFCF26F08084D
+1 HUSB @I53@
+1 WIFE @I60@
+1 CHIL @I61@
+1 CHIL @I62@
+1 MARR
+2 DATE 10 Jun 1924
+2 PLAC Rotleiten
+1 NOTE Biktrrybengkfbv Hvlbvcxi dw 45.65.7787 kt 3. Smjehc Epjsho
+0 @F26@ FAM
+1 _UID D3427DE2F875632887C063DEB4370FEEE296
+1 HUSB @I63@
+1 WIFE @I61@
+1 CHIL @I64@
+1 CHIL @I65@
+0 @F27@ FAM
+1 _UID 89D6E7F206F4AF994070334022CACD68AB5A
+1 HUSB @I65@
+1 WIFE @I66@
+0 @F28@ FAM
+1 _UID A53394A44417658F99D42918637BDE3DEC4A
+1 HUSB @I62@
+1 WIFE @I67@
+1 CHIL @I68@
+1 CHIL @I69@
+0 @F29@ FAM
+1 _UID A1315AD683E0EEF34854E78D185C8C556B76
+1 HUSB @I70@
+1 WIFE @I71@
+1 CHIL @I11@
+0 @F30@ FAM
+1 _UID 518A365945FCAE3153FB0B8D5B9308622017
+1 HUSB @I73@
+1 WIFE @I74@
+1 CHIL @I78@
+1 CHIL @I22@
+1 CHIL @I79@
+0 @F31@ FAM
+1 _UID BA7C0B1C96B91119C05E1AADE6E7D185B308
+1 HUSB @I80@
+1 WIFE @I79@
+1 CHIL @I81@
+1 CHIL @I82@
+0 @F32@ FAM
+1 _UID E1BABF8DFD49FF18EFAB37C473690C2D24FF
+1 HUSB @I78@
+1 WIFE @I83@
+1 CHIL @I84@
+1 CHIL @I85@
+0 @F33@ FAM
+1 _UID 23492456F2537A7A846EA629E5876977CF55
+1 HUSB @I82@
+1 WIFE @I86@
+0 @F34@ FAM
+1 _UID A15C223ED7564F9CF146F4B3B73805E1824B
+1 HUSB @I88@
+1 WIFE @I89@
+1 CHIL @I73@
+1 CHIL @I347@
+0 @F35@ FAM
+1 _UID ADABEE8DA7C744B89B3EC922766024366E1D
+1 HUSB @I90@
+1 WIFE @I91@
+1 CHIL @I29@
+0 @F36@ FAM
+1 _UID F789A5F4E8A4C7B64AB5B06FA86BD0145359
+1 HUSB @I92@
+1 WIFE @I10@
+1 CHIL @I356@
+1 MARR
+2 DATE 16 Sep 1993
+2 PLAC Walddorf, HÖRHOFEN
+0 @F37@ FAM
+1 _UID D15B3C0E21872B0EA6AAD2B1A7501688888C
+1 HUSB @I93@
+1 WIFE @I94@
+1 MARR
+2 DATE 13 Feb 1587
+2 PLAC Eichbach, Lindbach
+0 @F38@ FAM
+1 _UID 1B1A01AB6C77EA95E129962AD8D0D9D82067
+1 HUSB @I69@
+1 WIFE @I95@
+1 CHIL @I409@
+1 CHIL @I410@
+1 MARR
+2 DATE 11 Aug 1993
+0 @F39@ FAM
+1 _UID F6F25625E1CD1B63083E70FDAB720E9EE74D
+1 WIFE @I87@
+1 CHIL @I96@
+0 @F40@ FAM
+1 _UID 0B0DC234FE5DDEE6676502C0BC823D5C5F1A
+1 HUSB @I97@
+1 WIFE @I98@
+1 CHIL @I72@
+1 MARR
+2 PLAC Haselhofen
+0 @F41@ FAM
+1 _UID DFBE8E571E7C2AECB7AF7D962A9DC1F9D407
+1 HUSB @I99@
+1 WIFE @I100@
+1 CHIL @I97@
+1 MARR
+2 DATE 25 Feb 1780
+2 PLAC Neuheim, Haselhofen
+0 @F42@ FAM
+1 _UID 98EAD9DBAFF0BF8BEEC22B6EF82D6A4EA21C
+1 HUSB @I101@
+1 WIFE @I102@
+1 CHIL @I99@
+0 @F43@ FAM
+1 _UID 8728AA588208B8871057807F9C76F2BBEDC0
+1 HUSB @I103@
+1 WIFE @I104@
+1 CHIL @I100@
+0 @F44@ FAM
+1 _UID F88D3FE0C8773991FB58D4A776C5F31CCEC7
+1 HUSB @I105@
+1 WIFE @I106@
+1 CHIL @I98@
+0 @F45@ FAM
+1 _UID D486A4553BE4323E48040DCBDE9C072C9D4D
+1 HUSB @I107@
+1 WIFE @I110@
+1 CHIL @I34@
+1 MARR
+2 DATE 22 Jul 1837
+2 PLAC Lindleiten
+0 @F46@ FAM
+1 _UID 3CBDBDB7F05731DD3E44E1F854F229D0A6F7
+1 HUSB @I108@
+1 WIFE @I109@
+1 CHIL @I107@
+0 @F47@ FAM
+1 _UID ED02DFCFECEE3AF08DE264097E3DB519000E
+1 HUSB @I112@
+1 WIFE @I111@
+1 CHIL @I110@
+0 @F48@ FAM
+1 _UID 894963CE4874D2B12A00289FC425C176E91C
+1 HUSB @I114@
+1 WIFE @I113@
+1 CHIL @I115@
+1 CHIL @I116@
+1 MARR
+2 DATE Apr 1953
+2 PLAC Unterhofen
+0 @F49@ FAM
+1 _UID 241D4E4837F4BA0AE8CB1DF1331A6B27C9A5
+1 HUSB @I116@
+1 CHIL @I117@
+0 @F50@ FAM
+1 _UID B3B96B7A32C72FAC3F2228CCFECD3C83CEB3
+1 HUSB @I118@
+1 WIFE @I119@
+1 CHIL @I36@
+1 MARR
+2 DATE 10 Aug 1897
+2 PLAC Unterhofen
+0 @F51@ FAM
+1 _UID 1A3DB9123D7D494FAA0FBAAF32F3D3A2641A
+1 HUSB @I120@
+1 WIFE @I121@
+1 CHIL @I118@
+1 MARR
+2 DATE 01 Aug 1863
+2 PLAC Kirchwang
+0 @F52@ FAM
+1 _UID 8C1EB42D6F5485D858F4ED05EC8DBACDE056
+1 HUSB @I122@
+1 WIFE @I123@
+1 CHIL @I119@
+1 MARR
+2 DATE 28 Feb 1858
+2 PLAC Rotfeld
+0 @F53@ FAM
+1 _UID 3E8AA2FF4C124D1E3D9E40CD5EC308D6A743
+1 HUSB @I124@
+1 WIFE @I125@
+1 CHIL @I120@
+0 @F54@ FAM
+1 _UID E50662B8808F46B7BCEB5CC881033DD5B904
+1 HUSB @I126@
+1 WIFE @I127@
+1 CHIL @I121@
+0 @F55@ FAM
+1 _UID 8A43B09A2B38C6C13CAD7D548A50EA59DD88
+1 HUSB @I128@
+1 WIFE @I129@
+1 CHIL @I122@
+1 MARR
+2 DATE 17 Apr 1830
+2 PLAC Unterbrunn
+0 @F56@ FAM
+1 _UID AEC0BD795DDCBA9310B3E3289F62D4C4320C
+1 HUSB @I130@
+1 WIFE @I131@
+1 CHIL @I123@
+0 @F57@ FAM
+1 _UID 5746546B214DC6D8B4E912386CF720B7BA1A
+1 HUSB @I132@
+1 WIFE @I133@
+1 CHIL @I124@
+1 MARR
+2 DATE 30 Apr 1792
+2 PLAC Rotdorf
+0 @F58@ FAM
+1 _UID EBF2AEC68FD701267243A80A4C3EC2CD9E23
+1 HUSB @I134@
+1 WIFE @I135@
+1 CHIL @I125@
+1 MARR
+2 DATE 13 May 1798
+2 PLAC Unterkirchen
+0 @F59@ FAM
+1 _UID F13918CB813FCF1E12B77705488FA55C66F4
+1 HUSB @I136@
+1 WIFE @I137@
+1 CHIL @I126@
+0 @F60@ FAM
+1 _UID C1B6BD7AEC74C8FE5A83068C2C4FE9FE90A6
+1 HUSB @I138@
+1 WIFE @I139@
+1 CHIL @I127@
+1 MARR
+2 DATE 09 Jun 1804
+2 PLAC Steinbach
+0 @F61@ FAM
+1 _UID C11253A0203107F12A8C7CA3F79299B00140
+1 HUSB @I140@
+1 WIFE @I141@
+1 CHIL @I128@
+0 @F62@ FAM
+1 _UID 6F6D5DA3AA3530F6C7151FF00BF879CE0074
+1 WIFE @I142@
+1 CHIL @I129@
+0 @F63@ FAM
+1 _UID 89F72A0E345BCDFF1FA949AC1DE8563A9CF6
+1 HUSB @I143@
+1 WIFE @I144@
+1 CHIL @I130@
+0 @F64@ FAM
+1 _UID 98629D8AD4F4B62F9888F4548D8D69C2BF14
+1 HUSB @I145@
+1 WIFE @I146@
+1 CHIL @I131@
+0 @F65@ FAM
+1 _UID A8C48E31383080A66E40959C6CEAFFB21FC9
+1 HUSB @I147@
+1 WIFE @I148@
+1 CHIL @I92@
+1 CHIL @I149@
+1 MARR
+2 DATE 10 Jun 1965
+2 PLAC Fürstfeld
+0 @F66@ FAM
+1 _UID A27C5EF8F392A82C93591B70E2E071B27CCE
+1 HUSB @I150@
+1 WIFE @I151@
+1 CHIL @I147@
+1 MARR
+2 DATE 24 Sep 1936
+2 PLAC Unterhofen
+0 @F67@ FAM
+1 _UID B5EDFA3AF32C52E8FB0D039D23A8B56221ED
+1 HUSB @I152@
+1 WIFE @I153@
+1 CHIL @I148@
+1 MARR
+2 DATE 10 Aug 1924
+2 PLAC Fürstfeld
+0 @F68@ FAM
+1 _UID B5F0E9D7695B8ECE4FE10517EBE413AEE513
+1 HUSB @I154@
+1 WIFE @I155@
+1 CHIL @I35@
+1 MARR
+2 DATE 21 May 1888
+2 PLAC Bergau
+0 @F69@ FAM
+1 _UID 31677062409CB59B9BFB18BD73712702A462
+1 HUSB @I156@
+1 WIFE @I157@
+1 CHIL @I154@
+1 MARR
+2 DATE 12 Nov 1859
+2 PLAC Bergau
+0 @F70@ FAM
+1 _UID 15AD1BA7E7672208740BC83DBA3CB776A500
+1 HUSB @I158@
+1 WIFE @I159@
+1 CHIL @I155@
+1 MARR
+2 DATE 27 Sep 1860
+2 PLAC Bergau
+0 @F71@ FAM
+1 _UID 648BBF74D7F04EC5113200C171D3E3DC10C5
+1 HUSB @I160@
+1 WIFE @I161@
+1 CHIL @I156@
+0 @F72@ FAM
+1 _UID F612EDE8909CD3CBCD17C340C42D5822D83A
+1 HUSB @I162@
+1 WIFE @I163@
+1 CHIL @I157@
+0 @F73@ FAM
+1 _UID 766122A7335A12BAB2F20546EAE5C05CC5F4
+1 HUSB @I164@
+1 WIFE @I165@
+1 CHIL @I158@
+0 @F74@ FAM
+1 _UID 7E01B9D12A2BC40C9296F8F88DAE3A7BE54B
+1 HUSB @I166@
+1 WIFE @I167@
+1 CHIL @I159@
+0 @F75@ FAM
+1 _UID F444046D53ECD1C1A49314FE0DD023721E0A
+1 HUSB @I168@
+1 WIFE @I169@
+1 CHIL @I160@
+0 @F76@ FAM
+1 _UID 7EAA76916B27893D20BFE01BCE2ABE3A1D0C
+1 HUSB @I170@
+1 WIFE @I171@
+1 CHIL @I161@
+0 @F77@ FAM
+1 _UID B3A00122776046310CBD185670A55957619F
+1 HUSB @I172@
+1 WIFE @I173@
+1 CHIL @I162@
+0 @F78@ FAM
+1 _UID D19F69FF2ACF2B32703E369191734010BC5F
+1 HUSB @I174@
+1 WIFE @I175@
+1 CHIL @I163@
+0 @F79@ FAM
+1 _UID AFBB0BA54AE5EA8E495D0417F0C1A7C46AC6
+1 HUSB @I176@
+1 WIFE @I177@
+1 CHIL @I164@
+0 @F80@ FAM
+1 _UID 18A198C15A6EBFA256BE804E53BC0DE3953B
+1 HUSB @I178@
+1 WIFE @I179@
+1 CHIL @I165@
+0 @F81@ FAM
+1 _UID 5DEB533725D483E202C499295D711F6CEC3B
+1 HUSB @I180@
+1 WIFE @I181@
+1 CHIL @I166@
+0 @F82@ FAM
+1 _UID 5691838BC1310CBE6D4D44DE3AA1275123D3
+1 HUSB @I182@
+1 WIFE @I183@
+1 CHIL @I167@
+0 @F83@ FAM
+1 _UID D22C0D9FBCC412745D730BDE250EA5F2852D
+1 HUSB @I184@
+1 WIFE @I191@
+1 CHIL @I24@
+1 CHIL @I209@
+1 MARR
+2 DATE 28 Apr 1872
+2 PLAC Schöndorf
+0 @F84@ FAM
+1 _UID F81C4343167B50A7257DE843A8088B5B9486
+1 HUSB @I185@
+1 WIFE @I188@
+1 CHIL @I210@
+1 CHIL @I211@
+1 CHIL @I212@
+1 CHIL @I213@
+1 CHIL @I184@
+1 CHIL @I214@
+1 MARR
+2 DATE 10 Aug 1828
+2 PLAC Bärnau
+0 @F85@ FAM
+1 _UID D14D964C45AEF53BA03A8A76F872D16D79FA
+1 HUSB @I186@
+1 WIFE @I304@
+1 CHIL @I185@
+1 CHIL @I287@
+1 CHIL @I288@
+1 CHIL @I289@
+0 @F86@ FAM
+1 _UID 2986C609D0B57B116BA463136DD4F9ACA664
+1 HUSB @I187@
+1 WIFE @I240@
+1 CHIL @I186@
+0 @F87@ FAM
+1 _UID B65F03C599C7753B884BC1F276320D68A49C
+1 HUSB @I189@
+1 WIFE @I190@
+1 CHIL @I265@
+1 CHIL @I266@
+1 CHIL @I267@
+1 CHIL @I268@
+1 CHIL @I269@
+1 CHIL @I188@
+1 CHIL @I264@
+1 CHIL @I270@
+0 @F88@ FAM
+1 _UID B9D9CCA2FF08F1DAAE620CC435CD8AF83BA0
+1 HUSB @I192@
+1 WIFE @I193@
+1 CHIL @I312@
+1 CHIL @I314@
+1 CHIL @I315@
+1 CHIL @I191@
+1 CHIL @I316@
+1 CHIL @I317@
+1 CHIL @I318@
+1 CHIL @I319@
+1 CHIL @I320@
+1 MARR
+2 DATE 14 Nov 1846
+2 PLAC Schöndorf
+0 @F89@ FAM
+1 _UID EE961185E96396BFE835B6775D767E27570B
+1 HUSB @I194@
+1 WIFE @I195@
+1 CHIL @I192@
+1 CHIL @I311@
+0 @F90@ FAM
+1 _UID D50F1575853E0644A822F1FBA6EC34FA09F7
+1 HUSB @I196@
+1 WIFE @I197@
+1 CHIL @I321@
+1 CHIL @I322@
+1 CHIL @I323@
+1 CHIL @I193@
+1 CHIL @I324@
+1 MARR
+2 DATE 16 Mar 1816
+2 PLAC Waldbach
+0 @F91@ FAM
+1 _UID D22779B478DEC1924B6F53872C3E38C6F0F7
+1 HUSB @I198@
+1 CHIL @I194@
+0 @F92@ FAM
+1 _UID C9A36D442AE56622BCD5CA04B7532BC26A66
+1 HUSB @I272@
+1 WIFE @I199@
+1 CHIL @I299@
+1 CHIL @I25@
+1 CHIL @I300@
+1 CHIL @I271@
+1 MARR
+2 DATE 23 Jul 1870
+2 PLAC Steinau
+0 @F93@ FAM
+1 _UID CDCD4A8D5042AD8027A66C2FCC80400381E1
+1 HUSB @I200@
+1 WIFE @I201@
+1 CHIL @I295@
+1 CHIL @I297@
+1 CHIL @I296@
+1 CHIL @I199@
+1 CHIL @I301@
+1 CHIL @I302@
+1 CHIL @I298@
+1 MARR
+2 DATE 06 Nov 1832
+2 PLAC Steinkirchen
+0 @F94@ FAM
+1 _UID 40BF605C44248B215EBC08EF11AD52CFEA84
+1 HUSB @I202@
+1 WIFE @I206@
+1 CHIL @I294@
+1 CHIL @I200@
+1 CHIL @I303@
+1 MARR
+2 DATE 18 Mar 1798
+2 PLAC Steinkirchen
+0 @F95@ FAM
+1 _UID 6C156FD4EB7E0816BF20A00D4B0E4797640F
+1 WIFE @I203@
+1 CHIL @I201@
+0 @F96@ FAM
+1 _UID D04308ED45500B22FF337C29D9EEF6414926
+1 HUSB @I204@
+1 WIFE @I205@
+1 CHIL @I202@
+1 CHIL @I292@
+0 @F97@ FAM
+1 _UID F3006594DF4FE2170FC02AD9ADB6546DE831
+1 HUSB @I207@
+1 WIFE @I208@
+1 CHIL @I206@
+0 @F98@ FAM
+1 _UID 42198881B3697D1BE2CAB1776098099AA574
+1 HUSB @I216@
+1 WIFE @I209@
+1 CHIL @I215@
+1 CHIL @I217@
+0 @F99@ FAM
+1 _UID AFA2595DE627E883E3864438FD26A2B221A7
+1 HUSB @I211@
+1 WIFE @I218@
+1 MARR
+2 DATE ABT 1873
+0 @F100@ FAM
+1 _UID 3B350BC7F15AE2B600F658439AFAE2C79D89
+1 HUSB @I212@
+1 WIFE @I219@
+1 CHIL @I232@
+1 CHIL @I233@
+1 CHIL @I236@
+1 CHIL @I235@
+1 MARR
+2 DATE ABT 1857
+0 @F101@ FAM
+1 _UID F4AB2A735B6A65E8A0AC2A9C0C015A7B6528
+1 HUSB @I213@
+1 WIFE @I220@
+1 CHIL @I228@
+1 CHIL @I227@
+1 MARR
+2 DATE 09 Dec 1871
+0 @F102@ FAM
+1 _UID EBA16ED6582715DF316A1AF591D9FB60A07A
+1 HUSB @I221@
+1 WIFE @I214@
+1 CHIL @I222@
+1 CHIL @I223@
+1 MARR
+2 DATE 21 Nov 1863
+0 @F103@ FAM
+1 _UID 36FED890C067431F21AB3E2805A6DE82FA85
+1 HUSB @I223@
+1 WIFE @I224@
+1 CHIL @I225@
+1 CHIL @I226@
+0 @F104@ FAM
+1 _UID 35A8E196DF3FDBEF68EC25998F1D8F7937A5
+1 HUSB @I227@
+1 WIFE @I229@
+1 CHIL @I230@
+0 @F105@ FAM
+1 _UID 54D00EB8B8EBBB8A780706CB85720B773A51
+1 HUSB @I231@
+1 WIFE @I228@
+0 @F106@ FAM
+1 _UID C3F73783C5D11EB1F10DB9D9F910C73FD359
+1 HUSB @I233@
+1 WIFE @I234@
+1 CHIL @I237@
+1 CHIL @I238@
+0 @F107@ FAM
+1 _UID E0A38B64CC6FAFFE38157B85F09D72A4B8A6
+1 HUSB @I185@
+1 WIFE @I239@
+1 CHIL @I241@
+1 CHIL @I242@
+1 CHIL @I243@
+1 CHIL @I244@
+1 CHIL @I245@
+1 CHIL @I246@
+1 MARR
+2 DATE 01 Nov 1799
+0 @F108@ FAM
+1 _UID 2C57978000BF25FD9A7BC0E1E4356A7F9B3E
+1 HUSB @I247@
+1 WIFE @I243@
+1 MARR
+2 DATE 17 Jun 1825
+0 @F109@ FAM
+1 _UID 7A7E5C9A1062E8C0FC880A34B8A89699C89A
+1 HUSB @I248@
+1 WIFE @I242@
+1 CHIL @I260@
+1 CHIL @I261@
+1 CHIL @I262@
+1 CHIL @I263@
+1 MARR
+2 DATE 12 Oct 1827
+0 @F110@ FAM
+1 _UID 0DE287A9823988A5680E32F9D831968D152D
+1 HUSB @I241@
+1 WIFE @I249@
+1 CHIL @I250@
+1 CHIL @I251@
+1 CHIL @I252@
+1 CHIL @I253@
+1 MARR
+2 DATE 29 Nov 1828
+0 @F111@ FAM
+1 _UID DF51F037673A5DA96A9C6ABFC91BC63875DE
+1 HUSB @I250@
+1 WIFE @I254@
+1 CHIL @I255@
+1 CHIL @I256@
+1 CHIL @I257@
+0 @F112@ FAM
+1 _UID 97F0EE9972F752C9254443F9F3E29253103C
+1 HUSB @I256@
+1 WIFE @I258@
+0 @F113@ FAM
+1 _UID C57E99DF9563937343CE03028D9601FC49C9
+1 HUSB @I259@
+1 WIFE @I257@
+0 @F114@ FAM
+1 _UID 7411C5D4AFE598732D6BFC961E2EFF4AAD54
+1 HUSB @I274@
+1 WIFE @I273@
+1 CHIL @I272@
+1 MARR
+2 DATE 23 Nov 1828
+2 PLAC Altreuth
+0 @F115@ FAM
+1 _UID 7416E2C993ED23F4A9A91BBC9176F3817A09
+1 HUSB @I275@
+1 WIFE @I290@
+1 CHIL @I274@
+0 @F116@ FAM
+1 _UID 2E241C2489A0F4B44FCBA4C8B967A3AE33E1
+1 HUSB @I276@
+1 WIFE @I291@
+1 CHIL @I273@
+0 @F117@ FAM
+1 _UID 0ABB3D3DB93BC821AE2E7734A6F9425F30AC
+1 HUSB @I244@
+1 WIFE @I277@
+1 CHIL @I278@
+1 CHIL @I279@
+1 CHIL @I280@
+1 CHIL @I281@
+1 CHIL @I282@
+1 CHIL @I283@
+1 CHIL @I284@
+1 CHIL @I285@
+1 CHIL @I286@
+0 @F118@ FAM
+1 _UID 44774B3A2E66D85EF447C3AE7F6D468137B6
+1 WIFE @I292@
+1 CHIL @I293@
+0 @F119@ FAM
+1 _UID 4AE82E6EE230B8AAC4032BD684BFCF99FF89
+1 HUSB @I305@
+1 WIFE @I306@
+1 CHIL @I307@
+1 CHIL @I189@
+1 CHIL @I308@
+1 CHIL @I309@
+1 CHIL @I310@
+0 @F120@ FAM
+1 _UID 172FF20E0D01CD0BBC81EA1457E701BB03D1
+1 HUSB @I312@
+1 WIFE @I313@
+1 MARR
+2 DATE 03 Dec 1870
+0 @F121@ FAM
+1 _UID EA4B1AFDB1B426CBFB8E514B767D6639F5D0
+1 HUSB @I322@
+1 WIFE @I325@
+1 CHIL @I326@
+0 @F122@ FAM
+1 _UID 1079FB67B8C2EF557251B4D289D578D1EE4B
+1 HUSB @I316@
+1 WIFE @I326@
+1 MARR
+2 PLAC Unterhofen
+0 @F123@ FAM
+1 _UID 5393BB7EF552AAD86F2060EFFD5E5DFAC718
+1 HUSB @I327@
+1 WIFE @I197@
+1 MARR
+2 DATE AFT 1830
+2 PLAC Schöndorf
+0 @F124@ FAM
+1 _UID EB35C821308F137DE3EA4813B2A65A8C00A7
+1 HUSB @I328@
+1 WIFE @I329@
+1 CHIL @I196@
+0 @F125@ FAM
+1 _UID D38F1EBE6D2D63B127CCA265FD7EB79ACA94
+1 HUSB @I330@
+1 WIFE @I331@
+1 CHIL @I328@
+0 @F126@ FAM
+1 _UID 8DDBC10C7F4EC42E36C7C760A96491CD57AC
+1 HUSB @I330@
+1 WIFE @I332@
+1 MARR
+2 PLAC Haselfeld
+0 @F127@ FAM
+1 _UID FBF4AEF64AA5126A4A12C57EF16AEDA76D28
+1 HUSB @I333@
+1 CHIL @I330@
+0 @F128@ FAM
+1 _UID E5193B664CD8199D47C5CAB1335E16E68710
+1 HUSB @I334@
+1 WIFE @I335@
+1 CHIL @I333@
+1 CHIL @I336@
+1 CHIL @I337@
+1 CHIL @I338@
+1 CHIL @I339@
+1 CHIL @I340@
+1 CHIL @I341@
+0 @F129@ FAM
+1 _UID 26F0FE0231E77CFAB738D6ED71BD4EA87131
+1 HUSB @I45@
+1 WIFE @I342@
+1 MARR
+2 DATE 1993
+2 PLAC Bärnleiten
+0 @F130@ FAM
+1 _UID CEBD4F7224D3D3102BFA357807D9AF42A4E4
+1 HUSB @I346@
+1 CHIL @I67@
+0 @F131@ FAM
+1 _UID 8D77DF07AF2802F5BB9049BD915381DF3CF6
+1 HUSB @I348@
+1 WIFE @I349@
+1 CHIL @I51@
+1 MARR
+2 DATE 26 Nov 1852
+2 PLAC Eichkirchen, Haselreuth
+0 @F132@ FAM
+1 _UID 8001D734489E9EE24F014FBD74CB1A0D2B63
+1 HUSB @I350@
+1 WIFE @I351@
+1 CHIL @I348@
+1 MARR
+2 DATE 24 Jun 1822
+2 PLAC Žďárek, Haselreuth
+0 @F133@ FAM
+1 _UID D318E5DA2E132D303C92D44CD94D1DDE59EF
+1 HUSB @I352@
+1 WIFE @I353@
+1 CHIL @I349@
+1 MARR
+2 DATE 13 Mar 1814
+2 PLAC Oberbrunn, Gößfeld, KIRCHLEITEN
+0 @F134@ FAM
+1 _UID EB7C76A377C6AFCCFD7229D22DA33A2E4E94
+1 HUSB @I354@
+1 CHIL @I40@
+0 @F135@ FAM
+1 _UID 9000B8EF459B8F4AE828545A94B62E019292
+1 HUSB @I355@
+1 CHIL @I354@
+0 @F136@ FAM
+1 _UID 147F60F685D46C291A445A7B0B2857DC5B41
+1 HUSB @I357@
+1 WIFE @I358@
+1 CHIL @I58@
+1 MARR
+2 DATE 26 Aug 1781
+2 PLAC Lužná, Gößleiten
+0 @F137@ FAM
+1 _UID 422EA669E2D771904A76AC0247DA1BE71494
+1 HUSB @I359@
+1 WIFE @I360@
+1 CHIL @I357@
+0 @F138@ FAM
+1 _UID 7AB2DA9F38E6F900EBFCF97B216FB2700EE7
+1 HUSB @I361@
+1 WIFE @I362@
+1 CHIL @I358@
+1 MARR
+2 DATE 17 Jun 1758
+2 PLAC Hořenice, Gößleiten
+0 @F139@ FAM
+1 _UID 1273A4C53E86207A527A2EC527DDF79DF9F0
+1 HUSB @I363@
+1 WIFE @I364@
+1 CHIL @I59@
+1 MARR
+2 DATE 08 Dec 1797
+2 PLAC Eichau, Gößleiten
+0 @F140@ FAM
+1 _UID B3183174AB67A3D1FB5DA88710DAB2A94DAE
+1 WIFE @I365@
+1 CHIL @I363@
+0 @F141@ FAM
+1 _UID 766004CAFDA0DCCDAF7C5E547FE9ADDAEB9C
+1 HUSB @I366@
+1 WIFE @I367@
+1 CHIL @I364@
+1 MARR
+2 DATE 03 Jun 1760
+2 PLAC Oberreuth, Gößleiten
+0 @F142@ FAM
+1 _UID 62DBC8F11171FB920F77ED4BA18735FAA848
+1 HUSB @I381@
+1 WIFE @I368@
+1 CHIL @I350@
+0 @F143@ FAM
+1 _UID DA88CE7E60FE34E4CC78BA3037C0125E33C1
+1 HUSB @I369@
+1 WIFE @I370@
+1 CHIL @I351@
+0 @F144@ FAM
+1 _UID 6A5FE91D7713C5C5562FFB748B398B8484D6
+1 HUSB @I371@
+1 WIFE @I372@
+1 CHIL @I352@
+0 @F145@ FAM
+1 _UID 47EC4BF74D0EC1E84AF24A3539E0536E0296
+1 HUSB @I373@
+1 WIFE @I374@
+1 CHIL @I353@
+1 MARR
+2 DATE 27 Aug 1792
+2 PLAC Oberbrunn, Gößfeld, KIRCHLEITEN
+0 @F146@ FAM
+1 _UID AF4A3F4D0EDF9E9B725B544C980E30BBF60F
+1 HUSB @I375@
+1 WIFE @I376@
+1 CHIL @I373@
+1 MARR
+2 DATE 23 Nov 1766
+2 PLAC Eichleiten
+0 @F147@ FAM
+1 _UID 38C7258945F725FE90318304925EDB3D379F
+1 HUSB @I377@
+1 WIFE @I378@
+1 CHIL @I374@
+1 MARR
+2 DATE 15 Nov 1766
+2 PLAC Mühldorf, Mühlleiten
+0 @F148@ FAM
+1 _UID 6F6E66E1631F5864AA28B63E17B1B4B4D4C5
+1 HUSB @I379@
+1 WIFE @I380@
+1 CHIL @I371@
+1 MARR
+2 DATE 10 Feb 1713
+2 PLAC Haselleiten, Mühlleiten
+0 @F149@ FAM
+1 _UID EB0209F8C45224B7E4067749CBFD1432D7D1
+1 HUSB @I382@
+1 WIFE @I385@
+1 CHIL @I60@
+1 MARR
+2 DATE 23 Dec 1892
+2 PLAC Unterhofen
+0 @F150@ FAM
+1 _UID 7DE37D5AE270819D56547196E3D105443348
+1 HUSB @I383@
+1 WIFE @I384@
+1 CHIL @I382@
+0 @F151@ FAM
+1 _UID 8D04F409E5BE6DA899C166F933BD7EE2F8F2
+1 HUSB @I386@
+1 WIFE @I387@
+1 CHIL @I385@
+0 @F152@ FAM
+1 _UID 24D4C542C731E6B97D861A41B2D5325411EA
+1 HUSB @I388@
+1 WIFE @I390@
+1 CHIL @I379@
+0 @F153@ FAM
+1 _UID 8A95EBC61787BFD406B854AC84CC92630CDF
+1 HUSB @I389@
+1 WIFE @I401@
+1 CHIL @I380@
+0 @F154@ FAM
+1 _UID 3222FBADFAE3F4B6A9FBCA862AEA21023FE0
+1 HUSB @I391@
+1 CHIL @I366@
+0 @F155@ FAM
+1 _UID 7C85F92FE31E0DA05E22006B1749EC1982FF
+1 HUSB @I392@
+1 WIFE @I404@
+1 CHIL @I367@
+0 @F156@ FAM
+1 _UID DB9C6400E8EDE0BF42F4FEFD15A4A3354C03
+1 HUSB @I394@
+1 WIFE @I402@
+1 CHIL @I376@
+0 @F157@ FAM
+1 _UID 8C8DF6AF68E48249E4A66A36B14B3916468C
+1 HUSB @I395@
+1 WIFE @I396@
+1 CHIL @I375@
+0 @F158@ FAM
+1 _UID 8B3686016098CAA4450380312EE321900376
+1 HUSB @I397@
+1 WIFE @I398@
+1 CHIL @I378@
+0 @F159@ FAM
+1 _UID 48AC7E7A9FB75C769F721522121E6B2099EF
+1 HUSB @I399@
+1 WIFE @I400@
+1 CHIL @I377@
+0 @F160@ FAM
+1 _UID 2E17705A8F3AA8BB9A84078FD43F94246CAB
+1 HUSB @I403@
+1 CHIL @I362@
+0 @F161@ FAM
+1 _UID E953049391A0A2E06E5FB6F138F3FEDFD964
+1 HUSB @I405@
+1 WIFE @I406@
+1 CHIL @I391@
+0 @F162@ FAM
+1 _UID F8EDEF74A33CBCF42106D7115C4E6F77D165
+1 HUSB @I393@
+1 WIFE @I365@
+1 CHIL @I408@
+0 @F163@ FAM
+1 _UID 9DF6D4B7EE2E3B942C336438781CA9F1E795
+1 HUSB @I8@
+1 WIFE @I411@
+1 CHIL @I412@
+1 MARR
+2 DATE 11 Sep 2008
+2 PLAC Bärnleiten
+0 @S1@ SOUR
+1 TITL Rjjiyg Ebgngi Iqrdc
+1 AUTH Truyzircctofo Bcjibvtmpj
+0 @S2@ SOUR
+1 TITL Efvkrth, Frhxn WFJ. Dpyhs
+1 OBJE
+2 FORM jpg
+2 FILE Dbkqzn\jaoah_mqh.jpg
+2 TITL Dpyhs Frhxn WFJ.
+2 NOTE 
+2 _SCBK N
+2 _PRIM N
+2 _TYPE PHOTO
+0 TRLR
