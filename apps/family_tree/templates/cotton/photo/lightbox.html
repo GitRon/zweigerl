@@ -1,0 +1,29 @@
+<c-vars photos />
+{# The lightbox of the Fotos tab (#16): each photo whole, not cut to the frame, with what it shows and when. #}
+{# "$photo" says which; Vor and Zurück - and the arrow keys - go round. A native dialog, so Escape closes it #}
+{# and the keyboard stays inside while it is open; Escape stops here, so the canvas does not close the card #}
+{# behind it as well. #}
+{% with count=photos|length %}
+<dialog id="photo-lightbox" aria-label="Fotos" class="m-auto max-h-[94vh] w-[min(92vw,64rem)] rounded-lg border-[1.5px] border-ink bg-sheet p-4 backdrop:bg-ink/80" data-on:keydown="evt.key == 'Escape' && evt.stopPropagation(); evt.key == 'ArrowLeft' && ($photo = ($photo + {{ count }} - 1) % {{ count }}); evt.key == 'ArrowRight' && ($photo = ($photo + 1) % {{ count }})">
+    {% for entry in photos %}
+        <figure class="flex flex-col gap-3"{% if not forloop.first %} style="display: none"{% endif %} data-show="$photo == {{ forloop.counter0 }}">
+            <img src="{{ entry.url }}" alt="{{ entry.alt }}" loading="lazy" class="max-h-[70vh] w-full object-contain">
+            <figcaption class="flex flex-col gap-1">
+                {% if entry.link.photo.description %}
+                    <span class="whitespace-pre-line">{{ entry.link.photo.description }}</span>
+                {% endif %}
+                <span class="text-sm text-ink-muted">{% if entry.date %}Aufgenommen {{ entry.date }} · {% endif %}Foto {{ forloop.counter }} von {{ count }}</span>
+            </figcaption>
+        </figure>
+    {% endfor %}
+    <div class="mt-3 flex justify-between gap-3">
+        {% if count > 1 %}
+            <c-common.button data-on:click="$photo = ($photo + {{ count }} - 1) % {{ count }}">Zurück</c-common.button>
+        {% endif %}
+        <c-common.button class="ml-auto" data-on:click="el.closest('dialog').close()">Schließen</c-common.button>
+        {% if count > 1 %}
+            <c-common.button data-on:click="$photo = ($photo + 1) % {{ count }}">Vor</c-common.button>
+        {% endif %}
+    </div>
+</dialog>
+{% endwith %}

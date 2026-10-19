@@ -9,6 +9,8 @@ from apps.family_tree.models import (
     ParentChild,
     Partnership,
     Person,
+    Photo,
+    PhotoPerson,
     SiblingPair,
     Source,
     SourceFile,
@@ -211,6 +213,32 @@ class SourceAdmin(admin.ModelAdmin):
     search_fields = ("title", "description")
     autocomplete_fields = ("people",)
     inlines = (SourceFileInline,)
+
+
+class PhotoPersonInline(admin.TabularInline):
+    model = PhotoPerson
+    verbose_name_plural = "Personen auf dem Foto"
+    fields = ("person", "is_portrait")
+    autocomplete_fields = ("person",)
+    extra = 0
+
+
+@admin.register(Photo)
+class PhotoAdmin(admin.ModelAdmin):
+    """
+    A photo's description, date and people. The file is shown, not changed, and no photo is added here: a file
+    saved through the admin would keep its original name and everything in it, so photos are added on the person
+    card, through "store_upload" (#16, #21).
+    """
+
+    list_display = ("__str__", "description", "date_1")
+    search_fields = ("description",)
+    fields = ("file", "description", "date_kind", "date_1", "date_2", "precision")
+    readonly_fields = ("file",)
+    inlines = (PhotoPersonInline,)
+
+    def has_add_permission(self, request):
+        return False
 
 
 @admin.register(Citation)

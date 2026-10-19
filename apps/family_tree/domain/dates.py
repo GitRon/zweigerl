@@ -281,3 +281,21 @@ def _german_month(*, name: str) -> int:
     if number is None:
         raise ValueError(f"„{name}“ ist kein Monat.")
     return number
+
+
+EXIF_DATE = re.compile(r"^(\d{4}):(\d{2}):(\d{2})")
+
+
+def from_exif(*, text: str) -> UncertainDate | None:
+    """
+    The date a camera wrote into a photo, "2009:07:14 16:02:11", as an exact day - or None for anything a
+    camera writes when it does not know, such as "0000:00:00 00:00:00" (#16).
+    """
+    match = EXIF_DATE.match(text.strip())
+    if match is None:
+        return None
+    try:
+        day = datetime.date(*(int(part) for part in match.groups()))
+    except ValueError:
+        return None
+    return UncertainDate(kind=DateKind.EXACT, date_1=day, precision=Precision.DAY)

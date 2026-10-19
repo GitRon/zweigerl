@@ -16,6 +16,8 @@ each.
 | `ParentChild` | One parent and one child, optionally the `partnership` the child belongs to, and the `pedigree` | `CHIL` in a `FAM`, `PEDI` |
 | `SiblingPair` | Two siblings whose shared parents nobody knows | a `FAM` with children and no parents |
 | `TreeSettings` | The tree's settings - one row - holding the `home_person` (Ausgangsperson) | - |
+| `Photo` | A photo (#16): its `file`, a `description` and the uncertain date it was taken, the `people` on it | `OBJE` with `FILE` and `TITL` |
+| `PhotoPerson` | One person on one photo, and whether it is their portrait (`is_portrait`, the Titelbild). The through model of `Photo.people` | `OBJE` under an `INDI`, `_PRIM` |
 
 The names are English like all code, close to GEDCOM where it has a word; what a person reads - the
 `verbose_name`s, the choice labels, the messages - is German.
@@ -31,6 +33,15 @@ may be shown and exported about them, so a guess is worse than "unknown".
 `marriage` or `divorce`, with the uncertain date and the citations every fact has - see
 [Belege](evidence.md). Until #8 the Partnership held it as text in `start` and `end`; migration `0003`
 turned that into facts.
+
+**Photos give a person a face** (#16). The Fotos tab of the person card uploads them -
+`actions.photo.add_photos`, through `store_upload` at `photos/<photo-id>/original.<ext>`, see
+[data storage](data-storage.md#photos-and-scans) - as JPEG, PNG or WebP; a TIFF or PDF scan is a source's.
+The file is kept as it came: the picture frame shows its middle as 3:4 (`object-cover`) and the lightbox
+the whole picture, so nothing is ever cut off a photo. The date the camera wrote fills in the date it was
+taken, which the tab corrects as German free text, the way a fact's date is entered (#14): "um 1950",
+"vor 1960", "zwischen 1950 und 1955". One photo per person may be their portrait, which every frame of them
+shows - the card's head, the tree, the list - and the first photo of somebody without one becomes it.
 
 **Names and status are corrected on the person card** (#30): the pencil beside the name opens the form
 "Name & Status bearbeiten", saved by `actions.person.change_name_and_status`. Switching to `deceased` asks for
@@ -72,6 +83,8 @@ and a forbidden row ends in a `ValidationError` with the German message below - 
 | One Partnership and one SiblingPair row per pair, whichever way round | `partnership_once_per_pair`, `siblingpair_once_per_pair` - unique on `Least`/`Greatest` of the two, so which of them is `person_a` means nothing | "Diese beiden sind schon ein Paar." |
 | One ParentChild row per parent and child | `parentchild_once` | "Diese Eltern-Kind-Verbindung gibt es schon." |
 | One row of TreeSettings | `treesettings_single_row`, on `id = 1`; the admin offers no second and no delete | "Es gibt nur eine Zeile Einstellungen." |
+| Somebody is on a photo once, and has at most one portrait | `photoperson_once`, `photoperson_one_portrait` - unique on `person` where `is_portrait` | "Eine Person hat höchstens ein Titelbild." |
+| A photo's date is complete, sorted, and has a second date only as a range - as a fact's | `photo_date_complete`, `photo_sort_date_with_date`, `photo_date_2_only_between` | "Ein Aufnahmedatum braucht seine Art und seine Genauigkeit." |
 | The home person cannot be deleted | `on_delete=PROTECT`, and `actions.person.delete_person` refuses first with a message; the admin says so too (#19) | "Das ist die Ausgangsperson. …" |
 
 What spans several rows no constraint can hold, so it is in `clean()`, which the mixin runs on every save:

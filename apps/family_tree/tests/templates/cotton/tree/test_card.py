@@ -1,3 +1,5 @@
+from dataclasses import replace
+
 from django.urls import reverse
 
 from apps.common.tests.html import parse, render_component
@@ -59,3 +61,15 @@ def test_card_without_pedigree_collapse_has_no_label():
     )
 
     assert parse(html).find(id="tree-card-7-collapse") is None
+
+
+def test_card_shows_the_portrait_in_the_frame():
+    entry = replace(CARD.entry, portrait_url="/media/photos/5/original.jpg", portrait_alt="Am Hof")
+
+    html = render_component(
+        tag='<c-tree.card :card="card" width="140" height="190" />',
+        context={"card": replace(CARD, entry=entry)},
+    )
+
+    image = parse(html).find(id="tree-card-7").find("img")
+    assert (image["src"], image["alt"]) == ("/media/photos/5/original.jpg", "Am Hof")

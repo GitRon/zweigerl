@@ -1,0 +1,46 @@
+<c-vars entry person index />
+{# One photo in the Fotos tab of the person card (#16): the photo in its 3:4 frame - a click opens it whole in #}
+{# the lightbox, at "index" - what it shows and when, whether it is the portrait or a button making it one, #}
+{# and the form describing it, folded away. #}
+<li id="photo-{{ entry.link.photo.pk }}" class="flex flex-col gap-2 rounded-md border border-card-edge bg-sheet p-3">
+    <div class="flex items-start gap-3">
+        <button type="button" class="flex shrink-0 cursor-pointer rounded-lg" aria-label="Groß ansehen: {{ entry.alt }}" aria-haspopup="dialog" data-on:click="$photo = {{ index }}; document.getElementById('photo-lightbox').showModal()">
+            <c-common.frame :src="entry.url" :alt="entry.alt" width="w-20" />
+        </button>
+        <div class="flex min-w-0 flex-1 flex-col items-start gap-1">
+            {% if entry.link.is_portrait %}
+                <c-common.label text="Titelbild" tone="forest" />
+            {% endif %}
+            {% if entry.link.photo.description %}
+                <p class="text-sm whitespace-pre-line">{{ entry.link.photo.description }}</p>
+            {% else %}
+                <p class="text-sm text-ink-muted">Noch ohne Beschreibung.</p>
+            {% endif %}
+            <p class="text-sm text-ink-muted">{% if entry.date %}Aufgenommen {{ entry.date }}{% else %}Wann aufgenommen, weiß noch niemand.{% endif %}</p>
+            {% if not entry.link.is_portrait %}
+                <form data-on:submit="@post('{% url 'family_tree:photo-portrait-view' pk=person.pk photo_pk=entry.link.photo.pk %}', {contentType: 'form'})">
+                    {% csrf_token %}
+                    <input type="hidden" name="search" value="" data-attr:value="$search">
+                    <c-common.button type="submit">Als Titelbild</c-common.button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+    <details>
+        <summary class="cursor-pointer text-sm font-bold">Beschreiben</summary>
+        <form class="mt-2 flex flex-col gap-3" data-on:submit="@post('{% url 'family_tree:photo-describe-view' pk=person.pk photo_pk=entry.link.photo.pk %}', {contentType: 'form'})">
+            {% csrf_token %}
+            <input type="hidden" name="search" value="" data-attr:value="$search">
+            <label class="flex flex-col gap-1">
+                <span class="text-sm">Was ist zu sehen?</span>
+                <textarea name="description" rows="2" placeholder="z. B. Hochzeit am Hof, 2. Reihe links" class="rounded-md border-[1.5px] border-ink bg-sheet px-3 py-2">{{ entry.link.photo.description }}</textarea>
+            </label>
+            <label class="flex flex-col gap-1">
+                <span class="text-sm">Aufgenommen</span>
+                <input name="date" value="{{ entry.date }}" autocomplete="off" placeholder="z. B. um 1950" aria-describedby="photo-{{ entry.link.photo.pk }}-date-hint" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
+                <span id="photo-{{ entry.link.photo.pk }}-date-hint" class="text-sm text-ink-muted">Auch ungefähr: um 1950, vor 1960, zwischen 1950 und 1955. Leer, wenn's niemand weiß.</span>
+            </label>
+            <c-common.button type="submit" class="self-start">Speichern</c-common.button>
+        </form>
+    </details>
+</li>

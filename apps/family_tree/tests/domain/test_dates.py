@@ -7,6 +7,7 @@ from apps.family_tree.domain.dates import (
     Precision,
     UncertainDate,
     date_text,
+    from_exif,
     from_gedcom,
     from_german,
     lifespan,
@@ -215,3 +216,14 @@ def test_from_german_reads_what_date_text_writes(text):
 def test_from_german_refuses_what_it_cannot_read(text, message):
     with pytest.raises(ValueError, match=message):
         from_german(text=text)
+
+
+def test_from_exif_reads_the_day_the_camera_wrote():
+    assert from_exif(text="2009:07:14 16:02:11") == UncertainDate(
+        kind=DateKind.EXACT, date_1=datetime.date(2009, 7, 14), precision=Precision.DAY
+    )
+
+
+@pytest.mark.parametrize("text", ["0000:00:00 00:00:00", "2009:02:30 10:00:00", "gestern", ""])
+def test_from_exif_ignores_what_is_no_date(text):
+    assert from_exif(text=text) is None

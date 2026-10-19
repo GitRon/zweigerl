@@ -1,12 +1,12 @@
 from collections.abc import Iterable
 from dataclasses import dataclass
 
-from django.db.models import Prefetch, Q, QuerySet
+from django.db.models import F, Prefetch, Q, QuerySet
 
 from apps.family_tree.domain.dates import date_text, lifespan
 from apps.family_tree.domain.names import display_name, initials, matches, sort_key
 from apps.family_tree.domain.relationship import connected_people, relationship_name
-from apps.family_tree.models import Citation, Fact, Partnership, Person, SiblingPair, Source
+from apps.family_tree.models import Citation, Fact, Partnership, Person, PhotoPerson, SiblingPair, Source
 from apps.family_tree.models.fact import COUPLE_KINDS, CUSTOM, VALUE_KINDS
 from apps.family_tree.readers.evidence import facts, sources
 from apps.family_tree.readers.relationship import family_graph
@@ -52,6 +52,9 @@ class PersonListEntry:
     name: str
     initials: str
     lifespan: str
+    # The portrait the picture frame shows (#16), "" while there is none, and what it shows.
+    portrait_url: str = ""
+    portrait_alt: str = ""
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -126,6 +129,22 @@ class SourcesTab:
 
 
 @dataclass(frozen=True, kw_only=True)
+class PhotoEntry:
+    link: PhotoPerson
+    url: str
+    alt: str
+    # When it was taken, as the card writes it and the form reads it back - "" while nobody knows.
+    date: str
+
+
+@dataclass(frozen=True, kw_only=True)
+class PhotosTab:
+    person: Person
+    # The person's photos, the oldest first and those without a date last (#16).
+    photos: list[PhotoEntry]
+
+
+@dataclass(frozen=True, kw_only=True)
 class PersonCard:
     entry: PersonListEntry
     # How the person is related to the home person, None while nobody is chosen or nothing connects them.
@@ -134,6 +153,7 @@ class PersonCard:
     relatives: list[RelativeGroup]
     relative_count: int
     sources_tab: SourcesTab
+    photos_tab: PhotosTab
     # Whether a death fact is recorded, so the form for name and status (#30) does not ask for the year again.
     death_recorded: bool
 
@@ -158,6 +178,7 @@ def person_card(*, pk: int) -> PersonCard | None:
         relatives=groups,
         relative_count=sum(len(group.entries) for group in groups),
         sources_tab=_sources_tab(person=person),
+        photos_tab=_photos_tab(person=person),
         death_recorded=any(fact.kind == Fact.Kind.DEATH for fact in person.life_facts),
     )
 
@@ -434,13 +455,47 @@ def _fields(*, kind: str) -> str:
     return "custom" if kind == CUSTOM else "date"
 
 
+def photos_tab(*, pk: int) -> PhotosTab | None:
+    """
+    The Fotos tab of the person card (#16) on its own, for patching it after a photo was added or changed - or
+    None for a person who is not there.
+    """
+    person = Person.objects.filter(pk=pk).first()
+    return _photos_tab(person=person) if person else None
+
+
+def _photos_tab(*, person: Person) -> PhotosTab:
+    links = (
+        PhotoPerson.objects.filter(person=person)
+        .select_related("photo")
+        .order_by(F("photo__sort_date").asc(nulls_last=True), "photo__pk")
+    )
+    return PhotosTab(
+        person=person,
+        photos=[
+            PhotoEntry(
+                link=link,
+                url=link.photo.file.url,
+                alt=_alt(description=link.photo.description),
+                date=date_text(date=link.photo.date) if link.photo.date else "",
+            )
+            for link in links
+        ],
+    )
+
+
 def _with_life_facts() -> QuerySet[Person]:
     return Person.objects.prefetch_related(
         Prefetch(
             "facts",
             queryset=Fact.objects.filter(kind__in=(Fact.Kind.BIRTH, Fact.Kind.DEATH)),
             to_attr="life_facts",
-        )
+        ),
+        Prefetch(
+            "photo_links",
+            queryset=PhotoPerson.objects.filter(is_portrait=True).select_related("photo"),
+            to_attr="portraits",
+        ),
     )
 
 
@@ -448,6 +503,7 @@ def _entry(*, person: Person) -> PersonListEntry:
     # The facts come in the model's date order, so the first of a kind is the earliest one recorded.
     births = [fact.date for fact in person.life_facts if fact.kind == Fact.Kind.BIRTH]
     deaths = [fact.date for fact in person.life_facts if fact.kind == Fact.Kind.DEATH]
+    portrait = next(iter(person.portraits), None)
     return PersonListEntry(
         person=person,
         name=display_name(given_names=person.given_names, surname=person.surname, call_name=person.call_name),
@@ -457,7 +513,14 @@ def _entry(*, person: Person) -> PersonListEntry:
             death=next(iter(deaths), None),
             deceased=person.living_status == Person.LivingStatus.DECEASED,
         ),
+        portrait_url=portrait.photo.file.url if portrait else "",
+        portrait_alt=_alt(description=portrait.photo.description) if portrait else "",
     )
+
+
+def _alt(*, description: str) -> str:
+    # The frame announces only the photo, so its alt describes the picture rather than repeating the name.
+    return description or "Foto ohne Beschreibung"
 
 
 def _fact_entry(*, fact: Fact, person: Person) -> FactEntry:
