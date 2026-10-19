@@ -8,9 +8,11 @@ from django.forms import inlineformset_factory
 from django.urls import reverse
 
 from apps.family_tree.admin import FactInline, ParentsFormSet
-from apps.family_tree.models import Fact, ParentChild, Person
+from apps.family_tree.models import Fact, ParentChild, Person, Photo, Source
 from apps.family_tree.tests.factories.person import PersonFactory
+from apps.family_tree.tests.factories.photo import PhotoFactory
 from apps.family_tree.tests.factories.source import SourceFactory
+from apps.family_tree.tests.factories.source_file import SourceFileFactory
 from apps.family_tree.tests.factories.tree_settings import TreeSettingsFactory
 
 FactForms = inlineformset_factory(Person, Fact, fk_name="person", fields=FactInline.fields)
@@ -144,3 +146,49 @@ def test_photo_admin_never_adds_a_photo_past_the_upload(admin_client):
     response = admin_client.get(reverse("admin:family_tree_photo_add"))
 
     assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_source_admin_deletes_through_the_action_so_the_files_go(admin_client, django_capture_on_commit_callbacks):
+    scan = SourceFileFactory()
+
+    with django_capture_on_commit_callbacks() as callbacks:
+        admin_client.post(reverse("admin:family_tree_source_delete", args=[scan.source.pk]), {"post": "yes"})
+
+    assert (Source.objects.exists(), len(callbacks)) == (False, 1)
+
+
+@pytest.mark.django_db
+def test_source_admin_deletes_a_selection_through_the_action(admin_client, django_capture_on_commit_callbacks):
+    scans = [SourceFileFactory(), SourceFileFactory()]
+
+    with django_capture_on_commit_callbacks() as callbacks:
+        admin_client.post(
+            reverse("admin:family_tree_source_changelist"),
+            {"action": "delete_selected", "post": "yes", "_selected_action": [scan.source.pk for scan in scans]},
+        )
+
+    assert (Source.objects.exists(), len(callbacks)) == (False, 2)
+
+
+@pytest.mark.django_db
+def test_photo_admin_deletes_through_the_action_so_the_file_goes(admin_client, django_capture_on_commit_callbacks):
+    photo = PhotoFactory()
+
+    with django_capture_on_commit_callbacks() as callbacks:
+        admin_client.post(reverse("admin:family_tree_photo_delete", args=[photo.pk]), {"post": "yes"})
+
+    assert (Photo.objects.exists(), len(callbacks)) == (False, 1)
+
+
+@pytest.mark.django_db
+def test_photo_admin_deletes_a_selection_through_the_action(admin_client, django_capture_on_commit_callbacks):
+    photos = [PhotoFactory(), PhotoFactory()]
+
+    with django_capture_on_commit_callbacks() as callbacks:
+        admin_client.post(
+            reverse("admin:family_tree_photo_changelist"),
+            {"action": "delete_selected", "post": "yes", "_selected_action": [photo.pk for photo in photos]},
+        )
+
+    assert (Photo.objects.exists(), len(callbacks)) == (False, 2)

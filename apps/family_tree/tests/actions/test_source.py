@@ -8,10 +8,12 @@ from PIL import Image
 from pypdf import PdfWriter
 
 from apps.common.media import UploadRefusedError
-from apps.family_tree.actions.source import add_source_files, create_source
+from apps.family_tree.actions.source import add_source_files, create_source, delete_source, delete_source_file
 from apps.family_tree.models import Person, Source, SourceFile
+from apps.family_tree.tests.factories.citation import CitationFactory
 from apps.family_tree.tests.factories.person import PersonFactory
 from apps.family_tree.tests.factories.source import SourceFactory
+from apps.family_tree.tests.factories.source_file import SourceFileFactory
 
 
 @pytest.fixture(autouse=True)
@@ -131,3 +133,81 @@ def test_add_source_files_refusing_a_file_attaches_none():
         add_source_files(source_id=source.pk, files=[SimpleUploadedFile("Scan.pdf", b"kein pdf")])
 
     assert SourceFile.objects.exists() is False
+
+
+def _stored(*, media_root: Path, name: str) -> str:
+    (media_root / name).parent.mkdir(parents=True, exist_ok=True)
+    (media_root / name).write_bytes(b"%PDF-")
+
+    return name
+
+
+@pytest.mark.django_db
+def test_delete_source_deletes_it_with_its_files(media_root, django_capture_on_commit_callbacks):
+    scan = SourceFileFactory(file="sources/3/7.pdf")
+    _stored(media_root=media_root, name=scan.file.name)
+
+    with django_capture_on_commit_callbacks(execute=True):
+        delete_source(source_id=scan.source.pk)
+
+    assert (Source.objects.exists(), SourceFile.objects.exists(), (media_root / scan.file.name).exists()) == (
+        False,
+        False,
+        False,
+    )
+
+
+@pytest.mark.django_db
+def test_delete_source_keeps_the_files_until_the_deletion_is_committed(media_root, django_capture_on_commit_callbacks):
+    scan = SourceFileFactory(file="sources/3/7.pdf")
+    _stored(media_root=media_root, name=scan.file.name)
+
+    with django_capture_on_commit_callbacks(execute=False):
+        delete_source(source_id=scan.source.pk)
+
+    assert (media_root / scan.file.name).exists() is True
+
+
+@pytest.mark.django_db
+def test_delete_source_refuses_a_cited_source_and_keeps_its_files(media_root, django_capture_on_commit_callbacks):
+    scan = SourceFileFactory(source__title="Taufbuch", file="sources/3/7.pdf")
+    _stored(media_root=media_root, name=scan.file.name)
+    CitationFactory(source=scan.source)
+
+    with django_capture_on_commit_callbacks(execute=True), pytest.raises(ValidationError) as error:
+        delete_source(source_id=scan.source.pk)
+
+    assert (error.value.messages, (media_root / scan.file.name).exists()) == (
+        ["„Taufbuch“ wird noch zitiert und bleibt deshalb."],
+        True,
+    )
+
+
+@pytest.mark.django_db
+def test_delete_source_of_a_source_already_gone_raises():
+    with pytest.raises(Source.DoesNotExist):
+        delete_source(source_id=404)
+
+
+@pytest.mark.django_db
+def test_delete_source_file_removes_only_that_file(media_root, django_capture_on_commit_callbacks):
+    first = SourceFileFactory(file="sources/3/7.pdf")
+    second = SourceFileFactory(source=first.source, file="sources/3/8.pdf")
+    _stored(media_root=media_root, name=first.file.name)
+    _stored(media_root=media_root, name=second.file.name)
+
+    with django_capture_on_commit_callbacks(execute=True):
+        delete_source_file(source_id=first.source.pk, file_id=first.pk)
+
+    assert (list(first.source.files.all()), sorted(path.name for path in (media_root / "sources/3").iterdir())) == (
+        [second],
+        ["8.pdf"],
+    )
+
+
+@pytest.mark.django_db
+def test_delete_source_file_of_another_source_raises():
+    scan = SourceFileFactory()
+
+    with pytest.raises(SourceFile.DoesNotExist):
+        delete_source_file(source_id=SourceFactory().pk, file_id=scan.pk)

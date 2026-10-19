@@ -15,6 +15,7 @@ PREVIEW = DeletionPreview(
     fact_count=2,
     citation_count=1,
     source_count=1,
+    photo_count=0,
     relatives=[RelativeGroup(title="Kinder", relation="child", entries=[RelativeEntry(entry=LENA, unlinkable=True)])],
     cut_off=[],
 )
@@ -65,3 +66,19 @@ def test_delete_dialog_of_the_home_person_leads_to_choosing_another_one():
         None,
         reverse("family_tree:tree-settings-view"),
     )
+
+
+def test_delete_dialog_says_the_photos_stay_and_where_they_are_found():
+    html = render_component(tag=TAG, context={"preview": replace(PREVIEW, source_count=0, photo_count=2)})
+
+    text = " ".join(parse(html).get_text().split())
+    assert (
+        "2 Fotos von Johann Huber bleiben erhalten" in text,
+        "Was dann an niemandem mehr hängt, findest du in der Verwaltung." in text,
+    ) == (True, True)
+
+
+def test_delete_dialog_without_sources_or_photos_says_nothing_stays():
+    html = render_component(tag=TAG, context={"preview": replace(PREVIEW, source_count=0, photo_count=0)})
+
+    assert ("Verwaltung" in parse(html).get_text()) is False

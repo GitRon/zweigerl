@@ -8,7 +8,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from PIL import ExifTags, Image
 
 from apps.common.media import UploadRefusedError
-from apps.family_tree.actions.photo import add_photos, describe_photo, set_portrait
+from apps.family_tree.actions.photo import add_photos, delete_photo, describe_photo, set_portrait
 from apps.family_tree.domain.dates import DateKind, Precision, UncertainDate
 from apps.family_tree.models import Person, Photo, PhotoPerson
 from apps.family_tree.tests.factories.person import PersonFactory
@@ -207,3 +207,19 @@ def test_describe_photo_refuses_a_photo_the_person_is_not_on():
 
     with pytest.raises(Photo.DoesNotExist, match="Photo matching query does not exist"):
         describe_photo(person_id=lena.pk, photo_id=other.photo.pk, description="Am Hof", date="")
+
+
+@pytest.mark.django_db
+def test_delete_photo_deletes_it_with_its_file(media_root, django_capture_on_commit_callbacks):
+    photo = PhotoPersonFactory(photo__file="photos/4/original.jpg").photo
+    (media_root / "photos/4").mkdir(parents=True)
+    (media_root / "photos/4/original.jpg").write_bytes(_jpeg())
+
+    with django_capture_on_commit_callbacks(execute=True):
+        delete_photo(photo_id=photo.pk)
+
+    assert (Photo.objects.exists(), PhotoPerson.objects.exists(), (media_root / "photos/4/original.jpg").exists()) == (
+        False,
+        False,
+        False,
+    )
