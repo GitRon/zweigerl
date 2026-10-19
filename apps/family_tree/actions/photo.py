@@ -7,7 +7,7 @@ from django.core.files.uploadedfile import UploadedFile
 from django.db import transaction
 from PIL import ExifTags, Image
 
-from apps.common.media import UploadRefusedError, store_upload
+from apps.common.media import UploadRefusedError, delete_on_commit, store_upload
 from apps.family_tree.domain.dates import UncertainDate, from_exif, from_german
 from apps.family_tree.models import Person, Photo, PhotoPerson
 
@@ -48,6 +48,20 @@ def add_photos(*, person_id: int, files: Iterable[UploadedFile]) -> list[Photo]:
         raise
 
     return stored
+
+
+def delete_photo(*, photo_id: int) -> Photo:
+    """
+    Deletes a photo with its file, the file once the deletion is committed (#72). Only the admin does: a person
+    deleted from the tree leaves their photos, as their sources, and the admin is where they are found then;
+    see docs/patterns/data-storage.md, "When a file goes". Raises "Photo.DoesNotExist" for a photo already gone.
+    """
+    with transaction.atomic():
+        photo = Photo.objects.get(pk=photo_id)
+        photo.delete()
+        delete_on_commit(names=[photo.file.name])
+
+    return photo
 
 
 def set_portrait(*, person_id: int, photo_id: int) -> PhotoPerson:

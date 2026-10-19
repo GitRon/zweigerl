@@ -5,11 +5,13 @@ See docs/patterns/data-storage.md, "Photos and scans".
 """
 
 import io
+from collections.abc import Iterable
 from pathlib import PurePosixPath
 
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import UploadedFile
+from django.db import transaction
 from PIL import ExifTags, Image, ImageOps, UnidentifiedImageError
 from pypdf import PageObject, PdfReader, PdfWriter
 from pypdf.errors import PyPdfError
@@ -132,6 +134,22 @@ def store_upload(*, uploaded_file: UploadedFile, name: str) -> str:
         default_storage.delete(f"{name}.{other_extension}")
 
     return stored_name
+
+
+def delete_on_commit(*, names: Iterable[str]) -> None:
+    """
+    Deletes the stored files "names" once the transaction around the caller commits - the way a file goes
+    with its row (#72). Called after the rows are deleted, inside the same transaction: a rollback keeps the
+    rows and with them their files, and a commit never leaves a file nobody sees. Outside a transaction the
+    files go at once. A file already gone is no error.
+    """
+    names = list(names)
+
+    def delete() -> None:
+        for name in names:
+            default_storage.delete(name)
+
+    transaction.on_commit(delete)
 
 
 def _picture_only(*, content: bytes, allowed_formats: tuple[str, ...]) -> bytes:

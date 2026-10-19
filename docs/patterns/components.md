@@ -44,13 +44,15 @@ word. The folder keeps the names apart.
 | `<c-fact.delete-dialog>` | `apps.family_tree` | Asks before a fact goes (#14): which fact, and that its Belege go with it; a native `<dialog>` appended to the body, removed when closed or by the answer |
 | `<c-person.delete-dialog>` | `apps.family_tree` | The question before a person is deleted (#19): what vanishes, what stays, the links that go and who would hang loose, with the tick that says so - or, for the home person, the way to choose another one; a native `<dialog>` appended to the body |
 | `<c-person.unlink-dialog>` | `apps.family_tree` | The short question before one link is removed (#19); a native `<dialog>` appended to the body |
+| `<c-source.delete-dialog>` | `apps.family_tree` | Asks before a source goes with its files (#72) - or, for a source still cited, names the facts citing it and offers no "Löschen"; a native `<dialog>` appended to the body |
+| `<c-source.file-delete-dialog>` | `apps.family_tree` | Asks before one scan or PDF of a source goes (#72); a native `<dialog>` appended to the body |
 | `<c-person.loose>` | `apps.family_tree` | The Lose Zweigerl at the bottom of the sidebar (#19), each a link to their card; nothing while there are none; `id="loose-people"` |
 | `<c-person.portrait>` | `apps.family_tree` | The picture frame in the head of the person card: the portrait (#16), else the initials; `id="person-card-portrait"`, patched when the portrait changes |
 | `<c-photo.list>` | `apps.family_tree` | The Fotos tab of the person card (#16): every `<c-photo.card>`, the `<c-photo.lightbox>` and the upload form; `$photo` is the photo the lightbox shows; `id="person-card-photo-list"`, replaced with `<c-photo.count>` after a change |
 | `<c-photo.count>` | `apps.family_tree` | The number beside "Fotos" in the card's tabs; `id="person-card-photo-count"` |
 | `<c-photo.card>` | `apps.family_tree` | One photo in the Fotos tab: the frame opening the lightbox, what it shows and when, "Als Titelbild" or the label "Titelbild", and the folded form describing it; `id="photo-<pk>"` |
 | `<c-photo.lightbox>` | `apps.family_tree` | The photos whole in a native `<dialog id="photo-lightbox">`, with description and date, Vor and Zurück - also the arrow keys - going round |
-| `<c-source.card>` | `apps.family_tree` | One source on the person card (#15): kind, title, Zitat, its files opening through the media view, and the form attaching more; `id="source-<pk>"` |
+| `<c-source.card>` | `apps.family_tree` | One source on the person card (#15): kind, title, Zitat, its files opening through the media view, each with its button to remove it, the form attaching more, and "Quelle löschen" (#72); `id="source-<pk>"` |
 | `<c-source.list>` | `apps.family_tree` | The Quellen tab of the person card: every `<c-source.card>`, then `<c-source.new>`; `id="person-card-source-list"`, patched with `<c-source.count>` after a source was added - the whole card would morph its tabs back to the first |
 | `<c-source.count>` | `apps.family_tree` | The number beside "Quellen" in the card's tabs; `id="person-card-source-count"` |
 | `<c-source.new>` | `apps.family_tree` | The form for a new source in the Quellen tab, folded in a `<details>`: title, kind, Zitat, scans and PDFs |

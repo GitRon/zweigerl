@@ -224,8 +224,10 @@ class DeletionPreview:
     # What vanishes with the person: their facts and those of their partnerships, and the citations of them.
     fact_count: int
     citation_count: int
-    # What stays: the sources on their card, cited by their facts or not - decided in #19.
+    # What stays: the sources on their card, cited by their facts or not - decided in #19 - and the photos they
+    # are on, decided in #72. Both are then found in the admin, if nobody else has them.
     source_count: int
+    photo_count: int
     # Every link that goes with them, by what the relatives were to them.
     relatives: list[RelativeGroup]
     # Who is connected to the home person now and would hang loose afterwards.
@@ -251,6 +253,7 @@ def deletion_preview(*, pk: int) -> DeletionPreview | None:
         fact_count=vanishing_facts.count(),
         citation_count=Citation.objects.filter(fact__in=vanishing_facts).count(),
         source_count=sources(person=person).count(),
+        photo_count=person.photo_links.count(),
         relatives=relative_groups(person=person),
         cut_off=_cut_off(pk=pk, home=home),
     )

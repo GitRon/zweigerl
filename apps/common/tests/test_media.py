@@ -17,7 +17,7 @@ from pypdf.generic import (
     TextStringObject,
 )
 
-from apps.common.media import UploadRefusedError, store_upload
+from apps.common.media import UploadRefusedError, delete_on_commit, store_upload
 
 
 @pytest.fixture(autouse=True)
@@ -426,3 +426,15 @@ def test_store_upload_refuses_an_image_under_the_wrong_extension(media_root):
 
     with pytest.raises(UploadRefusedError, match="passt nicht zum Inhalt"):
         store_upload(uploaded_file=upload, name="photos/1/original")
+
+
+@pytest.mark.django_db
+def test_delete_on_commit_deletes_the_files_once_committed(media_root, django_capture_on_commit_callbacks):
+    (media_root / "a.pdf").write_bytes(b"%PDF-")
+
+    with django_capture_on_commit_callbacks() as callbacks:
+        delete_on_commit(names=["a.pdf", "already gone.pdf"])
+    still_there = (media_root / "a.pdf").exists()
+    callbacks[0]()
+
+    assert (still_there, (media_root / "a.pdf").exists()) == (True, False)

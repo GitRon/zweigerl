@@ -55,3 +55,22 @@ def test_card_attaches_files_to_the_source():
         "multipart/form-data",
         "files",
     )
+
+
+@pytest.mark.django_db
+def test_card_asks_before_a_file_or_the_source_goes():
+    scan = SourceFileFactory()
+    source = scan.source
+
+    page = parse(render_component(tag=TAG, context={"source": source, "person": PersonFactory.build(pk=7)}))
+
+    remove_file = page.find("button", attrs={"aria-label": "Datei 1 entfernen"})
+    delete_source = page.find("button", string=lambda text: text and text.strip() == "Quelle löschen")
+    file_url = reverse(
+        "family_tree:delete-source-file-view", kwargs={"pk": 7, "source_pk": source.pk, "file_pk": scan.pk}
+    )
+    source_url = reverse("family_tree:delete-source-view", kwargs={"pk": 7, "source_pk": source.pk})
+    assert (remove_file["data-on:click"], delete_source["data-on:click"]) == (
+        f"@get('{file_url}')",
+        f"@get('{source_url}')",
+    )

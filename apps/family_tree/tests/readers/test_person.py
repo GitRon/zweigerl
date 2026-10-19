@@ -573,7 +573,7 @@ def test_deletion_preview_of_somebody_not_there_is_none():
 
 
 @pytest.mark.django_db
-def test_deletion_preview_counts_what_vanishes_and_the_sources_that_stay():
+def test_deletion_preview_counts_what_vanishes_and_the_sources_and_photos_that_stay():
     johann = PersonFactory(given_names="Johann")
     maria = PersonFactory(given_names="Maria")
     marriage = PartnershipFactory(person_a=johann, person_b=maria)
@@ -582,10 +582,12 @@ def test_deletion_preview_counts_what_vanishes_and_the_sources_that_stay():
     CitationFactory(fact=FactFactory(person=None, partnership=marriage, kind=Fact.Kind.MARRIAGE))
     FactFactory(person=maria)
     SourceFactory(people=[johann])
+    PhotoPersonFactory(person=johann)
+    PhotoPersonFactory(person=maria)
 
     preview = deletion_preview(pk=johann.pk)
 
-    assert (preview.fact_count, preview.citation_count, preview.source_count) == (2, 2, 3)
+    assert (preview.fact_count, preview.citation_count, preview.source_count, preview.photo_count) == (2, 2, 3, 1)
 
 
 @pytest.mark.django_db
