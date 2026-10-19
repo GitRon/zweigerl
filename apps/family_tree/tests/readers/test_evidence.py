@@ -89,6 +89,7 @@ def test_source_deletion_counts_the_files_and_names_the_facts_citing_it():
     maria = PersonFactory(given_names="Maria", surname="Huber")
     register = SourceFileFactory().source
     SourceFileFactory(source=register)
+    SourceFileFactory()
     CitationFactory(source=register, fact=FactFactory(person=lena))
     marriage = FactFactory(
         person=None, partnership=PartnershipFactory(person_a=johann, person_b=maria), kind=Fact.Kind.MARRIAGE
