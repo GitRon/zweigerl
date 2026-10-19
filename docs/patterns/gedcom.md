@@ -39,7 +39,7 @@ writes the lines.
 |---|---|
 | `given_names`, `surname`, `call_name` | `NAME Lena /Huber/` with `GIVN`, `SURN`, `NICK`; no `NAME` for somebody without any |
 | `sex` | `SEX` |
-| `living_status` `deceased` | `DEAT Y`, unless a `death` fact already says so |
+| `living_status` `deceased` | `DEAT Y`, unless a `death` fact or a `DEAT` an import kept raw already says so |
 | `living_status` `living` | `_ZWG_STATUS living`; `unknown` writes nothing |
 | a source filed with the person | `SOUR @S…@` directly under the `INDI` |
 | a photo of the person | `OBJE @O…@`, with `_PRIM Y` for the portrait |
@@ -69,7 +69,7 @@ One value per fact in Zweigerl, one event per date in GEDCOM - see [Belege](evid
 | Zweigerl | GEDCOM |
 |---|---|
 | a Partnership | `FAM` with `HUSB` and `WIFE`: a woman is the `WIFE` whenever the other one is not a woman too, otherwise the order the couple was entered in decides - 5.5.1 knows no other roles, and `SEX` says who is who |
-| `kind` `marriage` | implied by its `MARR`; without a `marriage` fact, `MARR Y` |
+| `kind` `marriage` | implied by its `MARR`; without a `marriage` fact, `MARR Y` - unless an import kept a `MARR` raw, such as a date Zweigerl could not read |
 | `kind` `cohabitation` | `_ZWG_KIND cohabitation`; `unknown` writes nothing |
 | a ParentChild naming a Partnership | `CHIL` in that partnership's `FAM` |
 | a ParentChild naming none | `CHIL` in the parent's own `FAM @FP…@`, the parent as `HUSB`, or as `WIFE` for a woman |

@@ -1,7 +1,8 @@
-import pytest
-from django.utils import timezone
+import datetime
+from unittest import mock
 
-from apps.family_tree.domain.dates import MONTHS
+import pytest
+
 from apps.family_tree.models import Fact, ParentChild, Partnership, Person, Source
 from apps.family_tree.readers.gedcom import gedcom_export
 from apps.family_tree.tests.factories.citation import CitationFactory
@@ -20,16 +21,15 @@ RAW = [{"tag": "_UID", "value": "4F2A"}]
 
 
 @pytest.mark.django_db
-def test_gedcom_export_opens_with_the_header_and_ends_with_the_trailer():
-    today = timezone.localdate()
-
+@mock.patch("apps.family_tree.readers.gedcom.localdate", return_value=datetime.date(2026, 10, 19))
+def test_gedcom_export_opens_with_the_header_and_ends_with_the_trailer(_localdate):
     text = gedcom_export()
 
     assert text == (
         "0 HEAD\n"
         "1 SOUR ZWEIGERL\n"
         "2 NAME Zweigerl\n"
-        f"1 DATE {today.day} {MONTHS[today.month - 1]} {today.year}\n"
+        "1 DATE 19 OCT 2026\n"
         "1 SUBM @U1@\n"
         "1 GEDC\n"
         "2 VERS 5.5.1\n"
@@ -74,9 +74,14 @@ def test_gedcom_export_puts_the_home_person_first():
 
 @pytest.mark.django_db
 def test_gedcom_export_joins_birth_and_birthplace_into_one_birt():
-    birth = FactFactory(person__given_names="", person__surname="")
+    birth = FactFactory(person__given_names="", person__surname="", reliability="handed_down")
     birthplace = FactFactory(
-        person=birth.person, as_value=True, kind=Fact.Kind.BIRTHPLACE, value="Mariazell", reliability="probable"
+        person=birth.person,
+        as_value=True,
+        kind=Fact.Kind.BIRTHPLACE,
+        value="Mariazell",
+        reliability="probable",
+        gedcom_raw=RAW,
     )
     birth_citation = CitationFactory(fact=birth, page="fol. 12")
     place_citation = CitationFactory(fact=birthplace, page="")
@@ -84,8 +89,8 @@ def test_gedcom_export_joins_birth_and_birthplace_into_one_birt():
     text = gedcom_export()
 
     assert (
-        "1 BIRT\n2 DATE 12 MAR 1931\n2 PLAC Mariazell\n3 _ZWG_RELIABILITY probable\n"
-        f"2 SOUR @S{birth_citation.source_id}@\n3 PAGE fol. 12\n2 SOUR @S{place_citation.source_id}@\n"
+        "1 BIRT\n2 DATE 12 MAR 1931\n2 PLAC Mariazell\n3 _ZWG_RELIABILITY probable\n2 _ZWG_RELIABILITY handed_down\n"
+        f"2 SOUR @S{birth_citation.source_id}@\n3 PAGE fol. 12\n2 SOUR @S{place_citation.source_id}@\n2 _UID 4F2A\n"
     ) in text
 
 
@@ -144,6 +149,27 @@ def test_gedcom_export_writes_a_custom_fact_as_even_with_its_type():
     assert "1 EVEN Mariazell\n2 TYPE Firmung\n2 DATE BET 1820 AND 1830\n" in text
 
 
+@pytest.mark.parametrize(
+    ("fact", "lines"),
+    [
+        ({"kind": Fact.Kind.DEATH}, "1 DEAT\n2 DATE 12 MAR 1931\n"),
+        ({"as_value": True, "kind": Fact.Kind.RESIDENCE, "value": "Gußwerk"}, "1 RESI\n2 PLAC Gußwerk\n"),
+        (
+            {"as_value": True, "kind": Fact.Kind.CUSTOM, "label": "Firmung", "value": "Mariazell"},
+            "1 EVEN Mariazell\n2 TYPE Firmung\n",
+        ),
+    ],
+)
+@pytest.mark.django_db
+def test_gedcom_export_writes_reliability_citations_and_raw_below_each_fact(fact, lines):
+    probable_fact = FactFactory(reliability=Fact.Reliability.PROBABLE, gedcom_raw=RAW, **fact)
+    citation = CitationFactory(fact=probable_fact, page="fol. 3")
+
+    text = gedcom_export()
+
+    assert f"{lines}2 _ZWG_RELIABILITY probable\n2 SOUR @S{citation.source_id}@\n3 PAGE fol. 3\n2 _UID 4F2A\n" in text
+
+
 @pytest.mark.django_db
 def test_gedcom_export_names_a_reliability_other_than_documented():
     FactFactory(as_value=True, reliability=Fact.Reliability.HANDED_DOWN)
@@ -181,12 +207,33 @@ def test_gedcom_export_records_the_death_of_somebody_deceased_without_a_death_fa
 
 
 @pytest.mark.django_db
+def test_gedcom_export_adds_no_death_to_one_an_import_kept_raw():
+    PersonFactory(
+        living_status=Person.LivingStatus.DECEASED,
+        gedcom_raw=[{"tag": "DEAT", "children": [{"tag": "DATE", "value": "im Krieg"}]}],
+    )
+
+    text = gedcom_export()
+
+    assert "DEAT Y" not in text
+
+
+@pytest.mark.django_db
 def test_gedcom_export_adds_no_second_death_to_a_recorded_one():
     FactFactory(kind=Fact.Kind.DEATH, person__living_status=Person.LivingStatus.DECEASED)
 
     text = gedcom_export()
 
     assert "DEAT Y" not in text
+
+
+@pytest.mark.django_db
+def test_gedcom_export_points_both_partners_at_their_family():
+    partnership = PartnershipFactory(kind=Partnership.Kind.UNKNOWN)
+
+    text = gedcom_export()
+
+    assert text.count(f"1 FAMS @F{partnership.pk}@\n") == 2
 
 
 @pytest.mark.django_db
@@ -218,6 +265,25 @@ def test_gedcom_export_writes_a_marriage_without_a_date_as_marr_y():
     text = gedcom_export()
 
     assert f"1 WIFE @I{partnership.person_b_id}@\n1 MARR Y\n" in text
+
+
+@pytest.mark.django_db
+def test_gedcom_export_writes_a_divorce_on_the_family():
+    partnership = PartnershipFactory(kind=Partnership.Kind.UNKNOWN)
+    FactFactory(person=None, partnership=partnership, kind=Fact.Kind.DIVORCE)
+
+    text = gedcom_export()
+
+    assert f"1 WIFE @I{partnership.person_b_id}@\n1 DIV\n2 DATE 12 MAR 1931\n" in text
+
+
+@pytest.mark.django_db
+def test_gedcom_export_adds_no_marr_y_to_a_wedding_an_import_kept_raw():
+    partnership = PartnershipFactory(gedcom_raw=[{"tag": "MARR", "children": [{"tag": "DATE", "value": "im Krieg"}]}])
+
+    text = gedcom_export()
+
+    assert f"1 WIFE @I{partnership.person_b_id}@\n1 MARR\n2 DATE im Krieg\n" in text
 
 
 @pytest.mark.django_db

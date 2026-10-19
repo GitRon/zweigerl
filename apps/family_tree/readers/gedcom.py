@@ -3,12 +3,13 @@ The export of the whole tree as GEDCOM 5.5.1 (#26). What maps to what is docs/pa
 lines is "domain.gedcom".
 """
 
+from collections import defaultdict
 from dataclasses import dataclass, field
 from itertools import zip_longest
 from pathlib import PurePosixPath
 
 from django.db.models import Prefetch, QuerySet
-from django.utils import timezone
+from django.utils.timezone import localdate
 
 from apps.family_tree.domain.dates import DateKind, Precision, UncertainDate, to_gedcom
 from apps.family_tree.domain.gedcom import Node, from_raw, write
@@ -67,11 +68,21 @@ def gedcom_export() -> str:
     """
     people = _people()
     families = _families(people=people)
+    # Who is a parent and who a child in which family, once - a search per person would take minutes on a large tree.
+    as_parent, as_child = defaultdict(list), defaultdict(list)
+    for family in families:
+        for parent in family.parents:
+            as_parent[parent.pk].append(family)
+        for child_id in family.children:
+            as_child[child_id].append(family)
     return write(
         records=[
             _header(),
             Node(xref="@U1@", tag="SUBM", children=(Node(tag="NAME", value="Zweigerl"),)),
-            *(_individual(person=person, families=families) for person in people.values()),
+            *(
+                _individual(person=person, as_parent=as_parent[person.pk], as_child=as_child[person.pk])
+                for person in people.values()
+            ),
             *(_family(family=family) for family in families),
             *(_source(source=source) for source in Source.objects.prefetch_related("files").order_by("pk")),
             *(_photo(photo=photo) for photo in Photo.objects.order_by("pk")),
@@ -135,7 +146,7 @@ def _couple(*, person_a: Person, person_b: Person) -> list[Person]:
 
 
 def _header() -> Node:
-    today = UncertainDate(kind=DateKind.EXACT, date_1=timezone.localdate(), precision=Precision.DAY)
+    today = UncertainDate(kind=DateKind.EXACT, date_1=localdate(), precision=Precision.DAY)
     return Node(
         tag="HEAD",
         children=(
@@ -151,7 +162,7 @@ def _header() -> Node:
     )
 
 
-def _individual(*, person: Person, families: list[_Family]) -> Node:
+def _individual(*, person: Person, as_parent: list[_Family], as_child: list[_Family]) -> Node:
     facts = list(person.facts.all())
     return Node(
         xref=f"@I{person.pk}@",
@@ -161,12 +172,8 @@ def _individual(*, person: Person, families: list[_Family]) -> Node:
             Node(tag="SEX", value=person.sex),
             *_events(facts=facts),
             *_status(person=person, facts=facts),
-            *(Node(tag="FAMS", pointer=family.xref) for family in families if person in family.parents),
-            *(
-                _child_of(family=family, links=family.children[person.pk])
-                for family in families
-                if person.pk in family.children
-            ),
+            *(Node(tag="FAMS", pointer=family.xref) for family in as_parent),
+            *(_child_of(family=family, links=family.children[person.pk]) for family in as_child),
             *(Node(tag="SOUR", pointer=f"@S{source.pk}@") for source in person.filed_sources.all()),
             *(_photo_link(link=link) for link in person.photo_links.all()),
             *from_raw(records=person.gedcom_raw),
@@ -269,9 +276,21 @@ def _status(*, person: Person, facts: list[Fact]) -> tuple[Node, ...]:
     """
     if person.living_status == Person.LivingStatus.LIVING:
         return (Node(tag=STATUS_TAG, value=person.living_status),)
-    if person.living_status == Person.LivingStatus.DECEASED and not any(fact.kind == Fact.Kind.DEATH for fact in facts):
+    if (
+        person.living_status == Person.LivingStatus.DECEASED
+        and not any(fact.kind == Fact.Kind.DEATH for fact in facts)
+        and not _kept_raw(raw=person.gedcom_raw, tag="DEAT")
+    ):
         return (Node(tag="DEAT", value="Y"),)
     return ()
+
+
+def _kept_raw(*, raw: list[dict], tag: str) -> bool:
+    """
+    Whether an import kept a structure of this tag raw - a wedding with a date Zweigerl could not read says more
+    than a "MARR Y" would.
+    """
+    return any(record["tag"] == tag for record in raw)
 
 
 def _child_of(*, family: _Family, links: list[ParentChild]) -> Node:
@@ -330,7 +349,9 @@ def _couple_facts(*, family: _Family) -> tuple[Node, ...]:
     kind = (Node(tag=KIND_TAG, value=partnership.kind),) if partnership.kind == Partnership.Kind.COHABITATION else ()
     married = (
         (Node(tag="MARR", value="Y"),)
-        if partnership.kind == Partnership.Kind.MARRIAGE and not any(fact.kind == Fact.Kind.MARRIAGE for fact in facts)
+        if partnership.kind == Partnership.Kind.MARRIAGE
+        and not any(fact.kind == Fact.Kind.MARRIAGE for fact in facts)
+        and not _kept_raw(raw=partnership.gedcom_raw, tag="MARR")
         else ()
     )
     return (*kind, *married, *(_event(fact=fact) for fact in facts))

@@ -1,5 +1,5 @@
 from django.http import HttpRequest, HttpResponse
-from django.utils import timezone
+from django.utils.timezone import localdate
 from django.views.decorators.http import require_GET
 
 from apps.family_tree.readers.gedcom import gedcom_export
@@ -15,5 +15,5 @@ def gedcom_export_view(request: HttpRequest) -> HttpResponse:
     download rather than a datastar request - nothing on the page changes.
     """
     response = HttpResponse(gedcom_export(), content_type=GEDCOM_CONTENT_TYPE)
-    response["Content-Disposition"] = f'attachment; filename="zweigerl-{timezone.localdate().isoformat()}.ged"'
+    response["Content-Disposition"] = f'attachment; filename="zweigerl-{localdate().isoformat()}.ged"'
     return response

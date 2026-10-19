@@ -1,15 +1,18 @@
+import datetime
+from unittest import mock
+
 import pytest
 from django.urls import reverse
-from django.utils import timezone
 
 from apps.family_tree.tests.factories.person import PersonFactory
 
 
 @pytest.mark.django_db
-def test_gedcom_export_view_hands_out_the_tree_as_a_file(admin_client):
+@mock.patch("apps.family_tree.views.export.localdate", return_value=datetime.date(2026, 10, 19))
+def test_gedcom_export_view_hands_out_the_tree_as_a_file(_localdate, admin_client):
     PersonFactory()
 
     response = admin_client.get(reverse("family_tree:gedcom-export-view"))
 
     assert response.status_code == 200
-    assert response["Content-Disposition"] == f'attachment; filename="zweigerl-{timezone.localdate().isoformat()}.ged"'
+    assert response["Content-Disposition"] == 'attachment; filename="zweigerl-2026-10-19.ged"'
