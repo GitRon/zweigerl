@@ -12,7 +12,7 @@ from apps.family_tree.domain.layout import CARD_HEIGHT, CARD_WIDTH
 from apps.family_tree.models import Fact, Person
 from apps.family_tree.readers.person import FactForm, fact_entry, fact_form, person_card
 from apps.family_tree.readers.tree import tree_card
-from apps.family_tree.views.person_search import search_events
+from apps.family_tree.views.person_search import sidebar_events
 
 
 @require_GET
@@ -129,10 +129,11 @@ def _fact_fields(*, request: HttpRequest) -> dict:
 
 def _saved(*, request: HttpRequest, pk: int, text: str):
     # The whole card, closing the form: the facts are its first tab, and a birth or a death changes its head. The
-    # Lebensdaten also stand in the sidebar's list, under the search still running, and on the tree's card.
+    # Lebensdaten also stand in the sidebar - in its list under the search still running and in its "Lose Zweigerl" -
+    # and on the tree's card.
     card = person_card(pk=pk)
     yield ServerSentEventGenerator.patch_elements(render_component(request, "person.card", card=card))
-    yield from search_events(request, search=request.POST.get("search", "").strip())
+    yield from sidebar_events(request, search=request.POST.get("search", "").strip())
     if (in_tree := tree_card(pk=pk)) is not None:
         yield ServerSentEventGenerator.patch_elements(
             render_component(request, "tree.card", card=in_tree, width=CARD_WIDTH, height=CARD_HEIGHT)

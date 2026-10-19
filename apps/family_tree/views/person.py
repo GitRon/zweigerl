@@ -13,7 +13,7 @@ from apps.family_tree.domain.layout import CARD_HEIGHT, CARD_WIDTH
 from apps.family_tree.models import Person
 from apps.family_tree.readers.person import loose_people, person_card, person_list
 from apps.family_tree.readers.tree import tree, tree_card
-from apps.family_tree.views.person_search import search_events
+from apps.family_tree.views.person_search import sidebar_events
 
 
 def person_view(request: HttpRequest, pk: int) -> HttpResponse:
@@ -52,8 +52,8 @@ def person_view(request: HttpRequest, pk: int) -> HttpResponse:
 def person_name_view(request: HttpRequest, pk: int):
     """
     Saves the form "Name & Status bearbeiten" in the head of the person card (#30) and patches everything that
-    shows the name: the card, closing the form, the sidebar's list under the search still running, and the
-    person's card in the tree. A refusal is a toast, and the form stays open with what was entered.
+    shows the name: the card, closing the form, the sidebar's list under the search still running and its "Lose
+    Zweigerl", and the person's card in the tree. A refusal is a toast, and the form stays open with what was entered.
     """
     death_year = request.POST.get("death_year", "").strip()
     if death_year and not death_year.isdecimal():
@@ -80,7 +80,7 @@ def person_name_view(request: HttpRequest, pk: int):
     card = person_card(pk=pk)
     yield ServerSentEventGenerator.patch_elements(render_component(request, "person.card", card=card))
     yield ServerSentEventGenerator.patch_signals({"editing": 0})
-    yield from search_events(request, search=request.POST.get("search", "").strip())
+    yield from sidebar_events(request, search=request.POST.get("search", "").strip())
     if (in_tree := tree_card(pk=pk)) is not None:
         yield ServerSentEventGenerator.patch_elements(
             render_component(request, "tree.card", card=in_tree, width=CARD_WIDTH, height=CARD_HEIGHT)

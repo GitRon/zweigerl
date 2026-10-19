@@ -3,7 +3,7 @@ from datastar_py.sse import DatastarEvent
 from django.http import HttpRequest
 from django_cotton import render_component
 
-from apps.family_tree.readers.person import person_list
+from apps.family_tree.readers.person import loose_people, person_list
 
 
 @datastar_response
@@ -29,4 +29,21 @@ def search_events(request: HttpRequest, *, search: str) -> list[DatastarEvent]:
         ServerSentEventGenerator.patch_signals(
             {"filtered": bool(search), "matches": [entry.person.pk for entry in found.entries] if search else []}
         ),
+    ]
+
+
+def sidebar_events(request: HttpRequest, *, search: str) -> list[DatastarEvent]:
+    """
+    Everything in the sidebar that shows a name or Lebensdaten, patched after one of them changed: the list under
+    "search" and the "Lose Zweigerl" (#76), so the next change to a name cannot forget either.
+    """
+    return [*search_events(request, search=search), *loose_events(request)]
+
+
+def loose_events(request: HttpRequest) -> list[DatastarEvent]:
+    """
+    The "Lose Zweigerl" patched anew (#76) - after a name changed, or the home person, which leaves others loose.
+    """
+    return [
+        ServerSentEventGenerator.patch_elements(render_component(request, "person.loose", loose_people=loose_people()))
     ]
