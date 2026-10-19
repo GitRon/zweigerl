@@ -1,9 +1,10 @@
 <c-vars loose_people />
 {# The "Lose Zweigerl" at the bottom of the sidebar (#19): everyone with no connection to the home person, #}
 {# whom the tree therefore does not draw. Nothing deletes them on its own; each opens their card, where they #}
-{# are connected again or deleted. #}
-{% if loose_people %}
-    <section id="loose-people" aria-labelledby="loose-people-title" class="flex flex-col gap-2 border-t border-card-edge pt-3">
+{# are connected again or deleted. Patched whole after a change to a name or the home person (#76), so the #}
+{# section stands in the page even while empty - hidden, but there for the patch that fills it. #}
+<section id="loose-people" aria-labelledby="loose-people-title" class="flex flex-col gap-2 border-t border-card-edge pt-3"{% if not loose_people %} hidden{% endif %}>
+    {% if loose_people %}
         <h2 id="loose-people-title" class="flex justify-between text-lg"><span>Lose Zweigerl</span><span class="font-sans text-sm text-ink-muted">{{ loose_people|length }}</span></h2>
         <p class="text-sm text-ink-muted">Hängen mit der Ausgangsperson nicht zusammen. Verbind sie neu oder lösch sie.</p>
         <ul class="flex max-h-48 flex-col gap-0.5 overflow-y-auto">
@@ -19,5 +20,5 @@
                 </li>
             {% endfor %}
         </ul>
-    </section>
-{% endif %}
+    {% endif %}
+</section>
