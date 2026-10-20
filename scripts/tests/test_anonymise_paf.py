@@ -1,4 +1,5 @@
 import random
+import re
 import runpy
 import sys
 from unittest import mock
@@ -13,6 +14,7 @@ from scripts.anonymise_paf import (
     AnonymiseError,
     Anonymiser,
     Line,
+    Unit,
     anonymise,
     char_class,
     forbidden_words,
@@ -55,7 +57,7 @@ EXPORT = (
 
 
 @pytest.fixture
-def anonymiser():
+def anonymiser() -> Anonymiser:
     return Anonymiser(rng=random.Random(0), forbidden=set(), offset_days=-3660)
 
 
@@ -82,7 +84,7 @@ def test_parse_keeps_lf_without_bom_and_without_a_last_line_break():
 
 
 def test_parse_refuses_a_line_that_is_no_gedcom():
-    with pytest.raises(AnonymiseError, match="Line 2 is not a GEDCOM line."):
+    with pytest.raises(AnonymiseError, match=r"Line 2 is not a GEDCOM line."):
         parse(text="0 HEAD\r\nHuber\r\n")
 
 
@@ -116,37 +118,43 @@ def test_rule_for(path, value, expected):
 
 
 def test_rule_for_refuses_a_value_it_has_no_rule_for():
-    with pytest.raises(AnonymiseError, match="No rule for a value of INDI/_WOHNORT."):
+    with pytest.raises(AnonymiseError, match=r"No rule for a value of INDI/_WOHNORT."):
         rule_for(path=["INDI", "_WOHNORT"], value="Gmunden")
 
 
 def test_units_join_a_note_with_its_continuations():
     lines = parse(text="0 @I1@ INDI\n1 NOTE Schmied\n2 CONC in\n2 CONT Gmunden\n1 SEX M\n").lines
 
-    assert [(unit.rule, unit.indexes, unit.sex) for unit in units(lines=lines)] == [
-        ("keep", [0], "M"),
-        ("text", [1, 2, 3], "M"),
-        ("keep", [4], "M"),
+    assert list(units(lines=lines)) == [
+        Unit(rule="keep", indexes=[0], sex="M"),
+        Unit(rule="text", indexes=[1, 2, 3], sex="M"),
+        Unit(rule="keep", indexes=[4], sex="M"),
     ]
 
 
 def test_units_stop_at_a_continuation_of_another_level():
     lines = parse(text="0 @I1@ INDI\n1 NOTE Schmied\n1 CONC in\n").lines
 
-    with pytest.raises(AnonymiseError, match="No rule for a value of INDI/CONC."):
+    with pytest.raises(AnonymiseError, match=r"No rule for a value of INDI/CONC."):
         list(units(lines=lines))
 
 
 def test_units_carry_a_late_continuation_on_as_its_line_was():
     lines = parse(text="0 @I1@ INDI\n1 NOTE Schmied\n2 SOUR @S1@\n2 CONT in Gmunden\n2 CONT\n").lines
 
-    assert [unit.rule for unit in units(lines=lines)] == ["keep", "text", "keep", "text", "keep"]
+    assert list(units(lines=lines)) == [
+        Unit(rule="keep", indexes=[0], sex=""),
+        Unit(rule="text", indexes=[1], sex=""),
+        Unit(rule="keep", indexes=[2], sex=""),
+        Unit(rule="text", indexes=[3], sex=""),
+        Unit(rule="keep", indexes=[4], sex=""),
+    ]
 
 
 def test_units_refuse_a_continuation_of_a_name():
     lines = parse(text="0 @I1@ INDI\n1 NAME Josef /Huber/\n2 CONC er\n").lines
 
-    with pytest.raises(AnonymiseError, match="No rule for a value of INDI/NAME/CONC."):
+    with pytest.raises(AnonymiseError, match=r"No rule for a value of INDI/NAME/CONC."):
         list(units(lines=lines))
 
 
@@ -161,7 +169,7 @@ def test_split_text_cuts_at_the_same_places():
 
     split_text(lines=lines, indexes=[0, 1, 2, 3], text="Abcdefg hi Jklmnop\n\nqrst 2468")
 
-    assert [line.value for line in lines] == ["Abcdefg hi Jklm", "nop", None, "qrst 2468"]
+    assert lines == parse(text="1 NOTE Abcdefg hi Jklm\n2 CONC nop\n2 CONT\n2 CONT qrst 2468\n").lines
 
 
 def test_split_text_takes_a_lone_continuation_from_the_start():
@@ -190,13 +198,15 @@ def test_anonymiser_anonymise_replaces_every_value_but_the_kept_ones(anonymiser)
 
     anonymiser.anonymise(document=document)
 
-    assert [line.value for line in document.lines if line.tag in {"SOUR", "CHAR", "SEX", "BIRT"}] == [
+    lines = document.lines
+    assert (lines[1].value, lines[2].value, lines[5].value, lines[10].value, lines[11].value, lines[20].value) == (
         "PAF",
+        "Personal Ancestral File",
         "UTF-8",
         "M",
         None,
         "F",
-    ]
+    )
 
 
 def test_anonymiser_anonymise_keeps_the_names_of_a_family_consistent(anonymiser):
@@ -205,11 +215,11 @@ def test_anonymiser_anonymise_keeps_the_names_of_a_family_consistent(anonymiser)
     anonymiser.anonymise(document=document)
 
     josef, alois, huber = document.lines[7].value.replace("/", "").split()
-    assert [line.value for line in document.lines if line.tag in {"GIVN", "SURN", "_MARNM"}] == [
+    assert (document.lines[8].value, document.lines[9].value, document.lines[19].value) == (
         f"{josef} {alois}",
         huber,
         huber,
-    ]
+    )
 
 
 def test_anonymiser_anonymise_cuts_a_note_where_it_was_cut(anonymiser):
@@ -217,7 +227,7 @@ def test_anonymiser_anonymise_cuts_a_note_where_it_was_cut(anonymiser):
 
     anonymiser.anonymise(document=document)
 
-    assert [len(line.value) for line in document.lines if line.tag in {"NOTE", "CONC"}] == [25, 4]
+    assert (len(document.lines[14].value), len(document.lines[15].value)) == (25, 4)
 
 
 def test_anonymiser_remembered_invents_once(anonymiser):
@@ -288,7 +298,7 @@ def test_anonymiser_scramble_char_keeps_what_is_no_letter_and_sharp_s(anonymiser
 def test_anonymiser_scramble_gives_up_when_every_word_is_forbidden():
     anonymiser = Anonymiser(rng=random.Random(0), forbidden={"ss"}, offset_days=-3660)
 
-    with pytest.raises(AnonymiseError, match="No replacement found for a word of 1 characters."):
+    with pytest.raises(AnonymiseError, match=r"No replacement found for a word of 1 characters."):
         anonymiser.scramble(word="ß")
 
 
@@ -434,7 +444,7 @@ def test_month_name(like, index, expected):
 def test_refuse_leaks_names_a_word_left_in_a_value():
     document = parse(text="0 @I1@ INDI\n1 NOTE Schmied in Gm\n2 CONC unden\n")
 
-    with pytest.raises(AnonymiseError, match="2 replaced words are still in the result: gmunden, schmied."):
+    with pytest.raises(AnonymiseError, match=r"2 replaced words are still in the result: gmunden, schmied."):
         refuse_leaks(document=document, forbidden={"schmied", "unden", "gmunden"})
 
 
@@ -445,11 +455,11 @@ def test_refuse_leaks_passes_a_clean_document():
 
 
 def test_anonymise_keeps_the_structure():
-    lines = parse(text=anonymise(text=EXPORT, rng=random.Random(0))).lines
+    anonymised = anonymise(text=EXPORT, rng=random.Random(0))
 
-    assert [(line.level, line.xref, line.tag) for line in lines] == [
-        (line.level, line.xref, line.tag) for line in parse(text=EXPORT).lines
-    ]
+    assert re.sub(r"(?m)^(\d+ (?:@[^@]+@ )?\S+).*$", r"\1", anonymised) == re.sub(
+        r"(?m)^(\d+ (?:@[^@]+@ )?\S+).*$", r"\1", EXPORT
+    )
 
 
 def test_main_writes_the_anonymised_file(tmp_path):
@@ -477,7 +487,10 @@ def test_module_runs_as_a_script(tmp_path):
     source.write_bytes(EXPORT.encode("utf-8"))
     target = tmp_path / "anonymised.ged"
 
-    with mock.patch.object(sys, "argv", ["anonymise_paf", str(source), str(target)]), pytest.raises(SystemExit) as exit:
+    with (
+        mock.patch.object(sys, "argv", ["anonymise_paf", str(source), str(target)]),
+        pytest.raises(SystemExit) as exited,
+    ):
         runpy.run_path(anonymise_paf.__file__, run_name="__main__")
 
-    assert exit.value.code == 0
+    assert exited.value.code == 0

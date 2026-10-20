@@ -4,6 +4,7 @@ The file is written by `scripts/anonymise_paf.py` from a real export that never 
 these tests check its structure only - never an invented name or date, which change with every run.
 """
 
+import itertools
 import re
 import unicodedata
 from pathlib import Path
@@ -15,28 +16,28 @@ LINE = re.compile(r"(?P<level>\d+) (?:(?P<xref>@[^@]+@) )?(?P<tag>\S+)(?: (?P<va
 
 
 @pytest.fixture(scope="module")
-def raw():
+def raw() -> bytes:
     return PAF_EXPORT.read_bytes()
 
 
 @pytest.fixture(scope="module")
-def text(raw):
+def text(raw) -> str:
     return raw.decode("utf-8")
 
 
 @pytest.fixture(scope="module")
-def rows(text):
+def rows(text) -> list[str]:
     return text.removeprefix("﻿").split("\r\n")[:-1]
 
 
 @pytest.fixture(scope="module")
-def levels(rows):
+def levels(rows) -> list[int]:
     """The level of every line that parses."""
     return [int(match["level"]) for match in map(LINE.fullmatch, rows) if match]
 
 
 @pytest.fixture(scope="module")
-def paths(rows):
+def paths(rows) -> list[str]:
     """Every line as `INDI/BIRT/DATE <value>`, the tags from its record down to itself."""
     stack = []
     lines = []
@@ -58,7 +59,7 @@ def test_paf_export_ends_every_line_with_crlf(raw):
 def test_paf_export_parses_as_gedcom(rows, levels):
     assert (
         len(levels) == len(rows),
-        all(level <= previous + 1 for previous, level in zip(levels, levels[1:], strict=False)),
+        all(level <= previous + 1 for previous, level in itertools.pairwise(levels)),
         rows[0],
         rows[-1],
     ) == (True, True, "0 HEAD", "0 TRLR")

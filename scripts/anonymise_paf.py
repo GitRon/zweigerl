@@ -240,15 +240,21 @@ def units(*, lines: list[Line]) -> Iterator[Unit]:
             continue
         rule = rule_for(path=path, value=line.value)
         rules.append(rule)
-        indexes = [index]
-        if rule == "text":
-            while index + 1 < len(lines) and lines[index + 1].tag in CONTINUATION_TAGS:
-                if lines[index + 1].level != line.level + 1:
-                    break
-                index += 1
-                indexes.append(index)
+        indexes = continued(lines=lines, index=index) if rule == "text" else [index]
         yield Unit(rule=rule, indexes=indexes, sex=sexes.get(record, ""))
-        index += 1
+        index = indexes[-1] + 1
+
+
+def continued(*, lines: list[Line], index: int) -> list[int]:
+    """A line with the CONT and CONC lines right below it."""
+    indexes = [index]
+    level = lines[index].level + 1
+    while indexes[-1] + 1 < len(lines):
+        following = lines[indexes[-1] + 1]
+        if following.tag not in CONTINUATION_TAGS or following.level != level:
+            break
+        indexes.append(indexes[-1] + 1)
+    return indexes
 
 
 def joined_text(*, lines: list[Line], indexes: list[int]) -> str:
@@ -444,7 +450,9 @@ class Anonymiser:
             day, month, year = self.shift_day(year=int(match["ny"]), month=int(match["nm"]), day=int(match["nd"]))
             return f"{str(day).zfill(len(match['nd']))}.{str(month).zfill(len(match['nm']))}.{year}"
         if match["full"]:
-            day, month, year = self.shift_day(year=int(match["fy"]), month=month_index(name=match["fm"]), day=int(match["fd"]))
+            day, month, year = self.shift_day(
+                year=int(match["fy"]), month=month_index(name=match["fm"]), day=int(match["fd"])
+            )
             return f"{str(day).zfill(len(match['fd']))} {month_name(like=match['fm'], index=month)} {year}"
         if match["month_year"]:
             months = int(match["my"]) * 12 + month_index(name=match["mm"]) - 1 + self.offset_months
@@ -520,9 +528,7 @@ def main(*, argv: list[str] | None = None) -> int:
     parser.add_argument("target", type=Path, help="where the anonymised file goes")
     arguments = parser.parse_args(argv)
     try:
-        result = anonymise(
-            text=arguments.source.read_bytes().decode("utf-8"), rng=random.Random(secrets.randbits(128))
-        )
+        result = anonymise(text=arguments.source.read_bytes().decode("utf-8"), rng=random.Random(secrets.randbits(128)))
     except AnonymiseError as error:
         print(f"Nothing written: {error}", file=sys.stderr)
         return 1
