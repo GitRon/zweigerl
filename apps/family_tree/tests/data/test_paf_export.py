@@ -12,6 +12,7 @@ from pathlib import Path
 import pytest
 
 PAF_EXPORT = Path(__file__).parent / "paf_export.ged"
+MONTH = r"(?i:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)"
 LINE = re.compile(r"(?P<level>\d+) (?:(?P<xref>@[^@]+@) )?(?P<tag>\S+)(?: (?P<value>.*))?")
 
 
@@ -78,7 +79,7 @@ def test_paf_export_is_nfc(text):
     [
         ("umlaut", r"[äöüÄÖÜ]"),
         ("sharp s", r"ß"),
-        ("letter beyond Latin-1", r"[^\x00-\xff]"),
+        ("letter beyond Latin-1", r"[^\x00-\xff﻿]"),
         ("typographic quotation mark", r"[«»„“”‚‘’]"),  # noqa: RUF001
         ("dagger", r"†"),
     ],
@@ -99,8 +100,8 @@ def test_paf_export_keeps_non_ascii(text, form, pattern):
         ("BEF", r".*/DATE BEF .+"),
         ("AFT", r".*/DATE AFT .+"),
         ("the year only", r".*/DATE \d{4}"),
-        ("month and year", r".*/DATE [A-Za-z]{3} \d{4}"),
-        ("day and month without a year", r".*/DATE \d{1,2} [A-Za-z]{3}"),
+        ("month and year", rf".*/DATE {MONTH} \d{{4}}"),
+        ("day and month without a year", rf".*/DATE \d{{1,2}} {MONTH}"),
         ("the date of a change", r"INDI/CHAN/DATE \d{1,2} [A-Za-z]{3} \d{4}"),
     ],
 )

@@ -40,7 +40,7 @@ MAX_ATTEMPTS = 100
 
 NAME_TAGS = {"GIVN": "given", "NICK": "given", "SURN": "surname", "_MARNM": "surname", "_AKA": "name"}
 TEXT_TAGS = {
-    "ADDR", "ADR1", "ADR2", "AUTH", "CAUS", "CITY", "CTRY", "DSCR", "EDUC", "EMAIL", "EVEN", "NATI",
+    "ADDR", "ADR1", "ADR2", "AUTH", "CAUS", "CITY", "COPR", "CTRY", "DSCR", "EDUC", "EMAIL", "EVEN", "NATI",
     "NOTE", "OCCU", "PAGE", "PHON", "POST", "PUBL", "RELI", "RESI", "STAE", "TEXT", "TITL", "TYPE",
 }  # fmt: skip
 # Values that describe the file or a picture's role, never a person. NPFX holds titles such as "Dr.".
@@ -192,8 +192,9 @@ def rule_for(*, path: list[str], value: str | None) -> str:
     tag = path[-1]
     if not value or POINTER.fullmatch(value):
         return "keep"
-    if path[0] == "HEAD":
-        return {"DATE": "date", "FILE": "file"}.get(tag, "keep")
+    # The program that wrote the file, its name and its publisher's address, says nothing about the family.
+    if path[:2] == ["HEAD", "SOUR"]:
+        return "keep"
     if path[0] == "SUBM":
         return "text"
     if tag == "NAME" and path[0] == "INDI":
@@ -422,7 +423,8 @@ class Anonymiser:
         for part in value.split(","):
             name = part.strip()
             if not LETTERS.search(name):
-                parts.append(part)
+                # A part of digits only - a house number, a district - gets other digits.
+                parts.append(self.text(value=part))
                 continue
             invented = self.remembered(key=("place", name), invent=lambda name=name: self.invent_place(part=name))
             parts.append(part.replace(name, invented, 1))

@@ -103,7 +103,10 @@ def test_char_class(text, expected):
         (["INDI", "FAMS"], "@F1@", "keep"),
         (["HEAD", "DATE"], "12 MAR 1989", "date"),
         (["HEAD", "FILE"], "huber.ged", "file"),
+        (["HEAD", "NOTE"], "Stammbaum Huber", "text"),
+        (["HEAD", "CHAR"], "UTF-8", "keep"),
         (["HEAD", "SOUR", "NAME"], "Personal Ancestral File", "keep"),
+        (["HEAD", "SOUR", "CORP", "ADDR"], "Salt Lake City", "keep"),
         (["SUBM", "NAME"], "Josef Huber", "text"),
         (["INDI", "NAME"], "Josef /Huber/", "name"),
         (["INDI", "NAME", "SURN"], "Huber", "surname"),
@@ -193,7 +196,33 @@ def test_forbidden_words_holds_names_places_text_and_paths_but_not_what_stays():
                                                   "lungenentzündung"}  # fmt: skip
 
 
-def test_anonymiser_anonymise_replaces_every_value_but_the_kept_ones(anonymiser):
+@pytest.mark.parametrize(
+    ("index", "tag"),
+    [
+        (3, "DATE"),
+        (4, "FILE"),
+        (7, "NAME"),
+        (8, "GIVN"),
+        (9, "SURN"),
+        (12, "DATE"),
+        (13, "PLAC"),
+        (14, "NOTE"),
+        (15, "CONC"),
+        (16, "_UID"),
+        (18, "NAME"),
+        (19, "_MARNM"),
+    ],
+)
+def test_anonymiser_anonymise_replaces_the_value(anonymiser, index, tag):
+    document = parse(text=EXPORT)
+    original = parse(text=EXPORT).lines[index]
+
+    anonymiser.anonymise(document=document)
+
+    assert (document.lines[index].tag, document.lines[index].value != original.value) == (tag, True)
+
+
+def test_anonymiser_anonymise_keeps_what_says_nothing_about_a_person(anonymiser):
     document = parse(text=EXPORT)
 
     anonymiser.anonymise(document=document)
@@ -370,6 +399,12 @@ def test_anonymiser_place_keeps_the_parts_and_their_spaces(anonymiser):
 
     first, empty, second, again = invented.split(",")
     assert (empty, second.startswith(" "), again == f" {first}") == (" ", True, True)
+
+
+def test_anonymiser_place_gives_a_part_of_digits_other_digits(anonymiser):
+    _city, district = anonymiser.place(value="Wien, 1931.").split(",")
+
+    assert (district[0], district[-1], district[1:5].isdigit(), district[1:5] != "1931") == (" ", ".", True, True)
 
 
 def test_anonymiser_file_keeps_drive_separators_and_extension(anonymiser):
