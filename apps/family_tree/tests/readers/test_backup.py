@@ -8,7 +8,6 @@ from apps.family_tree.readers.backup import BackupFolder, backup_folder, last_ba
 from apps.family_tree.tests.factories.tree_settings import TreeSettingsFactory
 
 
-
 @pytest.mark.django_db
 def test_last_backup_without_settings_is_never():
     assert last_backup() == BackupAge(text="noch nie", overdue=True)

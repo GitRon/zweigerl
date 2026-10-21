@@ -89,9 +89,7 @@ def backup_view(request: HttpRequest):
         yield toast_sse(request=request, text=str(error), style="error")
         return
 
-    yield ServerSentEventGenerator.patch_elements(
-        render_component(request, "backup.status", last_backup=last_backup())
-    )
+    yield ServerSentEventGenerator.patch_elements(render_component(request, "backup.status", last_backup=last_backup()))
     yield ServerSentEventGenerator.patch_elements(
         render_component(request, "settings.backup", backup_folder=backup_folder())
     )

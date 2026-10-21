@@ -105,7 +105,9 @@ def test_backup_dir_view_refuses_a_folder_a_backup_would_refuse(admin_client, tm
     "apps.family_tree.actions.backup.localtime",
     return_value=datetime.datetime(2026, 10, 19, 14, 30, 12, tzinfo=datetime.UTC),
 )
-def test_backup_view_says_where_the_backup_went_and_patches_the_last_backup(_localtime, admin_client, settings, tmp_path):
+def test_backup_view_says_where_the_backup_went_and_patches_the_last_backup(
+    _localtime, admin_client, settings, tmp_path
+):
     settings.MEDIA_ROOT = tmp_path / "media"
     (tmp_path / "backups").mkdir()
     TreeSettingsFactory(backup_dir=str(tmp_path / "backups"))
@@ -113,7 +115,10 @@ def test_backup_view_says_where_the_backup_went_and_patches_the_last_backup(_loc
     response = admin_client.post(reverse("family_tree:backup-view"), headers={"Datastar-Request": "true"})
 
     body = b"".join(response.streaming_content).decode()
-    assert ('id="backup-status"' in body, f"Gesichert in {tmp_path.resolve() / 'backups' / '2026-10-19_143012'} (" in body) == (
+    assert (
+        'id="backup-status"' in body,
+        f"Gesichert in {tmp_path.resolve() / 'backups' / '2026-10-19_143012'} (" in body,
+    ) == (
         True,
         True,
     )

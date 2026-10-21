@@ -16,9 +16,7 @@ def test_backup_age_of_today():
 
 
 def test_backup_age_of_a_backup_dated_after_today_is_today():
-    assert backup_age(last_backup_on=datetime.date(2026, 10, 22), today=TODAY) == BackupAge(
-        text="heute", overdue=False
-    )
+    assert backup_age(last_backup_on=datetime.date(2026, 10, 22), today=TODAY) == BackupAge(text="heute", overdue=False)
 
 
 def test_backup_age_of_yesterday():

@@ -195,4 +195,3 @@ def test_check_backup_dir_makes_the_folder_absolute(backup_dir, monkeypatch):
     monkeypatch.chdir(backup_dir.parent)
 
     assert check_backup_dir(path=Path("backups")) == backup_dir.resolve()
-
