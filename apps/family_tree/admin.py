@@ -8,6 +8,7 @@ from apps.family_tree.actions.source import delete_source
 from apps.family_tree.models import (
     Citation,
     Fact,
+    GedcomImport,
     ParentChild,
     Partnership,
     Person,
@@ -153,6 +154,15 @@ class SiblingPairAdmin(admin.ModelAdmin):
     list_display = ("__str__",)
     search_fields = PAIR_SEARCH_FIELDS
     autocomplete_fields = ("person_a", "person_b")
+
+
+@admin.register(GedcomImport)
+class GedcomImportAdmin(admin.ModelAdmin):
+    """
+    The imports, under their names. The rows they wrote protect them, so one is deleted only with its rows gone.
+    """
+
+    list_display = ("name", "imported_at")
 
 
 @admin.register(TreeSettings)
