@@ -1,8 +1,9 @@
-<c-vars person_list loose_people />
+<c-vars person_list loose_people last_backup />
 {# The sidebar beside the tree: the word mark, the search and every person (#10). The search field binds #}
 {# "$search", and the server answers each pause in typing with the list patched anew. "type=search" #}
 {# brings the browser's own clear button, which fires "input" like typing does. "Person hinzufügen" asks #}
-{# for somebody connected to nobody yet (#18). Below the list wait the "Lose Zweigerl" (#19). #}
+{# for somebody connected to nobody yet (#18). Below the list wait the "Lose Zweigerl" (#19), at the bottom #}
+{# when the last backup was (#33). #}
 <aside class="sticky top-0 flex h-screen w-80 shrink-0 flex-col gap-4 border-r border-card-edge px-4 py-6 max-lg:static max-lg:h-auto max-lg:w-full max-lg:border-r-0 max-lg:border-b" data-signals="{search: ''}">
     <c-common.wordmark class="self-start text-4xl" />
     <input type="search" aria-label="Personen suchen" placeholder="Personen suchen…" autocomplete="off" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3" data-bind="search" data-on:input__debounce.300ms="@get('{% url 'family_tree:person-search-view' %}')">
@@ -10,4 +11,5 @@
     <c-person.list :person_list="person_list" />
     <c-person.loose :loose_people="loose_people" />
     <a href="{% url 'family_tree:tree-settings-view' %}" class="self-start">Einstellungen</a>
+    <c-backup.status :last_backup="last_backup" />
 </aside>

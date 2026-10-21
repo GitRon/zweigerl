@@ -6,7 +6,7 @@ class TreeSettings(ValidateConstraintsOnSaveMixin, models.Model):
     """
     The settings of the one tree an installation holds (#34 brings several): one row, primary key 1.
     The home person ("Ausgangsperson"), which the tree is laid out around (#11) and which #18, #19 and #20 read,
-    and the folder backups go to (#27).
+    the folder backups go to (#27) and when the last one was written (#33).
     """
 
     ONLY_ROW = 1
@@ -22,9 +22,12 @@ class TreeSettings(ValidateConstraintsOnSaveMixin, models.Model):
         blank=True,
         related_name="+",
     )
-    # Where "manage.py backup" writes its timestamped folders (#27); the settings page edits it with #33. Outside
+    # Where "manage.py backup" and the settings page's button write their timestamped folders (#27, #33). Outside
     # the data directory and the repository - the action refuses both.
     backup_dir = models.CharField("Sicherungsordner", max_length=500, blank=True)
+    # The moment the last finished backup is named after, wherever it went - the settings' folder or "--target" -
+    # for "Zuletzt gesichert" in the sidebar (#33). Empty until the first one.
+    last_backup_at = models.DateTimeField("Zuletzt gesichert", null=True, blank=True)
 
     class Meta:
         verbose_name = "Einstellung"

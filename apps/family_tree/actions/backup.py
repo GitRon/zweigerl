@@ -41,14 +41,16 @@ def create_backup(*, gedcom: str, target: Path | None = None) -> Backup:
     Writes a backup into a new folder named after the moment, in "target" or else in the backup folder of the
     settings: "zweigerl.sqlite3" through VACUUM INTO, which is consistent while the app keeps writing, the same
     state as "zweigerl.sql", the GEDCOM export as "zweigerl.ged" and the media directory as "media/". The folder
-    is written under a ".incomplete" name and renamed once everything is in it.
+    is written under a ".incomplete" name and renamed once everything is in it, and only then is the moment stored
+    as "TreeSettings.last_backup_at".
 
     "gedcom" is the export of "readers.gedcom.gedcom_export", which the caller passes in: an action does not call
     a reader. Must run outside a transaction, since SQLite refuses VACUUM inside one.
     """
     backup_dir = _backup_dir(target=target)
     incomplete = sorted(path for path in backup_dir.glob(f"*{INCOMPLETE_SUFFIX}") if path.is_dir())
-    stamp = localtime().strftime(STAMP_FORMAT)
+    moment = localtime()
+    stamp = moment.strftime(STAMP_FORMAT)
     final = backup_dir / stamp
     if final.exists():
         raise BackupRefusedError(
@@ -61,13 +63,15 @@ def create_backup(*, gedcom: str, target: Path | None = None) -> Backup:
     with connection.cursor() as cursor:
         cursor.execute("VACUUM INTO %s", [str(database)])
     _dump(database=database, dump=folder / "zweigerl.sql")
-    (folder / "zweigerl.ged").write_text(gedcom, encoding="utf-8")
+    # As given: Windows would otherwise write every line ending as CRLF.
+    (folder / "zweigerl.ged").write_text(gedcom, encoding="utf-8", newline="")
     media = folder / "media"
     if Path(settings.MEDIA_ROOT).is_dir():
         shutil.copytree(settings.MEDIA_ROOT, media)
     else:
         media.mkdir()
     folder.rename(final)
+    TreeSettings.objects.update_or_create(pk=TreeSettings.ONLY_ROW, defaults={"last_backup_at": moment})
 
     files = [path for path in final.rglob("*") if path.is_file()]
     return Backup(
@@ -79,18 +83,14 @@ def create_backup(*, gedcom: str, target: Path | None = None) -> Backup:
     )
 
 
-def _backup_dir(*, target: Path | None) -> Path:
+def check_backup_dir(*, path: Path) -> Path:
     """
-    The folder the backup goes to, refused unless it exists, can be written and lies outside both the data
-    directory and the repository. A missing folder is not created: an external disk that is not plugged in must
-    not turn into an empty folder where it would be.
+    "path" made absolute, refused unless it exists, can be written and lies outside both the data directory and
+    the repository - for a backup, and for the settings before they keep it as the backup folder. A missing
+    folder is not created: an external disk that is not plugged in must not turn into an empty folder where it
+    would be.
     """
-    if target is None:
-        configured = TreeSettings.objects.filter(pk=TreeSettings.ONLY_ROW).values_list("backup_dir", flat=True).first()
-        if not configured:
-            raise BackupRefusedError("Es ist noch kein Sicherungsordner eingestellt. Nenn einen mit --target.")
-        target = Path(configured)
-    backup_dir = target.expanduser().resolve()
+    backup_dir = path.expanduser().resolve()
     if not backup_dir.is_dir():
         raise BackupRefusedError(
             f"Den Sicherungsordner {backup_dir} gibt es nicht. Leg ihn an oder steck die Platte an."
@@ -104,6 +104,21 @@ def _backup_dir(*, target: Path | None) -> Path:
     if not access(backup_dir, W_OK):
         raise BackupRefusedError(f"In den Sicherungsordner {backup_dir} darf Zweigerl nicht schreiben.")
     return backup_dir
+
+
+def _backup_dir(*, target: Path | None) -> Path:
+    """
+    The folder the backup goes to: "target", else the one of the settings, checked by "check_backup_dir".
+    """
+    if target is None:
+        configured = TreeSettings.objects.filter(pk=TreeSettings.ONLY_ROW).values_list("backup_dir", flat=True).first()
+        if not configured:
+            raise BackupRefusedError(
+                "Es ist noch kein Sicherungsordner eingestellt. Trag einen in den Einstellungen ein oder nenn einen "
+                "mit --target."
+            )
+        target = Path(configured)
+    return check_backup_dir(path=target)
 
 
 def _dump(*, database: Path, dump: Path) -> None:

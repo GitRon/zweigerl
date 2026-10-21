@@ -1,0 +1,29 @@
+<c-vars backup_folder />
+{# The backup on the settings page (#33): the folder backups go to, saved as a form and checked by the server #}
+{# the way a backup checks it, the space left there, and "Jetzt sichern", which writes one at once - the same #}
+{# backup as "manage.py backup". Both answer with a toast; the section is patched anew after either. #}
+<section id="backup" class="flex max-w-xl flex-col gap-3">
+    <h2 class="text-2xl">Sicherung</h2>
+    <p class="text-ink-muted">Eine Sicherung legt die Datenbank, den Stammbaum als GEDCOM und alle Fotos und Scans in einen neuen Ordner mit Datum. Am besten auf einer externen Platte, nicht im Datenordner.</p>
+    <form class="flex items-end gap-3 max-lg:flex-col max-lg:items-stretch" data-on:submit="@post('{% url 'family_tree:backup-dir-view' %}', {contentType: 'form'})">
+        {% csrf_token %}
+        <label class="flex flex-1 flex-col gap-1">
+            <span class="text-sm">Sicherungsordner</span>
+            <input type="text" name="backup_dir" value="{{ backup_folder.path }}" autocomplete="off" spellcheck="false" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
+        </label>
+        <c-common.button type="submit">Speichern</c-common.button>
+    </form>
+    {% if backup_folder.free %}
+        <p class="text-sm text-ink-muted">Frei: {{ backup_folder.free }}</p>
+    {% elif backup_folder.path %}
+        <p class="text-sm text-ink-muted">Der Ordner ist gerade nicht erreichbar. Ist die Platte angesteckt?</p>
+    {% endif %}
+    <form class="self-start" data-on:submit="@post('{% url 'family_tree:backup-view' %}', {contentType: 'form'})">
+        {% csrf_token %}
+        {% if backup_folder.path %}
+            <c-common.button type="submit">Jetzt sichern</c-common.button>
+        {% else %}
+            <c-common.button type="submit" disabled>Jetzt sichern</c-common.button>
+        {% endif %}
+    </form>
+</section>

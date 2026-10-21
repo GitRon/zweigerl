@@ -15,7 +15,7 @@ each.
 | `Partnership` | Two people as a couple, with its `kind`. The through model of `Person.partners`. When they married or divorced are [facts](evidence.md) on it | `FAM` with `HUSB`/`WIFE`; `MARR`, `DIV` |
 | `ParentChild` | One parent and one child, optionally the `partnership` the child belongs to, and the `pedigree` | `CHIL` in a `FAM`, `PEDI` |
 | `SiblingPair` | Two siblings whose shared parents nobody knows | a `FAM` with children and no parents |
-| `TreeSettings` | The tree's settings - one row - holding the `home_person` (Ausgangsperson) and the `backup_dir` backups go to (#27) | - |
+| `TreeSettings` | The tree's settings - one row - holding the `home_person` (Ausgangsperson), the `backup_dir` backups go to (#27) and `last_backup_at`, when the last one was written (#33) | - |
 | `Photo` | A photo (#16): its `file`, a `description` and the uncertain date it was taken, the `people` on it | `OBJE` with `FILE` and `TITL` |
 | `PhotoPerson` | One person on one photo, and whether it is their portrait (`is_portrait`, the Titelbild). The through model of `Photo.people` | `OBJE` under an `INDI`, `_PRIM` |
 

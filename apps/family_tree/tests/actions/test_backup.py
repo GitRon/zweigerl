@@ -6,7 +6,8 @@ from unittest import mock
 
 import pytest
 
-from apps.family_tree.actions.backup import BackupRefusedError, create_backup
+from apps.family_tree.actions.backup import BackupRefusedError, check_backup_dir, create_backup
+from apps.family_tree.models import TreeSettings
 from apps.family_tree.tests.factories.person import PersonFactory
 from apps.family_tree.tests.factories.tree_settings import TreeSettingsFactory
 
@@ -129,6 +130,14 @@ def test_create_backup_names_what_an_earlier_run_left_incomplete(media_root, bac
 
 
 @pytest.mark.django_db(transaction=True)
+@mock.patch("apps.family_tree.actions.backup.localtime", return_value=MOMENT)
+def test_create_backup_remembers_the_moment_of_the_backup(_localtime, media_root, backup_dir):
+    create_backup(gedcom=GEDCOM, target=backup_dir)
+
+    assert TreeSettings.objects.get().last_backup_at == MOMENT
+
+
+@pytest.mark.django_db(transaction=True)
 def test_create_backup_goes_to_the_folder_of_the_settings(media_root, backup_dir):
     TreeSettingsFactory(backup_dir=str(backup_dir))
 
@@ -180,3 +189,9 @@ def test_create_backup_refuses_a_second_backup_of_the_same_moment(_localtime, ba
 
     with pytest.raises(BackupRefusedError, match="schon eine Sicherung 2026-10-19_143012"):
         create_backup(gedcom=GEDCOM, target=backup_dir)
+
+
+def test_check_backup_dir_makes_the_folder_absolute(backup_dir, monkeypatch):
+    monkeypatch.chdir(backup_dir.parent)
+
+    assert check_backup_dir(path=Path("backups")) == backup_dir.resolve()

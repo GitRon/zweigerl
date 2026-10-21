@@ -2,6 +2,7 @@ import pytest
 from django.urls import reverse
 from pytest_django.asserts import assertTemplateUsed
 
+from apps.family_tree.domain.backup import BackupAge
 from apps.family_tree.tests.factories.person import PersonFactory
 
 
@@ -36,3 +37,10 @@ def test_start_view_opens_no_card(admin_client):
     response = admin_client.get(reverse("family_tree:start-view"))
 
     assert (response.context["card"], response.context["selection"]) == (None, 0)
+
+
+@pytest.mark.django_db
+def test_start_view_says_when_the_last_backup_was(admin_client):
+    response = admin_client.get(reverse("family_tree:start-view"))
+
+    assert response.context["last_backup"] == BackupAge(text="noch nie", overdue=True)
