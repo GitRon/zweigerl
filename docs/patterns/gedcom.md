@@ -2,8 +2,8 @@
 
 **The whole tree goes out as one GEDCOM 5.5.1 file in UTF-8, with everybody in it, and comes back in through
 the same tags.** GEDCOM is how the data leaves Zweigerl - for another program, and inside every backup (#27) -
-so nothing Zweigerl knows is dropped on the way out. This page is the one mapping between the models and the
-tags; the import (#22) adds its side here.
+so nothing Zweigerl knows is dropped on the way out, and how a tree kept elsewhere comes in (#22). This page is
+the one mapping between the models and the tags, both ways.
 
 ## The export
 
@@ -94,6 +94,39 @@ What GEDCOM 5.5.1 has no tag for gets one starting `_ZWG_`, written only when th
 a tree entered the plain way exports as plain GEDCOM: `_ZWG_RELIABILITY`, `_ZWG_STATUS` and `_ZWG_KIND`.
 `_PRIM`, `_FREL`, `_MREL` and `_DATE` are the tags other programs already write for the same thing.
 
+## The import
+
+`manage.py import_gedcom <file> --name "PAF Ronny"` reads a GEDCOM file into the tree (#22); the dialog with its
+preview is #25 and calls the same action, `actions.gedcom_import.import_gedcom`.
+
+- **Only into an empty tree.** Merging with people already there is #35, so the action refuses otherwise.
+- **The first `INDI` becomes the home person**, as the export writes the home person first.
+- **Every row goes through `save()`**, in one transaction: a row the models refuse names its record -
+  "@F2@ in der Datei: Diese beiden sind schon ein Paar." - and nothing is left behind. The PAF export of 412
+  people takes a few seconds.
+- **Every row the import writes keeps its Herkunft**, the `GedcomImport` under the name given - see
+  [Belege](evidence.md#terms). The person card shows it in its head and on each fact.
+
+`domain.gedcom.read` reads the file: ged4py finds the character set - a BOM, the `CHAR` of the header, ANSEL -
+and reads the lines, and `CONC` and `CONT` are joined as bytes, `CONC` without a space, so a word or a character
+PAF cut in two comes back whole. ged4py's own reading of dates and names is not used: it turns `ABT 1931` into
+`ABOUT 1931` and a date phrase into `(…)`. `domain.gedcom_import.read_tree` maps the records - which tag becomes
+what is in [Belege](evidence.md#paf); in short, the table above read backwards, and:
+
+| GEDCOM | Zweigerl |
+|---|---|
+| `NAME` | `given_names` and `surname` from `GIVN` and `SURN`, or from `Given /Surname/` without them; `//` and `/?/` stay as written; `NICK` is the `call_name` |
+| `DEAT` or `BURI` | `living_status` `deceased`; without either it is `unknown`, never `living` |
+| `MARR` | `kind` `marriage`, with or without a date Zweigerl can read |
+| `FAM` with two parents | a Partnership, its children linked to both with it |
+| `FAM` with one parent | the children linked to that parent alone, no Partnership |
+| `FAM` without parents | a SiblingPair from the first child to each other one |
+| `PEDI` below the child's `FAMC` | `pedigree`; a value Zweigerl has no word for is `unknown`, the `PEDI` stays raw |
+| `DIV` below an `INDI` | a `DIV` of their family when they have exactly one, raw on the person otherwise |
+
+`HEAD`, `SUBM` and `TRLR` describe the file and are left out. `SOUR` records, citations and `NOTE` as notes come
+with #23; until then a `NOTE` stays raw on its record and a citation, being a pointer, is not kept.
+
 ## Raw GEDCOM
 
 What an import brings that Zweigerl does not understand stays in the `gedcom_raw` of the row it belongs to (see
@@ -109,12 +142,30 @@ structure:
 another record is not kept raw, since its xref means nothing outside the file it came from. Migration `0007`
 gave the dates migration `0003` kept (`{"tag": "MARR", "date": "im Krieg"}`) this shape.
 
+- **A `NAME` without a value** on a person holds the parts of their name Zweigerl has no field for - `NPFX`,
+  `_MARNM`, `_AKA` - and the export writes them below its own `NAME`, not as a second one.
+- **An event without a date Zweigerl can read** stays raw whole on its owner: `{"tag": "DEAT", "children":
+  [{"tag": "DATE", "value": "Frühjahr 1939"}]}`. A `DEAT` or a `MARR` that says only that it happened - `Y` or
+  nothing - is not kept, since the status and the kind say it and the export writes it back.
+- **What a fact has no field for** - the `PLAC` of a baptism, a death or a wedding, the `CAUS` of a death, the
+  date of an occupation - stays raw below the fact.
+- **A family of one parent has no row** for what its `FAM` carries, so its `_UID`, and a `MARR` or `DIV` it
+  might carry, are not kept; the count of facts the import reports is the count written. The PAF export has
+  neither on such a family.
+- **What a child's `FAMC` and `CHIL` carry** goes on the link to the first parent alone, since the export
+  writes the links of a child into one `FAMC`.
+
+## The round trip
+
+The PAF file of [test data](testing-data.md#the-paf-file), imported, exported and read again, gives the same
+people and families - names, facts, pedigrees and everything kept raw. It is compared as what the records say,
+not line by line: the export cuts a long value beside a space where PAF cuts it in the middle of a word, writes
+the records in an order of its own and names them by ids.
+
 ## Not yet
 
-- **A round trip** - the anonymised PAF file imported (#22), exported and compared - is #22's test; until then
-  the export is tested against invented rows. The file and how it is made are in
-  [test data](testing-data.md#the-paf-file).
-- **GEDCOM 7 with the media packed in** is `.gedzip`, #36.
+- **GEDCOM 7 with the media packed in** is `.gedzip`, #36. The `OBJE` of a PAF export stays raw until #24 finds
+  the files.
 
 ## See also
 

@@ -1,6 +1,7 @@
 <c-vars entry person />
 {# One fact on the person card (#13): what it is, its reliability, what it says, the partner of a couple's fact #}
-{# and its Belege - or that it wants one. The pencil swaps it for its form (#14), which carries the same id. #}
+{# and its Belege - or that it wants one - and the import it came from. The pencil swaps it for its form (#14), #}
+{# which carries the same id. #}
 <div id="fact-{{ entry.fact.pk }}" class="flex flex-col gap-1">
     <div class="flex items-center justify-between gap-3">
         <span class="text-sm text-ink-muted">{{ entry.label }}</span>
@@ -22,5 +23,9 @@
     {% endfor %}
     {% if entry.undocumented %}
         <p><c-common.label text="unbelegt, Quelle fehlt" tone="brick" /></p>
+    {% endif %}
+    {# The import the fact came from (#22). It stays "unbelegt" all the same: a Herkunft is not a Beleg. #}
+    {% if entry.origin %}
+        <p class="text-sm text-ink-muted">aus {{ entry.origin }}</p>
     {% endif %}
 </div>

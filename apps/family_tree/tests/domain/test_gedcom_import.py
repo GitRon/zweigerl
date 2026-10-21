@@ -1,0 +1,269 @@
+import datetime
+import io
+
+from apps.family_tree.domain.dates import DateKind, Precision, UncertainDate
+from apps.family_tree.domain.gedcom import read
+from apps.family_tree.domain.gedcom_import import (
+    ImportedChild,
+    ImportedFact,
+    ImportedFamily,
+    ImportedPerson,
+    ImportedTree,
+    read_tree,
+)
+
+# Every file below is invented, after the Familie Huber - see docs/patterns/testing-data.md.
+MARCH_12_1931 = UncertainDate(kind=DateKind.EXACT, date_1=datetime.date(1931, 3, 12), precision=Precision.DAY)
+YEAR_1989 = UncertainDate(kind=DateKind.EXACT, date_1=datetime.date(1989, 1, 1), precision=Precision.YEAR)
+
+
+def test_read_tree_reads_people_and_families_and_leaves_out_the_rest():
+    records = read(file=io.BytesIO(b"0 HEAD\n0 @I1@ INDI\n0 @F1@ FAM\n0 @S1@ SOUR\n1 TITL Taufbuch\n0 TRLR\n"))
+
+    tree = read_tree(records=records)
+
+    assert tree == ImportedTree(
+        people=[ImportedPerson(xref="@I1@")], families=[ImportedFamily(xref="@F1@", parents=())]
+    )
+
+
+def test_read_tree_gives_a_divorce_on_a_person_to_their_only_family():
+    records = read(file=io.BytesIO(b"0 @I1@ INDI\n1 FAMS @F1@\n1 DIV\n2 DATE 1989\n0 @F1@ FAM\n1 HUSB @I1@\n"))
+
+    tree = read_tree(records=records)
+
+    assert tree.families[0].facts == [ImportedFact(kind="divorce", date=YEAR_1989)]
+
+
+def test_read_tree_keeps_a_divorce_raw_on_a_person_with_two_families():
+    records = read(file=io.BytesIO(b"0 @I1@ INDI\n1 FAMS @F1@\n1 FAMS @F2@\n1 DIV\n0 @F1@ FAM\n0 @F2@ FAM\n"))
+
+    tree = read_tree(records=records)
+
+    assert tree.people[0].raw == [{"tag": "DIV"}]
+
+
+def test_read_tree_takes_a_death_for_deceased():
+    tree = read_tree(records=read(file=io.BytesIO(b"0 @I1@ INDI\n1 DEAT Y\n")))
+
+    assert tree.people[0] == ImportedPerson(xref="@I1@", deceased=True)
+
+
+def test_read_tree_takes_a_burial_for_deceased():
+    tree = read_tree(records=read(file=io.BytesIO(b"0 @I1@ INDI\n1 BURI\n2 PLAC Mariazell\n")))
+
+    assert tree.people[0].deceased is True
+
+
+def test_read_tree_never_takes_somebody_without_a_death_for_alive():
+    tree = read_tree(records=read(file=io.BytesIO(b"0 @I1@ INDI\n1 BIRT\n2 DATE 1820\n")))
+
+    assert tree.people[0].deceased is False
+
+
+def test_read_tree_keeps_a_tag_it_does_not_know_raw_without_its_pointers():
+    records = read(file=io.BytesIO(b"0 @I1@ INDI\n1 _UID 4F2A\n1 SOUR @S1@\n1 RELI rk.\n2 SOUR @S1@\n"))
+
+    tree = read_tree(records=records)
+
+    assert tree.people[0].raw == [{"tag": "_UID", "value": "4F2A"}, {"tag": "RELI", "value": "rk."}]
+
+
+def test_read_tree_reads_the_parts_of_a_name():
+    records = read(
+        file=io.BytesIO(
+            b"0 @I1@ INDI\n1 NAME Maria Theresia /Huber/\n2 GIVN Maria Theresia\n2 SURN Huber\n2 NICK Resi\n"
+        )
+    )
+
+    person = read_tree(records=records).people[0]
+
+    assert (person.given_names, person.surname, person.call_name, person.raw) == ("Maria Theresia", "Huber", "Resi", [])
+
+
+def test_read_tree_reads_a_name_without_its_parts_from_the_slashes():
+    person = read_tree(records=read(file=io.BytesIO(b"0 @I1@ INDI\n1 NAME Lena /Huber/\n"))).people[0]
+
+    assert (person.given_names, person.surname) == ("Lena", "Huber")
+
+
+def test_read_tree_reads_an_empty_surname_as_empty():
+    person = read_tree(records=read(file=io.BytesIO(b"0 @I1@ INDI\n1 NAME Theresia //\n"))).people[0]
+
+    assert (person.given_names, person.surname) == ("Theresia", "")
+
+
+def test_read_tree_keeps_a_surname_nobody_knows_as_written():
+    person = read_tree(records=read(file=io.BytesIO(b"0 @I1@ INDI\n1 NAME Anna /?/\n"))).people[0]
+
+    assert person.surname == "?"
+
+
+def test_read_tree_reads_a_name_without_slashes_as_given_names():
+    person = read_tree(records=read(file=io.BytesIO(b"0 @I1@ INDI\n1 NAME Anna\n"))).people[0]
+
+    assert (person.given_names, person.surname) == ("Anna", "")
+
+
+def test_read_tree_keeps_the_other_parts_of_a_name_raw_as_a_name_without_value():
+    records = read(file=io.BytesIO(b"0 @I1@ INDI\n1 NAME Lena /Huber/\n2 NPFX Dr.\n2 _MARNM Maier\n"))
+
+    person = read_tree(records=records).people[0]
+
+    assert person.raw == [
+        {"tag": "NAME", "children": [{"tag": "NPFX", "value": "Dr."}, {"tag": "_MARNM", "value": "Maier"}]}
+    ]
+
+
+def test_read_tree_keeps_a_second_name_raw_whole():
+    person = read_tree(
+        records=read(file=io.BytesIO(b"0 @I1@ INDI\n1 NAME Lena /Huber/\n1 NAME Lene /Maier/\n"))
+    ).people[0]
+
+    assert (person.given_names, person.raw) == ("Lena", [{"tag": "NAME", "value": "Lene /Maier/"}])
+
+
+def test_read_tree_reads_the_sex():
+    assert read_tree(records=read(file=io.BytesIO(b"0 @I1@ INDI\n1 SEX F\n"))).people[0].sex == "F"
+
+
+def test_read_tree_keeps_a_sex_it_does_not_know_raw():
+    person = read_tree(records=read(file=io.BytesIO(b"0 @I1@ INDI\n1 SEX N\n"))).people[0]
+
+    assert (person.sex, person.raw) == ("U", [{"tag": "SEX", "value": "N"}])
+
+
+def test_read_tree_splits_a_birth_into_its_date_and_its_place():
+    records = read(file=io.BytesIO(b"0 @I1@ INDI\n1 BIRT\n2 DATE 12 Mar 1931\n2 PLAC Graz\n2 NOTE Hausgeburt\n"))
+
+    facts = read_tree(records=records).people[0].facts
+
+    assert facts == [
+        ImportedFact(kind="birth", date=MARCH_12_1931, raw=[{"tag": "NOTE", "value": "Hausgeburt"}]),
+        ImportedFact(kind="birthplace", value="Graz"),
+    ]
+
+
+def test_read_tree_keeps_a_birth_date_it_cannot_read_raw_below_the_birthplace():
+    records = read(file=io.BytesIO(b"0 @I1@ INDI\n1 BIRT\n2 DATE Fruehjahr 1931\n2 PLAC Graz\n"))
+
+    facts = read_tree(records=records).people[0].facts
+
+    assert facts == [ImportedFact(kind="birthplace", value="Graz", raw=[{"tag": "DATE", "value": "Fruehjahr 1931"}])]
+
+
+def test_read_tree_keeps_a_birth_without_date_or_place_raw():
+    person = read_tree(records=read(file=io.BytesIO(b"0 @I1@ INDI\n1 BIRT\n2 DATE im Krieg\n"))).people[0]
+
+    assert (person.facts, person.raw) == ([], [{"tag": "BIRT", "children": [{"tag": "DATE", "value": "im Krieg"}]}])
+
+
+def test_read_tree_keeps_a_birthplace_too_long_for_a_fact_raw_below_the_birth():
+    place = "Graz " * 61
+    records = read(file=io.BytesIO(f"0 @I1@ INDI\n1 BIRT\n2 DATE 12 MAR 1931\n2 PLAC {place}\n".encode()))
+
+    facts = read_tree(records=records).people[0].facts
+
+    assert facts == [ImportedFact(kind="birth", date=MARCH_12_1931, raw=[{"tag": "PLAC", "value": place}])]
+
+
+def test_read_tree_reads_an_event_with_its_date_and_keeps_its_place_raw():
+    records = read(file=io.BytesIO(b"0 @I1@ INDI\n1 CHR\n2 DATE 12 MAR 1931\n2 PLAC Mariazell\n"))
+
+    facts = read_tree(records=records).people[0].facts
+
+    assert facts == [ImportedFact(kind="baptism", date=MARCH_12_1931, raw=[{"tag": "PLAC", "value": "Mariazell"}])]
+
+
+def test_read_tree_keeps_an_event_with_a_date_it_cannot_read_raw_whole():
+    person = read_tree(records=read(file=io.BytesIO(b"0 @I1@ INDI\n1 DEAT\n2 DATE 1926 (?)\n"))).people[0]
+
+    assert (person.facts, person.raw) == ([], [{"tag": "DEAT", "children": [{"tag": "DATE", "value": "1926 (?)"}]}])
+
+
+def test_read_tree_reads_an_occupation_and_keeps_its_date_raw():
+    records = read(file=io.BytesIO(b"0 @I1@ INDI\n1 OCCU Uhrmacher\n2 DATE 1871\n"))
+
+    facts = read_tree(records=records).people[0].facts
+
+    assert facts == [ImportedFact(kind="occupation", value="Uhrmacher", raw=[{"tag": "DATE", "value": "1871"}])]
+
+
+def test_read_tree_keeps_an_occupation_without_value_raw():
+    person = read_tree(records=read(file=io.BytesIO(b"0 @I1@ INDI\n1 OCCU\n2 PLAC Graz\n"))).people[0]
+
+    assert (person.facts, person.raw) == ([], [{"tag": "OCCU", "children": [{"tag": "PLAC", "value": "Graz"}]}])
+
+
+def test_read_tree_keeps_a_family_link_without_a_pointer_raw():
+    person = read_tree(records=read(file=io.BytesIO(b"0 @I1@ INDI\n1 FAMS\n1 FAMC\n"))).people[0]
+
+    assert person.raw == [{"tag": "FAMS"}, {"tag": "FAMC"}]
+
+
+def test_read_tree_reads_a_couple_with_their_wedding_and_their_child():
+    records = read(
+        file=io.BytesIO(
+            b"0 @F1@ FAM\n1 HUSB @I1@\n1 WIFE @I2@\n1 CHIL @I3@\n1 MARR\n2 DATE 12 MAR 1931\n2 PLAC Graz\n1 _UID 7A\n"
+        )
+    )
+
+    family = read_tree(records=records).families[0]
+
+    assert (family.parents, family.children, family.married, family.facts, family.raw) == (
+        ("@I1@", "@I2@"),
+        [ImportedChild(xref="@I3@")],
+        True,
+        [ImportedFact(kind="marriage", date=MARCH_12_1931, raw=[{"tag": "PLAC", "value": "Graz"}])],
+        [{"tag": "_UID", "value": "7A"}],
+    )
+
+
+def test_read_tree_keeps_a_wedding_without_a_date_raw_and_the_couple_married():
+    family = read_tree(records=read(file=io.BytesIO(b"0 @F1@ FAM\n1 MARR\n2 PLAC Graz\n"))).families[0]
+
+    assert (family.married, family.raw) == (True, [{"tag": "MARR", "children": [{"tag": "PLAC", "value": "Graz"}]}])
+
+
+def test_read_tree_takes_a_wedding_that_says_only_that_it_happened_for_the_kind():
+    family = read_tree(records=read(file=io.BytesIO(b"0 @F1@ FAM\n1 MARR Y\n"))).families[0]
+
+    assert (family.married, family.facts, family.raw) == (True, [], [])
+
+
+def test_read_tree_keeps_a_divorce_without_a_date_raw():
+    family = read_tree(records=read(file=io.BytesIO(b"0 @F1@ FAM\n1 DIV Y\n"))).families[0]
+
+    assert (family.married, family.raw) == (False, [{"tag": "DIV", "value": "Y"}])
+
+
+def test_read_tree_keeps_a_family_link_of_the_family_without_a_pointer_raw():
+    family = read_tree(records=read(file=io.BytesIO(b"0 @F1@ FAM\n1 HUSB\n"))).families[0]
+
+    assert (family.parents, family.raw) == ((), [{"tag": "HUSB"}])
+
+
+def test_read_tree_reads_the_pedigree_of_a_child_from_its_family_link():
+    records = read(file=io.BytesIO(b"0 @I3@ INDI\n1 FAMC @F1@\n2 PEDI adopted\n0 @F1@ FAM\n1 CHIL @I3@\n"))
+
+    assert read_tree(records=records).families[0].children == [ImportedChild(xref="@I3@", pedigree="adopted")]
+
+
+def test_read_tree_keeps_a_pedigree_it_has_no_word_for_raw():
+    records = read(file=io.BytesIO(b"0 @I3@ INDI\n1 FAMC @F1@\n2 PEDI sealing\n0 @F1@ FAM\n1 CHIL @I3@\n"))
+
+    children = read_tree(records=records).families[0].children
+
+    assert children == [ImportedChild(xref="@I3@", pedigree="unknown", raw=[{"tag": "PEDI", "value": "sealing"}])]
+
+
+def test_read_tree_keeps_what_a_child_link_carries_raw():
+    records = read(
+        file=io.BytesIO(b"0 @I3@ INDI\n1 FAMC @F1@\n2 NOTE vom Hof\n0 @F1@ FAM\n1 CHIL @I3@\n2 _FREL Natural\n")
+    )
+
+    children = read_tree(records=records).families[0].children
+
+    assert children == [
+        ImportedChild(xref="@I3@", raw=[{"tag": "NOTE", "value": "vom Hof"}, {"tag": "_FREL", "value": "Natural"}])
+    ]

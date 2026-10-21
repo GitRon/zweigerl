@@ -11,6 +11,10 @@ def test_display_name_takes_the_first_given_name_without_a_call_name():
     assert display_name(given_names="Johann Georg", surname="Huber", call_name="") == "Johann Huber"
 
 
+def test_display_name_takes_the_first_of_given_names_separated_by_commas():
+    assert display_name(given_names="Maria, Theresia", surname="Huber", call_name="") == "Maria Huber"
+
+
 def test_display_name_without_a_surname_is_the_first_name_alone():
     assert display_name(given_names="Theresia", surname="", call_name="") == "Theresia"
 
@@ -21,6 +25,10 @@ def test_display_name_of_somebody_nobody_has_named():
 
 def test_initials_of_first_given_name_and_surname():
     assert initials(given_names="johann Georg", surname="Huber") == "JH"
+
+
+def test_initials_take_the_first_of_given_names_separated_by_commas():
+    assert initials(given_names=",Maria, Theresia", surname="Huber") == "MH"
 
 
 def test_initials_of_somebody_without_a_name_are_empty():

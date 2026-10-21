@@ -164,11 +164,13 @@ def _header() -> Node:
 
 def _individual(*, person: Person, as_parent: list[_Family], as_child: list[_Family]) -> Node:
     facts = list(person.facts.all())
+    # The parts of a name an import kept raw - a title, a married name - belong below the NAME, not the INDI.
+    name_parts = [record for record in person.gedcom_raw if record["tag"] == "NAME" and not record.get("value")]
     return Node(
         xref=f"@I{person.pk}@",
         tag="INDI",
         children=(
-            *_name(person=person),
+            *_name(person=person, raw=name_parts),
             Node(tag="SEX", value=person.sex),
             *_events(facts=facts),
             *_status(person=person, facts=facts),
@@ -176,13 +178,17 @@ def _individual(*, person: Person, as_parent: list[_Family], as_child: list[_Fam
             *(_child_of(family=family, links=family.children[person.pk]) for family in as_child),
             *(Node(tag="SOUR", pointer=f"@S{source.pk}@") for source in person.filed_sources.all()),
             *(_photo_link(link=link) for link in person.photo_links.all()),
-            *from_raw(records=person.gedcom_raw),
+            *from_raw(records=[record for record in person.gedcom_raw if record not in name_parts]),
         ),
     )
 
 
-def _name(*, person: Person) -> tuple[Node, ...]:
-    if not (person.given_names or person.surname or person.call_name):
+def _name(*, person: Person, raw: list[dict]) -> tuple[Node, ...]:
+    """
+    The NAME with GIVN, SURN and NICK, and below them what an import kept raw of the name it read.
+    """
+    kept = tuple(node for record in raw for node in from_raw(records=record.get("children", [])))
+    if not (person.given_names or person.surname or person.call_name or kept):
         return ()
     parts = (
         Node(tag="GIVN", value=person.given_names),
@@ -190,7 +196,7 @@ def _name(*, person: Person) -> tuple[Node, ...]:
         Node(tag="NICK", value=person.call_name),
     )
     full = f"{person.given_names} /{person.surname}/".strip()
-    return (Node(tag="NAME", value=full, children=tuple(part for part in parts if part.value)),)
+    return (Node(tag="NAME", value=full, children=(*(part for part in parts if part.value), *kept)),)
 
 
 def _events(*, facts: list[Fact]) -> list[Node]:

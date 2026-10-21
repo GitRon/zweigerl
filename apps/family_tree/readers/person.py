@@ -101,6 +101,8 @@ class FactEntry:
     undocumented: bool
     # The name of the other partner for a fact of the couple, a marriage (#14); None for the person's own.
     partner: str | None = None
+    # The import the fact came from - "PAF Ronny" (#22) - None for one entered here. Not a Beleg.
+    origin: str | None = None
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -156,6 +158,8 @@ class PersonCard:
     photos_tab: PhotosTab
     # Whether a death fact is recorded, so the form for name and status (#30) does not ask for the year again.
     death_recorded: bool
+    # The import the person came from - "PAF Ronny" (#22) - None for somebody entered here.
+    origin: str | None = None
 
 
 def person_card(*, pk: int) -> PersonCard | None:
@@ -164,7 +168,7 @@ def person_card(*, pk: int) -> PersonCard | None:
     every fact with its reliability and its Belege, everyone directly related and the sources with their files -
     or None for a person who is not there.
     """
-    person = _with_life_facts().filter(pk=pk).first()
+    person = _with_life_facts().select_related("gedcom_import").filter(pk=pk).first()
     if person is None:
         return None
 
@@ -180,6 +184,7 @@ def person_card(*, pk: int) -> PersonCard | None:
         sources_tab=_sources_tab(person=person),
         photos_tab=_photos_tab(person=person),
         death_recorded=any(fact.kind == Fact.Kind.DEATH for fact in person.life_facts),
+        origin=person.gedcom_import.name if person.gedcom_import else None,
     )
 
 
@@ -544,6 +549,7 @@ def _fact_entry(*, fact: Fact, person: Person) -> FactEntry:
             if partner
             else None
         ),
+        origin=fact.gedcom_import.name if fact.gedcom_import else None,
     )
 
 

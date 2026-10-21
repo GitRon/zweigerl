@@ -63,6 +63,29 @@ def test_gedcom_export_writes_no_name_for_somebody_without_one():
 
 
 @pytest.mark.django_db
+def test_gedcom_export_writes_the_parts_of_a_name_an_import_kept_raw_below_the_name():
+    raw_name = {"tag": "NAME", "children": [{"tag": "_MARNM", "value": "Maier"}]}
+    lena = PersonFactory(given_names="Lena", surname="Huber", sex=Person.Sex.FEMALE, gedcom_raw=[raw_name, *RAW])
+
+    text = gedcom_export()
+
+    assert (
+        f"0 @I{lena.pk}@ INDI\n1 NAME Lena /Huber/\n2 GIVN Lena\n2 SURN Huber\n2 _MARNM Maier\n1 SEX F\n1 _UID 4F2A\n"
+        in text
+    )
+
+
+@pytest.mark.django_db
+def test_gedcom_export_writes_a_name_of_nothing_but_the_parts_an_import_kept_raw():
+    raw_name = {"tag": "NAME", "children": [{"tag": "NPFX", "value": "Dr."}]}
+    nameless = PersonFactory(given_names="", surname="", gedcom_raw=[raw_name])
+
+    text = gedcom_export()
+
+    assert f"0 @I{nameless.pk}@ INDI\n1 NAME //\n2 NPFX Dr.\n1 SEX U\n" in text
+
+
+@pytest.mark.django_db
 def test_gedcom_export_puts_the_home_person_first():
     anna = PersonFactory(given_names="Anna")
     lena = TreeSettingsFactory(home_person__given_names="Lena").home_person

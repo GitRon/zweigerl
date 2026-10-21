@@ -18,6 +18,7 @@ each.
 | `TreeSettings` | The tree's settings - one row - holding the `home_person` (Ausgangsperson), the `backup_dir` backups go to (#27) and `last_backup_at`, when the last one was written (#33) | - |
 | `Photo` | A photo (#16): its `file`, a `description` and the uncertain date it was taken, the `people` on it | `OBJE` with `FILE` and `TITL` |
 | `PhotoPerson` | One person on one photo, and whether it is their portrait (`is_portrait`, the Titelbild). The through model of `Photo.people` | `OBJE` under an `INDI`, `_PRIM` |
+| `GedcomImport` | One GEDCOM file read in (#22), its `name` - "PAF Ronny" - and when; the Herkunft of every row it wrote | - |
 
 The names are English like all code, close to GEDCOM where it has a word; what a person reads - the
 `verbose_name`s, the choice labels, the messages - is German.
@@ -100,10 +101,15 @@ A name may be empty: GEDCOM allows a person without one, and "the unknown first 
 
 ## Raw GEDCOM
 
-Every model but `TreeSettings` has `gedcom_raw`, a JSON list of the records an import brought along that
-Zweigerl does not understand, so the export writes them back (#22, #26). Each is one GEDCOM structure,
-`{"tag", "value", "children"}` - see [GEDCOM](gedcom.md#raw-gedcom) for the shape and where it is written.
-Nothing in Zweigerl reads it but the export, and nothing but the importer writes it.
+Person, Partnership, ParentChild, SiblingPair, Fact, Source and Citation have `gedcom_raw`, a JSON list of the
+records an import brought along that Zweigerl does not understand, so the export writes them back (#22, #26).
+Each is one GEDCOM structure, `{"tag", "value", "children"}` - see [GEDCOM](gedcom.md#raw-gedcom) for the shape
+and where it is written. Nothing in Zweigerl reads it but the export, and nothing but the importer writes it.
+
+Beside it each has `gedcom_import`, the Herkunft: the `GedcomImport` the row came from, under the name the import
+was given (#22), and empty for a row entered here. The person card names it in its head ("Herkunft: PAF Ronny")
+and on each fact. It is not a Beleg - see [Belege](evidence.md#terms). An import is protected while a row points
+at it.
 
 ## Adding people
 
