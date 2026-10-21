@@ -169,9 +169,9 @@ still hand out under its old URL. The directory `sources/<id>/` or `photos/<id>/
 
 ## Backups
 
-**`manage.py backup` writes one consistent copy of everything a person entered into a new folder** (#27),
-in the backup folder of the settings - `TreeSettings.backup_dir`, which the settings page edits with #33 - or
-in the one `--target` names, an external disk for instance:
+**`manage.py backup` and "Jetzt sichern" on the settings page write one consistent copy of everything a person
+entered into a new folder** (#27, #33), in the backup folder of the settings - `TreeSettings.backup_dir` - or, for
+the command, in the one `--target` names, an external disk for instance:
 
 ```
 <backup folder>/
@@ -189,14 +189,21 @@ in the one `--target` names, an external disk for instance:
   backup (#40), restic or a synced vault only move what changed (#39), and a single photo opens without
   Zweigerl. One file to take along is an export, the `.gedzip` of #36.
 - **Never half a backup.** The folder is written as `<stamp>.incomplete/` and renamed once everything is in
-  it. A folder with that suffix is never a backup - not for "Zuletzt gesichert" in #33 either - and the next
-  run names any it finds. It deletes none of them, and no old backup: a backup deletes nothing.
+  it. A folder with that suffix is never a backup, and the next run names any it finds. It deletes none of
+  them, and no old backup: a backup deletes nothing.
 - **Refused, with a German message**, when no folder is set, when it does not exist - a disk that is not
   plugged in must not become an empty folder in its place - when it lies inside the data directory or the
-  repository, or cannot be written.
-- `actions.backup.create_backup` does the work, and the command and #33's button call exactly it. It takes the
+  repository, or cannot be written. `actions.backup.check_backup_dir` holds these checks, and the settings page
+  runs the same ones before it keeps a folder, storing it as an absolute path.
+- `actions.backup.create_backup` does the work, and the command and the button call exactly it. It takes the
   GEDCOM text from its caller, since an action does not call a reader, and has to run outside a transaction:
-  SQLite refuses `VACUUM` inside one.
+  SQLite refuses `VACUUM` inside one. The button runs it within the request.
+- **"Zuletzt gesichert" is the moment of the last finished backup**, wherever it went: `create_backup` stores
+  it as `TreeSettings.last_backup_at` once the folder has its final name, so a half-written one never counts
+  and one on a `--target` disk does. The sidebar says it in local calendar days - "heute", "gestern", "vor 3
+  Tagen", "noch nie" - and from seven days on, or when there has never been one, adds a `brick` label
+  "Sicherung fällig" leading to the button. It is read from the database, not from the folder, so a page
+  never waits on a disk.
 
 ## Running it
 
@@ -211,4 +218,4 @@ browser run and anything pasted into an issue.
 ## Related
 
 - Serving media only to someone logged in: #21
-- Backups: the command #27, see [Backups](#backups); the button #33; off-site: #39
+- Backups: the command #27 and the button #33, see [Backups](#backups); off-site: #39; on a schedule: #41

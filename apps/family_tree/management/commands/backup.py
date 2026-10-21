@@ -3,6 +3,7 @@ from pathlib import Path
 from django.core.management.base import BaseCommand, CommandError, CommandParser
 
 from apps.family_tree.actions.backup import BackupRefusedError, create_backup
+from apps.family_tree.domain.backup import format_size
 from apps.family_tree.readers.gedcom import gedcom_export
 
 
@@ -20,8 +21,7 @@ class Command(BaseCommand):
         except BackupRefusedError as error:
             raise CommandError(str(error)) from error
 
-        megabytes = f"{backup.size / 1_000_000:.1f}".replace(".", ",")
         self.stdout.write(f"Gesichert in {backup.path}")
-        self.stdout.write(f"{megabytes} MB, Personen: {backup.people}, Dateien: {backup.files}")
+        self.stdout.write(f"{format_size(size=backup.size)}, Personen: {backup.people}, Dateien: {backup.files}")
         for folder in backup.incomplete:
             self.stdout.write(f"Unvollständig liegen geblieben: {folder}")

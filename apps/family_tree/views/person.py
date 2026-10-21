@@ -11,6 +11,7 @@ from apps.common.toasts import toast_sse
 from apps.family_tree.actions.person import change_name_and_status
 from apps.family_tree.domain.layout import CARD_HEIGHT, CARD_WIDTH
 from apps.family_tree.models import Person
+from apps.family_tree.readers.backup import last_backup
 from apps.family_tree.readers.person import loose_people, person_card, person_list
 from apps.family_tree.readers.tree import tree, tree_card
 from apps.family_tree.views.person_search import sidebar_events
@@ -40,6 +41,7 @@ def person_view(request: HttpRequest, pk: int) -> HttpResponse:
         {
             "person_list": person_list(search=""),
             "loose_people": loose_people(),
+            "last_backup": last_backup(),
             "tree": tree(),
             "card": card,
             "selection": pk,

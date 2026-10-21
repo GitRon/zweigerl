@@ -30,7 +30,12 @@ from apps.family_tree.views.source import (
     source_files_view,
 )
 from apps.family_tree.views.start import start_view
-from apps.family_tree.views.tree_settings import home_person_view, tree_settings_view
+from apps.family_tree.views.tree_settings import (
+    backup_dir_view,
+    backup_view,
+    home_person_view,
+    tree_settings_view,
+)
 
 app_name = "family_tree"
 
@@ -69,5 +74,7 @@ urlpatterns = [
     path("persons/<int:pk>/photos/<int:photo_pk>/", photo_describe_view, name="photo-describe-view"),
     path("settings/", tree_settings_view, name="tree-settings-view"),
     path("settings/home-person/", home_person_view, name="home-person-view"),
+    path("settings/backup-dir/", backup_dir_view, name="backup-dir-view"),
+    path("settings/backup/", backup_view, name="backup-view"),
     path("export/gedcom/", gedcom_export_view, name="gedcom-export-view"),
 ]

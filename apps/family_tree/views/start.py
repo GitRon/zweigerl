@@ -1,6 +1,7 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 
+from apps.family_tree.readers.backup import last_backup
 from apps.family_tree.readers.person import loose_people, person_list
 from apps.family_tree.readers.tree import tree
 
@@ -15,6 +16,7 @@ def start_view(request: HttpRequest) -> HttpResponse:
         {
             "person_list": person_list(search=""),
             "loose_people": loose_people(),
+            "last_backup": last_backup(),
             "tree": tree(),
             "card": None,
             "selection": 0,
