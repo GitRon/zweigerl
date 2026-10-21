@@ -18,8 +18,13 @@ def display_name(*, given_names: str, surname: str, call_name: str) -> str:
     "Gerti Huber" for Gertrud with the Rufname Gerti, "Johann Huber" for Johann Georg, "Ohne Namen" for
     somebody nobody has named yet.
     """
-    first = call_name.strip() or next(iter(given_names.split()), "")
+    first = call_name.strip() or _first_given_name(given_names=given_names)
     return " ".join(part for part in (first, surname.strip()) if part) or NO_NAME
+
+
+def _first_given_name(*, given_names: str) -> str:
+    # PAF separates given names with commas as well as spaces: "Gertraud, Crescentia, Amalia".
+    return next(iter(given_names.replace(",", " ").split()), "")
 
 
 def initials(*, given_names: str, surname: str) -> str:
@@ -27,7 +32,7 @@ def initials(*, given_names: str, surname: str) -> str:
     The first letters of the first given name and the family name, for the picture frame. Empty when the
     person has no name, so the frame shows its placeholder instead.
     """
-    first = next(iter(given_names.split()), "")
+    first = _first_given_name(given_names=given_names)
     return "".join(part[0] for part in (first, surname.strip()) if part).upper()
 
 
