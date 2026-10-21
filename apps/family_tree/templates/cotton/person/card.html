@@ -25,6 +25,10 @@
             {% if card.relationship %}
                 <p>{{ card.relationship }}</p>
             {% endif %}
+            {# Which import the person came from (#22) - not a Beleg, so it says nothing about the facts. #}
+            {% if card.origin %}
+                <p class="text-sm text-ink-muted">Herkunft: {{ card.origin }}</p>
+            {% endif %}
         </div>
     </div>
     <form id="person-card-name" aria-label="Name &amp; Status bearbeiten" class="flex flex-col gap-3" style="display: none" data-show="$editing == {{ person.pk }}" data-on:submit="@post('{% url 'family_tree:person-name-view' pk=person.pk %}', {contentType: 'form'})">

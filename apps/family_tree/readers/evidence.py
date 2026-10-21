@@ -15,7 +15,7 @@ def facts(*, person: Person) -> QuerySet[Fact]:
     """
     return (
         Fact.objects.filter(Q(person=person) | Q(partnership__person_a=person) | Q(partnership__person_b=person))
-        .select_related("partnership__person_a", "partnership__person_b")
+        .select_related("partnership__person_a", "partnership__person_b", "gedcom_import")
         .annotate(
             undocumented=Q(reliability=Fact.Reliability.DOCUMENTED)
             & ~Exists(Citation.objects.filter(fact=OuterRef("pk")))

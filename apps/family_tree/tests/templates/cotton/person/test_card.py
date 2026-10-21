@@ -59,6 +59,18 @@ def test_card_shows_name_lifespan_and_relationship():
     assert "1958 –" in page.get_text() and "Tante" in page.get_text()
 
 
+def test_card_names_the_import_the_person_came_from():
+    html = render_component(tag='<c-person.card :card="card" />', context={"card": replace(CARD, origin="PAF Huber")})
+
+    assert "Herkunft: PAF Huber" in parse(html).get_text()
+
+
+def test_card_names_no_import_for_somebody_entered_here():
+    html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
+
+    assert "Herkunft" not in parse(html).get_text()
+
+
 def test_card_shows_while_the_person_is_selected():
     html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
 

@@ -28,6 +28,7 @@ from apps.family_tree.readers.person import (
 )
 from apps.family_tree.tests.factories.citation import CitationFactory
 from apps.family_tree.tests.factories.fact import FactFactory
+from apps.family_tree.tests.factories.gedcom_import import GedcomImportFactory
 from apps.family_tree.tests.factories.parent_child import ParentChildFactory
 from apps.family_tree.tests.factories.partnership import PartnershipFactory
 from apps.family_tree.tests.factories.person import PersonFactory
@@ -341,6 +342,37 @@ def test_person_card_knows_no_death_fact_is_recorded():
     FactFactory(kind=Fact.Kind.DEATH, person=PersonFactory(given_names="Fremd"))
 
     assert person_card(pk=birth.person.pk).death_recorded is False
+
+
+@pytest.mark.django_db
+def test_person_card_names_the_import_the_person_came_from():
+    lena = PersonFactory(gedcom_import=GedcomImportFactory(name="PAF Huber"))
+
+    assert person_card(pk=lena.pk).origin == "PAF Huber"
+
+
+@pytest.mark.django_db
+def test_person_card_names_no_import_for_somebody_entered_here():
+    lena = PersonFactory()
+
+    assert person_card(pk=lena.pk).origin is None
+
+
+@pytest.mark.django_db
+def test_person_card_names_the_import_of_a_fact_and_still_shows_it_as_undocumented():
+    occupation = FactFactory(as_value=True, gedcom_import=GedcomImportFactory(name="PAF Huber"))
+
+    assert person_card(pk=occupation.person.pk).facts == [
+        FactEntry(
+            fact=occupation,
+            label="Beruf",
+            text="Uhrmacher",
+            reliability=None,
+            citations=[],
+            undocumented=True,
+            origin="PAF Huber",
+        )
+    ]
 
 
 @pytest.mark.django_db

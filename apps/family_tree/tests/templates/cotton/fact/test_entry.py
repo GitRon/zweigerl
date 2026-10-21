@@ -41,6 +41,22 @@ def test_entry_labels_a_probable_fact():
     assert "Wahrscheinlich" in parse(html).find(id="fact-11").get_text()
 
 
+def test_entry_names_the_import_an_undocumented_fact_came_from_beside_its_mark():
+    html = render_component(
+        tag=TAG,
+        context={"entry": replace(DOCUMENTED, citations=[], undocumented=True, origin="PAF Huber"), "person": GERTI},
+    )
+
+    text = parse(html).find(id="fact-11").get_text()
+    assert "aus PAF Huber" in text and "unbelegt, Quelle fehlt" in text
+
+
+def test_entry_names_no_import_for_a_fact_entered_here():
+    html = render_component(tag=TAG, context={"entry": DOCUMENTED, "person": GERTI})
+
+    assert "aus " not in parse(html).find(id="fact-11").get_text()
+
+
 def test_entry_names_the_partner_of_a_couples_fact():
     html = render_component(
         tag=TAG, context={"entry": replace(DOCUMENTED, label="Geheiratet", partner="Markus Gruber"), "person": GERTI}
