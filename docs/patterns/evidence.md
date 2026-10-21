@@ -16,7 +16,7 @@ The prose uses the German terms of genealogy; a name in backticks is the one in 
 | **Zitat** | `Citation` | The link between a fact and a source, carrying the page or place in the source |
 | **Verlässlichkeit** | `reliability` | How sure the fact is: *belegt* (`documented`), *wahrscheinlich* (`probable`) or *überliefert* (`handed_down`) |
 | **unbelegt** | `undocumented` | Derived, never stored: a fact marked *belegt* that has no citation |
-| **Herkunft** | - | Which import a fact came from, e.g. "PAF Ronny". Not a Beleg: an imported fact without its own source is marked *belegt* and therefore shows as *unbelegt*, so it stands out (#22, #23) |
+| **Herkunft** | `gedcom_import` | Which import a fact came from, a `GedcomImport` such as "PAF Ronny". Not a Beleg: an imported fact without its own source is marked *belegt* and therefore shows as *unbelegt*, so it stands out (#22, #23) |
 
 ## The models
 
@@ -164,9 +164,18 @@ cohabitation is not a wedding. A text it could not read went into the Partnershi
 Migrating back writes the dates into the two fields again. The migration carries its own copy of the date
 reading, so it does the same on every database whatever `domain/dates.py` becomes.
 
-## Later
+## PAF
 
-Which PAF tags are mapped and which kept raw is added here by #22.
+Decided 21.10.2026 (#22): which tags of a PAF 5.2 export become facts and fields, and which stay raw - see
+[GEDCOM](gedcom.md#the-import) for how.
+
+| Mapped | Kept raw |
+|---|---|
+| `NAME` with `GIVN`, `SURN`, `NICK`; `SEX`; `BIRT` (date and place), `CHR`, `DEAT`, `BURI` with their `DATE`; `OCCU`; `MARR`, `DIV` - a `DIV` on a person to their family when it is the only one | `_UID`, `CHAN`, `_MARNM`, `_AKA`, `NPFX`, `FCOM`, `RELI`, `DSCR`, `DEAT/CAUS`, the `PLAC` of every event but a birth, `OCCU/DATE`, `OBJE` with `_PRIM`, `_SCBK`, `_SSHOW` and `_TYPE` (until #24), `NOTE` (until #23), every date Zweigerl cannot read |
+
+**An imported fact is marked *belegt*** like any new one, so without a citation of its own it shows as
+*unbelegt*, with its Herkunft beside it: "aus PAF Ronny". Almost everything a PAF export brings arrives that
+way - it is what still wants a source.
 
 ## See also
 
