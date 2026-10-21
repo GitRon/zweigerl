@@ -75,7 +75,8 @@ def import_gedcom(*, file: BinaryIO, name: str) -> ImportResult:
         gedcom_import=origin,
         people=len(tree.people),
         families=len(tree.families),
-        facts=sum(len(person.facts) for person in tree.people) + sum(len(family.facts) for family in tree.families),
+        # The facts written, not the ones read: a family of one parent has no row for its wedding.
+        facts=Fact.objects.filter(gedcom_import=origin).count(),
     )
 
 
@@ -98,8 +99,9 @@ def _person(*, person: ImportedPerson, origin: GedcomImport) -> Person:
 def _family(*, family: ImportedFamily, people: dict[str, Person], origin: GedcomImport) -> None:
     """
     A couple becomes a Partnership with its children; a parent on their own is linked to the children alone; a
-    family without parents makes its children siblings. What the family itself carries raw has a row to live on
-    only as a Partnership or a SiblingPair.
+    family without parents makes its children siblings. What the family itself carries - its facts, what it keeps
+    raw - has a row to live on only as a Partnership, its raw as a SiblingPair too. What a child's link carries
+    raw goes on the link of the first parent alone, since the export writes the links of a child into one FAMC.
     """
     parents = [people[xref] for xref in family.parents if xref in people]
     children = [(child, people[child.xref]) for child in family.children if child.xref in people]
@@ -116,13 +118,13 @@ def _family(*, family: ImportedFamily, people: dict[str, Person], origin: Gedcom
         for fact in family.facts:
             _save(row=_fact(fact=fact, origin=origin, partnership=partnership), xref=family.xref)
     for child, row in children:
-        for parent in parents:
+        for index, parent in enumerate(parents):
             link = ParentChild(
                 parent=parent,
                 child=row,
                 partnership=partnership,
                 pedigree=child.pedigree,
-                gedcom_raw=child.raw,
+                gedcom_raw=child.raw if index == 0 else [],
                 gedcom_import=origin,
             )
             _save(row=link, xref=family.xref)

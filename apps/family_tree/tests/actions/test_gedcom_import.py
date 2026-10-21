@@ -110,6 +110,30 @@ def test_import_gedcom_links_the_children_of_a_parent_on_their_own_to_them_alone
 
 
 @pytest.mark.django_db
+def test_import_gedcom_keeps_what_a_child_link_carries_raw_on_the_first_parent_alone():
+    file = io.BytesIO(
+        b"0 @I1@ INDI\n0 @I2@ INDI\n0 @I3@ INDI\n1 FAMC @F1@\n2 _UID 9C\n"
+        b"0 @F1@ FAM\n1 HUSB @I1@\n1 WIFE @I2@\n1 CHIL @I3@\n"
+    )
+
+    import_gedcom(file=file, name="PAF Huber")
+
+    assert list(ParentChild.objects.order_by("parent_id").values_list("gedcom_raw", flat=True)) == [
+        [{"tag": "_UID", "value": "9C"}],
+        [],
+    ]
+
+
+@pytest.mark.django_db
+def test_import_gedcom_counts_only_the_facts_it_wrote():
+    file = io.BytesIO(b"0 @I1@ INDI\n1 BIRT\n2 DATE 1960\n0 @F1@ FAM\n1 HUSB @I1@\n1 MARR\n2 DATE 1989\n")
+
+    result = import_gedcom(file=file, name="PAF Huber")
+
+    assert (result.facts, Fact.objects.count()) == (1, 1)
+
+
+@pytest.mark.django_db
 def test_import_gedcom_makes_the_children_of_a_family_without_parents_siblings():
     file = io.BytesIO(b"0 @I1@ INDI\n0 @I2@ INDI\n0 @I3@ INDI\n0 @F1@ FAM\n1 CHIL @I1@\n1 CHIL @I2@\n1 CHIL @I3@\n")
 

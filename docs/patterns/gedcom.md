@@ -149,7 +149,11 @@ gave the dates migration `0003` kept (`{"tag": "MARR", "date": "im Krieg"}`) thi
   nothing - is not kept, since the status and the kind say it and the export writes it back.
 - **What a fact has no field for** - the `PLAC` of a baptism, a death or a wedding, the `CAUS` of a death, the
   date of an occupation - stays raw below the fact.
-- **A family of one parent has no row** for what its `FAM` carries, so its `_UID` is not kept.
+- **A family of one parent has no row** for what its `FAM` carries, so its `_UID`, and a `MARR` or `DIV` it
+  might carry, are not kept; the count of facts the import reports is the count written. The PAF export has
+  neither on such a family.
+- **What a child's `FAMC` and `CHIL` carry** goes on the link to the first parent alone, since the export
+  writes the links of a child into one `FAMC`.
 
 ## The round trip
 
