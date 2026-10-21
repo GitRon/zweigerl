@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('family_tree', '0008_tree_settings_backup_dir'),
+        ('family_tree', '0009_tree_settings_last_backup_at'),
     ]
 
     operations = [
