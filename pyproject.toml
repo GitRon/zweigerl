@@ -16,6 +16,7 @@ dependencies = [
     "pillow~=13.0",
     "pypdf~=6.1",
     "python-dotenv~=1.2",
+    "ged4py>=0.5.5",
 ]
 
 [dependency-groups]

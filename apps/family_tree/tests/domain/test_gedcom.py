@@ -1,4 +1,9 @@
-from apps.family_tree.domain.gedcom import Node, from_raw, write
+import io
+
+import pytest
+from ged4py.parser import ParserError
+
+from apps.family_tree.domain.gedcom import Node, from_raw, raw_list, read, to_raw, write
 
 
 def test_from_raw_reads_a_structure_with_its_children():
@@ -53,3 +58,76 @@ def test_write_cuts_a_value_of_nothing_but_spaces_where_it_must():
     text = write(records=[Node(tag="TEXT", value=" " * 201)])
 
     assert text == f"0 TEXT {' ' * 200}\n1 CONC  \n"
+
+
+def test_to_raw_keeps_the_tag_the_value_and_the_children():
+    node = Node(tag="_UID", value="4F2A", children=(Node(tag="_SRC", value="PAF"),))
+
+    assert to_raw(node=node) == {"tag": "_UID", "value": "4F2A", "children": [{"tag": "_SRC", "value": "PAF"}]}
+
+
+def test_to_raw_leaves_out_an_empty_value_and_no_children():
+    assert to_raw(node=Node(tag="_FLAG")) == {"tag": "_FLAG"}
+
+
+def test_to_raw_leaves_out_a_child_pointing_at_a_record():
+    node = Node(tag="OCCU", value="Uhrmacher", children=(Node(tag="SOUR", pointer="@S1@"),))
+
+    assert to_raw(node=node) == {"tag": "OCCU", "value": "Uhrmacher"}
+
+
+def test_raw_list_leaves_out_a_node_pointing_at_a_record():
+    nodes = [Node(tag="SOUR", pointer="@S1@"), Node(tag="RELI", value="röm.-kath.")]
+
+    assert raw_list(nodes=nodes) == [{"tag": "RELI", "value": "röm.-kath."}]
+
+
+def test_read_puts_each_line_below_the_record_it_belongs_to():
+    file = io.BytesIO(b"0 @I1@ INDI\r\n1 NAME Lena /Huber/\r\n2 GIVN Lena\r\n1 SEX F\r\n0 TRLR\r\n")
+
+    records = read(file=file)
+
+    assert records == [
+        Node(
+            xref="@I1@",
+            tag="INDI",
+            children=(
+                Node(tag="NAME", value="Lena /Huber/", children=(Node(tag="GIVN", value="Lena"),)),
+                Node(tag="SEX", value="F"),
+            ),
+        ),
+        Node(tag="TRLR"),
+    ]
+
+
+def test_read_joins_conc_without_a_space_and_cont_on_a_new_line():
+    file = io.BytesIO(b"0 NOTE Uhrma\n1 CONC cher in Graz\n1 CONT zweite Zeile\n")
+
+    assert read(file=file) == [Node(tag="NOTE", value="Uhrmacher in Graz\nzweite Zeile")]
+
+
+def test_read_joins_a_character_cut_in_two_by_conc():
+    file = io.BytesIO(b"\xef\xbb\xbf0 HEAD\n1 CHAR UTF-8\n0 NOTE M\xc3\n1 CONC \xbcller\n")
+
+    assert read(file=file)[1] == Node(tag="NOTE", value="Müller")
+
+
+def test_read_decodes_utf_8_behind_a_byte_order_mark():
+    file = io.BytesIO("﻿0 HEAD\r\n1 CHAR UTF-8\r\n0 NOTE Gößl ž\r\n".encode())
+
+    assert read(file=file)[1] == Node(tag="NOTE", value="Gößl ž")
+
+
+def test_read_tells_a_pointer_from_a_value():
+    file = io.BytesIO(b"0 FAM\n1 HUSB @I1@\n1 NOTE anna@@huber.example\n1 DATE @#DJULIAN@ 1700\n")
+
+    assert read(file=file)[0].children == (
+        Node(tag="HUSB", pointer="@I1@"),
+        Node(tag="NOTE", value="anna@huber.example"),
+        Node(tag="DATE", value="@#DJULIAN@ 1700"),
+    )
+
+
+def test_read_refuses_a_file_that_is_not_gedcom():
+    with pytest.raises(ParserError, match="Invalid syntax"):
+        read(file=io.BytesIO(b"0 HEAD\nLiebe Oma,\n0 TRLR\n"))
