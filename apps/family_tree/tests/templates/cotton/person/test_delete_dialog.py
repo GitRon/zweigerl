@@ -6,9 +6,9 @@ from apps.common.tests.html import parse, render_component
 from apps.family_tree.readers.person import DeletionPreview, PersonListEntry, RelativeEntry, RelativeGroup
 from apps.family_tree.tests.factories.person import PersonFactory
 
-JOHANN = PersonListEntry(person=PersonFactory.build(pk=3), name="Johann Huber", initials="JH", lifespan="1931 – 2009")
-LENA = PersonListEntry(person=PersonFactory.build(pk=5), name="Lena Huber", initials="LH", lifespan="1990 –")
-FRANZ = PersonListEntry(person=PersonFactory.build(pk=8), name="Franz Huber", initials="FH", lifespan="—")
+JOHANN = PersonListEntry(person=PersonFactory.build(pk=3), name="Johann Huber", initials="JH", lifespan="* 1931 † 2009")
+LENA = PersonListEntry(person=PersonFactory.build(pk=5), name="Lena Huber", initials="LH", lifespan="* 1990")
+FRANZ = PersonListEntry(person=PersonFactory.build(pk=8), name="Franz Huber", initials="FH", lifespan="")
 PREVIEW = DeletionPreview(
     entry=JOHANN,
     home=False,

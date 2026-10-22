@@ -1,21 +1,23 @@
+from django.urls import reverse
+
 from apps.common.tests.html import parse, render_component
 from apps.family_tree.readers.person import PersonList, PersonListEntry
 from apps.family_tree.tests.factories.person import PersonFactory
 
 
 def test_list_shows_each_person_with_name_and_lifespan():
-    entry = PersonListEntry(person=PersonFactory.build(pk=7), name="Gerti Huber", initials="GH", lifespan="1958 –")
+    entry = PersonListEntry(person=PersonFactory.build(pk=7), name="Gerti Huber", initials="GH", lifespan="* 1958")
 
     html = render_component(
         tag='<c-person.list :person_list="person_list" />',
         context={"person_list": PersonList(entries=[entry], total=1)},
     )
 
-    assert parse(html).find(id="person-list-7").get_text(" ", strip=True) == "GH Gerti Huber 1958 –"
+    assert parse(html).find(id="person-list-7").get_text(" ", strip=True) == "GH Gerti Huber * 1958"
 
 
 def test_list_counts_the_hits_of_a_search_against_everybody():
-    entry = PersonListEntry(person=PersonFactory.build(pk=7), name="Gerti Huber", initials="GH", lifespan="—")
+    entry = PersonListEntry(person=PersonFactory.build(pk=7), name="Gerti Huber", initials="GH", lifespan="")
 
     html = render_component(
         tag='<c-person.list :person_list="person_list" search="gerti" />',
@@ -48,7 +50,7 @@ def test_list_shows_the_portrait_in_the_frame():
         person=PersonFactory.build(pk=7),
         name="Gerti Huber",
         initials="GH",
-        lifespan="—",
+        lifespan="",
         portrait_url="/media/photos/5/original.jpg",
         portrait_alt="Am Hof",
     )
@@ -60,3 +62,18 @@ def test_list_shows_the_portrait_in_the_frame():
 
     image = parse(html).find(id="person-list-7").find("img")
     assert (image["src"], image["alt"]) == ("/media/photos/5/original.jpg", "Am Hof")
+
+
+def test_list_selects_a_person_opens_their_card_and_centres_them_in_the_tree():
+    entry = PersonListEntry(person=PersonFactory.build(pk=7), name="Gerti Huber", initials="GH", lifespan="")
+
+    html = render_component(
+        tag='<c-person.list :person_list="person_list" />',
+        context={"person_list": PersonList(entries=[entry], total=1)},
+    )
+
+    button = parse(html).find(id="person-list-7").find("button")
+    assert (button["data-on:click"], button["data-attr:aria-pressed"]) == (
+        f"$selection = 7; $focus = 7; @get('{reverse('family_tree:person-view', kwargs={'pk': 7})}')",
+        "String($selection == 7)",
+    )

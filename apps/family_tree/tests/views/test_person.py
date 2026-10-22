@@ -121,7 +121,7 @@ def test_person_name_view_does_not_patch_a_tree_card_the_tree_does_not_show(admi
     )
 
     body = b"".join(response.streaming_content).decode()
-    assert f"tree-card-{stranger.pk}" not in body
+    assert f'id="tree-card-{stranger.pk}"' not in body
 
 
 @pytest.mark.django_db

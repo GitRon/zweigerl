@@ -7,7 +7,7 @@ from apps.family_tree.tests.factories.person import PersonFactory
 TREE = Tree(
     cards=[
         TreeCard(
-            entry=PersonListEntry(person=PersonFactory.build(pk=7), name="Gerti Huber", initials="GH", lifespan="—"),
+            entry=PersonListEntry(person=PersonFactory.build(pk=7), name="Gerti Huber", initials="GH", lifespan=""),
             x=0,
             y=280,
         )
@@ -22,13 +22,13 @@ TREE = Tree(
 def test_canvas_starts_unzoomed_with_nobody_selected():
     html = render_component(tag='<c-tree.canvas :tree="tree" />', context={"tree": TREE})
 
-    assert parse(html).find("section")["data-signals"] == "{zoom: 1, selection: 0, filtered: false, matches: []}"
+    assert parse(html).find("section")["data-signals"] == "{zoom: 1, selection: 0, focus: 0, filtered: false, matches: []}"
 
 
-def test_canvas_opens_with_the_person_selected_whose_card_is_open():
+def test_canvas_opens_with_the_person_selected_and_focused_whose_card_is_open():
     html = render_component(tag='<c-tree.canvas :tree="tree" selection="7" />', context={"tree": TREE})
 
-    assert parse(html).find("section")["data-signals"] == "{zoom: 1, selection: 7, filtered: false, matches: []}"
+    assert parse(html).find("section")["data-signals"] == "{zoom: 1, selection: 7, focus: 7, filtered: false, matches: []}"
 
 
 def test_canvas_draws_cards_lines_and_unknown_parents():

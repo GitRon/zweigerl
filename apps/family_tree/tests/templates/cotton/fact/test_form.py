@@ -12,7 +12,7 @@ from apps.family_tree.tests.factories.source import SourceFactory
 
 TAG = '<c-fact.form :form="form" />'
 GERTI = PersonFactory.build(pk=7, given_names="Gertrud")
-MARKUS = PersonListEntry(person=PersonFactory.build(pk=9), name="Markus Gruber", initials="MG", lifespan="1955 –")
+MARKUS = PersonListEntry(person=PersonFactory.build(pk=9), name="Markus Gruber", initials="MG", lifespan="* 1955")
 REGISTER = SourceFactory.build(pk=21, title="Taufbuch Mariazell")
 CERTIFICATE = SourceFactory.build(pk=22, title="Heiratsurkunde")
 NEW = FactForm(

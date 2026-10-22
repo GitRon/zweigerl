@@ -8,7 +8,7 @@ from apps.family_tree.readers.tree import TreeCard
 from apps.family_tree.tests.factories.person import PersonFactory
 
 CARD = TreeCard(
-    entry=PersonListEntry(person=PersonFactory.build(pk=7), name="Gerti Huber", initials="GH", lifespan="1958 –"),
+    entry=PersonListEntry(person=PersonFactory.build(pk=7), name="Gerti Huber", initials="GH", lifespan="* 1958"),
     x=164,
     y=280,
 )
@@ -20,7 +20,7 @@ def test_card_shows_name_and_lifespan():
         context={"card": CARD},
     )
 
-    assert parse(html).find(id="tree-card-7").get_text(" ", strip=True) == "GH Gerti Huber 1958 –"
+    assert parse(html).find(id="tree-card-7").get_text(" ", strip=True) == "GH Gerti Huber * 1958"
 
 
 def test_card_selects_the_person_and_fetches_their_person_card():

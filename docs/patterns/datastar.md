@@ -113,7 +113,16 @@ card his contacts example.
   patched into `#person-card` and shows itself with `data-show="$selection == 7"`, so closing it - the
   button or Escape - is setting `$selection = 0`. A `data-effect` on the card moves the address back to
   the start page when that happens, so a reload does not open it again. Loaded at its own address, the
-  canvas starts with `$selection` already set to the person.
+  canvas starts with `$selection` already set to the person. The selected card stands out by a heavy `forest`
+  edge on `card` (#83), so it is found at a glance at any zoom.
+- **Chosen from outside the tree, a person is brought into view.** The sidebar's list, a hit of the search
+  and a relative on the person card set `$focus` along with `$selection`; a card in the tree does not, it is
+  already visible. A `data-effect` in the person card's head centres `#tree-card-<pk>` with `scrollIntoView`
+  once that card is in the page - the canvas has its final width then - and sets `$focus` back to `0`. The
+  canvas starts with `$focus` set to the person too, so an address loads centred on them. The canvas scrolls
+  smoothly unless the person asked for less motion (`motion-safe:scroll-smooth`), and below `lg` a scroll margin
+  on each card keeps it clear of the person card lying over the tree. A loose person has no card in the tree,
+  and nothing moves.
 - **The search reaches the tree as signals.** Besides patching the list, the search answers with
   `patch_signals({"filtered": ..., "matches": [...]})`: the ids of the hits, and whether a search is running
   at all. Each card fades with `$filtered && !$matches.includes(7)` and is outlined with
