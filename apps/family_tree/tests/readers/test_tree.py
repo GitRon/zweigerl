@@ -101,8 +101,8 @@ def test_tree_puts_each_person_on_their_card():
     TreeSettingsFactory(home_person=lena)
 
     assert tree().cards == [
-        TreeCard(entry=PersonListEntry(person=johann, name="Johann Huber", initials="JH", lifespan="—"), x=0, y=0),
-        TreeCard(entry=PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan="—"), x=0, y=ROW),
+        TreeCard(entry=PersonListEntry(person=johann, name="Johann Huber", initials="JH", lifespan=""), x=0, y=0),
+        TreeCard(entry=PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan=""), x=0, y=ROW),
     ]
 
 
@@ -136,7 +136,7 @@ def test_tree_card_is_the_card_of_the_person():
     TreeSettingsFactory(home_person=lena)
 
     assert tree_card(pk=lena.pk) == TreeCard(
-        entry=PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan="—"), x=0, y=ROW
+        entry=PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan=""), x=0, y=ROW
     )
 
 

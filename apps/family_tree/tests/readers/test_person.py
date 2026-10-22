@@ -116,7 +116,7 @@ def test_person_list_keeps_only_who_matches_the_search():
     result = person_list(search="hub")
 
     assert result == PersonList(
-        entries=[PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan="—")], total=2
+        entries=[PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan="")], total=2
     )
 
 
@@ -127,7 +127,7 @@ def test_person_list_finds_the_call_name():
 
     result = person_list(search="gerti")
 
-    assert result.entries == [PersonListEntry(person=gertrud, name="Gerti Huber", initials="GH", lifespan="—")]
+    assert result.entries == [PersonListEntry(person=gertrud, name="Gerti Huber", initials="GH", lifespan="")]
 
 
 @pytest.mark.django_db
@@ -138,23 +138,23 @@ def test_person_list_shows_the_earliest_birth_and_death():
     FactFactory(person=josef, kind=Fact.Kind.DEATH, date_1=datetime.date(2009, 5, 1))
     FactFactory(person=josef, kind=Fact.Kind.BAPTISM, date_1=datetime.date(1930, 1, 1))
 
-    assert person_list(search="").entries[0].lifespan == "1931 – 2009"
+    assert person_list(search="").entries[0].lifespan == "* 1931 † 2009"
 
 
 @pytest.mark.django_db
-def test_person_list_leaves_the_end_open_for_somebody_not_known_to_be_dead():
+def test_person_list_shows_only_the_birth_of_somebody_not_known_to_be_dead():
     lena = PersonFactory(given_names="Lena", living_status=Person.LivingStatus.LIVING)
     FactFactory(person=lena, date_1=datetime.date(1989, 3, 12))
 
-    assert person_list(search="").entries[0].lifespan == "1989 –"
+    assert person_list(search="").entries[0].lifespan == "* 1989"
 
 
 @pytest.mark.django_db
-def test_person_list_asks_for_the_death_date_of_somebody_dead():
+def test_person_list_marks_somebody_dead_without_a_death_date():
     theresia = PersonFactory(given_names="Theresia", living_status=Person.LivingStatus.DECEASED)
     FactFactory(person=theresia, date_1=datetime.date(1934, 1, 1))
 
-    assert person_list(search="").entries[0].lifespan == "1934 – ?"
+    assert person_list(search="").entries[0].lifespan == "* 1934 †"
 
 
 @pytest.mark.django_db
@@ -163,7 +163,7 @@ def test_person_entries_describes_only_the_people_asked_for():
     PersonFactory(given_names="Fremd")
 
     assert person_entries(person_ids=[lena.pk]) == {
-        lena.pk: PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan="—")
+        lena.pk: PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan="")
     }
 
 
@@ -204,7 +204,7 @@ def test_person_card_describes_the_person():
     PersonFactory(given_names="Fremd")
 
     assert person_card(pk=lena.pk).entry == PersonListEntry(
-        person=lena, name="Lena Huber", initials="LH", lifespan="1989 –"
+        person=lena, name="Lena Huber", initials="LH", lifespan="* 1989"
     )
 
 
@@ -301,7 +301,7 @@ def test_person_card_groups_the_relatives_and_counts_them():
                 relation="parent",
                 entries=[
                     RelativeEntry(
-                        entry=PersonListEntry(person=johann, name="Johann Huber", initials="JH", lifespan="—"),
+                        entry=PersonListEntry(person=johann, name="Johann Huber", initials="JH", lifespan=""),
                         unlinkable=True,
                     )
                 ],
@@ -311,7 +311,7 @@ def test_person_card_groups_the_relatives_and_counts_them():
                 relation="child",
                 entries=[
                     RelativeEntry(
-                        entry=PersonListEntry(person=emma, name="Emma Huber", initials="EH", lifespan="—"),
+                        entry=PersonListEntry(person=emma, name="Emma Huber", initials="EH", lifespan=""),
                         unlinkable=True,
                     )
                 ],

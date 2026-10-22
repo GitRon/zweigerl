@@ -111,9 +111,24 @@ it raw rather than inventing a day or dropping one. Both dates of a range share 
 
 The form (#14) accepts German free text and splits it into these fields: `domain.dates.from_german` reads
 "1931", "März 1989", "3.1989", "12. März 1989" and "12.3.1989", each after "um" (also "ca.", "circa",
-"etwa"), "vor" or "nach", and "zwischen 1820 und 1825" - everything `date_text` writes, so a fact opened
-for editing shows its date the way the card does and saves it unchanged. It refuses what it cannot read
-with a German `ValueError`, as `from_gedcom` does.
+"etwa"), "vor" or "nach", and "zwischen 1820 und 1825" - everything `date_text` and `year_text` write, so a
+fact opened for editing shows its date the way the card does and saves it unchanged. It also reads what people
+type out of habit or copy from elsewhere (#83): short months with or without their dot ("12. Sept. 1989",
+"Mär 1989"), "12.März 1989", the ranges "1820/1825", "1820-1825" and "von 1820 bis 1825", and ISO "1989-03-12".
+
+It refuses what it cannot read with a German `ValueError`, as `from_gedcom` does, with examples in the form
+that was typed. **What it could read but will not guess, it explains** rather than store a date nobody meant:
+
+| Typed | Says |
+|---|---|
+| a two-digit year, "07.03.62" | "Meinst du 07.03.1862 oder 07.03.1962?" - in a family tree both are as likely |
+| a question mark, "1926 (?)" or "1926?" | "Unsicher? Dann etwa „um 1926“" - "(?)" means *maybe wrong*, not *roughly*; doubt about a fact is its reliability |
+| a season or "Anfang", "Frühjahr 1965" | the nearest form it reads, "um 1965" |
+| two dates with "oder" | "zwischen … und …" |
+
+The Lebensdaten beside a name - `domain.dates.lifespan` - use the signs of genealogy and no dash, so an open
+end does not read as a missing death date: "* 1931 † 2009", "* 1958" for somebody alive or not known to be dead,
+"* 1931 †" when the death date is unknown, "† 2009", "†", and nothing when nothing is known.
 
 ## Adding, changing and removing a fact
 
