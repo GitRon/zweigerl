@@ -7,8 +7,8 @@ from apps.family_tree.readers.person import LinkPreview, PersonListEntry
 from apps.family_tree.tests.factories.person import PersonFactory
 
 PREVIEW = LinkPreview(
-    person=PersonListEntry(person=PersonFactory.build(pk=5), name="Lena Huber", initials="LH", lifespan="1990 –"),
-    relative=PersonListEntry(person=PersonFactory.build(pk=3), name="Stefan Berger", initials="SB", lifespan="—"),
+    person=PersonListEntry(person=PersonFactory.build(pk=5), name="Lena Huber", initials="LH", lifespan="* 1990"),
+    relative=PersonListEntry(person=PersonFactory.build(pk=3), name="Stefan Berger", initials="SB", lifespan=""),
     relation="partner",
     relation_name="Partner",
     couple_fact_count=0,

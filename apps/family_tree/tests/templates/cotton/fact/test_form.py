@@ -12,7 +12,7 @@ from apps.family_tree.tests.factories.source import SourceFactory
 
 TAG = '<c-fact.form :form="form" />'
 GERTI = PersonFactory.build(pk=7, given_names="Gertrud")
-MARKUS = PersonListEntry(person=PersonFactory.build(pk=9), name="Markus Gruber", initials="MG", lifespan="1955 –")
+MARKUS = PersonListEntry(person=PersonFactory.build(pk=9), name="Markus Gruber", initials="MG", lifespan="* 1955")
 REGISTER = SourceFactory.build(pk=21, title="Taufbuch Mariazell")
 CERTIFICATE = SourceFactory.build(pk=22, title="Heiratsurkunde")
 NEW = FactForm(
@@ -56,7 +56,7 @@ def test_form_for_a_new_fact_takes_the_place_of_the_button_and_posts_to_create()
     form = parse(html).find("form")
     assert (form["id"], form["data-signals"], form["data-on:submit"]) == (
         "fact-new",
-        "{fact_fields_new: 'date'}",
+        "{fact_fields_new: 'date', fact_reliability_new: 'documented', fact_cited_new: 0}",
         f"@post('{reverse('family_tree:create-fact-view', kwargs={'pk': 7})}', {{contentType: 'form'}})",
     )
 
@@ -67,7 +67,7 @@ def test_form_for_a_fact_takes_its_place_and_posts_the_change():
     form = parse(html).find("form")
     assert (form["id"], form["data-signals"], form["data-on:submit"]) == (
         "fact-11",
-        "{fact_fields_11: 'couple'}",
+        "{fact_fields_11: 'couple', fact_reliability_11: 'probable', fact_cited_11: 1}",
         f"@post('{reverse('family_tree:change-fact-view', kwargs={'pk': 7, 'fact_pk': 11})}', {{contentType: 'form'}})",
     )
 
@@ -126,6 +126,41 @@ def test_form_without_sources_says_where_they_come_from():
     html = render_component(tag=TAG, context={"form": NEW})
 
     assert "Leg sie unter „Quellen“ an." in parse(html).find("form").get_text()
+
+
+def test_form_without_sources_leads_to_the_sources_tab():
+    html = render_component(tag=TAG, context={"form": NEW})
+
+    assert parse(html).find("button", string="Zu den Quellen")["data-on:click"] == "$tab = 'sources'"
+
+
+def test_form_follows_the_reliability_and_the_ticked_sources():
+    html = render_component(tag=TAG, context={"form": MARRIAGE})
+
+    form = parse(html).find("form")
+    assert (
+        form.find("input", attrs={"name": "reliability"}).find_parent("fieldset")["data-on:change"],
+        form.find("input", attrs={"name": "sources"}).find_parent("fieldset")["data-on:change"],
+    ) == (
+        "$fact_reliability_11 = evt.target.value",
+        "$fact_cited_11 = el.querySelectorAll('input[name=sources]:checked').length",
+    )
+
+
+def test_form_says_that_belegt_needs_a_source_while_none_is_ticked():
+    html = render_component(tag=TAG, context={"form": NEW})
+
+    hint = parse(html).find(id="fact-new-documented-hint")
+    assert (hint["data-show"], hint.get_text(" ", strip=True)) == (
+        "$fact_reliability_new == 'documented' && $fact_cited_new == 0",
+        "Belegt braucht eine Quelle – bis du eine zitierst, steht die Angabe als unbelegt da.",
+    )
+
+
+def test_form_with_sources_points_at_them_from_the_hint():
+    html = render_component(tag=TAG, context={"form": MARRIAGE})
+
+    assert "Wähl sie unter „Belege“." in parse(html).find(id="fact-11-documented-hint").get_text()
 
 
 def test_form_cancels_by_fetching_the_card_again():

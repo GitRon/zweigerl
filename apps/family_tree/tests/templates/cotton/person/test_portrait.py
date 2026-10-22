@@ -10,7 +10,7 @@ def test_portrait_shows_the_photo():
         person=PersonFactory.build(pk=7),
         name="Gerti Huber",
         initials="GH",
-        lifespan="—",
+        lifespan="",
         portrait_url="/media/photos/5/original.jpg",
         portrait_alt="Am Hof",
     )
@@ -22,7 +22,7 @@ def test_portrait_shows_the_photo():
 
 
 def test_portrait_without_a_photo_shows_the_initials():
-    entry = PersonListEntry(person=PersonFactory.build(pk=7), name="Gerti Huber", initials="GH", lifespan="—")
+    entry = PersonListEntry(person=PersonFactory.build(pk=7), name="Gerti Huber", initials="GH", lifespan="")
 
     html = render_component(tag=TAG, context={"entry": entry})
 

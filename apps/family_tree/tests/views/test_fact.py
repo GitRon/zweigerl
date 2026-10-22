@@ -90,7 +90,7 @@ def test_create_fact_view_does_not_patch_a_tree_card_the_tree_does_not_show(admi
         reverse("family_tree:create-fact-view", kwargs={"pk": stranger.pk}), FIELDS, headers=DATASTAR
     )
 
-    assert f"tree-card-{stranger.pk}" not in _events(response)
+    assert f'id="tree-card-{stranger.pk}"' not in _events(response)
 
 
 @pytest.mark.django_db

@@ -25,9 +25,9 @@ GERTI = PersonListEntry(
     person=PersonFactory.build(pk=7, given_names="Gertrud", call_name="Gerti", sex="F", living_status="living"),
     name="Gerti Huber",
     initials="GH",
-    lifespan="1958 –",
+    lifespan="* 1958",
 )
-JOHANN = PersonListEntry(person=PersonFactory.build(pk=3), name="Johann Huber", initials="JH", lifespan="1931 – 2009")
+JOHANN = PersonListEntry(person=PersonFactory.build(pk=3), name="Johann Huber", initials="JH", lifespan="* 1931 † 2009")
 BIRTH = FactFactory.build(pk=11)
 CITATION = CitationFactory.build(fact=BIRTH, source=SourceFactory.build(title="Taufbuch Mariazell"), page="fol. 12")
 
@@ -56,7 +56,7 @@ def test_card_shows_name_lifespan_and_relationship():
 
     page = parse(html)
     assert page.find("h2").get_text() == "Gerti Huber"
-    assert "1958 –" in page.get_text() and "Tante" in page.get_text()
+    assert "* 1958" in page.get_text() and "Tante" in page.get_text()
 
 
 def test_card_names_the_import_the_person_came_from():
@@ -196,7 +196,7 @@ def test_card_opens_the_card_of_a_relative():
     relatives = parse(html).find(id="person-card-relatives")
     assert ("Eltern" in relatives.get_text(), relatives.find("button")["data-on:click"]) == (
         True,
-        f"$selection = 3; @get('{reverse('family_tree:person-view', kwargs={'pk': 3})}')",
+        f"$selection = 3; $focus = 3; @get('{reverse('family_tree:person-view', kwargs={'pk': 3})}')",
     )
 
 
@@ -284,4 +284,14 @@ def test_card_asks_before_deleting_the_person():
 
     assert parse(html).find("button", string="Löschen")["data-on:click"] == (
         f"@get('{reverse('family_tree:confirm-delete-person-view', kwargs={'pk': 7})}')"
+    )
+
+
+def test_card_centres_the_person_in_the_tree_when_chosen_from_outside_it():
+    html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
+
+    head = parse(html).find("h2").find_parent(attrs={"data-show": "$editing != 7"})
+    assert head["data-effect"] == (
+        "$focus == 7 && ($focus = 0, requestAnimationFrame(() => document.getElementById('tree-card-7')"
+        "?.scrollIntoView({block: 'center', inline: 'center'})))"
     )

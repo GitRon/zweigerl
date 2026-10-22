@@ -4,7 +4,7 @@ from apps.common.tests.html import parse, render_component
 from apps.family_tree.readers.person import PersonListEntry
 from apps.family_tree.tests.factories.person import PersonFactory
 
-ROSA = PersonListEntry(person=PersonFactory.build(pk=9), name="Rosa Auer", initials="RA", lifespan="—")
+ROSA = PersonListEntry(person=PersonFactory.build(pk=9), name="Rosa Auer", initials="RA", lifespan="")
 TAG = '<c-person.loose :loose_people="loose_people" />'
 
 

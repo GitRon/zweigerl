@@ -2,9 +2,10 @@
 {# The tree (#12): the cards and lines "readers.tree.tree" laid out, on a canvas that scrolls in its own #}
 {# container - trackpad, wheel, touch and the keyboard move it, the page itself never scrolls sideways. #}
 {# "$zoom" scales the drawing; the sizer around it grows and shrinks with it so the scroll range follows. #}
-{# "selection" is the person whose card is open on arrival, 0 for nobody. The toolbar's slot takes what else #}
-{# belongs above the tree. See docs/patterns/datastar.md, "The canvas". #}
-<section aria-label="Stammbaum" class="flex min-h-0 min-w-0 flex-1 flex-col" data-signals="{zoom: 1, selection: {{ selection }}, filtered: false, matches: []}" data-on:keydown__window="evt.key == 'Escape' && ($selection = 0)">
+{# "selection" is the person whose card is open on arrival, 0 for nobody; "$focus" starts with them too, so #}
+{# their card is centred. The toolbar's slot takes what else belongs above the tree. See #}
+{# docs/patterns/datastar.md, "The tree and its canvas". #}
+<section aria-label="Stammbaum" class="flex min-h-0 min-w-0 flex-1 flex-col" data-signals="{zoom: 1, selection: {{ selection }}, focus: {{ selection }}, filtered: false, matches: []}" data-on:keydown__window="evt.key == 'Escape' && ($selection = 0)">
     <div class="flex flex-wrap items-center gap-2 border-b border-card-edge px-4 py-2">
         <c-common.button aria-label="Verkleinern" data-on:click="$zoom = Math.max(0.25, $zoom - 0.25)" data-attr:disabled="$zoom == 0.25">−</c-common.button>
         <span class="w-14 shrink-0 whitespace-nowrap text-center" aria-live="polite" data-text="Math.round($zoom * 100) + ' %'">100 %</span>
@@ -12,7 +13,7 @@
         <c-common.button data-on:click="$zoom = 1" data-attr:disabled="$zoom == 1">Zurücksetzen</c-common.button>
         <div class="ml-auto">{{ slot }}</div>
     </div>
-    <div tabindex="0" aria-label="Stammbaum, scrollbar" class="min-h-0 flex-1 overflow-auto">
+    <div tabindex="0" aria-label="Stammbaum, scrollbar" class="min-h-0 flex-1 overflow-auto motion-safe:scroll-smooth">
         {% if tree.cards %}
             <div class="w-max p-12">
                 <div style="width: {{ tree.width }}px; height: {{ tree.height }}px;" data-style:width="$zoom * {{ tree.width }} + 'px'" data-style:height="$zoom * {{ tree.height }} + 'px'">

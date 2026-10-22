@@ -42,7 +42,7 @@ def test_sidebar_leads_to_the_settings():
 
 
 def test_sidebar_lists_the_loose_twigs():
-    rosa = PersonListEntry(person=PersonFactory.build(pk=9), name="Rosa Auer", initials="RA", lifespan="—")
+    rosa = PersonListEntry(person=PersonFactory.build(pk=9), name="Rosa Auer", initials="RA", lifespan="")
 
     html = render_component(
         tag='<c-person.sidebar :person_list="person_list" :loose_people="loose_people" :last_backup="last_backup" />',
