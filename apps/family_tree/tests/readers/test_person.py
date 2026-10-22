@@ -535,7 +535,7 @@ def test_fact_form_shows_each_kind_with_its_fields_and_the_partners():
 @pytest.mark.django_db
 def test_fact_form_for_a_fact_holds_its_date_as_text_and_its_citations():
     citation = CitationFactory(fact__reliability=Fact.Reliability.PROBABLE, page="fol. 12")
-    other = SourceFactory(people=[citation.fact.person])
+    other = SourceFactory(people=[citation.fact.person], title="Trauungsbuch Mariazell")
 
     form = fact_form(person_id=citation.fact.person.pk, fact_id=citation.fact.pk)
 
@@ -548,6 +548,16 @@ def test_fact_form_for_a_fact_holds_its_date_as_text_and_its_citations():
             CitationChoice(source=other, cited=False, page=""),
         ],
     )
+
+
+@pytest.mark.django_db
+def test_fact_form_counts_only_the_sources_the_fact_cites():
+    citation = CitationFactory()
+    SourceFactory(people=[citation.fact.person])
+
+    form = fact_form(person_id=citation.fact.person.pk, fact_id=citation.fact.pk)
+
+    assert form.cited == 1
 
 
 @pytest.mark.django_db

@@ -412,6 +412,11 @@ class FactForm:
         # What the form's id and its signal are named after: the fact it edits, or "new".
         return str(self.fact.pk) if self.fact else "new"
 
+    @property
+    def cited(self) -> int:
+        # How many sources the fact cites as the form opens; the form counts again as boxes are ticked.
+        return sum(1 for choice in self.citations if choice.cited)
+
 
 def fact_form(*, person_id: int, fact_id: int | None = None) -> FactForm | None:
     """

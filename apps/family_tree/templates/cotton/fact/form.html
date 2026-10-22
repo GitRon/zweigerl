@@ -3,7 +3,7 @@
 {# "Angabe hinzufügen". "$fact_fields_<key>" follows the kind chosen and says which fields it has: a date, a #}
 {# value, a custom fact's label with value and date, or a couple's partner with the date. The date is typed #}
 {# the way the card writes it, "um 1931". "Abbrechen" fetches the card again; "Entfernen" asks first. #}
-<form id="fact-{{ form.key }}" aria-label="Angabe" class="flex flex-col gap-3 rounded-md border-[1.5px] border-ink bg-sheet p-3" data-signals="{fact_fields_{{ form.key }}: '{{ form.fields }}'}" data-on:submit="@post('{% if form.fact %}{% url 'family_tree:change-fact-view' pk=form.person.pk fact_pk=form.fact.pk %}{% else %}{% url 'family_tree:create-fact-view' pk=form.person.pk %}{% endif %}', {contentType: 'form'})">
+<form id="fact-{{ form.key }}" aria-label="Angabe" class="flex flex-col gap-3 rounded-md border-[1.5px] border-ink bg-sheet p-3" data-signals="{fact_fields_{{ form.key }}: '{{ form.fields }}', fact_reliability_{{ form.key }}: '{{ form.reliability }}', fact_cited_{{ form.key }}: {{ form.cited }}}" data-on:submit="@post('{% if form.fact %}{% url 'family_tree:change-fact-view' pk=form.person.pk fact_pk=form.fact.pk %}{% else %}{% url 'family_tree:create-fact-view' pk=form.person.pk %}{% endif %}', {contentType: 'form'})">
     {% csrf_token %}
     {# The search still running, so the list patched after saving stays filtered by it. #}
     <input type="hidden" name="search" value="" data-attr:value="$search">
@@ -36,7 +36,7 @@
         <input name="date" value="{{ form.date }}" autocomplete="off" placeholder="z. B. 12. März 1931" aria-describedby="fact-{{ form.key }}-date-hint" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
         <span id="fact-{{ form.key }}-date-hint" class="text-sm text-ink-muted">Auch ungefähr: um 1931, vor 1850, zwischen 1820 und 1825.</span>
     </label>
-    <fieldset class="flex flex-col gap-1">
+    <fieldset class="flex flex-col gap-1" data-on:change="$fact_reliability_{{ form.key }} = evt.target.value">
         <legend class="mb-1 text-sm">Verlässlichkeit</legend>
         <div class="flex flex-wrap gap-x-4 gap-y-1">
             {% for value, label in form.reliabilities %}
@@ -44,7 +44,12 @@
             {% endfor %}
         </div>
     </fieldset>
-    <fieldset class="flex flex-col gap-2">
+    {# "belegt" without a citation shows as "unbelegt" (docs/patterns/evidence.md) - said here, before saving, #}
+    {# so the card afterwards does not seem to contradict the choice. #}
+    <p id="fact-{{ form.key }}-documented-hint" class="text-sm text-ink-muted" data-show="$fact_reliability_{{ form.key }} == 'documented' && $fact_cited_{{ form.key }} == 0">
+        Belegt braucht eine Quelle – bis du eine zitierst, steht die Angabe als unbelegt da.{% if form.citations %} Wähl sie unter „Belege“.{% endif %}
+    </p>
+    <fieldset class="flex flex-col gap-2" data-on:change="$fact_cited_{{ form.key }} = el.querySelectorAll('input[name=sources]:checked').length">
         <legend class="mb-1 text-sm">Belege</legend>
         {% if form.citations %}
             {% for choice in form.citations %}
@@ -58,6 +63,7 @@
             {% endfor %}
         {% else %}
             <p class="text-sm text-ink-muted">Noch keine Quelle bei dieser Person. Leg sie unter „Quellen“ an.</p>
+            <c-common.button class="self-start" data-on:click="$tab = 'sources'">Zu den Quellen</c-common.button>
         {% endif %}
     </fieldset>
     <div class="flex flex-wrap gap-3">
