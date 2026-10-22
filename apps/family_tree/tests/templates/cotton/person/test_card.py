@@ -292,6 +292,6 @@ def test_card_centres_the_person_in_the_tree_when_chosen_from_outside_it():
 
     head = parse(html).find("h2").find_parent(attrs={"data-show": "$editing != 7"})
     assert head["data-effect"] == (
-        "$focus == 7 && ($focus = 0, document.getElementById('tree-card-7')"
-        "?.scrollIntoView({block: 'center', inline: 'center'}))"
+        "$focus == 7 && ($focus = 0, requestAnimationFrame(() => document.getElementById('tree-card-7')"
+        "?.scrollIntoView({block: 'center', inline: 'center'})))"
     )

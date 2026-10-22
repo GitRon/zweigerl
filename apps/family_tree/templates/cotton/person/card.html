@@ -9,12 +9,13 @@
 {# Closing it - the button, or Escape on the canvas - moves #}
 {# the address back to the start page, so a reload does not open it again. Below "lg" it lies over the tree #}
 {# instead of beside it - see docs/patterns/responsive-layout.md. Chosen from outside the tree - the list, a #}
-{# relative - "$focus" is this person, and once the card is in the page and the canvas has its final width, #}
-{# the head centres their card in the tree; a loose person has none to centre. #}
+{# relative - "$focus" is this person, and the head centres their card in the tree a frame later, once this #}
+{# card is shown and the canvas beside it has its final width; a layout change under a smooth scroll would #}
+{# stop it. A loose person has no card in the tree to centre. #}
 {% url 'family_tree:start-view' as start_url %}
 {% with person=card.entry.person %}
 <aside id="person-card" aria-label="Personenkarte" class="flex w-96 shrink-0 flex-col gap-4 overflow-y-auto border-l border-card-edge bg-birch p-6 max-lg:absolute max-lg:inset-y-0 max-lg:right-0 max-lg:w-full max-lg:max-w-md max-lg:border-l-[1.5px] max-lg:border-ink" data-signals="{tab: 'facts', editing: 0, status: ''}" data-show="$selection == {{ card.entry.person.pk }}" data-effect="$selection == 0 && location.pathname != '{{ start_url }}' && history.pushState(null, '', '{{ start_url }}')">
-    <div class="flex items-start gap-4" data-show="$editing != {{ person.pk }}" data-effect="$focus == {{ person.pk }} && ($focus = 0, document.getElementById('tree-card-{{ person.pk }}')?.scrollIntoView({block: 'center', inline: 'center'}))">
+    <div class="flex items-start gap-4" data-show="$editing != {{ person.pk }}" data-effect="$focus == {{ person.pk }} && ($focus = 0, requestAnimationFrame(() => document.getElementById('tree-card-{{ person.pk }}')?.scrollIntoView({block: 'center', inline: 'center'})))">
         <c-person.portrait :entry="card.entry" />
         <div class="flex min-w-0 flex-1 flex-col gap-1">
             <div class="flex items-start justify-between gap-2">
