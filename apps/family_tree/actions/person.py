@@ -33,38 +33,147 @@ def create_person(*, given_names: str, surname: str, sex: str, living_status: st
 
 
 def add_relative(
-    *, person_id: int, relation: str, given_names: str, surname: str, sex: str, living_status: str
+    *,
+    person_id: int,
+    relation: str,
+    given_names: str,
+    surname: str,
+    sex: str,
+    living_status: str,
+    partnership_id: int | None = None,
+    pair_with_parent: bool = False,
 ) -> Person:
     """
-    Adds a person as the parent, partner, child or sibling of "person_id" and connects the two (#18). A sibling
-    shares the person's known parents - a full sibling - or, while nobody knows them, is stored as a SiblingPair.
-    Raises "Person.DoesNotExist" for somebody no longer in the tree, "ValueError" for a relation that is none of
-    "Relation", and the "ValidationError" of a rule the new link would break, a third birth parent for one;
-    nothing is saved then.
+    Adds a person as the parent, partner, child or sibling of "person_id" and connects the two (#18), the way
+    "link_relative" connects somebody already in the tree - see there for "partnership_id" and
+    "pair_with_parent". Raises what "link_relative" raises; nothing is saved then.
     """
     relation = Relation(relation)
     with transaction.atomic():
         person = Person.objects.get(pk=person_id)
         relative = create_person(given_names=given_names, surname=surname, sex=sex, living_status=living_status)
-        if relation == Relation.PARENT:
-            ParentChild.objects.create(parent=relative, child=person)
-        elif relation == Relation.PARTNER:
-            Partnership.objects.create(person_a=person, person_b=relative)
-        elif relation == Relation.CHILD:
-            ParentChild.objects.create(parent=person, child=relative)
-        else:
-            _add_sibling(person=person, sibling=relative)
+        _connect(
+            person=person,
+            relative=relative,
+            relation=relation,
+            partnership_id=partnership_id,
+            pair_with_parent=pair_with_parent,
+        )
     return relative
 
 
+def link_relative(
+    *,
+    person_id: int,
+    relation: str,
+    relative_id: int,
+    partnership_id: int | None = None,
+    pair_with_parent: bool = False,
+) -> Person:
+    """
+    Connects "relative_id", somebody already in the tree, as the parent, partner, child or sibling of "person_id"
+    (#89), and returns them.
+
+    - A child joins "partnership_id", a couple "person_id" is part of, as the child of both; without it, of the
+      person alone.
+    - A parent of a child with one parent so far joins the couple the two parents are; while they are none,
+      "pair_with_parent" makes them one.
+    - A sibling gets the person's parents - or, while nobody knows those, gives their own to the person - so the
+      two are full siblings; while neither has known parents they are stored as a SiblingPair.
+
+    Raises "Person.DoesNotExist" or "Partnership.DoesNotExist" for somebody or a couple no longer in the tree,
+    "ValueError" for a relation that is none of "Relation", and "ValidationError" for a link the family's rules
+    refuse: somebody as their own relative or ancestor, a third birth parent, a link already there. Nothing is
+    saved then.
+    """
+    relation = Relation(relation)
+    with transaction.atomic():
+        person = Person.objects.get(pk=person_id)
+        relative = Person.objects.get(pk=relative_id)
+        if relative.pk == person.pk:
+            raise ValidationError("Niemand ist sein eigener Verwandter.")
+        _connect(
+            person=person,
+            relative=relative,
+            relation=relation,
+            partnership_id=partnership_id,
+            pair_with_parent=pair_with_parent,
+        )
+    return relative
+
+
+def _connect(
+    *, person: Person, relative: Person, relation: Relation, partnership_id: int | None, pair_with_parent: bool
+) -> None:
+    if relation == Relation.PARENT:
+        _add_parent(child=person, parent=relative, pair_with_parent=pair_with_parent)
+    elif relation == Relation.PARTNER:
+        Partnership.objects.create(person_a=person, person_b=relative)
+    elif relation == Relation.CHILD:
+        _add_child(parent=person, child=relative, partnership_id=partnership_id)
+    else:
+        _add_sibling(person=person, sibling=relative)
+
+
+def _add_parent(*, child: Person, parent: Person, pair_with_parent: bool) -> None:
+    _refuse_own_ancestor(parent_id=parent.pk, child_id=child.pk)
+    partnership = None
+    other_links = list(child.parent_links.exclude(parent=parent))
+    if len(other_links) == 1:
+        other = other_links[0]
+        partnership = Partnership.objects.filter(
+            Q(person_a=other.parent_id, person_b=parent.pk) | Q(person_a=parent.pk, person_b=other.parent_id)
+        ).first()
+        if partnership is None and pair_with_parent:
+            partnership = Partnership.objects.create(person_a=other.parent, person_b=parent)
+        if partnership is not None and other.partnership_id is None:
+            other.partnership = partnership
+            other.save()
+    ParentChild.objects.create(parent=parent, child=child, partnership=partnership)
+
+
+def _add_child(*, parent: Person, child: Person, partnership_id: int | None) -> None:
+    _refuse_own_ancestor(parent_id=parent.pk, child_id=child.pk)
+    partnership = Partnership.objects.get(pk=partnership_id) if partnership_id is not None else None
+    # "ParentChild.clean" refuses a partnership the parent is not part of, before the other parent is looked at.
+    ParentChild.objects.create(parent=parent, child=child, partnership=partnership)
+    if partnership is None:
+        return
+    other_id = partnership.person_b_id if partnership.person_a_id == parent.pk else partnership.person_a_id
+    link = ParentChild.objects.filter(parent=other_id, child=child).first()
+    if link is None:
+        ParentChild.objects.create(parent_id=other_id, child=child, partnership=partnership)
+    elif link.partnership_id is None:
+        link.partnership = partnership
+        link.save()
+
+
 def _add_sibling(*, person: Person, sibling: Person) -> None:
-    parent_links = list(person.parent_links.all())
+    if ParentChild.objects.filter(child=sibling, parent__child_links__child=person).exists():
+        raise ValidationError("Die beiden haben einen gemeinsamen Elternteil und sind darüber schon Geschwister.")
+    parent_links, child = list(person.parent_links.all()), sibling
+    if not parent_links:
+        parent_links, child = list(sibling.parent_links.all()), person
     if not parent_links:
         SiblingPair.objects.create(person_a=person, person_b=sibling)
     for link in parent_links:
+        _refuse_own_ancestor(parent_id=link.parent_id, child_id=child.pk)
         ParentChild.objects.create(
-            parent_id=link.parent_id, child=sibling, partnership_id=link.partnership_id, pedigree=link.pedigree
+            parent_id=link.parent_id, child=child, partnership_id=link.partnership_id, pedigree=link.pedigree
         )
+
+
+def _refuse_own_ancestor(*, parent_id: int, child_id: int) -> None:
+    """
+    Refuses a parent link that would make somebody their own ancestor - the child already among the parent's
+    ancestors. No constraint can hold a rule across generations, see docs/patterns/app-layout.md.
+    """
+    generation, seen = {parent_id}, set()
+    while generation:
+        if child_id in generation:
+            raise ValidationError("Niemand ist sein eigener Vorfahr.")
+        seen |= generation
+        generation = set(ParentChild.objects.filter(child__in=generation).values_list("parent", flat=True)) - seen
 
 
 def change_name_and_status(

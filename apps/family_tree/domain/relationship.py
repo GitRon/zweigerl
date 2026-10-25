@@ -119,6 +119,32 @@ def connected_people(*, family: FamilyGraph, start_id: int) -> frozenset[int]:
     return frozenset(node for node in seen if isinstance(node, int))
 
 
+def ancestors(*, family: FamilyGraph, person_id: int) -> frozenset[int]:
+    """
+    Everyone "person_id" descends from, through every parent link whatever its pedigree - not the person themself.
+    """
+    return frozenset(
+        node for node in _ancestors(family=family, person_id=person_id) if isinstance(node, int) and node != person_id
+    )
+
+
+def descendants(*, family: FamilyGraph, person_id: int) -> frozenset[int]:
+    """
+    Everyone who descends from "person_id": their children, grandchildren and so on - not the person themself.
+    """
+    children: defaultdict[Node, set[Node]] = defaultdict(set)
+    for child, parents in family.parents.items():
+        for parent in parents:
+            children[parent].add(child)
+    seen: set[Node] = set()
+    frontier: list[Node] = [person_id]
+    while frontier:
+        unseen = children[frontier.pop()] - seen
+        seen |= unseen
+        frontier.extend(unseen)
+    return frozenset(node for node in seen if isinstance(node, int))
+
+
 def _sibling_groups(*, sibling_pairs: Iterable[tuple[int, int]]) -> list[frozenset[int]]:
     """
     The explicit sibling pairs joined into groups: whoever is a sibling of one member is a sibling of all.

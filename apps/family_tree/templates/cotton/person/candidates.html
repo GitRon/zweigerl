@@ -1,0 +1,29 @@
+<c-vars candidates search="" />
+{# Who in the tree the dialog "Verwandte hinzufügen" offers as the relative (#89), as #}
+{# "readers.person.relative_candidates" found them: the suggestions, then whoever else matches the search - or #}
+{# why nobody can be chosen. Each is a radio bound to "$relative", so the choice survives the next patch while #}
+{# the person is still among the hits. Patched whole for each relation and each pause in typing. #}
+<div id="relative-candidates" class="flex flex-col gap-2" aria-live="polite">
+    {% if candidates.refusal %}
+        <p class="text-ink-muted">{{ candidates.refusal }}</p>
+    {% else %}
+        {% if candidates.suggested %}
+            <p class="text-sm text-ink-muted">Vorschläge</p>
+            <ul class="flex flex-col gap-0.5">
+                {% for entry in candidates.suggested %}
+                    <li><c-person.candidate :entry="entry" /></li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% if candidates.found %}
+            <p class="text-sm text-ink-muted">Im Baum</p>
+            <ul class="flex max-h-60 flex-col gap-0.5 overflow-y-auto">
+                {% for entry in candidates.found %}
+                    <li><c-person.candidate :entry="entry" /></li>
+                {% endfor %}
+            </ul>
+        {% elif search and not candidates.suggested %}
+            <p class="text-ink-muted">Niemand im Baum passt zu „{{ search }}“.</p>
+        {% endif %}
+    {% endif %}
+</div>

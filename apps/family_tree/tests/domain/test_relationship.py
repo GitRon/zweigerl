@@ -1,6 +1,12 @@
 import pytest
 
-from apps.family_tree.domain.relationship import FamilyGraph, connected_people, relationship_name
+from apps.family_tree.domain.relationship import (
+    FamilyGraph,
+    ancestors,
+    connected_people,
+    descendants,
+    relationship_name,
+)
 
 # An invented family around Lena, by id. Two people are a couple in PARTNERSHIPS, a child of the two in
 # PARENT_CHILD, and Anna's sister Rosa is an explicit sibling whose parents nobody knows.
@@ -347,3 +353,19 @@ def test_connected_people_of_someone_without_links_is_them_alone():
     graph = FamilyGraph.from_links(sex={}, parent_child=[(2, 1)], partnerships=[], sibling_pairs=[])
 
     assert connected_people(family=graph, start_id=7) == {7}
+
+
+def test_ancestors_climbs_every_parent_line():
+    assert ancestors(family=FAMILY, person_id=THOMAS) == {JOSEF, ANNA, JOHANN, THERESIA, FRANZ}
+
+
+def test_ancestors_leaves_out_the_unknown_parent_of_explicit_siblings():
+    assert ancestors(family=FAMILY, person_id=MORITZ) == {HANS, ROSA}
+
+
+def test_descendants_walks_down_every_child():
+    assert descendants(family=FAMILY, person_id=MAX) == {BEN, EMIL, LEO}
+
+
+def test_descendants_of_someone_without_children_is_nobody():
+    assert descendants(family=FAMILY, person_id=VIKTOR) == frozenset()
