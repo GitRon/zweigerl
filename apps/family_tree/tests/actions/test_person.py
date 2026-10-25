@@ -10,6 +10,7 @@ from apps.family_tree.actions.person import (
     change_name_and_status,
     create_person,
     delete_person,
+    link_relative,
     unlink_relative,
 )
 from apps.family_tree.models import Citation, Fact, ParentChild, Partnership, Person, SiblingPair, Source, TreeSettings
@@ -140,6 +141,198 @@ def test_add_relative_saves_nothing_when_a_rule_refuses_the_link():
         add_relative(person_id=lena.pk, relation=Relation.PARENT, **FIELDS)
 
     assert Person.objects.count() == 3
+
+
+@pytest.mark.django_db
+def test_add_relative_adds_a_child_of_the_couple():
+    couple = PartnershipFactory()
+
+    child = add_relative(person_id=couple.person_a.pk, relation=Relation.CHILD, partnership_id=couple.pk, **FIELDS)
+
+    assert set(ParentChild.objects.filter(child=child).values_list("parent", "partnership")) == {
+        (couple.person_a.pk, couple.pk),
+        (couple.person_b.pk, couple.pk),
+    }
+
+
+@pytest.mark.django_db
+def test_add_relative_pairs_a_second_parent_with_the_first():
+    mother = ParentChildFactory()
+
+    father = add_relative(person_id=mother.child.pk, relation=Relation.PARENT, pair_with_parent=True, **FIELDS)
+
+    couple = Partnership.objects.get()
+    assert (couple.person_a, couple.person_b) == (mother.parent, father)
+    assert set(ParentChild.objects.values_list("parent", "partnership")) == {
+        (mother.parent.pk, couple.pk),
+        (father.pk, couple.pk),
+    }
+
+
+@pytest.mark.django_db
+def test_add_relative_leaves_a_second_parent_without_a_couple_when_not_asked_to():
+    mother = ParentChildFactory()
+
+    add_relative(person_id=mother.child.pk, relation=Relation.PARENT, **FIELDS)
+
+    assert list(ParentChild.objects.values_list("partnership", flat=True)) == [None, None]
+
+
+@pytest.mark.django_db
+def test_link_relative_links_somebody_in_the_tree_as_parent():
+    lena, josef = PersonFactory.create_batch(2)
+
+    linked = link_relative(person_id=lena.pk, relation=Relation.PARENT, relative_id=josef.pk)
+
+    assert linked == josef
+    assert list(ParentChild.objects.values_list("parent", "child", "partnership")) == [(josef.pk, lena.pk, None)]
+
+
+@pytest.mark.django_db
+def test_link_relative_puts_a_parent_with_the_couple_they_already_are():
+    couple = PartnershipFactory()
+    mother = ParentChildFactory(parent=couple.person_a)
+
+    link_relative(person_id=mother.child.pk, relation=Relation.PARENT, relative_id=couple.person_b.pk)
+
+    assert set(ParentChild.objects.values_list("parent", "partnership")) == {
+        (couple.person_a.pk, couple.pk),
+        (couple.person_b.pk, couple.pk),
+    }
+
+
+@pytest.mark.django_db
+def test_link_relative_keeps_the_couple_the_first_parents_link_already_names():
+    earlier = PartnershipFactory()
+    mother = ParentChildFactory(parent=earlier.person_a, partnership=earlier)
+    father = PersonFactory()
+
+    link_relative(person_id=mother.child.pk, relation=Relation.PARENT, relative_id=father.pk, pair_with_parent=True)
+
+    couple = Partnership.objects.exclude(pk=earlier.pk).get()
+    assert set(ParentChild.objects.values_list("parent", "partnership")) == {
+        (earlier.person_a.pk, earlier.pk),
+        (father.pk, couple.pk),
+    }
+
+
+@pytest.mark.django_db
+def test_link_relative_links_somebody_in_the_tree_as_partner():
+    lena, stefan = PersonFactory.create_batch(2)
+
+    link_relative(person_id=lena.pk, relation=Relation.PARTNER, relative_id=stefan.pk)
+
+    assert list(Partnership.objects.values_list("person_a", "person_b")) == [(lena.pk, stefan.pk)]
+
+
+@pytest.mark.django_db
+def test_link_relative_gives_the_other_parents_link_the_couple():
+    couple = PartnershipFactory()
+    stepchild = ParentChildFactory(parent=couple.person_b)
+
+    link_relative(
+        person_id=couple.person_a.pk, relation=Relation.CHILD, relative_id=stepchild.child.pk, partnership_id=couple.pk
+    )
+
+    assert set(ParentChild.objects.values_list("parent", "partnership")) == {
+        (couple.person_a.pk, couple.pk),
+        (couple.person_b.pk, couple.pk),
+    }
+
+
+@pytest.mark.django_db
+def test_link_relative_leaves_the_other_parents_link_with_its_own_couple():
+    couple = PartnershipFactory()
+    earlier = PartnershipFactory(person_a=couple.person_b)
+    stepchild = ParentChildFactory(parent=couple.person_b, partnership=earlier)
+
+    link_relative(
+        person_id=couple.person_a.pk, relation=Relation.CHILD, relative_id=stepchild.child.pk, partnership_id=couple.pk
+    )
+
+    assert ParentChild.objects.get(pk=stepchild.pk).partnership == earlier
+
+
+@pytest.mark.django_db
+def test_link_relative_refuses_a_couple_the_person_is_not_part_of():
+    lena, child = PersonFactory.create_batch(2)
+    others = PartnershipFactory()
+
+    with pytest.raises(ValidationError, match="Der Elternteil gehört nicht zu dieser Partnerschaft"):
+        link_relative(person_id=lena.pk, relation=Relation.CHILD, relative_id=child.pk, partnership_id=others.pk)
+
+
+@pytest.mark.django_db
+def test_link_relative_gives_a_sibling_the_persons_parents():
+    mother = ParentChildFactory()
+    sister = PersonFactory()
+
+    link_relative(person_id=mother.child.pk, relation=Relation.SIBLING, relative_id=sister.pk)
+
+    assert list(ParentChild.objects.filter(child=sister).values_list("parent", flat=True)) == [mother.parent.pk]
+
+
+@pytest.mark.django_db
+def test_link_relative_gives_the_person_the_siblings_parents_while_theirs_are_unknown():
+    lena = PersonFactory()
+    mother = ParentChildFactory()
+
+    link_relative(person_id=lena.pk, relation=Relation.SIBLING, relative_id=mother.child.pk)
+
+    assert list(ParentChild.objects.filter(child=lena).values_list("parent", flat=True)) == [mother.parent.pk]
+
+
+@pytest.mark.django_db
+def test_link_relative_stores_siblings_without_known_parents_as_a_pair():
+    lena, sister = PersonFactory.create_batch(2)
+
+    link_relative(person_id=lena.pk, relation=Relation.SIBLING, relative_id=sister.pk)
+
+    assert list(SiblingPair.objects.values_list("person_a", "person_b")) == [(lena.pk, sister.pk)]
+
+
+@pytest.mark.django_db
+def test_link_relative_refuses_siblings_through_a_shared_parent():
+    lena = ParentChildFactory()
+    sister = ParentChildFactory(parent=lena.parent)
+
+    with pytest.raises(ValidationError, match="sind darüber schon Geschwister"):
+        link_relative(person_id=lena.child.pk, relation=Relation.SIBLING, relative_id=sister.child.pk)
+
+
+@pytest.mark.django_db
+def test_link_relative_refuses_the_person_themself():
+    lena = PersonFactory()
+
+    with pytest.raises(ValidationError, match="Niemand ist sein eigener Verwandter"):
+        link_relative(person_id=lena.pk, relation=Relation.PARTNER, relative_id=lena.pk)
+
+
+@pytest.mark.django_db
+def test_link_relative_refuses_a_descendant_as_parent():
+    child = ParentChildFactory()
+    grandchild = ParentChildFactory(parent=child.child)
+
+    with pytest.raises(ValidationError, match="Niemand ist sein eigener Vorfahr"):
+        link_relative(person_id=child.parent.pk, relation=Relation.PARENT, relative_id=grandchild.child.pk)
+
+    assert ParentChild.objects.count() == 2
+
+
+@pytest.mark.django_db
+def test_link_relative_refuses_a_link_already_there():
+    mother = ParentChildFactory()
+
+    with pytest.raises(ValidationError, match="Diese Eltern-Kind-Verbindung gibt es schon"):
+        link_relative(person_id=mother.parent.pk, relation=Relation.CHILD, relative_id=mother.child.pk)
+
+
+@pytest.mark.django_db
+def test_link_relative_refuses_somebody_not_in_the_tree():
+    lena = PersonFactory()
+
+    with pytest.raises(Person.DoesNotExist, match="Person matching query does not exist"):
+        link_relative(person_id=lena.pk, relation=Relation.PARENT, relative_id=lena.pk + 1)
 
 
 ALIVE = {"sex": Person.Sex.FEMALE, "living_status": Person.LivingStatus.LIVING, "death_year": None}
