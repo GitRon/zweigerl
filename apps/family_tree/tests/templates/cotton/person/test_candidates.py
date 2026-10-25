@@ -18,11 +18,9 @@ def test_candidates_offer_each_person_as_a_choice_bound_to_the_relative():
 
     html = render_component(tag=TAG, context={"candidates": candidates, "search": "huber"})
 
-    choices = parse(html).find_all("input", attrs={"name": "relative_id"})
-    assert [(choice["value"], choice["data-bind"]) for choice in choices] == [
-        (str(thomas.pk), "relative"),
-        (str(josef.pk), "relative"),
-    ]
+    suggested, found = parse(html).find_all("input", attrs={"name": "relative_id"})
+    assert (suggested["value"], suggested["data-bind"]) == (str(thomas.pk), "relative")
+    assert (found["value"], found["data-bind"]) == (str(josef.pk), "relative")
 
 
 def test_candidates_say_why_nobody_can_be_chosen():

@@ -46,9 +46,7 @@ def test_new_dialog_asks_for_the_relation_and_fetches_whom_the_tree_offers(relat
 
     radio = parse(html).find("input", attrs={"name": "relation", "value": relation})
     assert radio.has_attr("required") is True
-    assert radio["data-on:change"] == (
-        "$relation = el.value; $relative = ''; @get('/persons/7/relatives/candidates/')"
-    )
+    assert radio["data-on:change"] == ("$relation = el.value; $relative = ''; @get('/persons/7/relatives/candidates/')")
 
 
 def test_new_dialog_searches_the_tree_for_the_relative():
@@ -75,22 +73,29 @@ def test_new_dialog_asks_whose_child_with_one_couple_preselected():
     html = render_component(tag=RELATIVE_TAG, context={**RELATIVE, "couples": couples})
 
     page = parse(html)
-    choices = page.find_all("input", attrs={"name": "partnership"})
-    assert [(choice["value"], choice.has_attr("checked")) for choice in choices] == [("3", True), ("", False)]
-    assert [choice.parent.get_text(strip=True) for choice in choices] == [
+    couple, alone = page.find_all("input", attrs={"name": "partnership"})
+    assert (couple["value"], couple.has_attr("checked"), couple.parent.get_text(strip=True)) == (
+        "3",
+        True,
         "Lena Huber und Stefan Huber",
+    )
+    assert (alone["value"], alone.has_attr("checked"), alone.parent.get_text(strip=True)) == (
+        "",
+        False,
         "nur von Lena Huber",
-    ]
-    assert choices[0].find_parent("fieldset")["data-show"] == "$relation == 'child'"
+    )
+    assert couple.find_parent("fieldset")["data-show"] == "$relation == 'child'"
 
 
-def test_new_dialog_preselects_no_couple_of_several():
+def test_new_dialog_preselects_no_couple_of_several_and_asks_for_one():
     couples = [Couple(partnership_id=3, partner="Stefan Huber"), Couple(partnership_id=4, partner="Jan Berger")]
     html = render_component(tag=RELATIVE_TAG, context={**RELATIVE, "couples": couples})
 
-    choices = parse(html).find_all("input", attrs={"name": "partnership"})
-    assert [choice.has_attr("checked") for choice in choices] == [False, False, False]
-    assert {choice["data-attr:required"] for choice in choices} == {"$relation == 'child'"}
+    page = parse(html)
+    assert page.find("input", attrs={"name": "partnership", "checked": True}) is None
+    assert page.find("input", attrs={"name": "partnership", "value": "4"})["data-attr:required"] == (
+        "$relation == 'child'"
+    )
 
 
 def test_new_dialog_asks_whether_a_second_parent_is_a_couple_with_the_first():
@@ -105,7 +110,10 @@ def test_new_dialog_asks_no_couple_question_without_couples_or_a_parent():
     html = render_component(tag=RELATIVE_TAG, context=RELATIVE)
 
     page = parse(html)
-    assert (page.find("input", attrs={"name": "partnership"}), page.find("input", attrs={"name": "pair_with_parent"})) == (
+    assert (
+        page.find("input", attrs={"name": "partnership"}),
+        page.find("input", attrs={"name": "pair_with_parent"}),
+    ) == (
         None,
         None,
     )
