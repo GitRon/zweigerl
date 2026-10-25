@@ -96,8 +96,19 @@ a tree entered the plain way exports as plain GEDCOM: `_ZWG_RELIABILITY`, `_ZWG_
 
 ## The import
 
-`manage.py import_gedcom <file> --name "PAF Ronny"` reads a GEDCOM file into the tree (#22); the dialog with its
-preview is #25 and calls the same action, `actions.gedcom_import.import_gedcom`.
+`manage.py import_gedcom <file> --name "PAF Ronny"` reads a GEDCOM file into the tree (#22), and so does
+"GEDCOM importieren" on the settings page (#25): both call `actions.gedcom_import.import_gedcom`.
+
+- **The dialog shows what comes before anything is saved.** Choosing the file reads it with
+  `domain.gedcom_preview.preview_file` - the same reading as the import, writing nothing - and shows the people,
+  families and `SOUR` records; under "Aus <`HEAD/SOUR`> erkannt" the `HEAD/CHAR`, the `FILE` of every `OBJE` as
+  a Windows path, a URL or another path, and the tags of the program's own; under "Auffällig" people without a
+  name, dates after today, people with an `ADDR` or `EMAIL` below them (#84) and the dates Zweigerl cannot read,
+  which stay raw. The `DATE` of a `CHAN` is when the program last changed the record and is left out.
+- **The file is not kept in between.** "Importieren" sends it again with the form, so no family data waits on
+  disk outside the database; reading it twice costs a moment. A row the models refuse is reported at
+  "Importieren", as by the command - the preview does not try the import.
+- **The name of the import** starts as the program from `HEAD/SOUR` and is changed there, to "PAF Ronny".
 
 - **Only into an empty tree.** Merging with people already there is #35, so the action refuses otherwise.
 - **The first `INDI` becomes the home person**, as the export writes the home person first.
