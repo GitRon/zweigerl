@@ -38,7 +38,7 @@
         </section>
         <label class="flex flex-col gap-1">
             <span class="text-sm">Name des Imports</span>
-            <input type="text" name="name" value="{{ preview.program }}" required maxlength="100" autocomplete="off" aria-describedby="gedcom-import-name-hint" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
+            <input type="text" name="name" value="{{ preview.program }}" maxlength="100" autocomplete="off" aria-describedby="gedcom-import-name-hint" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
             <span id="gedcom-import-name-hint" class="text-sm text-ink-muted">Steht bei jeder Person und Angabe als Herkunft, etwa „PAF Ronny“.</span>
         </label>
     {% endif %}

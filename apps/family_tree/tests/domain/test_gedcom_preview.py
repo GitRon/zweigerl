@@ -80,7 +80,7 @@ def test_preview_warns_about_dates_in_the_future():
 
 
 def test_preview_counts_the_dates_it_cannot_read_but_not_when_a_record_was_changed():
-    result = _preview("0 @I1@ INDI\n1 BIRT\n2 DATE Frühjahr 1939\n1 CHAN\n2 DATE 10 Aug 2000\n")
+    result = _preview("0 @I1@ INDI\n1 BIRT\n2 DATE Frühjahr 1939\n1 CHAN\n2 DATE gestern\n")
 
     assert result.unreadable_dates == 1
 
