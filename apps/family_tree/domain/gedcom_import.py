@@ -1,21 +1,24 @@
 """
 What a GEDCOM file says, in the shape Zweigerl stores it (#22) - see docs/patterns/gedcom.md, "The import".
 
-Pure functions: no database, no Django. "domain.gedcom.read" turns the file into nodes; "read_tree" maps the INDI
-and FAM records onto people, families and their facts, and keeps what Zweigerl does not understand as raw
-structures beside the row it belongs to. Nothing is guessed: a date Zweigerl cannot read stays raw, and somebody
-without a death record is not known to be alive.
+Pure functions: no database, no Django. "domain.gedcom.read" turns the file into nodes; "read_tree" maps the INDI,
+FAM and SOUR records onto people, families, sources and their facts, citations and notes (#23), and keeps what
+Zweigerl does not understand as raw structures beside the row it belongs to. Nothing is guessed: a date Zweigerl
+cannot read stays raw, and somebody without a death record is not known to be alive.
 """
 
 import re
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from apps.family_tree.domain.dates import UncertainDate, from_gedcom
 from apps.family_tree.domain.gedcom import Node, raw_list, to_raw
 
 # The longest value a fact holds - "Fact.value". A longer one stays raw rather than failing the whole import.
 FACT_VALUE_LENGTH = 300
+# The longest title of a source and page of a citation - "Source.title", "Citation.page" - the same way.
+SOURCE_TITLE_LENGTH = 300
+CITATION_PAGE_LENGTH = 300
 
 # The events that carry a date, by the kind of fact they become. A birth is read on its own, since its place is a
 # fact too.
@@ -35,11 +38,35 @@ NAME = re.compile(r"^(?P<given>[^/]*)(?:/(?P<surname>[^/]*)/?)?")
 
 
 @dataclass(frozen=True, kw_only=True)
+class ImportedCitation:
+    # The xref of the SOUR record the fact cites, as the file names it.
+    source: str
+    page: str = ""
+    raw: list[dict] = field(default_factory=list)
+
+
+@dataclass(frozen=True, kw_only=True)
 class ImportedFact:
     # A "Fact.Kind", and a value or a date - never both, since GEDCOM's own events are never "custom".
     kind: str
     value: str = ""
     date: UncertainDate | None = None
+    citations: list[ImportedCitation] = field(default_factory=list)
+    raw: list[dict] = field(default_factory=list)
+
+
+@dataclass(frozen=True, kw_only=True)
+class ImportedNote:
+    text: str
+    # What the NOTE carries below it, and the lines of the NOTE record it points at.
+    raw: list[dict] = field(default_factory=list)
+
+
+@dataclass(frozen=True, kw_only=True)
+class ImportedSource:
+    xref: str
+    title: str
+    description: str = ""
     raw: list[dict] = field(default_factory=list)
 
 
@@ -53,6 +80,9 @@ class ImportedPerson:
     # A DEAT or BURI is there. Without one, the person is "unknown", never "living".
     deceased: bool = False
     facts: list[ImportedFact] = field(default_factory=list)
+    notes: list[ImportedNote] = field(default_factory=list)
+    # The xrefs of the SOUR records the person is filed with - a SOUR pointer directly under the INDI.
+    sources: list[str] = field(default_factory=list)
     raw: list[dict] = field(default_factory=list)
 
 
@@ -81,6 +111,7 @@ class ImportedTree:
     # In the order of the file: the first one becomes the home person.
     people: list[ImportedPerson]
     families: list[ImportedFamily]
+    sources: list[ImportedSource] = field(default_factory=list)
 
 
 @dataclass(kw_only=True)
@@ -94,7 +125,11 @@ class _Person:
     deceased: bool = False
     named: bool = False
     facts: list[ImportedFact] = field(default_factory=list)
+    notes: list[ImportedNote] = field(default_factory=list)
+    sources: list[str] = field(default_factory=list)
     raw: list[dict] = field(default_factory=list)
+    # The NOTE records of the file by their xref, for a NOTE pointing at one.
+    note_records: dict[str, Node] = field(default_factory=dict)
     as_partner: list[str] = field(default_factory=list)
     # Each FAMC by the family's xref, with what it carries.
     as_child: dict[str, Node] = field(default_factory=dict)
@@ -103,11 +138,14 @@ class _Person:
 
 def read_tree(*, records: list[Node]) -> ImportedTree:
     """
-    The people and families of a GEDCOM file. HEAD, SUBM and the other records are left out - SOUR and NOTE
-    records come with #23. A DIV under a person goes to their family when they have exactly one, and stays
-    raw on the person otherwise.
+    The people, families and sources of a GEDCOM file. A NOTE record is read where a person's NOTE points at it;
+    HEAD, SUBM and the other records are left out. A DIV under a person goes to their family when they have
+    exactly one, and stays raw on the person otherwise.
     """
-    people = [_person(record=record) for record in records if record.tag == "INDI" and record.xref]
+    note_records = {record.xref: record for record in records if record.tag == "NOTE" and record.xref}
+    people = [
+        _person(record=record, note_records=note_records) for record in records if record.tag == "INDI" and record.xref
+    ]
     divorces: dict[str, list[Node]] = {}
     for person in people:
         if len(person.as_partner) == 1:
@@ -122,6 +160,7 @@ def read_tree(*, records: list[Node]) -> ImportedTree:
             for record in records
             if record.tag == "FAM" and record.xref
         ],
+        sources=[_source(record=record) for record in records if record.tag == "SOUR" and record.xref],
     )
 
 
@@ -134,12 +173,14 @@ def _frozen(*, person: _Person) -> ImportedPerson:
         sex=person.sex,
         deceased=person.deceased,
         facts=person.facts,
+        notes=person.notes,
+        sources=person.sources,
         raw=person.raw,
     )
 
 
-def _person(*, record: Node) -> _Person:
-    person = _Person(xref=record.xref)
+def _person(*, record: Node, note_records: dict[str, Node]) -> _Person:
+    person = _Person(xref=record.xref, note_records=note_records)
     for node in record.children:
         if node.tag in DEATH_RECORDS:
             person.deceased = True
@@ -175,8 +216,9 @@ def _read_sex(*, person: _Person, node: Node) -> None:
 
 def _read_birth(*, person: _Person, node: Node) -> None:
     """
-    A BIRT is two facts, the date and the place - see docs/patterns/evidence.md. What else it carries goes along
-    with the date, or with the place when there is no date Zweigerl can read; a BIRT without either stays raw.
+    A BIRT is two facts, the date and the place - see docs/patterns/evidence.md. What else it carries, its
+    citations too, goes along with the date, or with the place when there is no date Zweigerl can read; a BIRT
+    without either stays raw.
     """
     date_node = _first(node=node, tag="DATE")
     date = _date(node=date_node)
@@ -186,11 +228,12 @@ def _read_birth(*, person: _Person, node: Node) -> None:
     rest = [child for child in node.children if child is not place_node and (child is not date_node or date is None)]
     facts = []
     if date is not None:
-        facts.append(ImportedFact(kind="birth", date=date, raw=raw_list(nodes=rest)))
+        citations, raw = _cited(nodes=rest)
+        facts.append(ImportedFact(kind="birth", date=date, citations=citations, raw=raw))
         rest = []
     if place_node is not None:
-        place_raw = raw_list(nodes=[*place_node.children, *rest])
-        facts.append(ImportedFact(kind="birthplace", value=place_node.value, raw=place_raw))
+        citations, raw = _cited(nodes=[*place_node.children, *rest])
+        facts.append(ImportedFact(kind="birthplace", value=place_node.value, citations=citations, raw=raw))
     if facts:
         person.facts.extend(facts)
     else:
@@ -210,8 +253,9 @@ def _read_attribute(*, person: _Person, node: Node) -> None:
     value fact has neither.
     """
     if 0 < len(node.value) <= FACT_VALUE_LENGTH:
+        citations, raw = _cited(nodes=node.children)
         person.facts.append(
-            ImportedFact(kind=VALUE_ATTRIBUTES[node.tag], value=node.value, raw=raw_list(nodes=node.children))
+            ImportedFact(kind=VALUE_ATTRIBUTES[node.tag], value=node.value, citations=citations, raw=raw)
         )
     else:
         person.raw.append(to_raw(node=node))
@@ -235,6 +279,36 @@ def _read_divorce(*, person: _Person, node: Node) -> None:
     person.divorces.append(node)
 
 
+def _read_note(*, person: _Person, node: Node) -> None:
+    """
+    A NOTE becomes a note, with what it carries below it raw. One pointing at a NOTE record takes that record's
+    text, and the record's own lines - its CHAN - raw. A NOTE without text stays raw; one pointing at a record
+    the file does not have is left out, as a pointer meaning nothing.
+    """
+    if node.pointer:
+        if (record := person.note_records.get(node.pointer)) is None:
+            return
+        text, raw = record.value, raw_list(nodes=[*record.children, *node.children])
+    else:
+        text, raw = node.value, raw_list(nodes=node.children)
+    if text.strip():
+        person.notes.append(ImportedNote(text=text, raw=raw))
+    else:
+        person.raw.append(to_raw(node=node))
+
+
+def _read_source(*, person: _Person, node: Node) -> None:
+    """
+    A SOUR pointer directly under the INDI files the source with the person, as the export writes it; what it
+    carries below has no row to stay on and is not kept. A SOUR with its text on the line cites no record and
+    stays raw.
+    """
+    if node.pointer:
+        person.sources.append(node.pointer)
+    else:
+        person.raw.append(to_raw(node=node))
+
+
 def _keep_raw(*, person: _Person, node: Node) -> None:
     # "to_raw" leaves out a pointer below the node, "raw_list" one at the top too - a SOUR citing a record.
     person.raw.extend(raw_list(nodes=[node]))
@@ -249,6 +323,8 @@ _PERSON_TAGS: dict[str, Callable[..., None]] = {
     "FAMS": _read_partner,
     "FAMC": _read_child,
     "DIV": _read_divorce,
+    "NOTE": _read_note,
+    "SOUR": _read_source,
 }
 
 
@@ -309,8 +385,48 @@ def _dated(*, node: Node, kind: str) -> ImportedFact | None:
     date = _date(node=date_node)
     if date is None:
         return None
-    return ImportedFact(
-        kind=kind, date=date, raw=raw_list(nodes=[child for child in node.children if child is not date_node])
+    citations, raw = _cited(nodes=[child for child in node.children if child is not date_node])
+    return ImportedFact(kind=kind, date=date, citations=citations, raw=raw)
+
+
+def _cited(*, nodes: tuple[Node, ...] | list[Node]) -> tuple[list[ImportedCitation], list[dict]]:
+    """
+    The citations among what hangs below a fact - each SOUR pointing at a record, with its PAGE - and the rest as
+    raw structures. A fact cites a source once, so a second SOUR of the same record joins its page to the first.
+    A page too long for a citation stays raw below it. A SOUR with its text on the line cites no record and stays
+    raw.
+    """
+    citations: dict[str, ImportedCitation] = {}
+    for node in nodes:
+        if node.tag != "SOUR" or not node.pointer:
+            continue
+        cited = citations.get(node.pointer, ImportedCitation(source=node.pointer))
+        page_node = _first(node=node, tag="PAGE")
+        page = "; ".join(part for part in (cited.page, page_node.value if page_node else "") if part)
+        if len(page) > CITATION_PAGE_LENGTH:
+            page_node, page = None, cited.page
+        raw = raw_list(nodes=[child for child in node.children if child is not page_node])
+        citations[node.pointer] = replace(cited, page=page, raw=[*cited.raw, *raw])
+    rest = [node for node in nodes if node.tag != "SOUR" or not node.pointer]
+    return list(citations.values()), raw_list(nodes=rest)
+
+
+def _source(*, record: Node) -> ImportedSource:
+    """
+    A SOUR record: its TITL is the title and its TEXT the description; what else it carries - an AUTH, a PUBL, an
+    OBJE until #24 - stays raw. One without a title it can hold is named after its xref rather than refused, and
+    its TITL stays raw.
+    """
+    title_node = _first(node=record, tag="TITL")
+    if title_node is not None and not 0 < len(title_node.value.strip()) <= SOURCE_TITLE_LENGTH:
+        title_node = None
+    text_node = _first(node=record, tag="TEXT")
+    rest = [child for child in record.children if child is not title_node and child is not text_node]
+    return ImportedSource(
+        xref=record.xref,
+        title=title_node.value.strip() if title_node else f"Quelle {record.xref}",
+        description=text_node.value if text_node else "",
+        raw=raw_list(nodes=rest),
     )
 
 

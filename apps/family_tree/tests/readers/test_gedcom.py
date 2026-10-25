@@ -7,6 +7,7 @@ from apps.family_tree.models import Fact, ParentChild, Partnership, Person, Sour
 from apps.family_tree.readers.gedcom import gedcom_export
 from apps.family_tree.tests.factories.citation import CitationFactory
 from apps.family_tree.tests.factories.fact import FactFactory
+from apps.family_tree.tests.factories.note import NoteFactory
 from apps.family_tree.tests.factories.parent_child import ParentChildFactory
 from apps.family_tree.tests.factories.partnership import PartnershipFactory
 from apps.family_tree.tests.factories.person import PersonFactory
@@ -419,6 +420,19 @@ def test_gedcom_export_points_at_the_sources_filed_with_a_person():
     text = gedcom_export()
 
     assert f"0 @I{lena.pk}@ INDI\n1 SEX U\n1 SOUR @S{source.pk}@\n" in text
+
+
+@pytest.mark.django_db
+def test_gedcom_export_writes_the_notes_of_a_person_with_what_an_import_kept_of_them():
+    lena = PersonFactory(given_names="", surname="")
+    NoteFactory(person=lena, text="Zwei Jahre in Amerika?\nIm Passagierregister suchen.", gedcom_raw=RAW)
+
+    text = gedcom_export()
+
+    assert (
+        f"0 @I{lena.pk}@ INDI\n1 SEX U\n1 NOTE Zwei Jahre in Amerika?\n2 CONT Im Passagierregister suchen.\n"
+        "2 _UID 4F2A\n"
+    ) in text
 
 
 @pytest.mark.django_db

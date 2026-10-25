@@ -42,6 +42,7 @@ writes the lines.
 | `living_status` `deceased` | `DEAT Y`, unless a `death` fact or a `DEAT` an import kept raw already says so |
 | `living_status` `living` | `_ZWG_STATUS living`; `unknown` writes nothing |
 | a source filed with the person | `SOUR @S…@` directly under the `INDI` |
+| a note | `NOTE` with its text, line breaks as `CONT` |
 | a photo of the person | `OBJE @O…@`, with `_PRIM Y` for the portrait |
 
 ### Facts
@@ -123,9 +124,14 @@ what is in [Belege](evidence.md#paf); in short, the table above read backwards, 
 | `FAM` without parents | a SiblingPair from the first child to each other one |
 | `PEDI` below the child's `FAMC` | `pedigree`; a value Zweigerl has no word for is `unknown`, the `PEDI` stays raw |
 | `DIV` below an `INDI` | a `DIV` of their family when they have exactly one, raw on the person otherwise |
+| `SOUR` record | a Source: `TITL` the title, `TEXT` the description; one without a title is "Quelle @S1@" (#23) |
+| `SOUR @S…@` below a fact | a Citation with its `PAGE`; a second one of the same source joins its page to the first |
+| `SOUR @S…@` directly under an `INDI` | the source filed with the person |
+| `NOTE` under an `INDI` | a Note with no author; a `NOTE @N…@` takes the text of the `NOTE` record it points at |
 
-`HEAD`, `SUBM` and `TRLR` describe the file and are left out. `SOUR` records, citations and `NOTE` as notes come
-with #23; until then a `NOTE` stays raw on its record and a citation, being a pointer, is not kept.
+`HEAD`, `SUBM` and `TRLR` describe the file and are left out, and a `NOTE` record is read only where a person
+points at it. A pointer to a record the file does not have - a citation of a missing `SOUR`, a missing `NOTE` -
+is left out, since it means nothing.
 
 ## Raw GEDCOM
 
@@ -149,6 +155,10 @@ gave the dates migration `0003` kept (`{"tag": "MARR", "date": "im Krieg"}`) thi
   nothing - is not kept, since the status and the kind say it and the export writes it back.
 - **What a fact has no field for** - the `PLAC` of a baptism, a death or a wedding, the `CAUS` of a death, the
   date of an occupation - stays raw below the fact.
+- **What a source, a citation or a note has no field for** stays raw on its row: a source's `AUTH` and `OBJE`,
+  a citation's `QUAY`, a note's `CHAN`. A `SOUR` or `NOTE` with text on the line instead of a pointer - a
+  citation that names no record, a note on a family, an empty note - stays raw on its owner. A `SOUR` pointer
+  directly under an `INDI` keeps nothing of what is below it.
 - **A family of one parent has no row** for what its `FAM` carries, so its `_UID`, and a `MARR` or `DIV` it
   might carry, are not kept; the count of facts the import reports is the count written. The PAF export has
   neither on such a family.
@@ -158,7 +168,7 @@ gave the dates migration `0003` kept (`{"tag": "MARR", "date": "im Krieg"}`) thi
 ## The round trip
 
 The PAF file of [test data](testing-data.md#the-paf-file), imported, exported and read again, gives the same
-people and families - names, facts, pedigrees and everything kept raw. It is compared as what the records say,
+people, families and sources - names, facts with their citations, notes, pedigrees and everything kept raw. It is compared as what the records say,
 not line by line: the export cuts a long value beside a space where PAF cuts it in the middle of a word, writes
 the records in an order of its own and names them by ids.
 

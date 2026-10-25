@@ -16,6 +16,7 @@ from apps.family_tree.domain.gedcom import Node, from_raw, write
 from apps.family_tree.models import (
     Citation,
     Fact,
+    Note,
     ParentChild,
     Partnership,
     Person,
@@ -62,7 +63,7 @@ class _Family:
 
 def gedcom_export() -> str:
     """
-    The whole tree as GEDCOM 5.5.1 in UTF-8: everybody, with their facts and citations, their families, the
+    The whole tree as GEDCOM 5.5.1 in UTF-8: everybody, with their facts and citations and notes, their families, the
     sources with their files and the photos - and what an import kept raw, written back. The home person comes
     first, so an import into an empty tree (#22) makes them the home person again. #27's backup calls this too.
     """
@@ -99,6 +100,7 @@ def _people() -> dict[int, Person]:
     people = Person.objects.prefetch_related(
         Prefetch("facts", queryset=_facts()),
         Prefetch("filed_sources", queryset=Source.objects.order_by("pk")),
+        Prefetch("notes", queryset=Note.objects.order_by("created_at", "pk")),
         Prefetch("photo_links", queryset=PhotoPerson.objects.order_by("photo_id")),
     ).order_by("pk")
     return {person.pk: person for person in sorted(people, key=lambda person: person.pk != home_id)}
@@ -177,6 +179,10 @@ def _individual(*, person: Person, as_parent: list[_Family], as_child: list[_Fam
             *(Node(tag="FAMS", pointer=family.xref) for family in as_parent),
             *(_child_of(family=family, links=family.children[person.pk]) for family in as_child),
             *(Node(tag="SOUR", pointer=f"@S{source.pk}@") for source in person.filed_sources.all()),
+            *(
+                Node(tag="NOTE", value=note.text, children=from_raw(records=note.gedcom_raw))
+                for note in person.notes.all()
+            ),
             *(_photo_link(link=link) for link in person.photo_links.all()),
             *from_raw(records=[record for record in person.gedcom_raw if record not in name_parts]),
         ),

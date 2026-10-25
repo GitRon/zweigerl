@@ -181,16 +181,21 @@ reading, so it does the same on every database whatever `domain/dates.py` become
 
 ## PAF
 
-Decided 21.10.2026 (#22): which tags of a PAF 5.2 export become facts and fields, and which stay raw - see
-[GEDCOM](gedcom.md#the-import) for how.
+Decided 21.10.2026 (#22) and 18.10.2026 (#23): which tags of a PAF 5.2 export become facts, sources, citations,
+notes and fields, and which stay raw - see [GEDCOM](gedcom.md#the-import) for how.
 
 | Mapped | Kept raw |
 |---|---|
-| `NAME` with `GIVN`, `SURN`, `NICK`; `SEX`; `BIRT` (date and place), `CHR`, `DEAT`, `BURI` with their `DATE`; `OCCU`; `MARR`, `DIV` - a `DIV` on a person to their family when it is the only one | `_UID`, `CHAN`, `_MARNM`, `_AKA`, `NPFX`, `FCOM`, `RELI`, `DSCR`, `DEAT/CAUS`, the `PLAC` of every event but a birth, `OCCU/DATE`, `OBJE` with `_PRIM`, `_SCBK`, `_SSHOW` and `_TYPE` (until #24), `NOTE` (until #23), every date Zweigerl cannot read |
+| `NAME` with `GIVN`, `SURN`, `NICK`; `SEX`; `BIRT` (date and place), `CHR`, `DEAT`, `BURI` with their `DATE`; `OCCU`; `MARR`, `DIV` - a `DIV` on a person to their family when it is the only one; `SOUR` records with `TITL` and `TEXT`; a `SOUR` pointer below a fact with its `PAGE`; `NOTE` on an `INDI` | `_UID`, `CHAN`, `_MARNM`, `_AKA`, `NPFX`, `FCOM`, `RELI`, `DSCR`, `DEAT/CAUS`, the `PLAC` of every event but a birth, `OCCU/DATE`, `OBJE` with `_PRIM`, `_SCBK`, `_SSHOW` and `_TYPE` (until #24), `AUTH` of a source, `QUAY` and what else a citation carries, `NOTE` on a `FAM` or below an `OBJE`, every date Zweigerl cannot read |
 
-**An imported fact is marked *belegt*** like any new one, so without a citation of its own it shows as
-*unbelegt*, with its Herkunft beside it: "aus PAF Ronny". Almost everything a PAF export brings arrives that
-way - it is what still wants a source.
+**An imported fact is marked *belegt*** like any new one. With a citation it is documented for real; without
+one it shows as *unbelegt*, with its Herkunft beside it: "aus PAF Ronny". Almost everything a PAF export brings
+arrives that way - it is what still wants a source.
+
+**A cited source arrives as a Quelle, the citation as a Zitat with its page.** A `BIRT` is two facts; its
+citations go with the date, or with the place when there is no date Zweigerl can read - where the rest of the
+`BIRT` goes too. A fact citing one source twice gets one citation whose page joins both, since a fact cites a
+source once.
 
 ## See also
 

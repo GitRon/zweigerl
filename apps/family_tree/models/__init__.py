@@ -7,6 +7,7 @@ docs/patterns/family.md.
 from apps.family_tree.models.citation import Citation
 from apps.family_tree.models.fact import Fact
 from apps.family_tree.models.gedcom_import import GedcomImport
+from apps.family_tree.models.note import Note
 from apps.family_tree.models.parent_child import ParentChild
 from apps.family_tree.models.partnership import Partnership
 from apps.family_tree.models.person import Person
@@ -20,6 +21,7 @@ __all__ = [
     "Citation",
     "Fact",
     "GedcomImport",
+    "Note",
     "ParentChild",
     "Partnership",
     "Person",
