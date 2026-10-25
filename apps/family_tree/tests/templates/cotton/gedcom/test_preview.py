@@ -24,8 +24,7 @@ PREVIEW = Preview(
 def test_preview_without_a_file_offers_no_import():
     html = render_component(tag="<c-gedcom.preview />", context={})
 
-    page = parse(html)
-    assert [button.get_text(strip=True) for button in page.find_all("button")] == ["Abbrechen"]
+    assert parse(html).find("button", attrs={"type": "submit"}) is None
 
 
 def test_preview_names_the_program_it_recognised():

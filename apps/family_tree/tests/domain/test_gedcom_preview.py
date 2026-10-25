@@ -72,7 +72,9 @@ def test_preview_warns_about_people_without_a_name():
 
 
 def test_preview_warns_about_dates_in_the_future():
-    result = _preview("0 @I1@ INDI\n1 BIRT\n2 DATE 2031\n1 DEAT\n2 DATE 12 MAR 1989\n0 @F1@ FAM\n1 MARR\n2 DATE ABT 2050\n")
+    result = _preview(
+        "0 @I1@ INDI\n1 BIRT\n2 DATE 2031\n1 DEAT\n2 DATE 12 MAR 1989\n0 @F1@ FAM\n1 MARR\n2 DATE ABT 2050\n"
+    )
 
     assert result.future_dates == 2
 
