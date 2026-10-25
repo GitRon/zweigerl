@@ -1,12 +1,12 @@
 from collections.abc import Iterable
 from dataclasses import dataclass
 
-from django.db.models import F, Prefetch, Q, QuerySet
+from django.db.models import Count, F, Prefetch, Q, QuerySet
 
 from apps.family_tree.domain.dates import date_text, lifespan
 from apps.family_tree.domain.names import display_name, initials, matches, sort_key
-from apps.family_tree.domain.relationship import connected_people, relationship_name
-from apps.family_tree.models import Citation, Fact, Partnership, Person, PhotoPerson, SiblingPair, Source
+from apps.family_tree.domain.relationship import ancestors, connected_people, descendants, relationship_name
+from apps.family_tree.models import Citation, Fact, ParentChild, Partnership, Person, PhotoPerson, SiblingPair, Source
 from apps.family_tree.models.fact import COUPLE_KINDS, CUSTOM, VALUE_KINDS
 from apps.family_tree.readers.evidence import facts, sources
 from apps.family_tree.readers.relationship import family_graph
@@ -312,6 +312,120 @@ def link_preview(*, pk: int, relation: str, relative_pk: int) -> LinkPreview | N
         relation_name=RELATION_NAMES[relation],
         couple_fact_count=couple_facts.count() if relation == "partner" else 0,
     )
+
+
+@dataclass(frozen=True, kw_only=True)
+class Couple:
+    partnership_id: int
+    # The name of the other one of the two.
+    partner: str
+
+
+@dataclass(frozen=True, kw_only=True)
+class RelativeDialog:
+    entry: PersonListEntry
+    # The couples the person is part of, whose child a new child may be (#89).
+    couples: list[Couple]
+    # The name of the person's only parent, whom a second one may be paired with - None with none or two.
+    parent: str | None
+
+
+def relative_dialog(*, pk: int) -> RelativeDialog | None:
+    """
+    What the dialog "Verwandte hinzufügen" (#18, #89) asks about the person "pk": whose child a child of theirs is,
+    and whether a second parent is a couple with the first - or None for a person who is not there.
+    """
+    entry = person_entries(person_ids=[pk]).get(pk)
+    if entry is None:
+        return None
+
+    partnerships = Partnership.objects.filter(Q(person_a=pk) | Q(person_b=pk)).order_by("pk")
+    partner_ids = {
+        partnership.pk: partnership.person_b_id if partnership.person_a_id == pk else partnership.person_a_id
+        for partnership in partnerships
+    }
+    parent_ids = list(ParentChild.objects.filter(child=pk).values_list("parent", flat=True))
+    entries = person_entries(person_ids=[*partner_ids.values(), *parent_ids])
+    return RelativeDialog(
+        entry=entry,
+        couples=[
+            Couple(partnership_id=partnership_id, partner=entries[partner_id].name)
+            for partnership_id, partner_id in partner_ids.items()
+        ],
+        parent=entries[parent_ids[0]].name if len(parent_ids) == 1 else None,
+    )
+
+
+@dataclass(frozen=True, kw_only=True)
+class RelativeCandidates:
+    # Who is most likely meant - the partner of the one parent, say - offered before anything is typed.
+    suggested: list[PersonListEntry]
+    # Everybody else whose name matches the search; nobody without one.
+    found: list[PersonListEntry]
+    # Why nobody can be chosen at all - a child with two birth parents - or "".
+    refusal: str = ""
+
+
+def relative_candidates(*, pk: int, relation: str, search: str) -> RelativeCandidates:
+    """
+    Who is offered as the parent, partner, child or sibling of "pk" (#89), each list sorted by family name. Left out
+    is whom the family's rules would refuse or who makes no sense: the person, who already is that to them, a
+    descendant as parent, an ancestor or somebody with two birth parents as child, a parent, child or sibling as
+    partner, a parent or child as sibling. Nobody is left out for their Lebensdaten - those are too often unknown
+    or uncertain. Nothing is offered for a person who is not there or a relation that is none.
+    """
+    person = Person.objects.filter(pk=pk).first()
+    if person is None or relation not in RELATION_NAMES:
+        return RelativeCandidates(suggested=[], found=[])
+    if (
+        relation == "parent"
+        and person.parent_links.filter(pedigree=ParentChild.Pedigree.BIRTH).count() >= ParentChild.MAX_BIRTH_PARENTS
+    ):
+        name = display_name(given_names=person.given_names, surname=person.surname, call_name=person.call_name)
+        return RelativeCandidates(suggested=[], found=[], refusal=f"{name} hat schon zwei leibliche Eltern.")
+
+    excluded, suggested_ids = _candidate_rules(person=person, relation=relation)
+    people = [
+        candidate
+        for candidate in _with_life_facts().exclude(pk__in=excluded)
+        if matches(search=search, names=(candidate.given_names, candidate.surname, candidate.call_name))
+    ]
+    people.sort(key=lambda candidate: sort_key(given_names=candidate.given_names, surname=candidate.surname))
+    return RelativeCandidates(
+        suggested=[_entry(person=candidate) for candidate in people if candidate.pk in suggested_ids],
+        found=[_entry(person=candidate) for candidate in people if candidate.pk not in suggested_ids] if search else [],
+    )
+
+
+def _candidate_rules(*, person: Person, relation: str) -> tuple[set[int], set[int]]:
+    """
+    Whom to leave out and whom to suggest as the "relation" of "person" - see "relative_candidates".
+    """
+    found = relatives(person=person)
+    parents, partners, children, siblings = (
+        {relative.pk for relative in group} for group in (found.parents, found.partners, found.children, found.siblings)
+    )
+    family = family_graph()
+    if relation == "parent":
+        excluded = parents | descendants(family=family, person_id=person.pk)
+        suggested = {partner for parent in parents for partner in family.partners.get(parent, ())}
+    elif relation == "child":
+        with_two_birth_parents = (
+            Person.objects.annotate(
+                birth_parents=Count("parent_links", filter=Q(parent_links__pedigree=ParentChild.Pedigree.BIRTH))
+            )
+            .filter(birth_parents__gte=ParentChild.MAX_BIRTH_PARENTS)
+            .values_list("pk", flat=True)
+        )
+        excluded = children | ancestors(family=family, person_id=person.pk) | set(with_two_birth_parents)
+        suggested = set(Person.objects.filter(parent_links__parent__in=partners).values_list("pk", flat=True))
+    elif relation == "partner":
+        excluded = partners | parents | children | siblings
+        suggested = set(Person.objects.filter(child_links__child__in=children).values_list("pk", flat=True))
+    else:
+        excluded = siblings | parents | children
+        suggested = {entry.person.pk for entry in loose_people()}
+    return excluded | {person.pk}, suggested
 
 
 def loose_people() -> list[PersonListEntry]:

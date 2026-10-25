@@ -115,17 +115,38 @@ at it.
 
 A person is added from the sidebar, connected to nobody, or from a person's card as their parent, partner,
 child or sibling (#18) - in a short form with the names, `sex` and `living_status`; every fact follows on the new
-person's card. `actions.person.add_relative` writes the person and the one link in a transaction:
+person's card. `actions.person.add_relative` writes the person and the link in a transaction.
 
-| Added as | Writes |
+**The relative may be somebody already in the tree** (#89): the same dialog searches the tree once the relation is
+chosen, with "Neue Person anlegen" below the hits, and `actions.person.link_relative` writes the link alone. Two
+people both in the tree are connected there, never by entering one of them a second time. Afterwards the person's
+own card opens again, with the relative among the Verwandte. Both actions write the same rows:
+
+| As | Writes |
 |---|---|
-| Elternteil | a `ParentChild` of pedigree `birth`; a third birth parent is refused |
+| Elternteil | a `ParentChild` of pedigree `birth`; a third birth parent is refused. A child with one parent so far gets the second on the couple the two are; while they are none, "Mit … ein Paar" - ticked to start with - makes them one, and the first parent's row joins it while it names none |
 | Partner | a `Partnership` of kind `unknown` |
-| Kind | a `ParentChild` to this person alone - the other parent is added from the child's card |
-| Geschwister | the same `ParentChild` rows the person has, with their `partnership` and `pedigree`, so a full sibling; while the person has no known parents, a `SiblingPair` |
+| Kind | a `ParentChild` to this person, on the couple chosen under "Kind von" - a couple's child gets a row to the partner as well - or to this person alone ("nur von …"). The only couple is chosen to start with, of several none |
+| Geschwister | the same `ParentChild` rows the person has, with their `partnership` and `pedigree`, so a full sibling. Somebody already in the tree with parents of their own gives those to a person whose parents nobody knows. While neither has known parents, a `SiblingPair` |
 
-A half-sibling is added as a child of the parent they share. `actions.person.create_person` makes the first person
-of an empty tree the home person.
+A half-sibling is added as a child of the parent they share. Nobody is their own ancestor: no constraint can hold
+that across generations, so both actions refuse such a parent link themselves. `actions.person.create_person` makes
+the first person of an empty tree the home person.
+
+`readers.person.relative_candidates` decides whom the search offers. It leaves out whom the rules would refuse or
+who makes no sense - the person, who already is that to them, a descendant as parent, an ancestor or somebody with
+two birth parents as child, a parent, child or sibling as partner, a parent or child as sibling - and suggests,
+before anything is typed, whom the person most likely means:
+
+| As | Suggested |
+|---|---|
+| Elternteil | the partners of the parent already there |
+| Kind | the partner's children who are not yet the person's |
+| Partner | the other parent of the person's children |
+| Geschwister | the Lose Zweigerl |
+
+Nobody is left out for their Lebensdaten: dates are too often unknown or uncertain, and hiding the right person is
+worse than showing a wrong one.
 
 ## Deleting and unlinking
 

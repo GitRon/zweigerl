@@ -1,0 +1,11 @@
+<c-vars entry />
+{# One person offered in "<c-person.candidates>" (#89): a radio choosing them as the relative, with their frame, #}
+{# name and Lebensdaten - enough to tell two people of the same name apart. #}
+<label class="flex cursor-pointer items-center gap-3 rounded-md px-2 py-1.5 hover:bg-card">
+    <input type="radio" class="accent-forest" name="relative_id" value="{{ entry.person.pk }}" data-bind="relative">
+    <c-common.frame :src="entry.portrait_url" :alt="entry.portrait_alt" :initials="entry.initials" width="w-7" />
+    <span class="flex min-w-0 flex-col leading-tight">
+        <span class="truncate">{{ entry.name }}</span>
+        <span class="truncate text-sm text-ink-muted">{{ entry.lifespan }}</span>
+    </span>
+</label>

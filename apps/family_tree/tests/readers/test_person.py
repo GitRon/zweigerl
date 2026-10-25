@@ -5,11 +5,13 @@ import pytest
 from apps.family_tree.models import Fact, Person
 from apps.family_tree.readers.person import (
     CitationChoice,
+    Couple,
     FactEntry,
     KindChoice,
     LinkPreview,
     PersonList,
     PersonListEntry,
+    RelativeCandidates,
     RelativeEntry,
     RelativeGroup,
     Relatives,
@@ -22,6 +24,8 @@ from apps.family_tree.readers.person import (
     person_entries,
     person_list,
     photos_tab,
+    relative_candidates,
+    relative_dialog,
     relative_groups,
     relatives,
     sources_tab,
@@ -764,3 +768,123 @@ def test_loose_people_without_a_home_person_are_measured_from_the_person_entered
 @pytest.mark.django_db
 def test_loose_people_of_an_empty_tree_are_nobody():
     assert loose_people() == []
+
+
+def _people(entries: list[PersonListEntry]) -> list[Person]:
+    return [entry.person for entry in entries]
+
+
+@pytest.mark.django_db
+def test_relative_dialog_names_the_couples_and_the_only_parent():
+    lena = PersonFactory(given_names="Lena", surname="Huber")
+    stefan = PersonFactory(given_names="Stefan", surname="Huber")
+    couple = PartnershipFactory(person_a=stefan, person_b=lena)
+    ParentChildFactory(parent=PersonFactory(given_names="Maria", surname="Huber"), child=lena)
+
+    dialog = relative_dialog(pk=lena.pk)
+
+    assert (dialog.entry.name, dialog.couples, dialog.parent) == (
+        "Lena Huber",
+        [Couple(partnership_id=couple.pk, partner="Stefan Huber")],
+        "Maria Huber",
+    )
+
+
+@pytest.mark.django_db
+def test_relative_dialog_names_no_parent_to_pair_with_two():
+    lena = PersonFactory()
+    ParentChildFactory.create_batch(2, child=lena)
+
+    assert relative_dialog(pk=lena.pk).parent is None
+
+
+@pytest.mark.django_db
+def test_relative_dialog_of_somebody_not_there_is_none():
+    assert relative_dialog(pk=404) is None
+
+
+@pytest.mark.django_db
+def test_relative_candidates_offer_nothing_for_a_relation_that_is_none():
+    lena = PersonFactory()
+    PersonFactory()
+
+    assert relative_candidates(pk=lena.pk, relation="cousin", search="") == RelativeCandidates(suggested=[], found=[])
+
+
+@pytest.mark.django_db
+def test_relative_candidates_refuse_a_parent_for_a_child_with_two():
+    lena = PersonFactory(given_names="Lena", surname="Huber")
+    ParentChildFactory.create_batch(2, child=lena)
+
+    assert relative_candidates(pk=lena.pk, relation="parent", search="").refusal == (
+        "Lena Huber hat schon zwei leibliche Eltern."
+    )
+
+
+@pytest.mark.django_db
+def test_relative_candidates_suggest_the_partner_of_the_one_parent_before_any_search():
+    lena = PersonFactory(given_names="Lena")
+    maria = ParentChildFactory(child=lena).parent
+    thomas = PartnershipFactory(person_a=maria, person_b=PersonFactory(given_names="Thomas")).person_b
+    PersonFactory(given_names="Viktor")
+
+    candidates = relative_candidates(pk=lena.pk, relation="parent", search="")
+
+    assert (_people(candidates.suggested), candidates.found) == ([thomas], [])
+
+
+@pytest.mark.django_db
+def test_relative_candidates_leave_out_the_person_their_parents_and_descendants_as_parent():
+    lena = PersonFactory(given_names="Lena", surname="Huber")
+    ParentChildFactory(parent=PersonFactory(given_names="Maria", surname="Huber"), child=lena)
+    max_ = ParentChildFactory(parent=lena, child=PersonFactory(given_names="Max", surname="Huber")).child
+    ParentChildFactory(parent=max_, child=PersonFactory(given_names="Ben", surname="Huber"))
+    josef = PersonFactory(given_names="Josef", surname="Huber")
+    PersonFactory(given_names="Viktor", surname="Berger")
+
+    candidates = relative_candidates(pk=lena.pk, relation="parent", search="huber")
+
+    assert (candidates.suggested, _people(candidates.found)) == ([], [josef])
+
+
+@pytest.mark.django_db
+def test_relative_candidates_suggest_the_partners_children_and_leave_out_ancestors_and_full_children_as_child():
+    lena = PersonFactory(given_names="Lena", surname="Gruber")
+    mother = ParentChildFactory(parent=PersonFactory(surname="Gruber"), child=lena).parent
+    ParentChildFactory(parent=PersonFactory(surname="Gruber"), child=mother)
+    stefan = PartnershipFactory(person_a=lena).person_b
+    tobias = ParentChildFactory(parent=stefan, child=PersonFactory(given_names="Tobias", surname="Gruber")).child
+    ParentChildFactory.create_batch(2, child=PersonFactory(given_names="Felix", surname="Gruber"))
+    clara = PersonFactory(given_names="Clara", surname="Gruber")
+
+    candidates = relative_candidates(pk=lena.pk, relation="child", search="gruber")
+
+    assert (_people(candidates.suggested), _people(candidates.found)) == ([tobias], [clara])
+
+
+@pytest.mark.django_db
+def test_relative_candidates_suggest_the_other_parent_and_leave_out_the_family_as_partner():
+    lena = PersonFactory(given_names="Lena", surname="Huber")
+    mother = ParentChildFactory(parent=PersonFactory(surname="Huber"), child=lena).parent
+    max_ = ParentChildFactory(parent=lena, child=PersonFactory(surname="Huber")).child
+    stefan = ParentChildFactory(parent=PersonFactory(given_names="Stefan", surname="Huber"), child=max_).parent
+    ParentChildFactory(parent=mother, child=PersonFactory(surname="Huber"))
+    jan = PersonFactory(given_names="Jan", surname="Huber")
+
+    candidates = relative_candidates(pk=lena.pk, relation="partner", search="huber")
+
+    assert (_people(candidates.suggested), _people(candidates.found)) == ([stefan], [jan])
+
+
+@pytest.mark.django_db
+def test_relative_candidates_suggest_the_loose_and_leave_out_parents_and_children_as_sibling():
+    lena = PersonFactory(given_names="Lena", surname="Huber")
+    TreeSettingsFactory(home_person=lena)
+    ParentChildFactory(parent=PersonFactory(surname="Huber"), child=lena)
+    ParentChildFactory(parent=lena, child=PersonFactory(surname="Huber"))
+    stefan = PartnershipFactory(person_a=lena, person_b=PersonFactory(given_names="Stefan", surname="Huber")).person_b
+    rosa = PersonFactory(given_names="Rosa", surname="Huber")
+
+    candidates = relative_candidates(pk=lena.pk, relation="sibling", search="huber")
+
+    assert (_people(candidates.suggested), _people(candidates.found)) == ([rosa], [stefan])
