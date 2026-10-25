@@ -6,8 +6,19 @@ import pytest
 
 from apps.family_tree.actions.gedcom_import import ImportRefusedError, import_gedcom
 from apps.family_tree.domain.gedcom import read
-from apps.family_tree.domain.gedcom_import import ImportedPerson, ImportedTree, read_tree
-from apps.family_tree.models import Fact, GedcomImport, ParentChild, Partnership, Person, SiblingPair, TreeSettings
+from apps.family_tree.domain.gedcom_import import ImportedPerson, ImportedSource, ImportedTree, read_tree
+from apps.family_tree.models import (
+    Citation,
+    Fact,
+    GedcomImport,
+    Note,
+    ParentChild,
+    Partnership,
+    Person,
+    SiblingPair,
+    Source,
+    TreeSettings,
+)
 from apps.family_tree.readers.gedcom import gedcom_export
 from apps.family_tree.tests.factories.person import PersonFactory
 
@@ -155,20 +166,94 @@ def test_import_gedcom_names_the_record_the_models_refuse_and_writes_nothing():
 
 
 @pytest.mark.django_db
+def test_import_gedcom_writes_sources_and_the_citations_of_facts_from_the_import():
+    file = io.BytesIO(
+        b"0 @I1@ INDI\n1 BIRT\n2 DATE 1989\n2 SOUR @S1@\n3 PAGE fol. 12\n3 QUAY 3\n"
+        b"0 @S1@ SOUR\n1 TITL Taufbuch Mariazell\n1 AUTH Pfarre\n"
+    )
+
+    import_gedcom(file=file, name="PAF Huber")
+
+    assert list(Source.objects.values_list("title", "gedcom_raw", "gedcom_import__name")) == [
+        ("Taufbuch Mariazell", [{"tag": "AUTH", "value": "Pfarre"}], "PAF Huber")
+    ]
+    assert list(Citation.objects.values_list("fact__kind", "page", "gedcom_raw", "gedcom_import__name")) == [
+        ("birth", "fol. 12", [{"tag": "QUAY", "value": "3"}], "PAF Huber")
+    ]
+
+
+@pytest.mark.django_db
+def test_import_gedcom_writes_the_citation_of_a_wedding():
+    file = io.BytesIO(
+        b"0 @I1@ INDI\n0 @I2@ INDI\n0 @F1@ FAM\n1 HUSB @I1@\n1 WIFE @I2@\n1 MARR\n2 DATE 1989\n2 SOUR @S1@\n"
+        b"0 @S1@ SOUR\n1 TITL Trauungsbuch\n"
+    )
+
+    import_gedcom(file=file, name="PAF Huber")
+
+    assert Citation.objects.get().fact.partnership == Partnership.objects.get()
+
+
+@pytest.mark.django_db
+def test_import_gedcom_documents_a_cited_fact_and_leaves_one_without_a_source_unbelegt():
+    file = io.BytesIO(
+        b"0 @I1@ INDI\n1 BIRT\n2 DATE 1989\n2 SOUR @S1@\n1 DEAT\n2 DATE 2009\n0 @S1@ SOUR\n1 TITL Taufbuch\n"
+    )
+
+    import_gedcom(file=file, name="PAF Huber")
+
+    assert sorted((fact.kind, fact.reliability, fact.is_undocumented) for fact in Fact.objects.all()) == [
+        ("birth", "documented", False),
+        ("death", "documented", True),
+    ]
+
+
+@pytest.mark.django_db
+def test_import_gedcom_leaves_out_a_citation_of_a_source_the_file_does_not_have():
+    file = io.BytesIO(b"0 @I1@ INDI\n1 OCCU Uhrmacher\n2 SOUR @S9@\n1 SOUR @S9@\n")
+
+    result = import_gedcom(file=file, name="PAF Huber")
+
+    assert (result.citations, Person.objects.get().filed_sources.exists()) == (0, False)
+
+
+@pytest.mark.django_db
+def test_import_gedcom_files_a_source_with_the_person_pointing_at_it():
+    file = io.BytesIO(b"0 @I1@ INDI\n1 SOUR @S1@\n0 @I2@ INDI\n0 @S1@ SOUR\n1 TITL Brief\n")
+
+    import_gedcom(file=file, name="PAF Huber")
+
+    assert list(Source.objects.get().people.values_list("pk", flat=True)) == [Person.objects.order_by("pk")[0].pk]
+
+
+@pytest.mark.django_db
+def test_import_gedcom_writes_the_notes_of_a_person_without_an_author():
+    file = io.BytesIO(b"0 @I1@ INDI\n1 NOTE Zwei Jahre in Amerika?\n2 CONT Suchen.\n")
+
+    result = import_gedcom(file=file, name="PAF Huber")
+
+    assert list(Note.objects.values_list("person", "text", "author", "changed_at", "gedcom_import__name")) == [
+        (Person.objects.get().pk, "Zwei Jahre in Amerika?\nSuchen.", None, None, "PAF Huber")
+    ]
+    assert result.notes == 1
+
+
+@pytest.mark.django_db
 def test_import_gedcom_reads_the_paf_export():
     with PAF_EXPORT.open("rb") as file:
         result = import_gedcom(file=file, name="PAF Huber")
 
-    assert (result.people, result.families) == (412, 163)
+    assert (result.people, result.families, result.sources, result.citations, result.notes) == (412, 163, 2, 2, 44)
     assert (Person.objects.count(), Partnership.objects.count()) == (412, 150)
 
 
 @pytest.mark.django_db
 def test_import_gedcom_gets_back_what_the_export_writes_of_the_paf_export():
     """
-    The round trip of #22: the PAF export imported and exported again reads as the same people and families -
-    their names, facts and everything kept raw. Compared as text, not as lines: the export cuts a long value
-    beside a space, PAF in the middle of a word, and writes the records in an order of its own.
+    The round trip of #22 and #23: the PAF export imported and exported again reads as the same people, families
+    and sources - their names, facts, citations, notes and everything kept raw. Compared as text, not as lines:
+    the export cuts a long value beside a space, PAF in the middle of a word, and writes the records in an order
+    of its own.
     """
     with PAF_EXPORT.open("rb") as file:
         original = read_tree(records=read(file=file))
@@ -178,14 +263,37 @@ def test_import_gedcom_gets_back_what_the_export_writes_of_the_paf_export():
 
     assert _people(tree=exported) == _people(tree=original)
     assert _families(tree=exported) == _families(tree=original)
+    assert _sources(tree=exported) == _sources(tree=original)
 
 
 def _people(*, tree: ImportedTree) -> list[ImportedPerson]:
-    # Without the xrefs, which are the file's own, and with the facts in one order.
+    """
+    Without the xrefs, which are the file's own - a citation and a filed source name their source by its title
+    instead - and with the facts in one order.
+    """
+    titles = {source.xref: source.title for source in tree.sources}
     return [
-        replace(person, xref="", facts=sorted(person.facts, key=lambda fact: (fact.kind, fact.value, str(fact.date))))
+        replace(
+            person,
+            xref="",
+            facts=sorted(
+                (
+                    replace(
+                        fact,
+                        citations=[replace(citation, source=titles[citation.source]) for citation in fact.citations],
+                    )
+                    for fact in person.facts
+                ),
+                key=lambda fact: (fact.kind, fact.value, str(fact.date)),
+            ),
+            sources=[titles[xref] for xref in person.sources],
+        )
         for person in tree.people
     ]
+
+
+def _sources(*, tree: ImportedTree) -> list[ImportedSource]:
+    return sorted((replace(source, xref="") for source in tree.sources), key=lambda source: source.title)
 
 
 def _families(*, tree: ImportedTree) -> list[tuple]:

@@ -9,6 +9,7 @@ from apps.family_tree.models import (
     Citation,
     Fact,
     GedcomImport,
+    Note,
     ParentChild,
     Partnership,
     Person,
@@ -98,6 +99,17 @@ class FactInline(admin.TabularInline):
     extra = 0
 
 
+class NoteInline(admin.StackedInline):
+    """
+    The notes of a person, until the Notizen tab of the person card (#17) shows them.
+    """
+
+    model = Note
+    fields = ("text", "author", "created_at", "gedcom_import")
+    readonly_fields = ("author", "created_at", "gedcom_import")
+    extra = 0
+
+
 class CitationInline(admin.TabularInline):
     model = Citation
     fields = ("source", "page")
@@ -111,7 +123,7 @@ class PersonAdmin(admin.ModelAdmin):
     list_filter = ("sex", "living_status")
     search_fields = ("given_names", "surname", "call_name")
     fields = ("given_names", "surname", "call_name", "sex", "living_status", "gedcom_raw")
-    inlines = (FactInline, ParentsInline, ChildrenInline, PartnershipAsAInline, PartnershipAsBInline)
+    inlines = (FactInline, NoteInline, ParentsInline, ChildrenInline, PartnershipAsAInline, PartnershipAsBInline)
 
     def get_deleted_objects(self, objs, request):
         """

@@ -1,6 +1,7 @@
 """
-The import of a GEDCOM file into an empty tree (#22). What maps to what is docs/patterns/gedcom.md, "The import";
-reading the file and mapping it is "domain.gedcom" and "domain.gedcom_import".
+The import of a GEDCOM file into an empty tree (#22), with its sources, citations and notes (#23). What maps to
+what is docs/patterns/gedcom.md, "The import"; reading the file and mapping it is "domain.gedcom" and
+"domain.gedcom_import".
 """
 
 from dataclasses import dataclass
@@ -11,14 +12,23 @@ from django.db import transaction
 from ged4py.parser import IntegrityError, ParserError
 
 from apps.family_tree.domain.gedcom import read
-from apps.family_tree.domain.gedcom_import import ImportedFact, ImportedFamily, ImportedPerson, read_tree
+from apps.family_tree.domain.gedcom_import import (
+    ImportedFact,
+    ImportedFamily,
+    ImportedPerson,
+    ImportedSource,
+    read_tree,
+)
 from apps.family_tree.models import (
+    Citation,
     Fact,
     GedcomImport,
+    Note,
     ParentChild,
     Partnership,
     Person,
     SiblingPair,
+    Source,
     TreeSettings,
 )
 
@@ -35,6 +45,9 @@ class ImportResult:
     people: int
     families: int
     facts: int
+    sources: int
+    citations: int
+    notes: int
 
 
 @transaction.atomic
@@ -63,9 +76,10 @@ def import_gedcom(*, file: BinaryIO, name: str) -> ImportResult:
         origin.save()
     except ValidationError as error:
         raise ImportRefusedError(" ".join(error.messages)) from error
-    people = {person.xref: _person(person=person, origin=origin) for person in tree.people}
+    sources = {source.xref: _source(source=source, origin=origin) for source in tree.sources}
+    people = {person.xref: _person(person=person, origin=origin, sources=sources) for person in tree.people}
     for family in tree.families:
-        _family(family=family, people=people, origin=origin)
+        _family(family=family, people=people, origin=origin, sources=sources)
     if tree.people:
         TreeSettings.objects.update_or_create(
             pk=TreeSettings.ONLY_ROW, defaults={"home_person": people[tree.people[0].xref]}
@@ -77,10 +91,20 @@ def import_gedcom(*, file: BinaryIO, name: str) -> ImportResult:
         families=len(tree.families),
         # The facts written, not the ones read: a family of one parent has no row for its wedding.
         facts=Fact.objects.filter(gedcom_import=origin).count(),
+        sources=len(sources),
+        # Those written: a citation of a source the file does not have is left out.
+        citations=Citation.objects.filter(gedcom_import=origin).count(),
+        notes=Note.objects.filter(gedcom_import=origin).count(),
     )
 
 
-def _person(*, person: ImportedPerson, origin: GedcomImport) -> Person:
+def _source(*, source: ImportedSource, origin: GedcomImport) -> Source:
+    row = Source(title=source.title, description=source.description, gedcom_raw=source.raw, gedcom_import=origin)
+    _save(row=row, xref=source.xref)
+    return row
+
+
+def _person(*, person: ImportedPerson, origin: GedcomImport, sources: dict[str, Source]) -> Person:
     row = Person(
         given_names=person.given_names,
         surname=person.surname,
@@ -92,11 +116,16 @@ def _person(*, person: ImportedPerson, origin: GedcomImport) -> Person:
     )
     _save(row=row, xref=person.xref)
     for fact in person.facts:
-        _save(row=_fact(fact=fact, origin=origin, person=row), xref=person.xref)
+        _fact(fact=fact, origin=origin, sources=sources, xref=person.xref, person=row)
+    for note in person.notes:
+        _save(row=Note(person=row, text=note.text, gedcom_raw=note.raw, gedcom_import=origin), xref=person.xref)
+    row.filed_sources.set(sources[xref] for xref in person.sources if xref in sources)
     return row
 
 
-def _family(*, family: ImportedFamily, people: dict[str, Person], origin: GedcomImport) -> None:
+def _family(
+    *, family: ImportedFamily, people: dict[str, Person], origin: GedcomImport, sources: dict[str, Source]
+) -> None:
     """
     A couple becomes a Partnership with its children; a parent on their own is linked to the children alone; a
     family without parents makes its children siblings. What the family itself carries - its facts, what it keeps
@@ -116,7 +145,7 @@ def _family(*, family: ImportedFamily, people: dict[str, Person], origin: Gedcom
         )
         _save(row=partnership, xref=family.xref)
         for fact in family.facts:
-            _save(row=_fact(fact=fact, origin=origin, partnership=partnership), xref=family.xref)
+            _fact(fact=fact, origin=origin, sources=sources, xref=family.xref, partnership=partnership)
     for child, row in children:
         for index, parent in enumerate(parents):
             link = ParentChild(
@@ -138,10 +167,21 @@ def _family(*, family: ImportedFamily, people: dict[str, Person], origin: Gedcom
 
 
 def _fact(
-    *, fact: ImportedFact, origin: GedcomImport, person: Person | None = None, partnership: Partnership | None = None
-) -> Fact:
+    *,
+    fact: ImportedFact,
+    origin: GedcomImport,
+    sources: dict[str, Source],
+    xref: str,
+    person: Person | None = None,
+    partnership: Partnership | None = None,
+) -> None:
+    """
+    One fact with its citations. It stays "belegt" either way: with a citation it is documented for real, without
+    one it shows as "unbelegt" - see docs/patterns/evidence.md. A citation of a source the file does not have is
+    left out, as a pointer meaning nothing.
+    """
     date = fact.date
-    return Fact(
+    row = Fact(
         person=person,
         partnership=partnership,
         kind=fact.kind,
@@ -153,9 +193,22 @@ def _fact(
         gedcom_raw=fact.raw,
         gedcom_import=origin,
     )
+    _save(row=row, xref=xref)
+    for citation in fact.citations:
+        if citation.source in sources:
+            cited = Citation(
+                fact=row,
+                source=sources[citation.source],
+                page=citation.page,
+                gedcom_raw=citation.raw,
+                gedcom_import=origin,
+            )
+            _save(row=cited, xref=xref)
 
 
-def _save(*, row: Person | Partnership | ParentChild | SiblingPair | Fact, xref: str) -> None:
+def _save(
+    *, row: Person | Partnership | ParentChild | SiblingPair | Fact | Source | Citation | Note, xref: str
+) -> None:
     """
     Saves one row, naming the record of the file it comes from when the models refuse it.
     """

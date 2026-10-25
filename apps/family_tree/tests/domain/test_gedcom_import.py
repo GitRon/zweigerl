@@ -5,9 +5,12 @@ from apps.family_tree.domain.dates import DateKind, Precision, UncertainDate
 from apps.family_tree.domain.gedcom import read
 from apps.family_tree.domain.gedcom_import import (
     ImportedChild,
+    ImportedCitation,
     ImportedFact,
     ImportedFamily,
+    ImportedNote,
     ImportedPerson,
+    ImportedSource,
     ImportedTree,
     read_tree,
 )
@@ -17,14 +20,174 @@ MARCH_12_1931 = UncertainDate(kind=DateKind.EXACT, date_1=datetime.date(1931, 3,
 YEAR_1989 = UncertainDate(kind=DateKind.EXACT, date_1=datetime.date(1989, 1, 1), precision=Precision.YEAR)
 
 
-def test_read_tree_reads_people_and_families_and_leaves_out_the_rest():
-    records = read(file=io.BytesIO(b"0 HEAD\n0 @I1@ INDI\n0 @F1@ FAM\n0 @S1@ SOUR\n1 TITL Taufbuch\n0 TRLR\n"))
+def test_read_tree_reads_people_families_and_sources_and_leaves_out_the_rest():
+    records = read(
+        file=io.BytesIO(b"0 HEAD\n0 @I1@ INDI\n0 @F1@ FAM\n0 @S1@ SOUR\n1 TITL Taufbuch\n0 @N1@ NOTE Lose\n0 TRLR\n")
+    )
 
     tree = read_tree(records=records)
 
     assert tree == ImportedTree(
-        people=[ImportedPerson(xref="@I1@")], families=[ImportedFamily(xref="@F1@", parents=())]
+        people=[ImportedPerson(xref="@I1@")],
+        families=[ImportedFamily(xref="@F1@", parents=())],
+        sources=[ImportedSource(xref="@S1@", title="Taufbuch")],
     )
+
+
+def test_read_tree_reads_a_source_with_its_text_and_keeps_the_rest_raw():
+    records = read(file=io.BytesIO(b"0 @S1@ SOUR\n1 TITL Taufbuch\n1 AUTH Pfarre Mariazell\n1 TEXT Band 3\n"))
+
+    tree = read_tree(records=records)
+
+    assert tree.sources == [
+        ImportedSource(
+            xref="@S1@",
+            title="Taufbuch",
+            description="Band 3",
+            raw=[{"tag": "AUTH", "value": "Pfarre Mariazell"}],
+        )
+    ]
+
+
+def test_read_tree_names_a_source_without_a_title_after_its_record():
+    records = read(file=io.BytesIO(b"0 @S1@ SOUR\n1 TITL\n"))
+
+    tree = read_tree(records=records)
+
+    assert tree.sources == [ImportedSource(xref="@S1@", title="Quelle @S1@", raw=[{"tag": "TITL"}])]
+
+
+def test_read_tree_keeps_a_title_too_long_for_a_source_raw():
+    title = "Taufbuch " * 40
+    records = read(file=io.BytesIO(f"0 @S1@ SOUR\n1 TITL {title}\n".encode()))
+
+    tree = read_tree(records=records)
+
+    assert tree.sources == [ImportedSource(xref="@S1@", title="Quelle @S1@", raw=[{"tag": "TITL", "value": title}])]
+
+
+def test_read_tree_reads_a_citation_with_its_page_and_keeps_the_rest_raw():
+    records = read(
+        file=io.BytesIO(b"0 @I1@ INDI\n1 DEAT\n2 DATE 1989\n2 SOUR @S1@\n3 PAGE fol. 12\n3 QUAY 3\n2 SOUR Brief\n")
+    )
+
+    tree = read_tree(records=records)
+
+    assert tree.people[0].facts == [
+        ImportedFact(
+            kind="death",
+            date=YEAR_1989,
+            citations=[ImportedCitation(source="@S1@", page="fol. 12", raw=[{"tag": "QUAY", "value": "3"}])],
+            raw=[{"tag": "SOUR", "value": "Brief"}],
+        )
+    ]
+
+
+def test_read_tree_joins_the_pages_of_one_source_cited_twice_by_a_fact():
+    records = read(
+        file=io.BytesIO(b"0 @I1@ INDI\n1 OCCU Uhrmacher\n2 SOUR @S1@\n3 PAGE fol. 12\n2 SOUR @S1@\n3 PAGE fol. 14\n")
+    )
+
+    tree = read_tree(records=records)
+
+    assert tree.people[0].facts[0].citations == [ImportedCitation(source="@S1@", page="fol. 12; fol. 14")]
+
+
+def test_read_tree_keeps_a_page_too_long_for_a_citation_raw():
+    page = "fol. 12 " * 40
+    records = read(file=io.BytesIO(f"0 @I1@ INDI\n1 OCCU Uhrmacher\n2 SOUR @S1@\n3 PAGE {page}\n".encode()))
+
+    tree = read_tree(records=records)
+
+    assert tree.people[0].facts[0].citations == [ImportedCitation(source="@S1@", raw=[{"tag": "PAGE", "value": page}])]
+
+
+def test_read_tree_gives_the_citations_of_a_birth_to_its_date():
+    records = read(file=io.BytesIO(b"0 @I1@ INDI\n1 BIRT\n2 DATE 1989\n2 PLAC Graz\n2 SOUR @S1@\n"))
+
+    tree = read_tree(records=records)
+
+    birth, place = tree.people[0].facts
+    assert (birth.citations, place.citations) == ([ImportedCitation(source="@S1@")], [])
+
+
+def test_read_tree_gives_the_citations_of_a_birth_without_a_date_to_its_place():
+    records = read(file=io.BytesIO(b"0 @I1@ INDI\n1 BIRT\n2 PLAC Graz\n2 SOUR @S1@\n"))
+
+    tree = read_tree(records=records)
+
+    assert tree.people[0].facts[0].citations == [ImportedCitation(source="@S1@")]
+
+
+def test_read_tree_reads_the_citation_of_a_wedding():
+    records = read(file=io.BytesIO(b"0 @F1@ FAM\n1 MARR\n2 DATE 1989\n2 SOUR @S1@\n"))
+
+    tree = read_tree(records=records)
+
+    assert tree.families[0].facts[0].citations == [ImportedCitation(source="@S1@")]
+
+
+def test_read_tree_files_a_source_pointed_at_from_a_person_with_them():
+    records = read(file=io.BytesIO(b"0 @I1@ INDI\n1 SOUR @S1@\n2 PAGE fol. 12\n1 SOUR Brief von Tante Resi\n"))
+
+    tree = read_tree(records=records)
+
+    assert (tree.people[0].sources, tree.people[0].raw) == (
+        ["@S1@"],
+        [{"tag": "SOUR", "value": "Brief von Tante Resi"}],
+    )
+
+
+def test_read_tree_reads_a_note_on_a_person_with_what_it_carries_raw():
+    records = read(file=io.BytesIO(b"0 @I1@ INDI\n1 NOTE Zwei Jahre i\n2 CONC n Amerika?\n2 CONT Suchen.\n2 _X 1\n"))
+
+    tree = read_tree(records=records)
+
+    assert tree.people[0].notes == [
+        ImportedNote(text="Zwei Jahre in Amerika?\nSuchen.", raw=[{"tag": "_X", "value": "1"}])
+    ]
+
+
+def test_read_tree_reads_a_note_pointing_at_a_note_record():
+    records = read(
+        file=io.BytesIO(b"0 @I1@ INDI\n1 NOTE @N1@\n0 @N1@ NOTE Zwei Jahre in Amerika?\n1 CHAN\n2 DATE 1 JAN 2000\n")
+    )
+
+    tree = read_tree(records=records)
+
+    assert tree.people[0].notes == [
+        ImportedNote(
+            text="Zwei Jahre in Amerika?",
+            raw=[{"tag": "CHAN", "children": [{"tag": "DATE", "value": "1 JAN 2000"}]}],
+        )
+    ]
+
+
+def test_read_tree_leaves_out_a_note_pointing_at_a_record_the_file_does_not_have():
+    records = read(file=io.BytesIO(b"0 @I1@ INDI\n1 NOTE @N9@\n"))
+
+    tree = read_tree(records=records)
+
+    assert tree.people[0] == ImportedPerson(xref="@I1@")
+
+
+def test_read_tree_keeps_a_note_without_text_raw():
+    records = read(file=io.BytesIO(b"0 @I1@ INDI\n1 NOTE \n2 _X 1\n"))
+
+    tree = read_tree(records=records)
+
+    assert (tree.people[0].notes, tree.people[0].raw) == (
+        [],
+        [{"tag": "NOTE", "children": [{"tag": "_X", "value": "1"}]}],
+    )
+
+
+def test_read_tree_keeps_a_note_on_a_family_raw():
+    records = read(file=io.BytesIO(b"0 @F1@ FAM\n1 NOTE Kennengelernt am Kirtag\n"))
+
+    tree = read_tree(records=records)
+
+    assert tree.families[0].raw == [{"tag": "NOTE", "value": "Kennengelernt am Kirtag"}]
 
 
 def test_read_tree_gives_a_divorce_on_a_person_to_their_only_family():

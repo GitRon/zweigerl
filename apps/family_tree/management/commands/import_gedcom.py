@@ -25,3 +25,4 @@ class Command(BaseCommand):
 
         self.stdout.write(f"Importiert als „{result.gedcom_import.name}“")
         self.stdout.write(f"Personen: {result.people}, Familien: {result.families}, Angaben: {result.facts}")
+        self.stdout.write(f"Quellen: {result.sources}, Zitate: {result.citations}, Notizen: {result.notes}")

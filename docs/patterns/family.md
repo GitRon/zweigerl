@@ -19,6 +19,7 @@ each.
 | `Photo` | A photo (#16): its `file`, a `description` and the uncertain date it was taken, the `people` on it | `OBJE` with `FILE` and `TITL` |
 | `PhotoPerson` | One person on one photo, and whether it is their portrait (`is_portrait`, the Titelbild). The through model of `Photo.people` | `OBJE` under an `INDI`, `_PRIM` |
 | `GedcomImport` | One GEDCOM file read in (#22), its `name` - "PAF Ronny" - and when; the Herkunft of every row it wrote | - |
+| `Note` | A note about a person (#23): its `text`, the `author` - the user who wrote it, none for an imported note, which shows its Herkunft instead - `created_at`, and `changed_at`, which is empty until somebody edits it and then makes it "bearbeitet". The Notizen tab of the person card shows them (#17) | `NOTE` under an `INDI`, or pointing at a `NOTE` record |
 
 The names are English like all code, close to GEDCOM where it has a word; what a person reads - the
 `verbose_name`s, the choice labels, the messages - is German.

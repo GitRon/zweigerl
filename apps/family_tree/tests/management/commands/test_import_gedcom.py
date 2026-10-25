@@ -14,7 +14,11 @@ def test_import_gedcom_says_what_it_imported_under_which_name(tmp_path):
 
     call_command("import_gedcom", file, name="PAF Huber", stdout=output)
 
-    assert output.getvalue().splitlines() == ["Importiert als „PAF Huber“", "Personen: 2, Familien: 1, Angaben: 1"]
+    assert output.getvalue().splitlines() == [
+        "Importiert als „PAF Huber“",
+        "Personen: 2, Familien: 1, Angaben: 1",
+        "Quellen: 0, Zitate: 0, Notizen: 0",
+    ]
 
 
 @pytest.mark.django_db
