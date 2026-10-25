@@ -169,13 +169,13 @@ def test_import_gedcom_names_the_record_the_models_refuse_and_writes_nothing():
 def test_import_gedcom_writes_sources_and_the_citations_of_facts_from_the_import():
     file = io.BytesIO(
         b"0 @I1@ INDI\n1 BIRT\n2 DATE 1989\n2 SOUR @S1@\n3 PAGE fol. 12\n3 QUAY 3\n"
-        b"0 @S1@ SOUR\n1 TITL Taufbuch Mariazell\n1 AUTH Pfarre\n"
+        b"0 @S1@ SOUR\n1 TITL Taufbuch Mariazell\n1 AUTH Pfarre\n1 TEXT Band 3, im Pfarrarchiv\n"
     )
 
     import_gedcom(file=file, name="PAF Huber")
 
-    assert list(Source.objects.values_list("title", "gedcom_raw", "gedcom_import__name")) == [
-        ("Taufbuch Mariazell", [{"tag": "AUTH", "value": "Pfarre"}], "PAF Huber")
+    assert list(Source.objects.values_list("title", "description", "gedcom_raw", "gedcom_import__name")) == [
+        ("Taufbuch Mariazell", "Band 3, im Pfarrarchiv", [{"tag": "AUTH", "value": "Pfarre"}], "PAF Huber")
     ]
     assert list(Citation.objects.values_list("fact__kind", "page", "gedcom_raw", "gedcom_import__name")) == [
         ("birth", "fol. 12", [{"tag": "QUAY", "value": "3"}], "PAF Huber")
