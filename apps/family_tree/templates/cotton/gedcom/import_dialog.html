@@ -1,0 +1,16 @@
+{# The dialog "GEDCOM importieren" (#25). Choosing a file reads it without saving and patches what it would #}
+{# bring into "gedcom-import-preview"; "Importieren" there submits the same form, the file sent again. #}
+{# Appended to the body, it opens itself and removes itself when closed. "$importing" is true while the #}
+{# import runs, which takes a few seconds for a few hundred people. #}
+<dialog id="gedcom-import-dialog" aria-labelledby="gedcom-import-dialog-title" class="m-auto w-full max-w-lg rounded-lg border-[1.5px] border-ink bg-sheet p-6 text-ink backdrop:bg-ink/40" data-init="el.showModal()" data-on:close="el.remove()" data-on:keydown="evt.key == 'Escape' && evt.stopPropagation()">
+    <form class="flex flex-col gap-4" enctype="multipart/form-data" data-indicator:importing data-on:submit="@post('{% url 'family_tree:gedcom-import-view' %}', {contentType: 'form'})">
+        {% csrf_token %}
+        <h2 id="gedcom-import-dialog-title" class="text-2xl">GEDCOM importieren</h2>
+        <label class="flex flex-col gap-1">
+            <span class="text-sm">GEDCOM-Datei</span>
+            <input type="file" name="file" required accept=".ged,.gedcom" aria-describedby="gedcom-import-hint" class="w-full text-sm" data-on:change="@post('{% url 'family_tree:gedcom-preview-view' %}', {contentType: 'form'})">
+            <span id="gedcom-import-hint" class="text-sm text-ink-muted">Gelesen wird nur, gespeichert noch nichts.</span>
+        </label>
+        <c-gedcom.preview />
+    </form>
+</dialog>

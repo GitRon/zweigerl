@@ -14,6 +14,7 @@ from apps.family_tree.views.fact import (
     edit_fact_view,
     new_fact_view,
 )
+from apps.family_tree.views.gedcom_import import gedcom_import_dialog_view, gedcom_import_view, gedcom_preview_view
 from apps.family_tree.views.new_person import (
     create_person_view,
     create_relative_view,
@@ -77,4 +78,7 @@ urlpatterns = [
     path("settings/backup-dir/", backup_dir_view, name="backup-dir-view"),
     path("settings/backup/", backup_view, name="backup-view"),
     path("export/gedcom/", gedcom_export_view, name="gedcom-export-view"),
+    path("import/gedcom/", gedcom_import_view, name="gedcom-import-view"),
+    path("import/gedcom/new/", gedcom_import_dialog_view, name="gedcom-import-dialog-view"),
+    path("import/gedcom/preview/", gedcom_preview_view, name="gedcom-preview-view"),
 ]

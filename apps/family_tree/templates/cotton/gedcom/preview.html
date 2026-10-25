@@ -1,0 +1,54 @@
+<c-vars preview="" />
+{# What the chosen GEDCOM file would bring (#25), inside the form of "<c-gedcom.import-dialog>": the counts, #}
+{# what the program that wrote it brings along, what looks wrong, the name the import is kept under and #}
+{# "Importieren". Without a preview - no file yet, or one that is no GEDCOM - only "Abbrechen". #}
+<div id="gedcom-import-preview" class="flex flex-col gap-4">
+    {% if preview %}
+        <dl class="grid grid-cols-3 gap-3 text-center">
+            <div class="rounded-md border border-card-edge p-2"><dt class="text-sm text-ink-muted">Personen</dt><dd class="text-2xl">{{ preview.people }}</dd></div>
+            <div class="rounded-md border border-card-edge p-2"><dt class="text-sm text-ink-muted">Familien</dt><dd class="text-2xl">{{ preview.families }}</dd></div>
+            <div class="rounded-md border border-card-edge p-2"><dt class="text-sm text-ink-muted">Quellen</dt><dd class="text-2xl">{{ preview.sources }}</dd></div>
+        </dl>
+        <section class="flex flex-col gap-1" aria-labelledby="gedcom-import-recognised">
+            <h3 id="gedcom-import-recognised" class="text-lg">{% if preview.program %}Aus {{ preview.program }} erkannt{% else %}In der Datei erkannt{% endif %}</h3>
+            <ul class="flex flex-col gap-1 text-sm">
+                <li>Zeichensatz: {{ preview.charset|default:"nicht angegeben" }}</li>
+                {% if preview.photos %}
+                    <li>{{ preview.photos }} Foto{{ preview.photos|pluralize:"s" }}{% if preview.photos_windows %}, {{ preview.photos_windows }} mit Windows-Pfad{% endif %}{% if preview.photos_url %}, {{ preview.photos_url }} als URL{% endif %}{% if preview.photos_other %}, {{ preview.photos_other }} mit anderem Pfad{% endif %} - die Dateien selbst kommen noch nicht mit</li>
+                {% else %}
+                    <li>Keine Fotos</li>
+                {% endif %}
+                {% if preview.own_tags %}
+                    <li>Eigene Tags des Programms: {{ preview.own_tags|join:", " }} - sie bleiben roh erhalten</li>
+                {% endif %}
+            </ul>
+        </section>
+        <section class="flex flex-col gap-1" aria-labelledby="gedcom-import-warnings">
+            <h3 id="gedcom-import-warnings" class="text-lg">Auffällig</h3>
+            {% if preview.warnings %}
+                <ul class="flex flex-col gap-1 text-sm">
+                    {% if preview.unnamed %}<li><c-common.label text="prüfen" tone="brick" /> {{ preview.unnamed }} Person{{ preview.unnamed|pluralize:"en" }} ohne Namen</li>{% endif %}
+                    {% if preview.future_dates %}<li><c-common.label text="prüfen" tone="brick" /> {{ preview.future_dates }} Dat{{ preview.future_dates|pluralize:"um,en" }} in der Zukunft</li>{% endif %}
+                    {% if preview.with_contact %}<li><c-common.label text="prüfen" tone="brick" /> {{ preview.with_contact }} Person{{ preview.with_contact|pluralize:"en" }} mit Adresse oder E-Mail - meist sind das Lebende</li>{% endif %}
+                    {% if preview.unreadable_dates %}<li><c-common.label text="roh" /> {{ preview.unreadable_dates }} Dat{{ preview.unreadable_dates|pluralize:"um,en" }}, die Zweigerl nicht lesen kann - sie bleiben wie geschrieben erhalten</li>{% endif %}
+                </ul>
+            {% else %}
+                <p class="text-sm text-ink-muted">Nichts.</p>
+            {% endif %}
+        </section>
+        <label class="flex flex-col gap-1">
+            <span class="text-sm">Name des Imports</span>
+            <input type="text" name="name" value="{{ preview.program }}" maxlength="100" autocomplete="off" aria-describedby="gedcom-import-name-hint" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
+            <span id="gedcom-import-name-hint" class="text-sm text-ink-muted">Steht bei jeder Person und Angabe als Herkunft, etwa „PAF Ronny“.</span>
+        </label>
+    {% endif %}
+    <div class="flex justify-end gap-3">
+        <c-common.button data-on:click="el.closest('dialog').close()">Abbrechen</c-common.button>
+        {% if preview %}
+            <c-common.button variant="primary" type="submit" data-attr:disabled="$importing">
+                <span data-show="!$importing">Importieren</span>
+                <span data-show="$importing">Wird importiert …</span>
+            </c-common.button>
+        {% endif %}
+    </div>
+</div>

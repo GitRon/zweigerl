@@ -29,6 +29,15 @@ def test_tree_settings_view_shows_the_home_person(admin_client):
 
 
 @pytest.mark.django_db
+def test_tree_settings_view_says_whether_a_file_can_be_imported(admin_client):
+    PersonFactory()
+
+    response = admin_client.get(reverse("family_tree:tree-settings-view"))
+
+    assert response.context["tree_empty"] is False
+
+
+@pytest.mark.django_db
 def test_tree_settings_view_shows_the_backup_folder(admin_client, tmp_path):
     TreeSettingsFactory(backup_dir=str(tmp_path / "unplugged-disk"))
 

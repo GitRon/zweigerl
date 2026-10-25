@@ -12,6 +12,7 @@ from apps.family_tree.domain.names import display_name
 from apps.family_tree.models import Person
 from apps.family_tree.readers.backup import backup_folder, last_backup
 from apps.family_tree.readers.gedcom import gedcom_export
+from apps.family_tree.readers.gedcom_import import tree_is_empty
 from apps.family_tree.readers.person import loose_people, person_list
 from apps.family_tree.readers.tree_settings import home_person
 from apps.family_tree.views.person_search import loose_events
@@ -20,7 +21,7 @@ from apps.family_tree.views.person_search import loose_events
 def tree_settings_view(request: HttpRequest) -> HttpResponse:
     """
     The settings of the tree: who the home person is (#20), where backups go and the button making one (#33),
-    and the GEDCOM export (#26).
+    and the GEDCOM export (#26) and import (#25).
     """
     return render(
         request,
@@ -31,6 +32,7 @@ def tree_settings_view(request: HttpRequest) -> HttpResponse:
             "last_backup": last_backup(),
             "home_person": home_person(),
             "backup_folder": backup_folder(),
+            "tree_empty": tree_is_empty(),
         },
     )
 
