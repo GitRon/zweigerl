@@ -5,8 +5,9 @@
 {# scrolls away with the card: held at the top, it would lie over the column of pencils in the tabs. #}
 {# The head says who they are and what they are to the home person; the pencil beside the name swaps it for #}
 {# the form "Name & Status bearbeiten" (#30) while "$editing" is this person, "$status" being the status #}
-{# chosen there. That form also holds "Person löschen", asking what deleting the person would take with it #}
-{# (#19): rare and expensive to get wrong, so it is out of the way of what is clicked all the time. The tabs, #}
+{# chosen there. That form also holds "Mit … zusammenführen" (#85) and "Person löschen", asking what deleting #}
+{# the person would take with it (#19): rare and expensive to get wrong, so out of the way of what is clicked #}
+{# all the time. The tabs, #}
 {# switched by "$tab", hold every fact with its Beleg - added, changed and removed in place (#14) - the #}
 {# photos (#16), the sources with their scans (#15), everyone directly related, each link with its button to #}
 {# remove it, and "Verwandte hinzufügen" asking for a new relative (#18), and the notes in handwriting (#17). #}
@@ -86,7 +87,8 @@
             <c-common.button variant="primary" type="submit">Speichern</c-common.button>
             <c-common.button type="reset" data-on:click="$editing = 0">Abbrechen</c-common.button>
         </div>
-        <div class="mt-3 border-t border-card-edge pt-6">
+        <div class="mt-3 flex flex-wrap gap-3 border-t border-card-edge pt-6">
+            <c-common.button data-on:click="@get('{% url 'family_tree:merge-dialog-view' pk=person.pk %}')">Mit … zusammenführen</c-common.button>
             <c-common.button data-on:click="@get('{% url 'family_tree:confirm-delete-person-view' pk=person.pk %}')">Person löschen</c-common.button>
         </div>
     </form>

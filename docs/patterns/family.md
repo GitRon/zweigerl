@@ -170,6 +170,34 @@ else:
   deleted on their own. They stand at the bottom of the sidebar, each linking to their card, to be connected again
   or deleted. Who is connected is `domain.relationship.connected_people`, the same walk the tree is drawn from.
 
+## Merging two people
+
+**Two rows that are one person become one, by hand** (#85). A second import - a MyHeritage export beside the PAF
+tree, see [GEDCOM](gedcom.md#the-import) - brings the few people both files know a second time; recognising them
+is #35, merging them is this. "Mit … zusammenführen" in the card's form "Name & Status bearbeiten", beside "Person
+löschen", searches the tree for the other one (`readers.person_merge.merge_candidates`), shows the two side by side
+(`merge_preview`) and merges them with `actions.person_merge.merge_persons`. The person the merge started on stays;
+the other goes into them and is deleted. **It cannot be undone**, and the dialog says so before "Zusammenführen".
+
+| What | Afterwards |
+|---|---|
+| Names, `call_name`, `sex`, `living_status` | where the two differ, the one chosen in the comparison - the person's to start with (decided 26.10.2026) |
+| Facts, with their citations | all of both, each with its own Herkunft; two birth dates stand side by side like any other contradiction, see [Belege](evidence.md) |
+| Notes, photos, filed sources | all of both. The person's portrait stays theirs; the other's becomes it only for a person without one |
+| A partner of only one of them | the person's partner |
+| A partner both had | one family: the person's Partnership takes the other's facts, its raw and its children, and is a marriage when either was one |
+| A parent or child both had | one `ParentChild`, the person's with its `pedigree` and couple, with the raw of both |
+| Explicit siblings | the person's; a pair the merge makes siblings through a parent goes, as no `SiblingPair` stands beside a shared parent |
+| `gedcom_raw` | both, the person's first |
+| `gedcom_import`, the Herkunft of the person | the person's (decided 26.10.2026) |
+| The home person | the person, when it was the other |
+
+The search leaves out the person, their partners, ancestors and descendants: as one they would be their own
+partner or ancestor, and the action refuses them too. Siblings are offered - once their parents are merged, the
+two copies of a child are siblings. **Two people with more than two birth parents between them are refused**
+(decided 26.10.2026): their parents are themselves pairs of the same people, so the parents are merged first, from
+the top of the tree down, and the children after them.
+
 ## The home person
 
 The Ausgangsperson - the person the tree is laid out around (#11) - is stored as

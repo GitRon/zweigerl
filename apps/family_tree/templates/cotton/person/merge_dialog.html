@@ -1,0 +1,18 @@
+<c-vars entry />
+{# "Mit … zusammenführen" (#85): the search for the other one, the person the tree holds twice - mostly since a #}
+{# second import brought them again. Each hit patched into "merge-candidates" fetches the comparison, which #}
+{# takes the place of the search under the same id. Appended to the body, it opens itself and removes itself #}
+{# when closed, and Escape stops here, so the canvas does not close the card behind it as well. #}
+<dialog id="merge-person-dialog" aria-labelledby="merge-person-dialog-title" class="m-auto w-full max-w-2xl rounded-lg border-[1.5px] border-ink bg-sheet p-6 text-ink backdrop:bg-ink/40" data-init="el.showModal()" data-on:close="el.remove()" data-on:keydown="evt.key == 'Escape' && evt.stopPropagation()" data-signals="{merge_search: ''}">
+    <div class="flex flex-col gap-4">
+        <h2 id="merge-person-dialog-title" class="text-2xl">{{ entry.name }} zusammenführen</h2>
+        <div id="merge-step" class="flex flex-col gap-4">
+            <p>Mit wem? Such die Person, die dieselbe ist wie {{ entry.name }}, etwa aus einem zweiten Import.</p>
+            <c-common.search-field bind="merge_search" label="Im Baum suchen" url="{% url 'family_tree:merge-candidates-view' pk=entry.person.pk %}" data-on:keydown="evt.key == 'Enter' && evt.preventDefault()" />
+            <div id="merge-candidates"></div>
+            <div class="flex justify-end">
+                <c-common.button data-on:click="el.closest('dialog').close()">Abbrechen</c-common.button>
+            </div>
+        </div>
+    </div>
+</dialog>

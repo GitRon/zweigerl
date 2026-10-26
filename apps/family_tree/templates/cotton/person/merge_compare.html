@@ -1,0 +1,75 @@
+<c-vars preview />
+{# The two side by side in "<c-person.merge-dialog>" (#85), in place of the search under its id: the person the #}
+{# merge started on, who stays, and the other, who goes into them. A field the two disagree on asks which one #}
+{# stays, the person's chosen to start with; one they agree on is shown once. What each brings is counted - it #}
+{# all stays. "Zusammenführen" waits behind the plain word that it cannot be undone, in "brick" since it wants #}
+{# attention; two people who cannot be one get the reason instead and no button. #}
+{% with person=preview.person other=preview.other %}
+<form id="merge-step" class="flex flex-col gap-4" data-on:submit="@post('{% url 'family_tree:merge-view' pk=person.entry.person.pk other_pk=other.entry.person.pk %}', {contentType: 'form'})">
+    {% csrf_token %}
+    <table class="w-full table-fixed text-left">
+        <thead>
+            <tr>
+                <td class="w-28"></td>
+                <th scope="col" class="pb-2 font-normal">
+                    <span class="flex items-center gap-2">
+                        <c-common.frame :src="person.entry.portrait_url" :alt="person.entry.portrait_alt" :initials="person.entry.initials" width="w-7" />
+                        <span class="flex min-w-0 flex-col leading-tight"><span class="truncate">{{ person.entry.name }}</span><span class="text-sm text-ink-muted">bleibt</span></span>
+                    </span>
+                </th>
+                <th scope="col" class="pb-2 font-normal">
+                    <span class="flex items-center gap-2">
+                        <c-common.frame :src="other.entry.portrait_url" :alt="other.entry.portrait_alt" :initials="other.entry.initials" width="w-7" />
+                        <span class="flex min-w-0 flex-col leading-tight"><span class="truncate">{{ other.entry.name }}</span><span class="text-sm text-ink-muted">geht darin auf</span></span>
+                    </span>
+                </th>
+            </tr>
+        </thead>
+        <tbody class="align-top">
+            {% for field in preview.fields %}
+                <tr class="border-t border-card-edge">
+                    <th scope="row" class="py-1.5 pr-2 text-sm font-normal text-ink-muted">{{ field.label }}</th>
+                    {% if field.differs %}
+                        <td class="py-1.5 pr-2"><label class="flex min-h-11 cursor-pointer items-center gap-2"><input type="radio" class="accent-forest" name="{{ field.name }}" value="person" checked> {{ field.text|default:"–" }}</label></td>
+                        <td class="py-1.5"><label class="flex min-h-11 cursor-pointer items-center gap-2"><input type="radio" class="accent-forest" name="{{ field.name }}" value="other"> {{ field.other_text|default:"–" }}</label></td>
+                    {% else %}
+                        <td class="py-1.5" colspan="2">{{ field.text|default:"–" }}</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            <tr class="border-t border-card-edge">
+                <th scope="row" class="py-1.5 pr-2 text-sm font-normal text-ink-muted">Lebensdaten</th>
+                <td class="py-1.5 pr-2">{{ person.entry.lifespan|default:"–" }}</td>
+                <td class="py-1.5">{{ other.entry.lifespan|default:"–" }}</td>
+            </tr>
+            <tr class="border-t border-card-edge">
+                <th scope="row" class="py-1.5 pr-2 text-sm font-normal text-ink-muted">Herkunft</th>
+                <td class="py-1.5 pr-2">{{ person.origin|default:"hier angelegt" }}</td>
+                <td class="py-1.5">{{ other.origin|default:"hier angelegt" }}</td>
+            </tr>
+            <tr class="border-t border-card-edge">
+                <th scope="row" class="py-1.5 pr-2 text-sm font-normal text-ink-muted">Bringt mit</th>
+                {% for side in preview.sides %}
+                    <td class="py-1.5 pr-2 text-sm">{{ side.fact_count }} Angabe{{ side.fact_count|pluralize:"n" }}, {{ side.photo_count }} Foto{{ side.photo_count|pluralize:"s" }}, {{ side.note_count }} Notiz{{ side.note_count|pluralize:"en" }}, {{ side.source_count }} Quelle{{ side.source_count|pluralize:"n" }}, {{ side.relative_count }} Verwandte</td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+    <p class="text-sm text-ink-muted">Alles davon bleibt, mit seinen Belegen und seiner Herkunft. Widersprechen sich Angaben, stehen beide da.</p>
+    {% if preview.refusal %}
+        <p role="alert" class="rounded-md border-[1.5px] border-brick p-3">{{ preview.refusal }}</p>
+        <div class="flex justify-end">
+            <c-common.button data-on:click="el.closest('dialog').close()">Abbrechen</c-common.button>
+        </div>
+    {% else %}
+        <div role="alert" class="flex flex-col gap-1 rounded-md border-[1.5px] border-brick p-3">
+            <p class="font-bold text-brick">Das lässt sich nicht rückgängig machen</p>
+            <p>Danach gibt's nur noch eine Person. Wer die beiden waren, lässt sich nicht mehr auseinanderklauben.</p>
+        </div>
+        <div class="flex justify-end gap-3">
+            <c-common.button data-on:click="el.closest('dialog').close()">Abbrechen</c-common.button>
+            <c-common.button variant="primary" type="submit">Zusammenführen</c-common.button>
+        </div>
+    {% endif %}
+</form>
+{% endwith %}
