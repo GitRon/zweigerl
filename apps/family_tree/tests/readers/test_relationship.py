@@ -35,10 +35,12 @@ def test_family_graph_holds_every_link():
 def test_family_graph_leaves_out_another_tree():
     lena = PersonFactory()
     ParentChildFactory(parent__tree__name="Familie Berger", child__tree__name="Familie Berger")
+    PartnershipFactory(person_a__tree__name="Familie Berger", person_b__tree__name="Familie Berger")
+    SiblingPairFactory(person_a__tree__name="Familie Berger", person_b__tree__name="Familie Berger")
 
     graph = family_graph(tree_id=lena.tree_id)
 
-    assert (graph.sex, graph.parents) == ({lena.pk: lena.sex}, {})
+    assert (graph.sex, graph.parents, graph.partners, graph.marriages) == ({lena.pk: lena.sex}, {}, {}, set())
 
 
 @pytest.mark.django_db

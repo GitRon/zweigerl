@@ -1,6 +1,6 @@
 <c-vars open_tree />
 {# Which tree is open (#34), under the word mark in the sidebar: its name, and once there are others, the #}
-{# links to them, folded in a <details> so the sidebar of an installation with one tree stays as it was. #}
+{# links to them, folded in a <details>. An installation with one tree shows its name alone. #}
 <nav id="tree-switcher" aria-label="Stammbaum" class="flex flex-col gap-1">
     {% if open_tree.others %}
         <details>

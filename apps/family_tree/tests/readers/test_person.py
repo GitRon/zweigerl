@@ -790,6 +790,14 @@ def test_loose_people_leave_out_the_people_of_another_tree():
 
 
 @pytest.mark.django_db
+def test_loose_people_without_a_home_person_are_measured_within_the_tree():
+    PersonFactory(given_names="Markus", tree__name="Familie Berger")
+    couple = PartnershipFactory(person_a__given_names="Lena", person_b__given_names="Rosa")
+
+    assert loose_people(tree_id=couple.person_a.tree_id) == []
+
+
+@pytest.mark.django_db
 def test_loose_people_of_an_empty_tree_are_nobody():
     assert loose_people(tree_id=TreeFactory().pk) == []
 
