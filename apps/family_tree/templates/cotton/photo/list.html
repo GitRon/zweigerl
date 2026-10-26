@@ -19,7 +19,7 @@
         <input type="hidden" name="search" value="" data-attr:value="$search">
         <label class="flex w-full flex-col gap-1 text-sm">
             <span>Fotos hochladen</span>
-            <input type="file" name="files" multiple required accept=".jpg,.jpeg,.png,.webp" aria-describedby="person-card-photo-hint" class="w-full text-sm">
+            <c-common.file-field name="files" multiple required accept=".jpg,.jpeg,.png,.webp" aria-describedby="person-card-photo-hint" />
             <span id="person-card-photo-hint" class="text-ink-muted">JPEG, PNG oder WebP. Ortsangaben im Foto werden entfernt.</span>
         </label>
         <c-common.button type="submit">Hochladen</c-common.button>

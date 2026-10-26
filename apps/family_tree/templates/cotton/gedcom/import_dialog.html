@@ -8,8 +8,8 @@
         <h2 id="gedcom-import-dialog-title" class="text-2xl">GEDCOM importieren</h2>
         <label class="flex flex-col gap-1">
             <span class="text-sm">GEDCOM-Datei</span>
-            <input type="file" name="file" required accept=".ged,.gedcom" aria-describedby="gedcom-import-hint" class="w-full text-sm" data-on:change="@post('{% url 'family_tree:gedcom-preview-view' %}', {contentType: 'form'})">
-            <span id="gedcom-import-hint" class="text-sm text-ink-muted">Gelesen wird nur, gespeichert noch nichts.</span>
+            <c-common.file-field name="file" required accept=".ged,.gedcom" aria-describedby="gedcom-import-hint" data-on:change="@post('{% url 'family_tree:gedcom-preview-view' %}', {contentType: 'form'})" />
+            <span id="gedcom-import-hint" class="text-sm text-ink-muted">Die Datei wird erst gelesen, gespeichert wird noch nichts.</span>
         </label>
         <c-gedcom.preview />
     </form>
