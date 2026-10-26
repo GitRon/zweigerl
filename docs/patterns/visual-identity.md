@@ -61,8 +61,9 @@ apart by its word first; a colour may underline the word, never replace it. That
 which the browser would fake by smearing the outline.
 
 **The handwriting is a note, not a style.** It says "somebody wrote this down": a remark on a person, a
-reminder. A button, a heading or a label set in it would look playful and read badly. The moodboard writes
-notes in `brick`; whether that stays is #17's call.
+reminder. A button, a heading or a label set in it would look playful and read badly. A note is written in
+`ink`, not in the moodboard's `brick`: `brick` is reserved for what wants you, and a note is a remark, not an
+alarm (#17).
 
 The three are self-hosted from fontsource (`yarn`), never from a CDN, and only at the weights above.
 `assets/css/tailwind.css` imports them, and `assets/copy-fonts.mjs` - run by `yarn build:css` - puts the
