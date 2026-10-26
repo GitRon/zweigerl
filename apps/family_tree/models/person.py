@@ -3,6 +3,10 @@ from django.db import models
 
 from apps.family_tree.models.gedcom import GedcomRawMixin
 
+# The fields of a person themselves, the way "Name & Status bearbeiten" corrects them (#30) - and those a merge
+# takes from one of the two people or the other (#85).
+NAME_AND_STATUS_FIELDS = ("given_names", "surname", "call_name", "sex", "living_status")
+
 
 class Person(ValidateConstraintsOnSaveMixin, GedcomRawMixin):
     """
