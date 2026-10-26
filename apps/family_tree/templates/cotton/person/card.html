@@ -19,10 +19,12 @@
 {# change under a smooth scroll would stop it. A loose person has no card in the tree to centre. #}
 {% url 'family_tree:start-view' as start_url %}
 {% with person=card.entry.person %}
-<aside id="person-card" aria-label="Personenkarte" class="flex w-96 shrink-0 flex-col gap-4 overflow-y-auto border-l border-card-edge bg-birch p-6 max-lg:absolute max-lg:inset-y-0 max-lg:right-0 max-lg:w-full max-lg:max-w-md max-lg:border-l-[1.5px] max-lg:border-ink" data-signals="{tab: 'facts', editing: 0, status: '', scrolled: false}" data-show="$selection == {{ card.entry.person.pk }}" data-effect="$selection == 0 && location.pathname != '{{ start_url }}' && history.pushState(null, '', '{{ start_url }}')">
+<aside id="person-card" aria-label="Personenkarte" class="flex w-96 shrink-0 scroll-pt-16 flex-col gap-4 overflow-y-auto border-l border-card-edge bg-birch p-6 max-lg:absolute max-lg:inset-y-0 max-lg:right-0 max-lg:w-full max-lg:max-w-md max-lg:border-l-[1.5px] max-lg:border-ink" data-signals="{tab: 'facts', editing: 0, status: '', scrolled: false}" data-show="$selection == {{ card.entry.person.pk }}" data-effect="$selection == 0 && location.pathname != '{{ start_url }}' && history.pushState(null, '', '{{ start_url }}')">
     {# No height and the gap taken back, so it moves nothing; the bar inside hangs over what is below it, #}
-    {# across the padding to both edges of the card. #}
-    <div class="sticky top-0 z-20 -mx-6 -mb-4 h-0">
+    {# across the padding to both edges of the card. It sticks inside the card's padding, hence "-top-6" #}
+    {# to reach the top edge, where nothing runs above it. The card's "scroll-pt-16" keeps a field reached #}
+    {# with Tab clear of the bar. #}
+    <div class="sticky -top-6 z-20 -mx-6 -mb-4 h-0">
         <div class="flex items-center justify-between gap-3 border-b border-card-edge bg-birch px-6 py-2" style="display: none" data-show="$scrolled">
             <span class="truncate font-serif text-lg">{{ card.entry.name }}</span>
             <c-common.button class="w-11 shrink-0 px-0!" aria-label="Karte schließen" title="Karte schließen" data-on:click="$selection = 0; $editing = 0">
