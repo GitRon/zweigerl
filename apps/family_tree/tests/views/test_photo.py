@@ -9,7 +9,7 @@ from PIL import Image
 from apps.family_tree.models import Photo, PhotoPerson
 from apps.family_tree.tests.factories.person import PersonFactory
 from apps.family_tree.tests.factories.photo_person import PhotoPersonFactory
-from apps.family_tree.tests.factories.tree_settings import TreeSettingsFactory
+from apps.family_tree.tests.factories.tree import TreeFactory
 from apps.family_tree.views.photo import _patch_photos
 
 
@@ -174,7 +174,7 @@ def test_photo_describe_view_of_a_photo_no_longer_there_says_so(admin_client):
 
 @pytest.mark.django_db
 def test_photo_describe_view_does_not_patch_a_tree_card_the_tree_does_not_show(admin_client):
-    TreeSettingsFactory()
+    TreeFactory(home_person=PersonFactory())
     stranger = PhotoPersonFactory()
 
     body = _post(

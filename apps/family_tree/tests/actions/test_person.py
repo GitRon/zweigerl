@@ -13,7 +13,7 @@ from apps.family_tree.actions.person import (
     link_relative,
     unlink_relative,
 )
-from apps.family_tree.models import Citation, Fact, ParentChild, Partnership, Person, SiblingPair, Source, TreeSettings
+from apps.family_tree.models import Citation, Fact, ParentChild, Partnership, Person, SiblingPair, Source, Tree
 from apps.family_tree.tests.factories.citation import CitationFactory
 from apps.family_tree.tests.factories.fact import FactFactory
 from apps.family_tree.tests.factories.parent_child import ParentChildFactory
@@ -21,7 +21,7 @@ from apps.family_tree.tests.factories.partnership import PartnershipFactory
 from apps.family_tree.tests.factories.person import PersonFactory
 from apps.family_tree.tests.factories.sibling_pair import SiblingPairFactory
 from apps.family_tree.tests.factories.source import SourceFactory
-from apps.family_tree.tests.factories.tree_settings import TreeSettingsFactory
+from apps.family_tree.tests.factories.tree import TreeFactory
 
 FIELDS = {
     "given_names": "Rosa",
@@ -33,7 +33,7 @@ FIELDS = {
 
 @pytest.mark.django_db
 def test_create_person_saves_the_names_without_surrounding_spaces():
-    person = create_person(**{**FIELDS, "given_names": "  Rosa ", "surname": " Huber"})
+    person = create_person(tree_id=TreeFactory().pk, **{**FIELDS, "given_names": "  Rosa ", "surname": " Huber"})
 
     assert Person.objects.values_list("given_names", "surname", "sex", "living_status").get(pk=person.pk) == (
         "Rosa",
@@ -45,24 +45,45 @@ def test_create_person_saves_the_names_without_surrounding_spaces():
 
 @pytest.mark.django_db
 def test_create_person_makes_the_first_person_the_home_person():
-    person = create_person(**FIELDS)
+    person = create_person(tree_id=TreeFactory().pk, **FIELDS)
 
-    assert TreeSettings.objects.get().home_person == person
+    assert Tree.objects.get().home_person == person
+
+
+@pytest.mark.django_db
+def test_create_person_makes_the_first_person_of_a_new_tree_its_home_person():
+    PersonFactory()
+    berger = TreeFactory(name="Familie Berger")
+
+    person = create_person(tree_id=berger.pk, **FIELDS)
+
+    assert list(Tree.objects.values_list("name", "home_person")) == [
+        ("Familie Berger", person.pk),
+        ("Familie Huber", None),
+    ]
 
 
 @pytest.mark.django_db
 def test_create_person_leaves_the_home_person_of_a_tree_with_people():
     PersonFactory()
 
-    create_person(**FIELDS)
+    create_person(tree_id=TreeFactory().pk, **FIELDS)
 
-    assert TreeSettings.objects.exists() is False
+    assert Tree.objects.get().home_person is None
 
 
 @pytest.mark.django_db
 def test_create_person_refuses_a_sex_that_is_none():
     with pytest.raises(ValidationError, match="Das Geschlecht ist männlich, weiblich, divers oder unbekannt"):
-        create_person(**{**FIELDS, "sex": "Q"})
+        create_person(tree_id=TreeFactory().pk, **{**FIELDS, "sex": "Q"})
+
+
+@pytest.mark.django_db
+def test_create_person_refuses_a_tree_that_is_not_there():
+    tree = TreeFactory()
+
+    with pytest.raises(Tree.DoesNotExist, match="Tree matching query does not exist"):
+        create_person(tree_id=tree.pk + 1, **FIELDS)
 
 
 @pytest.mark.django_db
@@ -72,6 +93,16 @@ def test_add_relative_adds_a_parent():
     mother = add_relative(person_id=lena.pk, relation=Relation.PARENT, **FIELDS)
 
     assert list(ParentChild.objects.values_list("parent", "child", "pedigree")) == [(mother.pk, lena.pk, "birth")]
+
+
+@pytest.mark.django_db
+def test_add_relative_adds_the_relative_to_the_tree_of_the_person():
+    PersonFactory()
+    lena = PersonFactory(tree__name="Familie Berger")
+
+    mother = add_relative(person_id=lena.pk, relation=Relation.PARENT, **FIELDS)
+
+    assert mother.tree == lena.tree
 
 
 @pytest.mark.django_db
@@ -335,6 +366,15 @@ def test_link_relative_refuses_somebody_not_in_the_tree():
         link_relative(person_id=lena.pk, relation=Relation.PARENT, relative_id=lena.pk + 1)
 
 
+@pytest.mark.django_db
+def test_link_relative_refuses_somebody_of_another_tree():
+    lena = PersonFactory()
+    markus = PersonFactory(tree__name="Familie Berger")
+
+    with pytest.raises(ValidationError, match="Die beiden gehören zu verschiedenen Stammbäumen"):
+        link_relative(person_id=lena.pk, relation=Relation.PARTNER, relative_id=markus.pk)
+
+
 ALIVE = {"sex": Person.Sex.FEMALE, "living_status": Person.LivingStatus.LIVING, "death_year": None}
 
 
@@ -483,7 +523,7 @@ def test_delete_person_takes_their_facts_and_citations_and_keeps_sources_and_rel
 
 @pytest.mark.django_db
 def test_delete_person_refuses_the_home_person():
-    lena = TreeSettingsFactory().home_person
+    lena = TreeFactory(home_person=PersonFactory()).home_person
 
     with pytest.raises(ValidationError, match="Das ist die Ausgangsperson"):
         delete_person(person_id=lena.pk)

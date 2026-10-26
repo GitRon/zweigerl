@@ -74,3 +74,11 @@ def test_sibling_pair_refuses_the_same_pair_the_other_way_round_in_the_database(
 
     with pytest.raises(IntegrityError, match="siblingpair_once_per_pair"):
         SiblingPair.objects.bulk_create([SiblingPair(person_a=siblings.person_b, person_b=siblings.person_a)])
+
+
+@pytest.mark.django_db
+def test_sibling_pair_refuses_siblings_of_two_trees():
+    lena = PersonFactory()
+
+    with pytest.raises(ValidationError, match="Die beiden gehören zu verschiedenen Stammbäumen"):
+        SiblingPairFactory(person_a=lena, person_b=PersonFactory(tree__name="Familie Berger"))

@@ -133,7 +133,7 @@ def _saved(*, request: HttpRequest, pk: int, text: str):
     # and on the tree's card.
     card = person_card(pk=pk)
     yield ServerSentEventGenerator.patch_elements(render_component(request, "person.card", card=card))
-    yield from sidebar_events(request, search=request.POST.get("search", "").strip())
+    yield from sidebar_events(request, tree_id=card.entry.person.tree_id, search=request.POST.get("search", "").strip())
     if (in_tree := tree_card(pk=pk)) is not None:
         yield ServerSentEventGenerator.patch_elements(
             render_component(request, "tree.card", card=in_tree, width=CARD_WIDTH, height=CARD_HEIGHT)

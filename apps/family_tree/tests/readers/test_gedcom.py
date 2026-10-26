@@ -4,7 +4,7 @@ from unittest import mock
 import pytest
 
 from apps.family_tree.models import Fact, ParentChild, Partnership, Person, Source
-from apps.family_tree.readers.gedcom import gedcom_export
+from apps.family_tree.readers.gedcom import gedcom_export, gedcom_exports
 from apps.family_tree.tests.factories.citation import CitationFactory
 from apps.family_tree.tests.factories.fact import FactFactory
 from apps.family_tree.tests.factories.note import NoteFactory
@@ -16,7 +16,7 @@ from apps.family_tree.tests.factories.photo_person import PhotoPersonFactory
 from apps.family_tree.tests.factories.sibling_pair import SiblingPairFactory
 from apps.family_tree.tests.factories.source import SourceFactory
 from apps.family_tree.tests.factories.source_file import SourceFileFactory
-from apps.family_tree.tests.factories.tree_settings import TreeSettingsFactory
+from apps.family_tree.tests.factories.tree import TreeFactory
 
 RAW = [{"tag": "_UID", "value": "4F2A"}]
 
@@ -24,7 +24,7 @@ RAW = [{"tag": "_UID", "value": "4F2A"}]
 @pytest.mark.django_db
 @mock.patch("apps.family_tree.readers.gedcom.localdate", return_value=datetime.date(2026, 10, 19))
 def test_gedcom_export_opens_with_the_header_and_ends_with_the_trailer(_localdate):
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert text == (
         "0 HEAD\n"
@@ -43,10 +43,38 @@ def test_gedcom_export_opens_with_the_header_and_ends_with_the_trailer(_localdat
 
 
 @pytest.mark.django_db
+def test_gedcom_exports_are_every_tree_by_a_file_name_of_its_own():
+    huber = TreeFactory(name="Familie Huber")
+    goessl = TreeFactory(name="Familie Gößl")
+
+    assert list(gedcom_exports()) == [f"{huber.pk}-familie-huber.ged", f"{goessl.pk}-familie-goessl.ged"]
+
+
+@pytest.mark.django_db
+def test_gedcom_export_leaves_out_everything_of_another_tree():
+    lena = PersonFactory(given_names="Lena")
+    markus = PersonFactory(given_names="Markus", tree__name="Familie Berger")
+    PartnershipFactory(person_a=markus, person_b=PersonFactory(tree__name="Familie Berger"))
+    ParentChildFactory(parent=markus, child=PersonFactory(tree__name="Familie Berger"))
+    SiblingPairFactory(person_a=markus, person_b=PersonFactory(tree__name="Familie Berger"))
+    SourceFactory(tree__name="Familie Berger", title="Taufbuch Berger")
+    PhotoFactory(tree__name="Familie Berger")
+
+    text = gedcom_export(tree_id=lena.tree_id)
+
+    assert (f"@I{lena.pk}@ INDI" in text, " FAM\n" in text, " SOUR\n" in text, " OBJE\n" in text) == (
+        True,
+        False,
+        False,
+        False,
+    )
+
+
+@pytest.mark.django_db
 def test_gedcom_export_writes_the_name_with_its_parts():
     lena = PersonFactory(given_names="Lena Maria", surname="Huber", call_name="Leni", sex=Person.Sex.FEMALE)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert (
         f"0 @I{lena.pk}@ INDI\n1 NAME Lena Maria /Huber/\n2 GIVN Lena Maria\n2 SURN Huber\n2 NICK Leni\n1 SEX F\n"
@@ -58,7 +86,7 @@ def test_gedcom_export_writes_the_name_with_its_parts():
 def test_gedcom_export_writes_no_name_for_somebody_without_one():
     unknown_wife = PersonFactory(given_names="", surname="")
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"0 @I{unknown_wife.pk}@ INDI\n1 SEX U\n0 " in text
 
@@ -68,7 +96,7 @@ def test_gedcom_export_writes_the_parts_of_a_name_an_import_kept_raw_below_the_n
     raw_name = {"tag": "NAME", "children": [{"tag": "_MARNM", "value": "Maier"}]}
     lena = PersonFactory(given_names="Lena", surname="Huber", sex=Person.Sex.FEMALE, gedcom_raw=[raw_name, *RAW])
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert (
         f"0 @I{lena.pk}@ INDI\n1 NAME Lena /Huber/\n2 GIVN Lena\n2 SURN Huber\n2 _MARNM Maier\n1 SEX F\n1 _UID 4F2A\n"
@@ -81,7 +109,7 @@ def test_gedcom_export_writes_a_name_of_nothing_but_the_parts_an_import_kept_raw
     raw_name = {"tag": "NAME", "children": [{"tag": "NPFX", "value": "Dr."}]}
     nameless = PersonFactory(given_names="", surname="", gedcom_raw=[raw_name])
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"0 @I{nameless.pk}@ INDI\n1 NAME //\n2 NPFX Dr.\n1 SEX U\n" in text
 
@@ -89,9 +117,9 @@ def test_gedcom_export_writes_a_name_of_nothing_but_the_parts_an_import_kept_raw
 @pytest.mark.django_db
 def test_gedcom_export_puts_the_home_person_first():
     anna = PersonFactory(given_names="Anna")
-    lena = TreeSettingsFactory(home_person__given_names="Lena").home_person
+    lena = TreeFactory(home_person=PersonFactory(given_names="Lena")).home_person
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert text.index(f"0 @I{lena.pk}@ INDI") < text.index(f"0 @I{anna.pk}@ INDI")
 
@@ -110,7 +138,7 @@ def test_gedcom_export_joins_birth_and_birthplace_into_one_birt():
     birth_citation = CitationFactory(fact=birth, page="fol. 12")
     place_citation = CitationFactory(fact=birthplace, page="")
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert (
         "1 BIRT\n2 DATE 12 MAR 1931\n2 PLAC Mariazell\n3 _ZWG_RELIABILITY probable\n2 _ZWG_RELIABILITY handed_down\n"
@@ -124,7 +152,7 @@ def test_gedcom_export_gives_a_second_birthplace_its_own_birt():
     FactFactory(person=birth.person, as_value=True, kind=Fact.Kind.BIRTHPLACE, value="Mariazell")
     FactFactory(person=birth.person, as_value=True, kind=Fact.Kind.BIRTHPLACE, value="Gußwerk")
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert "1 BIRT\n2 DATE 12 MAR 1931\n2 PLAC Mariazell\n1 BIRT\n2 PLAC Gußwerk\n" in text
 
@@ -141,7 +169,7 @@ def test_gedcom_export_gives_a_second_birthplace_its_own_birt():
 def test_gedcom_export_writes_a_date_fact_as_its_event(kind, lines):
     FactFactory(kind=kind)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert lines in text
 
@@ -159,7 +187,7 @@ def test_gedcom_export_writes_a_date_fact_as_its_event(kind, lines):
 def test_gedcom_export_writes_a_value_fact_as_its_attribute(kind, lines):
     FactFactory(as_value=True, kind=kind)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert lines in text
 
@@ -168,7 +196,7 @@ def test_gedcom_export_writes_a_value_fact_as_its_attribute(kind, lines):
 def test_gedcom_export_writes_a_custom_fact_as_even_with_its_type():
     FactFactory(kind=Fact.Kind.CUSTOM, label="Firmung", value="Mariazell", between=True)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert "1 EVEN Mariazell\n2 TYPE Firmung\n2 DATE BET 1820 AND 1830\n" in text
 
@@ -189,7 +217,7 @@ def test_gedcom_export_writes_reliability_citations_and_raw_below_each_fact(fact
     probable_fact = FactFactory(reliability=Fact.Reliability.PROBABLE, gedcom_raw=RAW, **fact)
     citation = CitationFactory(fact=probable_fact, page="fol. 3")
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"{lines}2 _ZWG_RELIABILITY probable\n2 SOUR @S{citation.source_id}@\n3 PAGE fol. 3\n2 _UID 4F2A\n" in text
 
@@ -198,7 +226,7 @@ def test_gedcom_export_writes_reliability_citations_and_raw_below_each_fact(fact
 def test_gedcom_export_names_a_reliability_other_than_documented():
     FactFactory(as_value=True, reliability=Fact.Reliability.HANDED_DOWN)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert "1 OCCU Uhrmacher\n2 _ZWG_RELIABILITY handed_down\n" in text
 
@@ -207,7 +235,7 @@ def test_gedcom_export_names_a_reliability_other_than_documented():
 def test_gedcom_export_writes_a_citation_with_its_page():
     citation = CitationFactory(fact__as_value=True, page="Nr. 1989/3471")
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"1 OCCU Uhrmacher\n2 SOUR @S{citation.source_id}@\n3 PAGE Nr. 1989/3471\n" in text
 
@@ -216,7 +244,7 @@ def test_gedcom_export_writes_a_citation_with_its_page():
 def test_gedcom_export_marks_somebody_living():
     lena = PersonFactory(given_names="", surname="", living_status=Person.LivingStatus.LIVING)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"0 @I{lena.pk}@ INDI\n1 SEX U\n1 _ZWG_STATUS living\n" in text
 
@@ -225,7 +253,7 @@ def test_gedcom_export_marks_somebody_living():
 def test_gedcom_export_records_the_death_of_somebody_deceased_without_a_death_fact():
     josef = PersonFactory(given_names="", surname="", living_status=Person.LivingStatus.DECEASED)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"0 @I{josef.pk}@ INDI\n1 SEX U\n1 DEAT Y\n" in text
 
@@ -237,7 +265,7 @@ def test_gedcom_export_adds_no_death_to_one_an_import_kept_raw():
         gedcom_raw=[{"tag": "DEAT", "children": [{"tag": "DATE", "value": "im Krieg"}]}],
     )
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert "DEAT Y" not in text
 
@@ -246,7 +274,7 @@ def test_gedcom_export_adds_no_death_to_one_an_import_kept_raw():
 def test_gedcom_export_adds_no_second_death_to_a_recorded_one():
     FactFactory(kind=Fact.Kind.DEATH, person__living_status=Person.LivingStatus.DECEASED)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert "DEAT Y" not in text
 
@@ -255,7 +283,7 @@ def test_gedcom_export_adds_no_second_death_to_a_recorded_one():
 def test_gedcom_export_points_both_partners_at_their_family():
     partnership = PartnershipFactory(kind=Partnership.Kind.UNKNOWN)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert text.count(f"1 FAMS @F{partnership.pk}@\n") == 2
 
@@ -265,7 +293,7 @@ def test_gedcom_export_writes_a_couple_with_the_woman_as_wife():
     partnership = PartnershipFactory(person_a__sex=Person.Sex.FEMALE, person_b__sex=Person.Sex.MALE)
     FactFactory(person=None, partnership=partnership, kind=Fact.Kind.MARRIAGE)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert (
         f"0 @F{partnership.pk}@ FAM\n1 HUSB @I{partnership.person_b_id}@\n1 WIFE @I{partnership.person_a_id}@\n"
@@ -277,7 +305,7 @@ def test_gedcom_export_writes_a_couple_with_the_woman_as_wife():
 def test_gedcom_export_keeps_the_order_of_a_couple_of_two_women():
     partnership = PartnershipFactory(person_a__sex=Person.Sex.FEMALE, person_b__sex=Person.Sex.FEMALE)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"1 HUSB @I{partnership.person_a_id}@\n1 WIFE @I{partnership.person_b_id}@\n" in text
 
@@ -286,7 +314,7 @@ def test_gedcom_export_keeps_the_order_of_a_couple_of_two_women():
 def test_gedcom_export_writes_a_marriage_without_a_date_as_marr_y():
     partnership = PartnershipFactory()
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"1 WIFE @I{partnership.person_b_id}@\n1 MARR Y\n" in text
 
@@ -296,7 +324,7 @@ def test_gedcom_export_writes_a_divorce_on_the_family():
     partnership = PartnershipFactory(kind=Partnership.Kind.UNKNOWN)
     FactFactory(person=None, partnership=partnership, kind=Fact.Kind.DIVORCE)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"1 WIFE @I{partnership.person_b_id}@\n1 DIV\n2 DATE 12 MAR 1931\n" in text
 
@@ -305,7 +333,7 @@ def test_gedcom_export_writes_a_divorce_on_the_family():
 def test_gedcom_export_adds_no_marr_y_to_a_wedding_an_import_kept_raw():
     partnership = PartnershipFactory(gedcom_raw=[{"tag": "MARR", "children": [{"tag": "DATE", "value": "im Krieg"}]}])
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"1 WIFE @I{partnership.person_b_id}@\n1 MARR\n2 DATE im Krieg\n" in text
 
@@ -314,7 +342,7 @@ def test_gedcom_export_adds_no_marr_y_to_a_wedding_an_import_kept_raw():
 def test_gedcom_export_names_a_cohabitation():
     partnership = PartnershipFactory(kind=Partnership.Kind.COHABITATION)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"1 WIFE @I{partnership.person_b_id}@\n1 _ZWG_KIND cohabitation\n" in text
 
@@ -323,7 +351,7 @@ def test_gedcom_export_names_a_cohabitation():
 def test_gedcom_export_writes_nothing_for_a_partnership_of_unknown_kind():
     partnership = PartnershipFactory(kind=Partnership.Kind.UNKNOWN)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"1 WIFE @I{partnership.person_b_id}@\n0 " in text
 
@@ -334,7 +362,7 @@ def test_gedcom_export_puts_a_child_into_the_family_of_its_partnership():
     link = ParentChildFactory(parent=partnership.person_a, partnership=partnership)
     ParentChildFactory(parent=partnership.person_b, child=link.child, partnership=partnership)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"1 CHIL @I{link.child_id}@\n" in text
     assert f"1 FAMC @F{partnership.pk}@\n2 PEDI birth\n" in text
@@ -346,7 +374,7 @@ def test_gedcom_export_tells_apart_two_parents_of_different_pedigree():
     link = ParentChildFactory(parent=partnership.person_a, partnership=partnership, pedigree="adopted")
     ParentChildFactory(parent=partnership.person_b, child=link.child, partnership=partnership)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"1 CHIL @I{link.child_id}@\n2 _FREL adopted\n2 _MREL birth\n" in text
     assert f"1 FAMC @F{partnership.pk}@\n0 " in text
@@ -356,7 +384,7 @@ def test_gedcom_export_tells_apart_two_parents_of_different_pedigree():
 def test_gedcom_export_writes_no_pedi_for_an_unknown_pedigree():
     link = ParentChildFactory(pedigree=ParentChild.Pedigree.UNKNOWN)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"1 FAMC @FP{link.parent_id}@\n0 " in text
 
@@ -365,7 +393,7 @@ def test_gedcom_export_writes_no_pedi_for_an_unknown_pedigree():
 def test_gedcom_export_gives_a_mother_without_partnership_a_family_of_her_own():
     link = ParentChildFactory(parent__sex=Person.Sex.FEMALE)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"0 @FP{link.parent_id}@ FAM\n1 WIFE @I{link.parent_id}@\n1 CHIL @I{link.child_id}@\n" in text
     assert f"1 FAMS @FP{link.parent_id}@\n" in text
@@ -375,7 +403,7 @@ def test_gedcom_export_gives_a_mother_without_partnership_a_family_of_her_own():
 def test_gedcom_export_gives_a_father_without_partnership_a_family_of_his_own():
     link = ParentChildFactory(parent__sex=Person.Sex.MALE)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"0 @FP{link.parent_id}@ FAM\n1 HUSB @I{link.parent_id}@\n" in text
 
@@ -384,7 +412,7 @@ def test_gedcom_export_gives_a_father_without_partnership_a_family_of_his_own():
 def test_gedcom_export_writes_siblings_without_known_parents_as_a_family_without_parents():
     pair = SiblingPairFactory()
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"0 @FS{pair.pk}@ FAM\n1 CHIL @I{pair.person_a_id}@\n1 CHIL @I{pair.person_b_id}@\n" in text
     assert f"1 FAMC @FS{pair.pk}@\n" in text
@@ -395,7 +423,7 @@ def test_gedcom_export_writes_a_source_with_its_files():
     source = SourceFactory(title="Taufbuch Mariazell", description="Pfarramt Mariazell\nBand 3")
     source_file = SourceFileFactory(source=source, file=f"sources/{source.pk}/7.pdf")
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert (
         f"0 @S{source.pk}@ SOUR\n1 TITL Taufbuch Mariazell\n1 TEXT Pfarramt Mariazell\n2 CONT Band 3\n"
@@ -407,7 +435,7 @@ def test_gedcom_export_writes_a_source_with_its_files():
 def test_gedcom_export_writes_nothing_for_a_source_of_other_kind():
     source = SourceFactory(title="Brief", kind=Source.Kind.OTHER)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"0 @S{source.pk}@ SOUR\n1 TITL Brief\n0 " in text
 
@@ -417,7 +445,7 @@ def test_gedcom_export_points_at_the_sources_filed_with_a_person():
     lena = PersonFactory(given_names="", surname="")
     source = SourceFactory(people=[lena])
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"0 @I{lena.pk}@ INDI\n1 SEX U\n1 SOUR @S{source.pk}@\n" in text
 
@@ -427,7 +455,7 @@ def test_gedcom_export_writes_the_notes_of_a_person_with_what_an_import_kept_of_
     lena = PersonFactory(given_names="", surname="")
     NoteFactory(person=lena, text="Zwei Jahre in Amerika?\nIm Passagierregister suchen.", gedcom_raw=RAW)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert (
         f"0 @I{lena.pk}@ INDI\n1 SEX U\n1 NOTE Zwei Jahre in Amerika?\n2 CONT Im Passagierregister suchen.\n"
@@ -439,7 +467,7 @@ def test_gedcom_export_writes_the_notes_of_a_person_with_what_an_import_kept_of_
 def test_gedcom_export_writes_a_photo_with_what_it_shows_and_when():
     photo = PhotoFactory(description="Hochzeit am Hof", about_1950=True)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert (
         f"0 @O{photo.pk}@ OBJE\n1 FILE {photo.file.name}\n2 FORM jpg\n2 TITL Hochzeit am Hof\n1 _DATE ABT 1950\n"
@@ -450,7 +478,7 @@ def test_gedcom_export_writes_a_photo_with_what_it_shows_and_when():
 def test_gedcom_export_writes_a_photo_nobody_described():
     photo = PhotoFactory()
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"0 @O{photo.pk}@ OBJE\n1 FILE {photo.file.name}\n2 FORM jpg\n0 " in text
 
@@ -460,7 +488,7 @@ def test_gedcom_export_points_at_the_photos_of_a_person_and_their_portrait():
     portrait = PhotoPersonFactory(person__given_names="", person__surname="", is_portrait=True)
     group_photo = PhotoPersonFactory(person=portrait.person)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"1 OBJE @O{portrait.photo_id}@\n2 _PRIM Y\n1 OBJE @O{group_photo.photo_id}@\n" in text
 
@@ -469,7 +497,7 @@ def test_gedcom_export_points_at_the_photos_of_a_person_and_their_portrait():
 def test_gedcom_export_writes_back_what_an_import_kept_of_a_person():
     lena = PersonFactory(given_names="", surname="", gedcom_raw=RAW)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"0 @I{lena.pk}@ INDI\n1 SEX U\n1 _UID 4F2A\n" in text
 
@@ -480,7 +508,7 @@ def test_gedcom_export_writes_back_what_an_import_kept_of_a_fact_and_its_citatio
         fact__as_value=True, fact__gedcom_raw=RAW, page="", gedcom_raw=[{"tag": "QUAY", "value": "3"}]
     )
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"1 OCCU Uhrmacher\n2 SOUR @S{citation.source_id}@\n3 QUAY 3\n2 _UID 4F2A\n" in text
 
@@ -489,7 +517,7 @@ def test_gedcom_export_writes_back_what_an_import_kept_of_a_fact_and_its_citatio
 def test_gedcom_export_writes_back_what_an_import_kept_of_a_birth():
     FactFactory(gedcom_raw=RAW)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert "1 BIRT\n2 DATE 12 MAR 1931\n2 _UID 4F2A\n" in text
 
@@ -498,7 +526,7 @@ def test_gedcom_export_writes_back_what_an_import_kept_of_a_birth():
 def test_gedcom_export_writes_back_what_an_import_kept_of_a_family():
     partnership = PartnershipFactory(kind=Partnership.Kind.UNKNOWN, gedcom_raw=RAW)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"1 WIFE @I{partnership.person_b_id}@\n1 _UID 4F2A\n" in text
 
@@ -507,7 +535,7 @@ def test_gedcom_export_writes_back_what_an_import_kept_of_a_family():
 def test_gedcom_export_writes_back_what_an_import_kept_of_a_parent_link():
     link = ParentChildFactory(gedcom_raw=RAW)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"1 FAMC @FP{link.parent_id}@\n2 PEDI birth\n2 _UID 4F2A\n" in text
 
@@ -516,7 +544,7 @@ def test_gedcom_export_writes_back_what_an_import_kept_of_a_parent_link():
 def test_gedcom_export_writes_back_what_an_import_kept_of_siblings():
     pair = SiblingPairFactory(gedcom_raw=RAW)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"1 CHIL @I{pair.person_b_id}@\n1 _UID 4F2A\n" in text
 
@@ -525,7 +553,7 @@ def test_gedcom_export_writes_back_what_an_import_kept_of_siblings():
 def test_gedcom_export_writes_back_what_an_import_kept_of_a_source():
     source = SourceFactory(title="Brief", kind=Source.Kind.OTHER, gedcom_raw=RAW)
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert f"0 @S{source.pk}@ SOUR\n1 TITL Brief\n1 _UID 4F2A\n" in text
 
@@ -534,6 +562,6 @@ def test_gedcom_export_writes_back_what_an_import_kept_of_a_source():
 def test_gedcom_export_writes_a_birthplace_without_a_birth_date():
     FactFactory(as_value=True, kind=Fact.Kind.BIRTHPLACE, value="Mariazell")
 
-    text = gedcom_export()
+    text = gedcom_export(tree_id=TreeFactory().pk)
 
     assert "1 BIRT\n2 PLAC Mariazell\n" in text

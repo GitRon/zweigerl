@@ -47,5 +47,7 @@ class SiblingPair(ValidateConstraintsOnSaveMixin, GedcomRawMixin):
         """
         if self.person_a_id is None or self.person_b_id is None:
             return
+        if self.person_a.tree_id != self.person_b.tree_id:
+            raise ValidationError("Die beiden gehören zu verschiedenen Stammbäumen.")
         if self.person_a.parent_links.filter(parent__child_links__child=self.person_b_id).exists():
             raise ValidationError("Die beiden haben einen gemeinsamen Elternteil und sind darüber schon Geschwister.")

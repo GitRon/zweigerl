@@ -1,6 +1,6 @@
-<c-common.layout>
+<c-common.layout :title="open_tree.tree.name">
     <div class="flex min-h-screen max-lg:flex-col">
-        <c-person.sidebar :person_list="person_list" :loose_people="loose_people" :last_backup="last_backup" />
+        <c-person.sidebar :open_tree="open_tree" :person_list="person_list" :loose_people="loose_people" :last_backup="last_backup" />
         <main class="relative flex h-screen min-w-0 flex-1">
             <c-tree.canvas :tree="tree" :selection="selection">
                 <form method="post" action="{% url 'common:logout-view' %}">

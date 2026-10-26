@@ -4,6 +4,7 @@ from django.db import IntegrityError
 
 from apps.family_tree.models import GedcomImport
 from apps.family_tree.tests.factories.gedcom_import import GedcomImportFactory
+from apps.family_tree.tests.factories.tree import TreeFactory
 
 
 def test_gedcom_import_str_is_its_name():
@@ -19,4 +20,4 @@ def test_gedcom_import_refuses_a_missing_name_on_save():
 @pytest.mark.django_db
 def test_gedcom_import_refuses_a_missing_name_in_the_database():
     with pytest.raises(IntegrityError, match="gedcomimport_has_name"):
-        GedcomImport.objects.bulk_create([GedcomImportFactory.build(name="")])
+        GedcomImport.objects.bulk_create([GedcomImportFactory.build(tree=TreeFactory(), name="")])

@@ -4,6 +4,7 @@ from django.db import IntegrityError
 
 from apps.family_tree.models import Source
 from apps.family_tree.tests.factories.source import SourceFactory
+from apps.family_tree.tests.factories.tree import TreeFactory
 
 
 def test_source_str_is_its_title():
@@ -19,7 +20,7 @@ def test_source_refuses_a_missing_title_on_save():
 @pytest.mark.django_db
 def test_source_refuses_a_missing_title_in_the_database():
     with pytest.raises(IntegrityError, match="source_has_title"):
-        Source.objects.bulk_create([SourceFactory.build(title="")])
+        Source.objects.bulk_create([SourceFactory.build(tree=TreeFactory(), title="")])
 
 
 @pytest.mark.django_db
@@ -31,4 +32,4 @@ def test_source_refuses_an_unknown_kind_on_save():
 @pytest.mark.django_db
 def test_source_refuses_an_unknown_kind_in_the_database():
     with pytest.raises(IntegrityError, match="source_kind_valid"):
-        Source.objects.bulk_create([SourceFactory.build(kind="rumour")])
+        Source.objects.bulk_create([SourceFactory.build(tree=TreeFactory(), kind="rumour")])

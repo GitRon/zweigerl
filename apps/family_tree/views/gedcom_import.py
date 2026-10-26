@@ -9,16 +9,19 @@ from django_cotton import render_component
 from apps.common.toasts import toast_session, toast_sse
 from apps.family_tree.actions.gedcom_import import ImportRefusedError, import_gedcom
 from apps.family_tree.domain.gedcom_preview import Preview, UnreadableGedcomError, preview_file
+from apps.family_tree.models import Tree
 
 
 @require_GET
 @datastar_response
-def gedcom_import_dialog_view(request: HttpRequest):
+def gedcom_import_dialog_view(request: HttpRequest, tree_pk: int):
     """
-    The dialog behind "GEDCOM importieren" on the settings page (#25), asking for the file.
+    The dialog behind "GEDCOM importieren" on the settings page of a tree (#25), asking for the file.
     """
     yield ServerSentEventGenerator.patch_elements(
-        render_component(request, "gedcom.import-dialog"), mode=ElementPatchMode.APPEND, selector="body"
+        render_component(request, "gedcom.import-dialog", tree_id=tree_pk),
+        mode=ElementPatchMode.APPEND,
+        selector="body",
     )
 
 
@@ -47,11 +50,11 @@ def gedcom_preview_view(request: HttpRequest):
 
 @require_POST
 @datastar_response
-def gedcom_import_view(request: HttpRequest):
+def gedcom_import_view(request: HttpRequest, tree_pk: int):
     """
-    "Importieren" in the dialog (#25): the same import as "manage.py import_gedcom", from the file the preview
-    was read from - the browser sends it again, so nothing waits on disk in between. Leads to the tree, which
-    now has everybody in it. A refusal leaves the dialog open and says why.
+    "Importieren" in the dialog (#25): the same import as "manage.py import_gedcom", into the tree whose settings it
+    was opened from, from the file the preview was read from - the browser sends it again, so nothing waits on disk
+    in between. Leads to the tree, which now has everybody in it. A refusal leaves the dialog open and says why.
     """
     file = request.FILES.get("file")
     if file is None:
@@ -59,13 +62,16 @@ def gedcom_import_view(request: HttpRequest):
         return
 
     try:
-        result = import_gedcom(file=file, name=request.POST.get("name", ""))
+        result = import_gedcom(tree_id=tree_pk, file=file, name=request.POST.get("name", ""))
+    except Tree.DoesNotExist:
+        yield toast_sse(request=request, text="Diesen Stammbaum gibt es nicht mehr.", style="error")
+        return
     except ImportRefusedError as error:
         yield toast_sse(request=request, text=str(error), style="error")
         return
 
     toast_session(request=request, text=f"Passt. „{result.gedcom_import.name}“ ist importiert.", style="success")
-    yield ServerSentEventGenerator.redirect(reverse("family_tree:start-view"))
+    yield ServerSentEventGenerator.redirect(reverse("family_tree:tree-view", kwargs={"tree_pk": tree_pk}))
 
 
 def _preview(*, request: HttpRequest, preview: Preview | None):

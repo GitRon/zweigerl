@@ -11,15 +11,16 @@ from apps.common.toasts import toast_sse
 from apps.family_tree.actions.person import change_name_and_status
 from apps.family_tree.domain.layout import CARD_HEIGHT, CARD_WIDTH
 from apps.family_tree.models import Person
-from apps.family_tree.readers.backup import last_backup
-from apps.family_tree.readers.person import loose_people, person_card, person_list
+from apps.family_tree.readers.person import person_card
 from apps.family_tree.readers.tree import tree, tree_card
+from apps.family_tree.readers.trees import open_tree
 from apps.family_tree.views.person_search import sidebar_events
+from apps.family_tree.views.start import sidebar_context
 
 
 def person_view(request: HttpRequest, pk: int) -> HttpResponse:
     """
-    A person's own address (#13): a browser loading it gets the start page with their card open beside the tree,
+    A person's own address (#13): a browser loading it gets the page of their tree with their card open beside it,
     a click in the tree only the card, patched in, with the address bar moved along - so a reload or a bookmark
     opens the same card again.
     """
@@ -35,14 +36,13 @@ def person_view(request: HttpRequest, pk: int) -> HttpResponse:
             ]
         )
 
+    tree_id = card.entry.person.tree_id
     return render(
         request,
         "family_tree/start.html",
         {
-            "person_list": person_list(search=""),
-            "loose_people": loose_people(),
-            "last_backup": last_backup(),
-            "tree": tree(),
+            **sidebar_context(opened=open_tree(pk=tree_id)),
+            "tree": tree(tree_id=tree_id),
             "card": card,
             "selection": pk,
         },
@@ -82,7 +82,7 @@ def person_name_view(request: HttpRequest, pk: int):
     card = person_card(pk=pk)
     yield ServerSentEventGenerator.patch_elements(render_component(request, "person.card", card=card))
     yield ServerSentEventGenerator.patch_signals({"editing": 0})
-    yield from sidebar_events(request, search=request.POST.get("search", "").strip())
+    yield from sidebar_events(request, tree_id=card.entry.person.tree_id, search=request.POST.get("search", "").strip())
     if (in_tree := tree_card(pk=pk)) is not None:
         yield ServerSentEventGenerator.patch_elements(
             render_component(request, "tree.card", card=in_tree, width=CARD_WIDTH, height=CARD_HEIGHT)

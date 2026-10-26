@@ -12,7 +12,7 @@
             <p>{{ name }} ist die Ausgangsperson, um sie herum steht der ganze Baum. Wähl erst eine andere Ausgangsperson, dann lässt sich {{ name }} löschen.</p>
             <div class="flex flex-wrap justify-end gap-3">
                 <c-common.button data-on:click="el.closest('dialog').close()">Abbrechen</c-common.button>
-                <c-common.button variant="primary" href="{% url 'family_tree:tree-settings-view' %}">Andere Ausgangsperson wählen…</c-common.button>
+                <c-common.button variant="primary" href="{% url 'family_tree:tree-settings-view' tree_pk=preview.entry.person.tree_id %}">Andere Ausgangsperson wählen…</c-common.button>
             </div>
         </div>
     {% else %}

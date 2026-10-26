@@ -7,6 +7,7 @@ docs/patterns/family.md.
 from apps.family_tree.models.citation import Citation
 from apps.family_tree.models.fact import Fact
 from apps.family_tree.models.gedcom_import import GedcomImport
+from apps.family_tree.models.installation_settings import InstallationSettings
 from apps.family_tree.models.note import Note
 from apps.family_tree.models.parent_child import ParentChild
 from apps.family_tree.models.partnership import Partnership
@@ -15,12 +16,13 @@ from apps.family_tree.models.photo import Photo, PhotoPerson
 from apps.family_tree.models.sibling_pair import SiblingPair
 from apps.family_tree.models.source import Source
 from apps.family_tree.models.source_file import SourceFile
-from apps.family_tree.models.tree_settings import TreeSettings
+from apps.family_tree.models.tree import Tree
 
 __all__ = [
     "Citation",
     "Fact",
     "GedcomImport",
+    "InstallationSettings",
     "Note",
     "ParentChild",
     "Partnership",
@@ -30,5 +32,5 @@ __all__ = [
     "SiblingPair",
     "Source",
     "SourceFile",
-    "TreeSettings",
+    "Tree",
 ]

@@ -1,15 +1,17 @@
-<c-vars person_list loose_people last_backup />
-{# The sidebar beside the tree: the word mark, the search and every person (#10). The search field binds #}
+<c-vars open_tree person_list loose_people last_backup />
+{# The sidebar beside the tree: the word mark, which tree is open with the way to the others (#34), the #}
+{# search and every person of the tree (#10). The search field binds #}
 {# "$search", and the server answers each pause in typing with the list patched anew; its cross empties it #}
 {# and brings the whole list back (#96). "Person hinzufügen" asks #}
 {# for somebody connected to nobody yet (#18). Below the list wait the "Lose Zweigerl" (#19), at the bottom #}
 {# when the last backup was (#33). #}
 <aside class="sticky top-0 flex h-screen w-80 shrink-0 flex-col gap-4 border-r border-card-edge px-4 py-6 max-lg:static max-lg:h-auto max-lg:w-full max-lg:border-r-0 max-lg:border-b" data-signals="{search: ''}">
     <c-common.wordmark class="self-start text-4xl" />
-    <c-common.search-field bind="search" label="Personen suchen" url="{% url 'family_tree:person-search-view' %}" />
-    <c-common.button class="self-start" data-on:click="@get('{% url 'family_tree:new-person-view' %}')">Person hinzufügen</c-common.button>
+    <c-tree.switcher :open_tree="open_tree" />
+    <c-common.search-field bind="search" label="Personen suchen" url="{% url 'family_tree:person-search-view' tree_pk=open_tree.tree.pk %}" />
+    <c-common.button class="self-start" data-on:click="@get('{% url 'family_tree:new-person-view' tree_pk=open_tree.tree.pk %}')">Person hinzufügen</c-common.button>
     <c-person.list :person_list="person_list" />
     <c-person.loose :loose_people="loose_people" />
-    <a href="{% url 'family_tree:tree-settings-view' %}" class="self-start">Einstellungen</a>
-    <c-backup.status :last_backup="last_backup" />
+    <a href="{% url 'family_tree:tree-settings-view' tree_pk=open_tree.tree.pk %}" class="self-start">Einstellungen</a>
+    <c-backup.status :last_backup="last_backup" :tree_id="open_tree.tree.pk" />
 </aside>

@@ -170,7 +170,7 @@ still hand out under its old URL. The directory `sources/<id>/` or `photos/<id>/
 ## Backups
 
 **`manage.py backup` and "Jetzt sichern" on the settings page write one consistent copy of everything a person
-entered into a new folder** (#27, #33), in the backup folder of the settings - `TreeSettings.backup_dir` - or, for
+entered into a new folder** (#27, #33), in the backup folder of the settings - `InstallationSettings.backup_dir` - or, for
 the command, in the one `--target` names, an external disk for instance:
 
 ```
@@ -178,7 +178,9 @@ the command, in the one `--target` names, an external disk for instance:
 └── 2026-10-19_143012/       # local time, to the second
     ├── zweigerl.sqlite3     # the database, through VACUUM INTO
     ├── zweigerl.sql         # the same state as SQL text, readable without SQLite
-    ├── zweigerl.ged         # the GEDCOM export of everybody, see gedcom.md
+    ├── gedcom/              # the GEDCOM export of each tree, see gedcom.md
+    │   ├── 1-familie-huber.ged    # "<id>-<name>", so two trees never share a file (#34)
+    │   └── 2-familie-berger.ged
     └── media/               # the media directory as it is
 ```
 
@@ -199,7 +201,7 @@ the command, in the one `--target` names, an external disk for instance:
   GEDCOM text from its caller, since an action does not call a reader, and has to run outside a transaction:
   SQLite refuses `VACUUM` inside one. The button runs it within the request.
 - **"Zuletzt gesichert" is the moment of the last finished backup**, wherever it went: `create_backup` stores
-  it as `TreeSettings.last_backup_at` once the folder has its final name, so a half-written one never counts
+  it as `InstallationSettings.last_backup_at` once the folder has its final name, so a half-written one never counts
   and one on a `--target` disk does. The sidebar says it in local calendar days - "heute", "gestern", "vor 3
   Tagen", "noch nie" - and from seven days on, or when there has never been one, adds a `brick` label
   "Sicherung fällig" leading to the button. It is read from the database, not from the folder, so a page

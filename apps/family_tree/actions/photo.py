@@ -34,7 +34,7 @@ def add_photos(*, person_id: int, files: Iterable[UploadedFile]) -> list[Photo]:
             has_portrait = person.photo_links.filter(is_portrait=True).exists()
             for uploaded_file in files:
                 # The row comes first, so its id can name the file; see docs/patterns/data-storage.md.
-                photo = Photo.objects.create()
+                photo = Photo.objects.create(tree_id=person.tree_id)
                 photo.file.name = store_upload(uploaded_file=uploaded_file, name=photo.storage_name)
                 stored.append(photo)
                 photo.set_date(date=_date_taken(name=photo.file.name))

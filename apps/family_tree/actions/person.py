@@ -5,7 +5,7 @@ from django.db import models, transaction
 from django.db.models import Q
 from django.utils import timezone
 
-from apps.family_tree.models import Fact, ParentChild, Partnership, Person, SiblingPair, TreeSettings
+from apps.family_tree.models import Fact, ParentChild, Partnership, Person, SiblingPair, Tree
 
 
 class Relation(models.TextChoices):
@@ -16,19 +16,22 @@ class Relation(models.TextChoices):
     SIBLING = "sibling", "Geschwister"
 
 
-def create_person(*, given_names: str, surname: str, sex: str, living_status: str) -> Person:
+def create_person(*, tree_id: int, given_names: str, surname: str, sex: str, living_status: str) -> Person:
     """
-    Adds a person to the tree without connecting them to anybody (#18). The first person of an empty tree becomes
-    the home person, so the tree has someone to be laid out around from the start. An invalid "sex" or
-    "living_status" is refused with the constraint's "ValidationError".
+    Adds a person to the tree "tree_id" without connecting them to anybody (#18). The first person of an empty tree
+    becomes its home person, so the tree has someone to be laid out around from the start. Raises
+    "Tree.DoesNotExist" for a tree that is not there, and the constraint's "ValidationError" for an invalid "sex"
+    or "living_status".
     """
     with transaction.atomic():
-        first = not Person.objects.exists()
+        tree = Tree.objects.get(pk=tree_id)
+        first = not tree.people.exists()
         person = Person.objects.create(
-            given_names=given_names.strip(), surname=surname.strip(), sex=sex, living_status=living_status
+            tree=tree, given_names=given_names.strip(), surname=surname.strip(), sex=sex, living_status=living_status
         )
         if first:
-            TreeSettings.objects.update_or_create(pk=TreeSettings.ONLY_ROW, defaults={"home_person": person})
+            tree.home_person = person
+            tree.save()
     return person
 
 
@@ -44,14 +47,16 @@ def add_relative(
     pair_with_parent: bool = False,
 ) -> Person:
     """
-    Adds a person as the parent, partner, child or sibling of "person_id" and connects the two (#18), the way
-    "link_relative" connects somebody already in the tree - see there for "partnership_id" and
+    Adds a person to the tree of "person_id" as their parent, partner, child or sibling and connects the two
+    (#18), the way "link_relative" connects somebody already in the tree - see there for "partnership_id" and
     "pair_with_parent". Raises what "link_relative" raises; nothing is saved then.
     """
     relation = Relation(relation)
     with transaction.atomic():
         person = Person.objects.get(pk=person_id)
-        relative = create_person(given_names=given_names, surname=surname, sex=sex, living_status=living_status)
+        relative = create_person(
+            tree_id=person.tree_id, given_names=given_names, surname=surname, sex=sex, living_status=living_status
+        )
         _connect(
             person=person,
             relative=relative,
@@ -83,8 +88,8 @@ def link_relative(
 
     Raises "Person.DoesNotExist" or "Partnership.DoesNotExist" for somebody or a couple no longer in the tree,
     "ValueError" for a relation that is none of "Relation", and "ValidationError" for a link the family's rules
-    refuse: somebody as their own relative or ancestor, a third birth parent, a link already there. Nothing is
-    saved then.
+    refuse: somebody as their own relative or ancestor, a third birth parent, a link already there, somebody of
+    another tree (#34). Nothing is saved then.
     """
     relation = Relation(relation)
     with transaction.atomic():
@@ -92,6 +97,8 @@ def link_relative(
         relative = Person.objects.get(pk=relative_id)
         if relative.pk == person.pk:
             raise ValidationError("Niemand ist sein eigener Verwandter.")
+        if relative.tree_id != person.tree_id:
+            raise ValidationError("Die beiden gehören zu verschiedenen Stammbäumen.")
         _connect(
             person=person,
             relative=relative,
@@ -233,7 +240,7 @@ def delete_person(*, person_id: int) -> Person:
     """
     with transaction.atomic():
         person = Person.objects.get(pk=person_id)
-        if TreeSettings.objects.filter(home_person=person).exists():
+        if Tree.objects.filter(home_person=person).exists():
             raise ValidationError(
                 "Das ist die Ausgangsperson. Wähl erst eine andere Ausgangsperson, dann lässt sie sich löschen."
             )

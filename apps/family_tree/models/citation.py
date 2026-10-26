@@ -1,4 +1,5 @@
 from ambient_toolbox.mixins.validation import ValidateConstraintsOnSaveMixin
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from apps.family_tree.models.gedcom import GedcomRawMixin
@@ -38,3 +39,13 @@ class Citation(ValidateConstraintsOnSaveMixin, GedcomRawMixin):
 
     def __str__(self) -> str:
         return f"{self.fact} - {self.source}"
+
+    def clean(self) -> None:
+        """
+        The rule across rows no constraint can hold: a fact cites only the sources of its own tree (#34).
+        """
+        if self.fact_id is None or self.source_id is None:
+            return
+        owner = self.fact.person or self.fact.partnership.person_a
+        if owner.tree_id != self.source.tree_id:
+            raise ValidationError("Die Quelle gehört zu einem anderen Stammbaum als die Angabe.")

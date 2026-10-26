@@ -1,0 +1,25 @@
+<c-vars tree />
+{# The tree itself on its settings page (#34): its name, posted as a form, and a new tree beside it - for the #}
+{# family of one's partner, say - which opens empty once it is there. Both answer a refusal with a toast and #}
+{# keep what was entered; a success loads the page anew, since the name stands in the sidebar too. #}
+<section id="tree" class="flex max-w-xl flex-col gap-3">
+    <h2 class="text-2xl">Stammbaum</h2>
+    <form class="flex items-end gap-3 max-lg:flex-col max-lg:items-stretch" data-on:submit="@post('{% url 'family_tree:rename-tree-view' tree_pk=tree.pk %}', {contentType: 'form'})">
+        {% csrf_token %}
+        <label class="flex flex-1 flex-col gap-1">
+            <span class="text-sm">Name</span>
+            <input type="text" name="name" value="{{ tree.name }}" required maxlength="100" autocomplete="off" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
+        </label>
+        <c-common.button type="submit">Umbenennen</c-common.button>
+    </form>
+    <h3 class="pt-4 text-xl">Neuer Stammbaum</h3>
+    <p class="text-ink-muted">Ein eigener Baum, etwa für die Familie deines Partners. Er fangt leer an, und was in ihm steht, bleibt von diesem getrennt.</p>
+    <form class="flex items-end gap-3 max-lg:flex-col max-lg:items-stretch" data-on:submit="@post('{% url 'family_tree:create-tree-view' %}', {contentType: 'form'})">
+        {% csrf_token %}
+        <label class="flex flex-1 flex-col gap-1">
+            <span class="text-sm">Name</span>
+            <input type="text" name="name" required maxlength="100" autocomplete="off" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
+        </label>
+        <c-common.button type="submit">Anlegen</c-common.button>
+    </form>
+</section>

@@ -1,6 +1,7 @@
 import datetime
 
 from ambient_toolbox.mixins.validation import ValidateConstraintsOnSaveMixin
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from apps.family_tree.domain.dates import DateKind, Precision, UncertainDate, sort_date
@@ -25,6 +26,9 @@ class Photo(ValidateConstraintsOnSaveMixin, models.Model):
         MONTH = Precision.MONTH, "Monat"
         YEAR = Precision.YEAR, "Jahr"
 
+    tree = models.ForeignKey(
+        "family_tree.Tree", verbose_name="Stammbaum", on_delete=models.PROTECT, related_name="photos"
+    )
     file = models.FileField("Datei", max_length=200)
     description = models.TextField("Beschreibung", blank=True)
     # When it was taken, as the uncertain date of docs/patterns/evidence.md - "um 1950" is what most old
@@ -151,3 +155,10 @@ class PhotoPerson(ValidateConstraintsOnSaveMixin, models.Model):
 
     def __str__(self) -> str:
         return f"{self.person} auf {self.photo}"
+
+    def clean(self) -> None:
+        """
+        The rule across rows no constraint can hold: the person is of the photo's tree (#34).
+        """
+        if self.photo_id is not None and self.person_id is not None and self.photo.tree_id != self.person.tree_id:
+            raise ValidationError("Das Foto und die Person gehören zu verschiedenen Stammbäumen.")

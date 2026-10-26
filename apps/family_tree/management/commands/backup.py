@@ -4,11 +4,11 @@ from django.core.management.base import BaseCommand, CommandError, CommandParser
 
 from apps.family_tree.actions.backup import BackupRefusedError, create_backup
 from apps.family_tree.domain.backup import format_size
-from apps.family_tree.readers.gedcom import gedcom_export
+from apps.family_tree.readers.gedcom import gedcom_exports
 
 
 class Command(BaseCommand):
-    help = "Sichert Datenbank, GEDCOM und Medien in einen Ordner mit Zeitstempel (#27)."
+    help = "Sichert Datenbank, das GEDCOM jedes Stammbaums und Medien in einen Ordner mit Zeitstempel (#27)."
 
     def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument(
@@ -17,7 +17,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options) -> None:
         try:
-            backup = create_backup(gedcom=gedcom_export(), target=options["target"])
+            backup = create_backup(gedcoms=gedcom_exports(), target=options["target"])
         except BackupRefusedError as error:
             raise CommandError(str(error)) from error
 

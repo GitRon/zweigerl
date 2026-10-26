@@ -1,11 +1,11 @@
-<c-vars person_list home_person />
+<c-vars tree_id person_list home_person />
 {# The choice of the home person (#20): every person in the sidebar's order, the chosen one selected. #}
 {# Submitting posts the form, and the server answers with a toast - the form already shows the choice. #}
 <section id="home-person" class="flex max-w-xl flex-col gap-3">
     <h2 class="text-2xl">Ausgangsperson</h2>
     <p class="text-ink-muted">Von ihr aus zeigt der Baum die Generationen und sagt, wie jemand verwandt ist.</p>
     {% if person_list.entries %}
-        <form class="flex items-end gap-3 max-lg:flex-col max-lg:items-stretch" data-on:submit="@post('{% url 'family_tree:home-person-view' %}', {contentType: 'form'})">
+        <form class="flex items-end gap-3 max-lg:flex-col max-lg:items-stretch" data-on:submit="@post('{% url 'family_tree:home-person-view' tree_pk=tree_id %}', {contentType: 'form'})">
             {% csrf_token %}
             <label class="flex flex-1 flex-col gap-1">
                 <span class="text-sm">Person</span>

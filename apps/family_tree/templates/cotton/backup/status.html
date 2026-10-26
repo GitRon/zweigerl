@@ -1,10 +1,11 @@
-<c-vars last_backup />
+<c-vars last_backup tree_id />
 {# "Zuletzt gesichert" at the bottom of the sidebar (#33), from "readers.backup.last_backup". A backup that is #}
-{# due - never made, or a week old - says so with a label that wants attention and leads to the button. #}
+{# due - never made, or a week old - says so with a label that wants attention and leads to the button, #}
+{# on the settings page of the tree "tree_id" - a backup holds every tree, the button is on each. #}
 {# Patched after the button on the settings page made one. #}
 <p id="backup-status" class="flex flex-wrap items-center gap-2 text-sm text-ink-muted">
     <span>Zuletzt gesichert: {{ last_backup.text }}</span>
     {% if last_backup.overdue %}
-        <a href="{% url 'family_tree:tree-settings-view' %}#backup" class="no-underline"><c-common.label text="Sicherung fällig" tone="brick" /></a>
+        <a href="{% url 'family_tree:tree-settings-view' tree_pk=tree_id %}#backup" class="no-underline"><c-common.label text="Sicherung fällig" tone="brick" /></a>
     {% endif %}
 </p>

@@ -9,6 +9,9 @@ class GedcomImport(ValidateConstraintsOnSaveMixin, models.Model):
     fact without a source of its own stays "unbelegt" - see docs/patterns/evidence.md.
     """
 
+    tree = models.ForeignKey(
+        "family_tree.Tree", verbose_name="Stammbaum", on_delete=models.PROTECT, related_name="imports"
+    )
     name = models.CharField("Name", max_length=100)
     imported_at = models.DateTimeField("Importiert am", auto_now_add=True)
 

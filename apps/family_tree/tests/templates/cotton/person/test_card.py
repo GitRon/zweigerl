@@ -23,9 +23,12 @@ from apps.family_tree.tests.factories.person import PersonFactory
 from apps.family_tree.tests.factories.photo import PhotoFactory
 from apps.family_tree.tests.factories.photo_person import PhotoPersonFactory
 from apps.family_tree.tests.factories.source import SourceFactory
+from apps.family_tree.tests.factories.tree import TreeFactory
 
 GERTI = PersonListEntry(
-    person=PersonFactory.build(pk=7, given_names="Gertrud", call_name="Gerti", sex="F", living_status="living"),
+    person=PersonFactory.build(
+        pk=7, tree=TreeFactory.build(pk=2), given_names="Gertrud", call_name="Gerti", sex="F", living_status="living"
+    ),
     name="Gerti Huber",
     initials="GH",
     lifespan="* 1958",
@@ -81,11 +84,11 @@ def test_card_shows_while_the_person_is_selected():
     assert parse(html).find(id="person-card")["data-show"] == "$selection == 7"
 
 
-def test_card_moves_the_address_back_to_the_start_page_when_closed():
+def test_card_moves_the_address_back_to_the_page_of_the_tree_when_closed():
     html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
 
     assert parse(html).find(id="person-card")["data-effect"] == (
-        "$selection == 0 && location.pathname != '/' && history.pushState(null, '', '/')"
+        "$selection == 0 && location.pathname != '/trees/2/' && history.pushState(null, '', '/trees/2/')"
     )
 
 

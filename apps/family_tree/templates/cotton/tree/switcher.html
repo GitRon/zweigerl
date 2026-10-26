@@ -1,0 +1,20 @@
+<c-vars open_tree />
+{# Which tree is open (#34), under the word mark in the sidebar: its name, and once there are others, the #}
+{# links to them, folded in a <details>. An installation with one tree shows its name alone. #}
+<nav id="tree-switcher" aria-label="Stammbaum" class="flex flex-col gap-1">
+    {% if open_tree.others %}
+        <details>
+            <summary class="flex min-h-11 cursor-pointer items-baseline gap-2">
+                <span class="font-serif text-xl">{{ open_tree.tree.name }}</span>
+                <span class="text-sm text-ink-muted">wechseln</span>
+            </summary>
+            <ul class="flex flex-col gap-2 border-l border-card-edge py-1 pl-3">
+                {% for other in open_tree.others %}
+                    <li><a href="{% url 'family_tree:tree-view' tree_pk=other.pk %}">{{ other.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </details>
+    {% else %}
+        <p class="font-serif text-xl">{{ open_tree.tree.name }}</p>
+    {% endif %}
+</nav>

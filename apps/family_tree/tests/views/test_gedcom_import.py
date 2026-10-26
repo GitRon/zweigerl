@@ -2,8 +2,9 @@ import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 
-from apps.family_tree.models import Person
+from apps.family_tree.models import Person, Tree
 from apps.family_tree.tests.factories.person import PersonFactory
+from apps.family_tree.tests.factories.tree import TreeFactory
 
 DATASTAR = {"Datastar-Request": "true"}
 GEDCOM = b"0 HEAD\n1 SOUR PAF\n0 @I1@ INDI\n1 NAME Lena /Huber/\n0 TRLR\n"
@@ -13,13 +14,21 @@ def _events(response) -> str:
     return b"".join(response.streaming_content).decode()
 
 
+def _import_url(*, tree: Tree) -> str:
+    return reverse("family_tree:gedcom-import-view", kwargs={"tree_pk": tree.pk})
+
+
 def _file(content: bytes = GEDCOM) -> SimpleUploadedFile:
     return SimpleUploadedFile("huber.ged", content, content_type="application/octet-stream")
 
 
 @pytest.mark.django_db
 def test_gedcom_import_dialog_view_appends_the_dialog(admin_client):
-    response = admin_client.get(reverse("family_tree:gedcom-import-dialog-view"), headers=DATASTAR)
+    tree = TreeFactory()
+
+    response = admin_client.get(
+        reverse("family_tree:gedcom-import-dialog-view", kwargs={"tree_pk": tree.pk}), headers=DATASTAR
+    )
 
     body = _events(response)
     assert response.status_code == 200
@@ -53,28 +62,40 @@ def test_gedcom_preview_view_refuses_a_file_that_is_not_gedcom(admin_client):
 
 @pytest.mark.django_db
 def test_gedcom_import_view_imports_and_leads_to_the_tree(admin_client):
-    response = admin_client.post(
-        reverse("family_tree:gedcom-import-view"), {"file": _file(), "name": "PAF Huber"}, headers=DATASTAR
-    )
+    tree = TreeFactory()
+
+    response = admin_client.post(_import_url(tree=tree), {"file": _file(), "name": "PAF Huber"}, headers=DATASTAR)
 
     body = _events(response)
-    assert reverse("family_tree:start-view") in body and Person.objects.get().given_names == "Lena"
+    assert reverse("family_tree:tree-view", kwargs={"tree_pk": tree.pk}) in body
+    assert Person.objects.get(tree=tree).given_names == "Lena"
     assert admin_client.session["_toasts"] == [{"text": "Passt. „PAF Huber“ ist importiert.", "style": "success"}]
 
 
 @pytest.mark.django_db
 def test_gedcom_import_view_asks_for_a_file(admin_client):
-    response = admin_client.post(reverse("family_tree:gedcom-import-view"), {"name": "PAF Huber"}, headers=DATASTAR)
+    response = admin_client.post(_import_url(tree=TreeFactory()), {"name": "PAF Huber"}, headers=DATASTAR)
 
     assert "Such zuerst eine GEDCOM-Datei aus." in _events(response)
 
 
 @pytest.mark.django_db
 def test_gedcom_import_view_answers_a_refusal_with_its_reason(admin_client):
-    PersonFactory()
+    tree = PersonFactory().tree
 
-    response = admin_client.post(
-        reverse("family_tree:gedcom-import-view"), {"file": _file(), "name": "PAF Huber"}, headers=DATASTAR
-    )
+    response = admin_client.post(_import_url(tree=tree), {"file": _file(), "name": "PAF Huber"}, headers=DATASTAR)
 
     assert "nur in einen leeren Stammbaum" in _events(response)
+
+
+@pytest.mark.django_db
+def test_gedcom_import_view_answers_a_tree_that_is_not_there(admin_client):
+    tree = TreeFactory()
+
+    response = admin_client.post(
+        reverse("family_tree:gedcom-import-view", kwargs={"tree_pk": tree.pk + 1}),
+        {"file": _file(), "name": "PAF Huber"},
+        headers=DATASTAR,
+    )
+
+    assert "Diesen Stammbaum gibt es nicht mehr." in _events(response)

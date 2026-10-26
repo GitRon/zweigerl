@@ -5,8 +5,14 @@ from django.urls import reverse
 from apps.common.tests.html import parse, render_component
 from apps.family_tree.readers.person import DeletionPreview, PersonListEntry, RelativeEntry, RelativeGroup
 from apps.family_tree.tests.factories.person import PersonFactory
+from apps.family_tree.tests.factories.tree import TreeFactory
 
-JOHANN = PersonListEntry(person=PersonFactory.build(pk=3), name="Johann Huber", initials="JH", lifespan="* 1931 † 2009")
+JOHANN = PersonListEntry(
+    person=PersonFactory.build(pk=3, tree=TreeFactory.build(pk=2)),
+    name="Johann Huber",
+    initials="JH",
+    lifespan="* 1931 † 2009",
+)
 LENA = PersonListEntry(person=PersonFactory.build(pk=5), name="Lena Huber", initials="LH", lifespan="* 1990")
 FRANZ = PersonListEntry(person=PersonFactory.build(pk=8), name="Franz Huber", initials="FH", lifespan="")
 PREVIEW = DeletionPreview(
@@ -64,7 +70,7 @@ def test_delete_dialog_of_the_home_person_leads_to_choosing_another_one():
 
     assert (page.find("form"), page.find("a", string="Andere Ausgangsperson wählen…")["href"]) == (
         None,
-        reverse("family_tree:tree-settings-view"),
+        reverse("family_tree:tree-settings-view", kwargs={"tree_pk": 2}),
     )
 
 

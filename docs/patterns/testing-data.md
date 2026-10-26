@@ -16,6 +16,13 @@ a recognisable family, it is the invented Familie Huber.
 - Keep shared setup minimal and function-scoped. The more objects a fixture creates, the less isolated the
   tests using it become.
 
+## One tree unless a test names another
+
+`TreeFactory` finds its tree by name rather than making a new one each time, so every person, source, photo and
+import a factory builds lands in the same tree, "Familie Huber", and a test of one family needs to say nothing about
+trees. A test about a second tree names it - `PersonFactory(tree__name="Familie Berger")` - and
+`TreeFactory(home_person=lena)` makes Lena the home person of the tree she is already in (#34).
+
 ## Mandatory relations belong in the factory
 
 A factory has to produce a *valid* domain object. If every row of a model needs another row to make

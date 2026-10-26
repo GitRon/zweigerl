@@ -9,6 +9,7 @@ from apps.family_tree.models import (
     Citation,
     Fact,
     GedcomImport,
+    InstallationSettings,
     Note,
     ParentChild,
     Partnership,
@@ -18,7 +19,7 @@ from apps.family_tree.models import (
     SiblingPair,
     Source,
     SourceFile,
-    TreeSettings,
+    Tree,
 )
 
 # Both pair models are found by either person's name.
@@ -119,24 +120,24 @@ class CitationInline(admin.TabularInline):
 
 @admin.register(Person)
 class PersonAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "call_name", "sex", "living_status")
-    list_filter = ("sex", "living_status")
+    list_display = ("__str__", "call_name", "sex", "living_status", "tree")
+    list_filter = ("tree", "sex", "living_status")
     search_fields = ("given_names", "surname", "call_name")
-    fields = ("given_names", "surname", "call_name", "sex", "living_status", "gedcom_raw")
+    fields = ("tree", "given_names", "surname", "call_name", "sex", "living_status", "gedcom_raw")
     inlines = (FactInline, NoteInline, ParentsInline, ChildrenInline, PartnershipAsAInline, PartnershipAsBInline)
 
     def get_deleted_objects(self, objs, request):
         """
-        The home person is protected by the TreeSettings row, which nobody may delete, so Django would report the
-        PROTECT as a missing permission to delete "Einstellung", next to a link to that row. This says what it is
+        The home person is protected by their tree, which nobody may delete here, so Django would report the
+        PROTECT as a missing permission to delete "Stammbaum", next to a link to that tree. This says what it is
         instead (#19).
         """
         deleted, model_count, perms_needed, protected = super().get_deleted_objects(objs, request)
-        home_ids = set(TreeSettings.objects.exclude(home_person=None).values_list("home_person", flat=True))
+        home_ids = set(Tree.objects.exclude(home_person=None).values_list("home_person", flat=True))
         homes = [obj for obj in objs if obj.pk in home_ids]
         if homes:
-            perms_needed.discard(TreeSettings._meta.verbose_name)
-            settings_row = f"{capfirst(TreeSettings._meta.verbose_name)}:"
+            perms_needed.discard(Tree._meta.verbose_name)
+            settings_row = f"{capfirst(Tree._meta.verbose_name)}:"
             protected = [
                 *(f"{home} ist die Ausgangsperson. Wähl erst eine andere Ausgangsperson." for home in homes),
                 *(item for item in protected if not str(item).startswith(settings_row)),
@@ -174,19 +175,32 @@ class GedcomImportAdmin(admin.ModelAdmin):
     The imports, under their names. The rows they wrote protect them, so one is deleted only with its rows gone.
     """
 
-    list_display = ("name", "imported_at")
+    list_display = ("name", "tree", "imported_at")
+    list_filter = ("tree",)
 
 
-@admin.register(TreeSettings)
-class TreeSettingsAdmin(admin.ModelAdmin):
+@admin.register(Tree)
+class TreeAdmin(admin.ModelAdmin):
+    """
+    The trees (#34). None is deleted here: everything in it would have to go first, which has no way of its own yet.
+    """
+
+    list_display = ("name", "home_person")
+    search_fields = ("name",)
+    autocomplete_fields = ("home_person",)
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(InstallationSettings)
+class InstallationSettingsAdmin(admin.ModelAdmin):
     """
     One row, primary key 1: it can be added while it does not exist and never deleted.
     """
 
-    autocomplete_fields = ("home_person",)
-
     def has_add_permission(self, request):
-        return super().has_add_permission(request) and not TreeSettings.objects.exists()
+        return super().has_add_permission(request) and not InstallationSettings.objects.exists()
 
     def has_delete_permission(self, request, obj=None):
         return False
@@ -232,8 +246,8 @@ class SourceFileInline(admin.TabularInline):
 
 @admin.register(Source)
 class SourceAdmin(admin.ModelAdmin):
-    list_display = ("title", "kind")
-    list_filter = ("kind",)
+    list_display = ("title", "kind", "tree")
+    list_filter = ("tree", "kind")
     search_fields = ("title", "description")
     autocomplete_fields = ("people",)
     inlines = (SourceFileInline,)
@@ -264,10 +278,11 @@ class PhotoAdmin(admin.ModelAdmin):
     card, through "store_upload" (#16, #21).
     """
 
-    list_display = ("__str__", "description", "date_1")
+    list_display = ("__str__", "description", "date_1", "tree")
+    list_filter = ("tree",)
     search_fields = ("description",)
-    fields = ("file", "description", "date_kind", "date_1", "date_2", "precision")
-    readonly_fields = ("file",)
+    fields = ("tree", "file", "description", "date_kind", "date_1", "date_2", "precision")
+    readonly_fields = ("tree", "file")
     inlines = (PhotoPersonInline,)
 
     def has_add_permission(self, request):

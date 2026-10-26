@@ -4,21 +4,22 @@
 and how we know - is an Angabe with its Beleg (#8).** The models follow GEDCOM's INDI and FAM closely
 enough that an import (#22) and an export (#26) map field to field without a translation layer.
 
-One installation holds one tree (several are #34). The models live in `apps/family_tree/models/`, one module
-each.
+One installation holds any number of trees (#34) - one's own family, the family of one's partner - and they share
+nobody, see [Trees](#trees). The models live in `apps/family_tree/models/`, one module each.
 
 ## The models
 
 | Model | Is | GEDCOM |
 |---|---|---|
-| `Person` | `given_names`, `surname`, `call_name` (Rufname), `sex`, `living_status` | `INDI` with `NAME`/`GIVN`/`SURN`, `NICK`, `SEX` |
+| `Tree` | One family tree (#34): its `name` and its `home_person` (Ausgangsperson) | - |
+| `Person` | The `tree` they belong to, `given_names`, `surname`, `call_name` (Rufname), `sex`, `living_status` | `INDI` with `NAME`/`GIVN`/`SURN`, `NICK`, `SEX` |
 | `Partnership` | Two people as a couple, with its `kind`. The through model of `Person.partners`. When they married or divorced are [facts](evidence.md) on it | `FAM` with `HUSB`/`WIFE`; `MARR`, `DIV` |
 | `ParentChild` | One parent and one child, optionally the `partnership` the child belongs to, and the `pedigree` | `CHIL` in a `FAM`, `PEDI` |
 | `SiblingPair` | Two siblings whose shared parents nobody knows | a `FAM` with children and no parents |
-| `TreeSettings` | The tree's settings - one row - holding the `home_person` (Ausgangsperson), the `backup_dir` backups go to (#27) and `last_backup_at`, when the last one was written (#33) | - |
-| `Photo` | A photo (#16): its `file`, a `description` and the uncertain date it was taken, the `people` on it | `OBJE` with `FILE` and `TITL` |
+| `InstallationSettings` | The settings of the installation as a whole - one row - holding the `backup_dir` backups go to (#27) and `last_backup_at`, when the last one was written (#33); a backup holds every tree | - |
+| `Photo` | A photo (#16) of one `tree`: its `file`, a `description` and the uncertain date it was taken, the `people` on it | `OBJE` with `FILE` and `TITL` |
 | `PhotoPerson` | One person on one photo, and whether it is their portrait (`is_portrait`, the Titelbild). The through model of `Photo.people` | `OBJE` under an `INDI`, `_PRIM` |
-| `GedcomImport` | One GEDCOM file read in (#22), its `name` - "PAF Ronny" - and when; the Herkunft of every row it wrote | - |
+| `GedcomImport` | One GEDCOM file read into one `tree` (#22), its `name` - "PAF Ronny" - and when; the Herkunft of every row it wrote | - |
 | `Note` | A note about a person (#23): its `text`, the `author` - the user who wrote it, none for an imported note, which shows its Herkunft instead - `created_at`, and `changed_at`, which is empty until somebody edits it and then makes it "bearbeitet". The Notizen tab of the person card shows them, and anybody logged in writes, changes and deletes them there - `actions.note` (#17) | `NOTE` under an `INDI`, or pointing at a `NOTE` record |
 
 The names are English like all code, close to GEDCOM where it has a word; what a person reads - the
@@ -84,7 +85,9 @@ and a forbidden row ends in a `ValidationError` with the German message below - 
 | Nobody is their own partner, parent or sibling | `partnership_not_self`, `parentchild_not_self`, `siblingpair_not_self` | "Niemand ist sein eigener Partner." |
 | One Partnership and one SiblingPair row per pair, whichever way round | `partnership_once_per_pair`, `siblingpair_once_per_pair` - unique on `Least`/`Greatest` of the two, so which of them is `person_a` means nothing | "Diese beiden sind schon ein Paar." |
 | One ParentChild row per parent and child | `parentchild_once` | "Diese Eltern-Kind-Verbindung gibt es schon." |
-| One row of TreeSettings | `treesettings_single_row`, on `id = 1`; the admin offers no second and no delete | "Es gibt nur eine Zeile Einstellungen." |
+| One row of InstallationSettings | `installationsettings_single_row`, on `id = 1`; the admin offers no second and no delete | "Es gibt nur eine Zeile Einstellungen." |
+| A tree has a name, and no two trees the same | `tree_has_name`, `tree_name_once` | "Einen Stammbaum mit diesem Namen gibt es schon." |
+| A tree with anything in it is not deleted | `on_delete=PROTECT` on the `tree` of Person, Source, Photo and GedcomImport; the admin deletes no tree | - |
 | Somebody is on a photo once, and has at most one portrait | `photoperson_once`, `photoperson_one_portrait` - unique on `person` where `is_portrait` | "Eine Person hat höchstens ein Titelbild." |
 | A photo's date is complete, sorted, and has a second date only as a range - as a fact's | `photo_date_complete`, `photo_sort_date_with_date`, `photo_date_2_only_between` | "Ein Aufnahmedatum braucht seine Art und seine Genauigkeit." |
 | The home person cannot be deleted | `on_delete=PROTECT`, and `actions.person.delete_person` refuses first with a message; the admin says so too (#19) | "Das ist die Ausgangsperson. …" |
@@ -96,9 +99,39 @@ What spans several rows no constraint can hold, so it is in `clean()`, which the
 | A ParentChild's Partnership contains its parent | `ParentChild.clean()` |
 | At most two `birth` parents | `ParentChild.clean()` against the saved rows, and the admin's `ParentsFormSet` for several entered at once |
 | No SiblingPair row for people with a shared parent | `SiblingPair.clean()`, and `ParentChild.clean()` refuses the shared parent while the row is still there |
+| Everything a row connects is of one tree (#34) | `Partnership.clean()`, `ParentChild.clean()`, `SiblingPair.clean()`, `Citation.clean()` (the fact's owner and the source), `PhotoPerson.clean()`, `Tree.clean()` (its home person) |
 
 A name may be empty: GEDCOM allows a person without one, and "the unknown first wife" belongs in the tree.
 `loaddata` writes past `save()`, so the Familie Huber fixture is held by the constraints alone.
+
+## Trees
+
+**Every person, source, photo and import belongs to exactly one tree, and everything else belongs through them**
+(#34): a fact through its person or couple, a citation through its fact, a note through its person, a scan through
+its source. The trees never share anybody - one's partner's family is a tree of its own, not a second set of people
+woven into the first. Copying people from one tree into another and deleting a whole tree are stories of their own.
+
+- **The tree is in the address of every page about it**: `/trees/<id>/` is its tree, `/trees/<id>/settings/` its
+  settings; searching, adding a person, the home person, the export and the import live below it. A person's own
+  address stays `/persons/<id>/`, since the person carries their tree, and it opens the page of that tree. Two tabs
+  on two trees therefore never write into the wrong one.
+- **`/` opens the first tree by name**, and an installation without one asks for its first: "Servus! … Wie soll
+  deiner heißen?"
+- **The sidebar names the open tree** under the word mark, with the others to switch to once there are any
+  (`<c-tree.switcher>`). Its settings page renames it and starts a new one, which opens empty, ready for its first
+  person or a GEDCOM import - `actions.trees.create_tree`, `actions.trees.rename_tree`.
+- **What reads a whole tree takes its id**: `readers.person.person_list`, `loose_people`, `readers.tree.tree`,
+  `readers.relationship.family_graph`, `readers.gedcom.gedcom_export`. What starts from a person takes the person's
+  tree, so the relatives a dialog offers (#89) are never of another tree, and `actions.person.link_relative` refuses
+  somebody of another tree with "Die beiden gehören zu verschiedenen Stammbäumen."
+- **What a source is filed with** - `Source.people` - is written only by the actions, which keep it to the source's
+  tree; the admin's field for it does not check.
+- **The backup holds every tree** (#27, #33), with one GEDCOM file each - see
+  [data storage](data-storage.md#backups). Its folder and when it last ran are the installation's settings, not a
+  tree's.
+
+Migration `0012` puts what an installation already holds into one tree named "Stammbaum", whose home person is the
+one chosen so far; an installation with nothing in it gets no tree.
 
 ## Raw GEDCOM
 
@@ -132,7 +165,8 @@ own card opens again, with the relative among the Verwandte. Both actions write 
 
 A half-sibling is added as a child of the parent they share. Nobody is their own ancestor: no constraint can hold
 that across generations, so both actions refuse such a parent link themselves. `actions.person.create_person` makes
-the first person of an empty tree the home person.
+the first person of an empty tree its home person, whatever the other trees hold, and a relative always joins the
+tree of the person they are added to.
 
 `readers.person.relative_candidates` decides whom the search offers. It leaves out whom the rules would refuse or
 who makes no sense - the person, who already is that to them, a descendant as parent, an ancestor or somebody with
@@ -172,19 +206,19 @@ else:
 
 ## The home person
 
-The Ausgangsperson - the person the tree is laid out around (#11) - is stored as
-`TreeSettings.home_person` and read with `readers.tree_settings.home_person()`, which returns `None` while
-nobody has been chosen; #18 and #19 read it there. It is chosen on the settings page, `/settings/` (#20), and
-saved by `actions.tree_settings.choose_home_person`; the tree and the relationship names follow it on the next
-page they render. Until one is chosen, the tree is laid out around the person entered first, see
+Each tree has its own Ausgangsperson - the person it is laid out around (#11) - stored as `Tree.home_person`
+and read with `readers.trees.home_person(tree_id=…)`, which returns `None` while nobody has been chosen; #18 and
+#19 read it there. It is chosen on the tree's settings page, `/trees/<id>/settings/` (#20), and saved by
+`actions.trees.choose_home_person`, which refuses somebody of another tree; the tree and the relationship names
+follow it on the next page they render. Until one is chosen, the tree is laid out around the person entered first, see
 [tree layout](tree-layout.md).
 
 ## How someone is related to the home person
 
 `domain.relationship.relationship_name(family=…, home_id=…, person_id=…)` names, in German and by the person's
 `sex`, what someone is to the home person: "Urgroßvater", "Großnichte", "Schwägerin", "Cousine 2. Grades". It is
-a pure function over a `FamilyGraph`, which `readers.relationship.family_graph()` loads from the whole tree in
-four queries - so a list names every row from one load (#9).
+a pure function over a `FamilyGraph`, which `readers.relationship.family_graph(tree_id=…)` loads from the whole
+tree in four queries - so a list names every row from one load (#9).
 
 - **Blood first**, through the nearest common ancestor: the generations up from the home person and from the
   other person decide the word. Every parent link counts, whatever its `pedigree`, and half-siblings are
@@ -201,8 +235,8 @@ where it has none. Four generations and more repeat the "Ur": Ururgroßvater, Ur
 
 ## Familie Huber
 
-`apps/family_tree/fixtures/huber_family.json` is the invented family of the mockup: sixteen people over four
-generations around Lena Huber, the home person. It holds every case above - two couples with their
+`apps/family_tree/fixtures/huber_family.json` is the invented family of the mockup, the tree "Familie Huber":
+sixteen people over four generations around Lena Huber, the home person. It holds every case above - two couples with their
 children, a father married twice with a son from his first marriage, two cousins with only their father -
 and it is what the browser run
 of [`/implement-story`](../../.claude/skills/implement-story/SKILL.md) plays with. Tests never load it to get

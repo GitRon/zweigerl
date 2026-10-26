@@ -1,5 +1,5 @@
 """
-The export of the whole tree as GEDCOM 5.5.1 (#26). What maps to what is docs/patterns/gedcom.md; writing the
+The export of one tree as GEDCOM 5.5.1 (#26). What maps to what is docs/patterns/gedcom.md; writing the
 lines is "domain.gedcom".
 """
 
@@ -12,6 +12,7 @@ from django.db.models import Prefetch, QuerySet
 from django.utils.timezone import localdate
 
 from apps.family_tree.domain.dates import DateKind, Precision, UncertainDate, to_gedcom
+from apps.family_tree.domain.file_names import file_slug
 from apps.family_tree.domain.gedcom import Node, from_raw, write
 from apps.family_tree.models import (
     Citation,
@@ -24,7 +25,7 @@ from apps.family_tree.models import (
     PhotoPerson,
     SiblingPair,
     Source,
-    TreeSettings,
+    Tree,
 )
 
 # The event or attribute each kind of fact becomes. A birthplace is the PLAC of a BIRT, a residence the PLAC of a
@@ -61,14 +62,25 @@ class _Family:
     sibling_pair: SiblingPair | None = None
 
 
-def gedcom_export() -> str:
+def gedcom_exports() -> dict[str, str]:
     """
-    The whole tree as GEDCOM 5.5.1 in UTF-8: everybody, with their facts and citations and notes, their families, the
-    sources with their files and the photos - and what an import kept raw, written back. The home person comes
-    first, so an import into an empty tree (#22) makes them the home person again. #27's backup calls this too.
+    Every tree as GEDCOM, for the backup (#27, #34): by a file name made of the tree's id and name -
+    "1-familie-huber.ged" - so two trees never share one, whatever they are called.
     """
-    people = _people()
-    families = _families(people=people)
+    return {
+        f"{tree_id}-{file_slug(text=name)}.ged": gedcom_export(tree_id=tree_id)
+        for tree_id, name in Tree.objects.order_by("pk").values_list("pk", "name")
+    }
+
+
+def gedcom_export(*, tree_id: int) -> str:
+    """
+    The tree "tree_id" as GEDCOM 5.5.1 in UTF-8: everybody, with their facts and citations and notes, their families,
+    the sources with their files and the photos - and what an import kept raw, written back. The home person comes
+    first, so an import into an empty tree (#22) makes them the home person again. Nothing of another tree (#34).
+    """
+    people = _people(tree_id=tree_id)
+    families = _families(tree_id=tree_id, people=people)
     # Who is a parent and who a child in which family, once - a search per person would take minutes on a large tree.
     as_parent, as_child = defaultdict(list), defaultdict(list)
     for family in families:
@@ -85,24 +97,31 @@ def gedcom_export() -> str:
                 for person in people.values()
             ),
             *(_family(family=family) for family in families),
-            *(_source(source=source) for source in Source.objects.prefetch_related("files").order_by("pk")),
-            *(_photo(photo=photo) for photo in Photo.objects.order_by("pk")),
+            *(
+                _source(source=source)
+                for source in Source.objects.filter(tree=tree_id).prefetch_related("files").order_by("pk")
+            ),
+            *(_photo(photo=photo) for photo in Photo.objects.filter(tree=tree_id).order_by("pk")),
             Node(tag="TRLR"),
         ]
     )
 
 
-def _people() -> dict[int, Person]:
+def _people(*, tree_id: int) -> dict[int, Person]:
     """
-    Everybody by id, the home person first and the others in the order they were entered.
+    Everybody of the tree by id, the home person first and the others in the order they were entered.
     """
-    home_id = TreeSettings.objects.filter(pk=TreeSettings.ONLY_ROW).values_list("home_person_id", flat=True).first()
-    people = Person.objects.prefetch_related(
-        Prefetch("facts", queryset=_facts()),
-        Prefetch("filed_sources", queryset=Source.objects.order_by("pk")),
-        Prefetch("notes", queryset=Note.objects.order_by("created_at", "pk")),
-        Prefetch("photo_links", queryset=PhotoPerson.objects.order_by("photo_id")),
-    ).order_by("pk")
+    home_id = Tree.objects.filter(pk=tree_id).values_list("home_person_id", flat=True).first()
+    people = (
+        Person.objects.filter(tree=tree_id)
+        .prefetch_related(
+            Prefetch("facts", queryset=_facts()),
+            Prefetch("filed_sources", queryset=Source.objects.order_by("pk")),
+            Prefetch("notes", queryset=Note.objects.order_by("created_at", "pk")),
+            Prefetch("photo_links", queryset=PhotoPerson.objects.order_by("photo_id")),
+        )
+        .order_by("pk")
+    )
     return {person.pk: person for person in sorted(people, key=lambda person: person.pk != home_id)}
 
 
@@ -110,17 +129,19 @@ def _facts() -> QuerySet[Fact]:
     return Fact.objects.prefetch_related(Prefetch("citations", queryset=Citation.objects.order_by("pk")))
 
 
-def _families(*, people: dict[int, Person]) -> list[_Family]:
+def _families(*, tree_id: int, people: dict[int, Person]) -> list[_Family]:
     families = {
         partnership.pk: _Family(
             xref=f"@F{partnership.pk}@",
             parents=_couple(person_a=people[partnership.person_a_id], person_b=people[partnership.person_b_id]),
             partnership=partnership,
         )
-        for partnership in Partnership.objects.prefetch_related(Prefetch("facts", queryset=_facts())).order_by("pk")
+        for partnership in Partnership.objects.filter(person_a__tree=tree_id)
+        .prefetch_related(Prefetch("facts", queryset=_facts()))
+        .order_by("pk")
     }
     single_parents: dict[int, _Family] = {}
-    for link in ParentChild.objects.order_by("child_id", "pk"):
+    for link in ParentChild.objects.filter(child__tree=tree_id).order_by("child_id", "pk"):
         if link.partnership_id is not None:
             family = families[link.partnership_id]
         else:
@@ -132,7 +153,7 @@ def _families(*, people: dict[int, Person]) -> list[_Family]:
         _Family(
             xref=f"@FS{pair.pk}@", parents=[], children={pair.person_a_id: [], pair.person_b_id: []}, sibling_pair=pair
         )
-        for pair in SiblingPair.objects.order_by("pk")
+        for pair in SiblingPair.objects.filter(person_a__tree=tree_id).order_by("pk")
     ]
     return [*families.values(), *sorted(single_parents.values(), key=lambda family: family.parents[0].pk), *siblings]
 

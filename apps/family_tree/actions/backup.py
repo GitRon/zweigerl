@@ -1,6 +1,6 @@
 """
 The backup of everything a person entered (#27): one timestamped folder with the database, an SQL dump, the
-GEDCOM export and the media - see docs/patterns/data-storage.md, "Backups".
+GEDCOM export of every tree and the media - see docs/patterns/data-storage.md, "Backups".
 """
 
 import shutil
@@ -13,7 +13,7 @@ from django.conf import settings
 from django.db import connection
 from django.utils.timezone import localtime
 
-from apps.family_tree.models import Person, TreeSettings
+from apps.family_tree.models import InstallationSettings, Person
 
 # A folder still being written. It never counts as a backup, and a run that died leaves it behind under this name.
 INCOMPLETE_SUFFIX = ".incomplete"
@@ -36,16 +36,16 @@ class Backup:
     incomplete: list[Path]
 
 
-def create_backup(*, gedcom: str, target: Path | None = None) -> Backup:
+def create_backup(*, gedcoms: dict[str, str], target: Path | None = None) -> Backup:
     """
-    Writes a backup into a new folder named after the moment, in "target" or else in the backup folder of the
-    settings: "zweigerl.sqlite3" through VACUUM INTO, which is consistent while the app keeps writing, the same
-    state as "zweigerl.sql", the GEDCOM export as "zweigerl.ged" and the media directory as "media/". The folder
-    is written under a ".incomplete" name and renamed once everything is in it, and only then is the moment stored
-    as "TreeSettings.last_backup_at".
+    Writes a backup of every tree into a new folder named after the moment, in "target" or else in the backup
+    folder of the settings: "zweigerl.sqlite3" through VACUUM INTO, which is consistent while the app keeps writing,
+    the same state as "zweigerl.sql", the GEDCOM export of each tree in "gedcom/" and the media directory as
+    "media/". The folder is written under a ".incomplete" name and renamed once everything is in it, and only then
+    is the moment stored as "InstallationSettings.last_backup_at".
 
-    "gedcom" is the export of "readers.gedcom.gedcom_export", which the caller passes in: an action does not call
-    a reader. Must run outside a transaction, since SQLite refuses VACUUM inside one.
+    "gedcoms" are the exports of "readers.gedcom.gedcom_exports" by file name, which the caller passes in: an action
+    does not call a reader. Must run outside a transaction, since SQLite refuses VACUUM inside one.
     """
     backup_dir = _backup_dir(target=target)
     incomplete = sorted(path for path in backup_dir.glob(f"*{INCOMPLETE_SUFFIX}") if path.is_dir())
@@ -63,15 +63,18 @@ def create_backup(*, gedcom: str, target: Path | None = None) -> Backup:
     with connection.cursor() as cursor:
         cursor.execute("VACUUM INTO %s", [str(database)])
     _dump(database=database, dump=folder / "zweigerl.sql")
-    # As given: Windows would otherwise write every line ending as CRLF.
-    (folder / "zweigerl.ged").write_text(gedcom, encoding="utf-8", newline="")
+    gedcom_folder = folder / "gedcom"
+    gedcom_folder.mkdir()
+    for file_name, gedcom in gedcoms.items():
+        # As given: Windows would otherwise write every line ending as CRLF.
+        (gedcom_folder / file_name).write_text(gedcom, encoding="utf-8", newline="")
     media = folder / "media"
     if Path(settings.MEDIA_ROOT).is_dir():
         shutil.copytree(settings.MEDIA_ROOT, media)
     else:
         media.mkdir()
     folder.rename(final)
-    TreeSettings.objects.update_or_create(pk=TreeSettings.ONLY_ROW, defaults={"last_backup_at": moment})
+    InstallationSettings.objects.update_or_create(pk=InstallationSettings.ONLY_ROW, defaults={"last_backup_at": moment})
 
     files = [path for path in final.rglob("*") if path.is_file()]
     return Backup(
@@ -111,7 +114,11 @@ def _backup_dir(*, target: Path | None) -> Path:
     The folder the backup goes to: "target", else the one of the settings, checked by "check_backup_dir".
     """
     if target is None:
-        configured = TreeSettings.objects.filter(pk=TreeSettings.ONLY_ROW).values_list("backup_dir", flat=True).first()
+        configured = (
+            InstallationSettings.objects.filter(pk=InstallationSettings.ONLY_ROW)
+            .values_list("backup_dir", flat=True)
+            .first()
+        )
         if not configured:
             raise BackupRefusedError(
                 "Es ist noch kein Sicherungsordner eingestellt. Trag einen in den Einstellungen ein oder nenn einen "

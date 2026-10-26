@@ -73,6 +73,8 @@ class ParentChild(ValidateConstraintsOnSaveMixin, GedcomRawMixin):
             raise ValidationError({"partnership": "Der Elternteil gehört nicht zu dieser Partnerschaft."})
         if self.child_id is None:
             return
+        if self.parent.tree_id != self.child.tree_id:
+            raise ValidationError("Elternteil und Kind gehören zu verschiedenen Stammbäumen.")
         if self._duplicates_siblings():
             raise ValidationError(
                 "Ein anderes Kind dieses Elternteils ist schon als Geschwister ohne bekannte Eltern eingetragen. "

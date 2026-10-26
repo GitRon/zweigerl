@@ -32,20 +32,32 @@ from apps.family_tree.views.source import (
     source_create_view,
     source_files_view,
 )
-from apps.family_tree.views.start import start_view
+from apps.family_tree.views.start import start_view, tree_view
 from apps.family_tree.views.tree_settings import (
     backup_dir_view,
     backup_view,
     home_person_view,
     tree_settings_view,
 )
+from apps.family_tree.views.trees import create_tree_view, rename_tree_view
 
 app_name = "family_tree"
 
 urlpatterns = [
     path("", start_view, name="start-view"),
-    path("persons/", create_person_view, name="create-person-view"),
-    path("persons/new/", new_person_view, name="new-person-view"),
+    path("trees/", create_tree_view, name="create-tree-view"),
+    path("trees/<int:tree_pk>/", tree_view, name="tree-view"),
+    path("trees/<int:tree_pk>/name/", rename_tree_view, name="rename-tree-view"),
+    path("trees/<int:tree_pk>/persons/", create_person_view, name="create-person-view"),
+    path("trees/<int:tree_pk>/persons/new/", new_person_view, name="new-person-view"),
+    path("trees/<int:tree_pk>/persons/search/", person_search_view, name="person-search-view"),
+    path("trees/<int:tree_pk>/settings/", tree_settings_view, name="tree-settings-view"),
+    path("trees/<int:tree_pk>/settings/home-person/", home_person_view, name="home-person-view"),
+    path("trees/<int:tree_pk>/settings/backup-dir/", backup_dir_view, name="backup-dir-view"),
+    path("trees/<int:tree_pk>/settings/backup/", backup_view, name="backup-view"),
+    path("trees/<int:tree_pk>/export/gedcom/", gedcom_export_view, name="gedcom-export-view"),
+    path("trees/<int:tree_pk>/import/gedcom/", gedcom_import_view, name="gedcom-import-view"),
+    path("trees/<int:tree_pk>/import/gedcom/new/", gedcom_import_dialog_view, name="gedcom-import-dialog-view"),
     path("persons/<int:pk>/", person_view, name="person-view"),
     path("persons/<int:pk>/name/", person_name_view, name="person-name-view"),
     path("persons/<int:pk>/delete/", delete_person_view, name="delete-person-view"),
@@ -64,7 +76,6 @@ urlpatterns = [
     path("persons/<int:pk>/relatives/", create_relative_view, name="create-relative-view"),
     path("persons/<int:pk>/relatives/new/", new_relative_view, name="new-relative-view"),
     path("persons/<int:pk>/relatives/candidates/", relative_candidates_view, name="relative-candidates-view"),
-    path("persons/search/", person_search_view, name="person-search-view"),
     path("persons/<int:pk>/sources/", source_create_view, name="source-create-view"),
     path("persons/<int:pk>/sources/<int:source_pk>/files/", source_files_view, name="source-files-view"),
     path("persons/<int:pk>/sources/<int:source_pk>/delete/", delete_source_view, name="delete-source-view"),
@@ -79,12 +90,5 @@ urlpatterns = [
     path("persons/<int:pk>/photos/", photo_create_view, name="photo-create-view"),
     path("persons/<int:pk>/photos/<int:photo_pk>/portrait/", photo_portrait_view, name="photo-portrait-view"),
     path("persons/<int:pk>/photos/<int:photo_pk>/", photo_describe_view, name="photo-describe-view"),
-    path("settings/", tree_settings_view, name="tree-settings-view"),
-    path("settings/home-person/", home_person_view, name="home-person-view"),
-    path("settings/backup-dir/", backup_dir_view, name="backup-dir-view"),
-    path("settings/backup/", backup_view, name="backup-view"),
-    path("export/gedcom/", gedcom_export_view, name="gedcom-export-view"),
-    path("import/gedcom/", gedcom_import_view, name="gedcom-import-view"),
-    path("import/gedcom/new/", gedcom_import_dialog_view, name="gedcom-import-dialog-view"),
     path("import/gedcom/preview/", gedcom_preview_view, name="gedcom-preview-view"),
 ]

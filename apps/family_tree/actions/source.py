@@ -18,7 +18,7 @@ def create_source(*, person_id: int, title: str, kind: str, description: str, fi
     """
     with transaction.atomic():
         person = Person.objects.get(pk=person_id)
-        source = Source(title=title.strip(), kind=kind, description=description.strip())
+        source = Source(tree_id=person.tree_id, title=title.strip(), kind=kind, description=description.strip())
         source.save()
         source.people.add(person)
         _store_files(source=source, files=files)

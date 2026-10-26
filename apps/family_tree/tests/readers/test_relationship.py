@@ -6,6 +6,7 @@ from apps.family_tree.tests.factories.parent_child import ParentChildFactory
 from apps.family_tree.tests.factories.partnership import PartnershipFactory
 from apps.family_tree.tests.factories.person import PersonFactory
 from apps.family_tree.tests.factories.sibling_pair import SiblingPairFactory
+from apps.family_tree.tests.factories.tree import TreeFactory
 
 
 @pytest.mark.django_db
@@ -16,7 +17,7 @@ def test_family_graph_holds_every_link():
     sibling_pair = SiblingPairFactory()
     stranger = PersonFactory()
 
-    graph = family_graph()
+    graph = family_graph(tree_id=TreeFactory().pk)
 
     group = frozenset((sibling_pair.person_a_id, sibling_pair.person_b_id))
     assert graph.parents == {
@@ -31,13 +32,25 @@ def test_family_graph_holds_every_link():
 
 
 @pytest.mark.django_db
+def test_family_graph_leaves_out_another_tree():
+    lena = PersonFactory()
+    ParentChildFactory(parent__tree__name="Familie Berger", child__tree__name="Familie Berger")
+    PartnershipFactory(person_a__tree__name="Familie Berger", person_b__tree__name="Familie Berger")
+    SiblingPairFactory(person_a__tree__name="Familie Berger", person_b__tree__name="Familie Berger")
+
+    graph = family_graph(tree_id=lena.tree_id)
+
+    assert (graph.sex, graph.parents, graph.partners, graph.marriages) == ({lena.pk: lena.sex}, {}, {}, set())
+
+
+@pytest.mark.django_db
 def test_family_graph_without_a_person_leaves_out_them_and_their_links():
     link = ParentChildFactory()
     partnership = PartnershipFactory(person_a=link.parent)
     sibling_pair = SiblingPairFactory(person_a=link.parent)
     kept = ParentChildFactory(parent=partnership.person_b)
 
-    graph = family_graph(without_id=link.parent_id)
+    graph = family_graph(tree_id=TreeFactory().pk, without_id=link.parent_id)
 
     assert (link.parent_id in graph.sex, dict(graph.parents), dict(graph.partners)) == (
         False,

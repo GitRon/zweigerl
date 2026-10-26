@@ -1,13 +1,14 @@
 <c-common.layout title="Einstellungen">
     <div class="flex min-h-screen max-lg:flex-col">
-        <c-person.sidebar :person_list="person_list" :loose_people="loose_people" :last_backup="last_backup" />
+        <c-person.sidebar :open_tree="open_tree" :person_list="person_list" :loose_people="loose_people" :last_backup="last_backup" />
         <main class="flex flex-1 flex-col gap-10 px-8 py-16">
-            <a href="{% url 'family_tree:start-view' %}" class="self-start">Zurück zum Stammbaum</a>
+            <a href="{% url 'family_tree:tree-view' tree_pk=open_tree.tree.pk %}" class="self-start">Zurück zum Stammbaum</a>
             <h1 class="text-4xl">Einstellungen</h1>
-            <c-settings.home-person :person_list="person_list" :home_person="home_person" />
-            <c-settings.backup :backup_folder="backup_folder" />
-            <c-settings.export />
-            <c-settings.import :tree_empty="tree_empty" />
+            <c-settings.tree :tree="open_tree.tree" />
+            <c-settings.home-person :tree_id="open_tree.tree.pk" :person_list="person_list" :home_person="home_person" />
+            <c-settings.export :tree_id="open_tree.tree.pk" />
+            <c-settings.import :tree_id="open_tree.tree.pk" :tree_empty="tree_empty" />
+            <c-settings.backup :tree_id="open_tree.tree.pk" :backup_folder="backup_folder" />
         </main>
     </div>
 </c-common.layout>

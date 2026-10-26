@@ -9,11 +9,12 @@ from django.urls import reverse
 
 from apps.family_tree.admin import FactInline, ParentsFormSet
 from apps.family_tree.models import Fact, ParentChild, Person, Photo, Source
+from apps.family_tree.tests.factories.installation_settings import InstallationSettingsFactory
 from apps.family_tree.tests.factories.person import PersonFactory
 from apps.family_tree.tests.factories.photo import PhotoFactory
 from apps.family_tree.tests.factories.source import SourceFactory
 from apps.family_tree.tests.factories.source_file import SourceFileFactory
-from apps.family_tree.tests.factories.tree_settings import TreeSettingsFactory
+from apps.family_tree.tests.factories.tree import TreeFactory
 
 FactForms = inlineformset_factory(Person, Fact, fk_name="person", fields=FactInline.fields)
 ParentsForms = inlineformset_factory(
@@ -65,25 +66,36 @@ def test_parents_formset_accepts_two_birth_parents_and_an_adoptive_one():
 
 @pytest.mark.django_db
 def test_admin_offers_to_add_the_settings_while_there_are_none(admin_client):
-    response = admin_client.get(reverse("admin:family_tree_treesettings_add"))
+    response = admin_client.get(reverse("admin:family_tree_installationsettings_add"))
 
     assert response.status_code == 200
 
 
 @pytest.mark.django_db
 def test_admin_refuses_a_second_row_of_settings(admin_client):
-    TreeSettingsFactory()
+    InstallationSettingsFactory()
 
-    response = admin_client.get(reverse("admin:family_tree_treesettings_add"))
+    response = admin_client.get(reverse("admin:family_tree_installationsettings_add"))
 
     assert response.status_code == 403
 
 
 @pytest.mark.django_db
 def test_admin_never_deletes_the_settings(admin_client):
-    tree_settings = TreeSettingsFactory()
+    installation_settings = InstallationSettingsFactory()
 
-    response = admin_client.get(reverse("admin:family_tree_treesettings_delete", args=[tree_settings.pk]))
+    response = admin_client.get(
+        reverse("admin:family_tree_installationsettings_delete", args=[installation_settings.pk])
+    )
+
+    assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_admin_never_deletes_a_tree(admin_client):
+    tree = TreeFactory()
+
+    response = admin_client.get(reverse("admin:family_tree_tree_delete", args=[tree.pk]))
 
     assert response.status_code == 403
 
@@ -121,7 +133,7 @@ def test_source_file_inline_never_adds_a_file_past_the_upload(admin_client):
 
 @pytest.mark.django_db
 def test_person_admin_explains_that_the_home_person_cannot_be_deleted(admin_client):
-    lena = TreeSettingsFactory(home_person__given_names="Lena", home_person__surname="Huber").home_person
+    lena = TreeFactory(home_person=PersonFactory(given_names="Lena", surname="Huber")).home_person
 
     response = admin_client.get(reverse("admin:family_tree_person_delete", args=[lena.pk]))
 
@@ -133,7 +145,7 @@ def test_person_admin_explains_that_the_home_person_cannot_be_deleted(admin_clie
 
 @pytest.mark.django_db
 def test_person_admin_deletes_anybody_else_as_usual(admin_client):
-    TreeSettingsFactory()
+    TreeFactory(home_person=PersonFactory())
     johann = PersonFactory()
 
     response = admin_client.get(reverse("admin:family_tree_person_delete", args=[johann.pk]))

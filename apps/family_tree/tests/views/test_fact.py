@@ -8,7 +8,7 @@ from apps.family_tree.tests.factories.fact import FactFactory
 from apps.family_tree.tests.factories.partnership import PartnershipFactory
 from apps.family_tree.tests.factories.person import PersonFactory
 from apps.family_tree.tests.factories.source import SourceFactory
-from apps.family_tree.tests.factories.tree_settings import TreeSettingsFactory
+from apps.family_tree.tests.factories.tree import TreeFactory
 
 DATASTAR = {"Datastar-Request": "true"}
 FIELDS = {"kind": "birth", "label": "", "value": "", "date": "12. März 1958", "reliability": "documented", "search": ""}
@@ -37,7 +37,7 @@ def test_new_fact_view_of_somebody_not_there_is_not_found(admin_client):
 @pytest.mark.django_db
 def test_create_fact_view_saves_and_patches_card_list_and_tree(admin_client):
     lena = PersonFactory(given_names="Lena", surname="Huber")
-    TreeSettingsFactory(home_person=lena)
+    TreeFactory(home_person=lena)
 
     response = admin_client.post(
         reverse("family_tree:create-fact-view", kwargs={"pk": lena.pk}), FIELDS, headers=DATASTAR
@@ -83,7 +83,7 @@ def test_create_fact_view_reads_the_partner_and_the_chosen_sources_with_their_pl
 
 @pytest.mark.django_db
 def test_create_fact_view_does_not_patch_a_tree_card_the_tree_does_not_show(admin_client):
-    TreeSettingsFactory()
+    TreeFactory(home_person=PersonFactory())
     stranger = PersonFactory(given_names="Fremd")
 
     response = admin_client.post(

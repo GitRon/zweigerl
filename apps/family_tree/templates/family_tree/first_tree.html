@@ -1,0 +1,17 @@
+<c-common.layout title="Erster Stammbaum">
+    {# An installation without a tree (#34): the one thing to do is to start one. The form posts the name, and #}
+    {# the server opens the new tree or answers a refusal with a toast. #}
+    <main class="mx-auto flex min-h-screen max-w-xl flex-col justify-center gap-6 px-8 py-16">
+        <c-common.wordmark class="self-start text-7xl" />
+        <h1 class="text-4xl">Servus!</h1>
+        <p class="text-ink-muted">Jeder Baum fangt mit an Zweigerl an. Wie soll deiner heißen?</p>
+        <form class="flex items-end gap-3 max-lg:flex-col max-lg:items-stretch" data-on:submit="@post('{% url 'family_tree:create-tree-view' %}', {contentType: 'form'})">
+            {% csrf_token %}
+            <label class="flex flex-1 flex-col gap-1">
+                <span class="text-sm">Name des Stammbaums</span>
+                <input type="text" name="name" required maxlength="100" autocomplete="off" placeholder="Familie Huber" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3">
+            </label>
+            <c-common.button variant="primary" type="submit">Anlegen</c-common.button>
+        </form>
+    </main>
+</c-common.layout>
