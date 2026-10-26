@@ -181,16 +181,17 @@ git worktree add -b feature/<slug> .claude/worktrees/issue-<n>-<slug> origin/mai
 Then call `EnterWorktree` with `path` pointing at the new directory: the session moves in, and the rest of
 the run happens there.
 
-A fresh worktree carries no untracked files, so it has no `.venv`, and Phase 3 is where that would
-surface - long after the story is written:
+A fresh worktree carries no untracked files, so it has neither `.venv` nor `node_modules`, and Phase 3 is
+where that would surface - the suite needs the one, `yarn build:css` the Tailwind compiler in the other -
+long after the story is written:
 
 ```bash
 [ -x .venv/bin/python ] || [ -x .venv/Scripts/python.exe ] || uv sync
+[ -d node_modules/tailwindcss ] || yarn install --frozen-lockfile
 ```
 
 `pre-commit` and `uv` are installed machine-wide and their caches are shared, so they need nothing per
-checkout. `node_modules` is missing too, but `content-server.sh` installs it in Phase 6 rather than
-failing.
+checkout.
 
 The worktree stays behind when the run ends. Phase 7 opens a PR, it does not merge one, and review
 comments need a checkout to be answered in. [`/clean-worktrees`](../clean-worktrees/SKILL.md) removes it
