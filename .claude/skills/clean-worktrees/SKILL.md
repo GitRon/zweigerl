@@ -20,7 +20,7 @@ removes them - and only them.
 
 A PR can be merged three ways on GitHub, and only one of them keeps the branch's commits. After a
 **squash** or a **rebase** merge the commits on a feature branch never reach `main` - new ones do - so
-`git branch --merged`, `git merge-base --is-ancestor <tip> github/main` and `git branch -d` all call every
+`git branch --merged`, `git merge-base --is-ancestor <tip> origin/main` and `git branch -d` all call every
 finished branch unmerged. They are right only after a merge commit, and nothing on the branch says which
 way its PR went. A remote branch marked `[gone]` is no proof either: it says the branch was deleted on
 GitHub, not that every local commit went with it.
@@ -40,7 +40,7 @@ it. Do the comparison yourself from the
 output.
 
 ```bash
-git fetch github --prune
+git fetch origin --prune
 git worktree list --porcelain
 git for-each-ref refs/heads --format='%(refname:short) %(objectname) %(upstream:track)'
 gh pr list --state merged --limit 500 --json number,headRefName,headRefOid --jq '.[] | "\(.headRefName) \(.headRefOid) #\(.number)"'
@@ -69,7 +69,7 @@ added on GitHub and the remote branch is deleted. GitHub keeps the PR's ref, so 
 check again; if the fetch fails too, the branch stays:
 
 ```bash
-git fetch github pull/<number>/head
+git fetch origin pull/<number>/head
 ```
 
 ## Phase 2 - classify
@@ -79,7 +79,7 @@ Each worktree other than the main checkout falls into exactly one bucket:
 | Bucket | Test | Action |
 |---|---|---|
 | remove | branch tip is a merged PR's head or an ancestor of it, and the branch has no open PR | `git worktree remove` |
-| remove | detached `HEAD` on a commit already in `main` (`git merge-base --is-ancestor <sha> github/main` exits 0) | `git worktree remove` |
+| remove | detached `HEAD` on a commit already in `main` (`git merge-base --is-ancestor <sha> origin/main` exits 0) | `git worktree remove` |
 | keep: own session | the worktree this session runs in | report; it can only be removed from elsewhere |
 | keep: newer work | tip is neither a merged head nor an ancestor of one, no merged PR, or an open PR | report with the reason |
 

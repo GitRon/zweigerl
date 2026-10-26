@@ -11,7 +11,7 @@
 
 set -uo pipefail
 
-BASE_REF="${1:-github/main}"
+BASE_REF="${1:-origin/main}"
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT" || exit 1
 

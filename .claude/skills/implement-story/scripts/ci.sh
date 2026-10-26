@@ -89,7 +89,7 @@ assets_status=$?
 # that number only becomes a conflict once both branches are in the same tree. By then the run that
 # would have caught it is a green tick on a merged pull request.
 BASE_REF="$(sed -n 's/.*"base"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$RUN_DIR/state.json" 2>/dev/null | head -n 1)"
-bash "$REPO_ROOT/.claude/skills/implement-story/scripts/migration-numbers.sh" "${BASE_REF:-github/main}" \
+bash "$REPO_ROOT/.claude/skills/implement-story/scripts/migration-numbers.sh" "${BASE_REF:-origin/main}" \
   > "$LOG_DIR/migration-numbers.log" 2>&1
 migration_status=$?
 
@@ -116,7 +116,7 @@ fi
   echo "| Tests + coverage | \`uv run pytest --cov\` | $(verdict $test_status) |"
   echo "| Import boundaries | \`uv run lint-imports\` | $(verdict $imports_status) |"
   echo "| Stylesheet | \`yarn build:css\` | $(verdict $assets_status) |"
-  echo "| Migration numbers | \`migration-numbers.sh ${BASE_REF:-github/main}\` | $migration_verdict |"
+  echo "| Migration numbers | \`migration-numbers.sh ${BASE_REF:-origin/main}\` | $migration_verdict |"
   echo
   if [ $lint_status -ne 0 ]; then
     echo "## pre-commit (last 60 lines)"

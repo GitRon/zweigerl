@@ -63,7 +63,7 @@ means that lens was never reviewed, which is reported as a gap rather than block
   "slug": "person-search",
   "issue": 21,
   "branch": "feature/person-search",
-  "base": "github/main",
+  "base": "origin/main",
   "session": "person-search [f69956]",
   "phase": "review",
   "deadline_seconds": 720,
@@ -85,8 +85,8 @@ means that lens was never reviewed, which is reported as a gap rather than block
 }
 ```
 
-`base` is the ref every diff is taken against: `github/main`, or a neighbour's branch when this story
-stacks on one. Phase 7 strips a `github/` prefix off it for `gh pr create --base`, which wants a branch
+`base` is the ref every diff is taken against: `origin/main`, or a neighbour's branch when this story
+stacks on one. Phase 7 strips an `origin/` prefix off it for `gh pr create --base`, which wants a branch
 name. `session` is what `ListAgents` calls this run - it tells each session its own name, and writing it
 down here is what lets a neighbour address this one instead of guessing. `touches` is the file list this
 run claims, which is how the neighbouring worktrees see it coming. `phase` is one of `spec`, `plan`,
@@ -153,16 +153,16 @@ One story, one checkout. The branch, the run directory and the smoke database al
 nothing else, which is what lets several stories run at once.
 
 ```bash
-git fetch github
+git fetch origin
 [ "$(git rev-parse --path-format=absolute --git-dir)" = "$(git rev-parse --path-format=absolute --git-common-dir)" ] \
   || echo "already in a worktree"
 ```
 
-Fetch first, whichever way this goes. The branch is cut from `github/main`, never from local `main`, which
+Fetch first, whichever way this goes. The branch is cut from `origin/main`, never from local `main`, which
 only moves on a `pull` and is stale on any machine that has been reviewing more than merging.
 
 **Already in a worktree**, or `--no-worktree`: adopt the branch that is checked out and create nothing. A
-worktree sitting on `main` still needs its own branch - `git switch -c <branch> github/main`, taking the
+worktree sitting on `main` still needs its own branch - `git switch -c <branch> origin/main`, taking the
 name from the next step. This is the case where a dirty tree matters: if `git status --porcelain` is not
 empty or a rebase/merge is in progress, stop and say so rather than building on someone else's
 half-finished work.
@@ -171,13 +171,12 @@ half-finished work.
 uncommitted here does not come with it and does not block the run.
 
 ```bash
-git worktree add -b feature/<slug> .claude/worktrees/issue-<n>-<slug> github/main
+git worktree add -b feature/<slug> .claude/worktrees/issue-<n>-<slug> origin/main
 ```
 
 `feature/` for new behaviour, `fix/` for a defect, `chore/` for maintenance. The directory drops the
-`issue-<n>-` prefix when the story came in as free text. The remote is `github`, not `origin` - which is
-also why the worktree is created here rather than by `EnterWorktree`'s own `name`, whose base ref is
-`origin/<default>`.
+`issue-<n>-` prefix when the story came in as free text. The worktree is created here rather than by
+`EnterWorktree`'s own `name`, so the branch and the directory carry the names above.
 
 Then call `EnterWorktree` with `path` pointing at the new directory: the session moves in, and the rest of
 the run happens there.
@@ -199,7 +198,7 @@ once the PR is merged.
 
 ### Then take the worktree's lock, and say who you are
 
-Record `base` as `github/main` and `session` as the name `ListAgents` reports for this session - it opens
+Record `base` as `origin/main` and `session` as the name `ListAgents` reports for this session - it opens
 with "This session is `<name> [ref]`". A neighbour reads that name out of `state.json` to reach this run;
 without it, the rows `ListAgents` returns are just names, some of them sessions on other projects
 entirely.
@@ -454,16 +453,16 @@ other - say so plainly, and never report a pass you did not see.
 
 ## Phase 7 - Ship
 
-Commit the fixes, push with `git push -u github <branch>`, and open the PR:
+Commit the fixes, push with `git push -u origin <branch>`, and open the PR:
 
 ```bash
-gh pr create --base ${base#github/} --title "<story title>" --body-file <body>
+gh pr create --base ${base#origin/} --title "<story title>" --body-file <body>
 ```
 
 The title starts with the issue number and a colon, `#<n>: <story title>`; without an issue it is the
 story title alone - see [commit messages](../../../docs/contributing/commit-messages.md#pull-request-titles).
 
-`--base` wants a branch name, so the `github/` comes off: a run based on `github/main` opens against
+`--base` wants a branch name, so the `origin/` comes off: a run based on `origin/main` opens against
 `main`, a stacked one against the neighbour's branch as recorded.
 
 The body carries: what the story asked for, what you built, `Closes #<n>` when there is an issue, the
