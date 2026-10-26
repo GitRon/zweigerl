@@ -21,11 +21,12 @@
     {% for citation in entry.citations %}
         <p class="text-sm">Beleg: {{ citation.source.title }}{% if citation.page %}, {{ citation.page }}{% endif %}</p>
     {% endfor %}
-    {% if entry.undocumented %}
-        <p><c-common.label text="unbelegt, Quelle fehlt" tone="brick" /></p>
-    {% endif %}
-    {# The import the fact came from (#22). It stays "unbelegt" all the same: a Herkunft is not a Beleg. #}
-    {% if entry.origin %}
-        <p class="text-sm text-ink-muted">aus {{ entry.origin }}</p>
+    {# "unbelegt" is quiet: after an import nearly every fact is, and a loud mark on each would stop meaning #}
+    {# anything (#96). The import the fact came from (#22) stands beside it - a Herkunft is not a Beleg. #}
+    {% if entry.undocumented or entry.origin %}
+        <p class="flex flex-wrap gap-x-3 text-sm text-ink-muted">
+            {% if entry.undocumented %}<span>unbelegt</span>{% endif %}
+            {% if entry.origin %}<span>aus {{ entry.origin }}</span>{% endif %}
+        </p>
     {% endif %}
 </div>

@@ -30,7 +30,7 @@
         {% csrf_token %}
         <label class="flex w-full flex-col gap-1 text-sm">
             <span>Scan oder PDF anhängen</span>
-            <input type="file" name="files" multiple required accept=".jpg,.jpeg,.png,.webp,.tif,.tiff,.pdf" class="w-full text-sm">
+            <c-common.file-field name="files" multiple required accept=".jpg,.jpeg,.png,.webp,.tif,.tiff,.pdf" />
         </label>
         <c-common.button type="submit">Anhängen</c-common.button>
     </form>
