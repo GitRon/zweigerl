@@ -27,6 +27,12 @@ def rows(raw) -> list[str]:
 
 
 @pytest.fixture(scope="module")
+def levels(rows) -> list[int]:
+    """The level of every line that parses."""
+    return [int(match["level"]) for match in map(LINE.fullmatch, rows) if match]
+
+
+@pytest.fixture(scope="module")
 def paths(rows) -> list[str]:
     """Every line as `INDI/BIRT/DATE <value>`, the tags from its record down to itself."""
     stack = []
@@ -42,9 +48,7 @@ def test_myheritage_export_starts_with_a_bom_and_ends_its_lines_with_crlf_but_th
     assert (raw.startswith(b"\xef\xbb\xbf"), raw.endswith(b"\r\n"), raw.count(b"\r\n") > 1000) == (True, False, True)
 
 
-def test_myheritage_export_parses_as_gedcom(rows):
-    levels = [int(match["level"]) for match in map(LINE.fullmatch, rows) if match]
-
+def test_myheritage_export_parses_as_gedcom(rows, levels):
     assert (
         len(levels) == len(rows),
         all(level <= previous + 1 for previous, level in itertools.pairwise(levels)),

@@ -428,15 +428,22 @@ def _cited(*, nodes: tuple[Node, ...] | list[Node]) -> tuple[list[ImportedCitati
         page = "; ".join(part for part in (cited.page, page_node.value if page_node else "") if part)
         if len(page) > CITATION_PAGE_LENGTH:
             page_node, page = None, cited.page
-        quay_node = _first(node=node, tag="QUAY")
-        quality = max(
-            (value for value in (cited.quality, quay_node.value.strip() if quay_node else "") if value in RELIABILITY_BY_QUAY),
-            default="",
-        )
         raw = raw_list(nodes=[child for child in node.children if child is not page_node])
-        citations[node.pointer] = replace(cited, page=page, quality=quality, raw=[*cited.raw, *raw])
+        citations[node.pointer] = replace(
+            cited, page=page, quality=_better_quality(known=cited.quality, sour=node), raw=[*cited.raw, *raw]
+        )
     rest = [node for node in nodes if node.tag != "SOUR" or not node.pointer]
     return list(citations.values()), raw_list(nodes=rest)
+
+
+def _better_quality(*, known: str, sour: Node) -> str:
+    """
+    The better of a citation's QUAY so far and the one below this SOUR - a higher one is better. A QUAY that is not
+    0 to 3 counts as none.
+    """
+    quay = _first(node=sour, tag="QUAY")
+    said = quay.value.strip() if quay else ""
+    return max((value for value in (known, said) if value in RELIABILITY_BY_QUAY), default="")
 
 
 def _source(*, record: Node) -> ImportedSource:

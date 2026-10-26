@@ -109,14 +109,12 @@ def test_read_tree_takes_the_best_quay_of_the_citations_of_a_fact():
 
     tree = read_tree(records=records)
 
-    fact = tree.people[0].facts[0]
-    assert ([citation.quality for citation in fact.citations], fact.reliability) == (["0", "1"], "probable")
+    first, second = tree.people[0].facts[0].citations
+    assert (first.quality, second.quality, tree.people[0].facts[0].reliability) == ("0", "1", "probable")
 
 
 def test_read_tree_takes_the_better_quay_of_one_source_cited_twice():
-    records = read(
-        file=io.BytesIO(b"0 @I1@ INDI\n1 OCCU Uhrmacher\n2 SOUR @S1@\n3 QUAY 0\n2 SOUR @S1@\n3 QUAY 2\n")
-    )
+    records = read(file=io.BytesIO(b"0 @I1@ INDI\n1 OCCU Uhrmacher\n2 SOUR @S1@\n3 QUAY 0\n2 SOUR @S1@\n3 QUAY 2\n"))
 
     tree = read_tree(records=records)
 
