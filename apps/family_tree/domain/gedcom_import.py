@@ -14,6 +14,7 @@ from dataclasses import dataclass, field, replace
 
 from apps.family_tree.domain.dates import DateKind, Precision, UncertainDate, from_gedcom
 from apps.family_tree.domain.gedcom import Node, raw_list, to_raw
+from apps.family_tree.domain.html_text import plain_text
 
 # The longest value a fact holds - "Fact.value". A longer one stays raw rather than failing the whole import.
 FACT_VALUE_LENGTH = 300
@@ -448,7 +449,8 @@ def _better_quality(*, known: str, sour: Node) -> str:
 
 def _source(*, record: Node) -> ImportedSource:
     """
-    A SOUR record: its TITL is the title and its TEXT the description; what else it carries - an AUTH, a PUBL, an
+    A SOUR record: its TITL is the title and its TEXT the description, as text even where the export wrote HTML
+    (#102); what else it carries - an AUTH, a PUBL, an
     OBJE until #24 - stays raw. One without a title it can hold is named after its xref rather than refused, and
     its TITL stays raw.
     """
@@ -460,7 +462,7 @@ def _source(*, record: Node) -> ImportedSource:
     return ImportedSource(
         xref=record.xref,
         title=title_node.value.strip() if title_node else f"Quelle {record.xref}",
-        description=text_node.value if text_node else "",
+        description=plain_text(text=text_node.value) if text_node else "",
         raw=raw_list(nodes=rest),
     )
 
