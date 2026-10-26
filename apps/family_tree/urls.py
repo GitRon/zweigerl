@@ -24,6 +24,12 @@ from apps.family_tree.views.new_person import (
 )
 from apps.family_tree.views.note import delete_note_view, note_change_view, note_create_view
 from apps.family_tree.views.person import person_name_view, person_view
+from apps.family_tree.views.person_merge import (
+    merge_candidates_view,
+    merge_compare_view,
+    merge_dialog_view,
+    merge_view,
+)
 from apps.family_tree.views.person_search import person_search_view
 from apps.family_tree.views.photo import photo_create_view, photo_describe_view, photo_portrait_view
 from apps.family_tree.views.source import (
@@ -50,6 +56,10 @@ urlpatterns = [
     path("persons/<int:pk>/name/", person_name_view, name="person-name-view"),
     path("persons/<int:pk>/delete/", delete_person_view, name="delete-person-view"),
     path("persons/<int:pk>/delete/confirm/", confirm_delete_person_view, name="confirm-delete-person-view"),
+    path("persons/<int:pk>/merge/", merge_dialog_view, name="merge-dialog-view"),
+    path("persons/<int:pk>/merge/candidates/", merge_candidates_view, name="merge-candidates-view"),
+    path("persons/<int:pk>/merge/<int:other_pk>/", merge_view, name="merge-view"),
+    path("persons/<int:pk>/merge/<int:other_pk>/confirm/", merge_compare_view, name="merge-compare-view"),
     path("persons/<int:pk>/links/<str:relation>/<int:relative_pk>/", unlink_view, name="unlink-view"),
     path(
         "persons/<int:pk>/links/<str:relation>/<int:relative_pk>/confirm/",

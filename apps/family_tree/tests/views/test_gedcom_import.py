@@ -3,7 +3,6 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 
 from apps.family_tree.models import Person
-from apps.family_tree.tests.factories.person import PersonFactory
 
 DATASTAR = {"Datastar-Request": "true"}
 GEDCOM = b"0 HEAD\n1 SOUR PAF\n0 @I1@ INDI\n1 NAME Lena /Huber/\n0 TRLR\n"
@@ -71,10 +70,8 @@ def test_gedcom_import_view_asks_for_a_file(admin_client):
 
 @pytest.mark.django_db
 def test_gedcom_import_view_answers_a_refusal_with_its_reason(admin_client):
-    PersonFactory()
-
     response = admin_client.post(
-        reverse("family_tree:gedcom-import-view"), {"file": _file(), "name": "PAF Huber"}, headers=DATASTAR
+        reverse("family_tree:gedcom-import-view"), {"file": _file(), "name": "  "}, headers=DATASTAR
     )
 
-    assert "nur in einen leeren Stammbaum" in _events(response)
+    assert "Ein Import braucht einen Namen" in _events(response)

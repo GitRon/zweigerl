@@ -17,6 +17,17 @@ def test_parent_child_str_points_from_parent_to_child():
     assert str(parent_child) == "Johann Huber → Lena Huber"
 
 
+@pytest.mark.django_db
+def test_parent_child_merged_birth_parents_counts_a_parent_of_both_once_with_the_persons_pedigree():
+    josef, other = PersonFactory(), PersonFactory()
+    johann = ParentChildFactory(child=josef, pedigree=ParentChild.Pedigree.ADOPTED).parent
+    ParentChildFactory(parent=johann, child=other)
+    theresia = ParentChildFactory(child=other).parent
+    ParentChildFactory(child=PersonFactory())
+
+    assert ParentChild.merged_birth_parents(person_id=josef.pk, other_id=other.pk) == {theresia.pk}
+
+
 def test_parent_child_clean_leaves_a_link_without_parent_to_the_field_validation():
     parent_child = ParentChild(child=PersonFactory.build(pk=1))
 

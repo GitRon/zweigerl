@@ -3,8 +3,6 @@ import io
 import pytest
 from django.core.management import CommandError, call_command
 
-from apps.family_tree.tests.factories.person import PersonFactory
-
 
 @pytest.mark.django_db
 def test_import_gedcom_says_what_it_imported_under_which_name(tmp_path):
@@ -23,12 +21,11 @@ def test_import_gedcom_says_what_it_imported_under_which_name(tmp_path):
 
 @pytest.mark.django_db
 def test_import_gedcom_says_why_it_refused(tmp_path):
-    PersonFactory()
     file = tmp_path / "huber.ged"
     file.write_bytes(b"0 HEAD\n0 @I1@ INDI\n0 TRLR\n")
 
-    with pytest.raises(CommandError, match="nur in einen leeren Stammbaum"):
-        call_command("import_gedcom", file, name="PAF Huber")
+    with pytest.raises(CommandError, match="Ein Import braucht einen Namen"):
+        call_command("import_gedcom", file, name="  ")
 
 
 def test_import_gedcom_says_when_the_file_cannot_be_opened(tmp_path):

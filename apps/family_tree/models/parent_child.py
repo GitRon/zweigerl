@@ -61,6 +61,21 @@ class ParentChild(ValidateConstraintsOnSaveMixin, GedcomRawMixin):
     def __str__(self) -> str:
         return f"{self.parent} → {self.child}"
 
+    @classmethod
+    def merged_birth_parents(cls, *, person_id: int, other_id: int) -> set[int]:
+        """
+        The birth parents "person_id" would have once "other_id" is merged into them (#85): the person's own, and
+        those of the other who are no parent of the person yet - a parent of both keeps the person's link, with its
+        pedigree. More than two is what the merge refuses.
+        """
+        parents = cls.objects.filter(child=person_id).values("parent")
+        return {
+            *cls.objects.filter(child=person_id, pedigree=cls.Pedigree.BIRTH).values_list("parent", flat=True),
+            *cls.objects.filter(child=other_id, pedigree=cls.Pedigree.BIRTH)
+            .exclude(parent__in=parents)
+            .values_list("parent", flat=True),
+        }
+
     def clean(self) -> None:
         """
         The rules across rows no constraint can hold - see docs/patterns/family.md. When the admin adds a

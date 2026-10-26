@@ -304,6 +304,15 @@ def test_card_asks_before_deleting_the_person_from_the_name_form():
     )
 
 
+def test_card_fetches_the_merge_dialog_from_the_name_form():
+    html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
+
+    form = parse(html).find(id="person-card-name")
+    assert form.find("button", string="Mit … zusammenführen")["data-on:click"] == (
+        f"@get('{reverse('family_tree:merge-dialog-view', kwargs={'pk': 7})}')"
+    )
+
+
 def test_card_centres_the_person_in_the_tree_when_chosen_from_outside_it():
     html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
 

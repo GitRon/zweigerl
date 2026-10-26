@@ -31,11 +31,40 @@ MYHERITAGE_EXPORT = Path(__file__).parent.parent / "data" / "myheritage_export.g
 
 
 @pytest.mark.django_db
-def test_import_gedcom_refuses_a_tree_that_is_not_empty():
+def test_import_gedcom_writes_beside_the_people_already_there_and_keeps_the_home_person():
+    home = PersonFactory(given_names="Lena", surname="Huber")
+    TreeSettings.objects.create(pk=TreeSettings.ONLY_ROW, home_person=home)
+
+    import_gedcom(file=io.BytesIO(b"0 HEAD\n0 @I1@ INDI\n1 NAME Lena /Huber/\n0 TRLR\n"), name="MyHeritage Huber")
+
+    assert (
+        list(Person.objects.order_by("pk").values_list("given_names", "gedcom_import__name")),
+        TreeSettings.objects.get().home_person,
+    ) == ([("Lena", None), ("Lena", "MyHeritage Huber")], home)
+
+
+@pytest.mark.django_db
+def test_import_gedcom_chooses_no_home_person_for_a_tree_that_is_not_empty():
     PersonFactory()
 
-    with pytest.raises(ImportRefusedError, match="nur in einen leeren Stammbaum"):
-        import_gedcom(file=io.BytesIO(b"0 HEAD\n0 @I1@ INDI\n0 TRLR\n"), name="PAF Huber")
+    import_gedcom(file=io.BytesIO(b"0 HEAD\n0 @I1@ INDI\n1 NAME Lena /Huber/\n0 TRLR\n"), name="MyHeritage Huber")
+
+    assert TreeSettings.objects.exists() is False
+
+
+@pytest.mark.django_db
+def test_import_gedcom_keeps_the_records_of_two_files_with_the_same_xrefs_apart():
+    import_gedcom(file=io.BytesIO(b"0 @I1@ INDI\n1 NAME Lena /Huber/\n"), name="PAF Huber")
+    file = io.BytesIO(
+        b"0 @I1@ INDI\n1 NAME Josef /Huber/\n0 @I2@ INDI\n1 NAME Maria /Huber/\n0 @F1@ FAM\n1 HUSB @I1@\n1 WIFE @I2@\n"
+    )
+
+    import_gedcom(file=file, name="MyHeritage Huber")
+
+    assert (
+        sorted(Person.objects.values_list("given_names", "gedcom_import__name")),
+        list(Partnership.objects.values_list("person_a__given_names", "person_b__given_names")),
+    ) == ([("Josef", "MyHeritage Huber"), ("Lena", "PAF Huber"), ("Maria", "MyHeritage Huber")], [("Josef", "Maria")])
 
 
 @pytest.mark.django_db
