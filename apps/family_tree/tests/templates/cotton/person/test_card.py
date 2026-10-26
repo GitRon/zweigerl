@@ -101,8 +101,29 @@ def test_card_asks_for_a_new_relative_in_the_relatives_tab():
 def test_card_closes_by_clearing_the_selection():
     html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
 
-    button = parse(html).find("button", attrs={"aria-label": "Karte schließen"})
-    assert button["data-on:click"] == "$selection = 0; $editing = 0"
+    in_bar, at_top = parse(html).find_all("button", attrs={"aria-label": "Karte schließen"})
+    assert (in_bar["data-on:click"], at_top["data-on:click"]) == (
+        "$selection = 0; $editing = 0",
+        "$selection = 0; $editing = 0",
+    )
+
+
+def test_card_tells_when_its_cross_has_scrolled_out_of_sight():
+    html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
+
+    cross = parse(html).find("button", attrs={"data-on-intersect": True})
+    assert (cross["aria-label"], cross["data-on-intersect"], cross["data-on-intersect__exit"]) == (
+        "Karte schließen",
+        "$scrolled = false",
+        "$scrolled = true",
+    )
+
+
+def test_card_shows_a_bar_with_name_and_cross_once_scrolled():
+    html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
+
+    bar = parse(html).find(attrs={"data-show": "$scrolled"})
+    assert (bar.span.get_text(), bar.button["aria-label"]) == ("Gerti Huber", "Karte schließen")
 
 
 def test_card_switches_tabs_with_their_counts():
