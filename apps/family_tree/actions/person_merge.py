@@ -74,13 +74,7 @@ def _refuse(*, person: Person, other: Person) -> None:
         raise ValidationError("Die beiden sind ein Paar, also zwei Personen.")
     if other.pk in _ancestors(person_id=person.pk) or person.pk in _ancestors(person_id=other.pk):
         raise ValidationError("Ein Vorfahr und sein Nachkomme sind zwei Personen.")
-    parents = set(ParentChild.objects.filter(child=person).values_list("parent", flat=True))
-    birth_parents = {
-        *ParentChild.objects.filter(child=person, pedigree=ParentChild.Pedigree.BIRTH).values_list("parent", flat=True),
-        *ParentChild.objects.filter(child=other, pedigree=ParentChild.Pedigree.BIRTH)
-        .exclude(parent__in=parents)
-        .values_list("parent", flat=True),
-    }
+    birth_parents = ParentChild.merged_birth_parents(person_id=person.pk, other_id=other.pk)
     if len(birth_parents) > ParentChild.MAX_BIRTH_PARENTS:
         raise ValidationError(
             f"Zusammen hätten die beiden {len(birth_parents)} leibliche Eltern. "

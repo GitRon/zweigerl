@@ -124,13 +124,7 @@ def _refusal(*, person: Person, other: Person, names: dict[int, str]) -> str:
         if ancestor.pk in ancestors(family=family, person_id=descendant.pk):
             return f"{names[ancestor.pk]} ist ein Vorfahr von {names[descendant.pk]}, also sind es zwei Personen."
 
-    parents = set(ParentChild.objects.filter(child=person).values_list("parent", flat=True))
-    birth_parents = {
-        *ParentChild.objects.filter(child=person, pedigree=ParentChild.Pedigree.BIRTH).values_list("parent", flat=True),
-        *ParentChild.objects.filter(child=other, pedigree=ParentChild.Pedigree.BIRTH)
-        .exclude(parent__in=parents)
-        .values_list("parent", flat=True),
-    }
+    birth_parents = ParentChild.merged_birth_parents(person_id=person.pk, other_id=other.pk)
     if len(birth_parents) > ParentChild.MAX_BIRTH_PARENTS:
         return (
             f"Zusammen hätten die beiden {len(birth_parents)} leibliche Eltern. Führ zuerst die Eltern zusammen, "

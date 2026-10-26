@@ -87,6 +87,19 @@ def test_merge_persons_keeps_the_portrait_of_the_person():
 
 
 @pytest.mark.django_db
+def test_merge_persons_gives_the_others_portrait_to_a_person_without_one():
+    josef, other = PersonFactory(), PersonFactory()
+    PhotoPersonFactory(person=josef)
+    portrait = PhotoPersonFactory(person=other, is_portrait=True)
+
+    merge_persons(person_id=josef.pk, other_id=other.pk, from_other=[])
+
+    assert list(PhotoPerson.objects.filter(person=josef, is_portrait=True).values_list("photo", flat=True)) == [
+        portrait.photo_id
+    ]
+
+
+@pytest.mark.django_db
 def test_merge_persons_puts_a_photo_of_both_on_the_person_once_with_the_others_portrait():
     josef, other = PersonFactory(), PersonFactory()
     link = PhotoPersonFactory(person=josef)
