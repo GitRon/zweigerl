@@ -75,7 +75,8 @@ Georgia and the system sans: it reads, but it is not Zweigerl.
 - **Matt, without a gradient and without a shadow.** The `--shadow-*` scales are dropped, so `shadow-md`
   does not exist. A page in an album lies flat.
 - **Lines are ink: `ink`, 1.5px** (`border-[1.5px]`), drawn as if with a pen. A hairline that only
-  separates is `card-edge` at 1px.
+  separates is `card-edge` at 1px. The one heavier line is the line of ancestors that stands out in the
+  tree, `ink` at 2.5px while everything else fades - see [the tree layout](tree-layout.md#the-line-of-ancestors).
 - **Paper corners.** The radius scale is `rounded-sm` (2px), `rounded-md` (3px) and `rounded-lg` (4px), and
   nothing else exists. A label is `sm`, a control `md`, a picture frame `lg`.
 - **Pictures are real**: photos and scans, pressed plants from a herbarium. Nothing is illustrated, no
@@ -110,8 +111,10 @@ always comes with an `alt`** describing the picture, not repeating the name.
 label on a herbarium sheet. `tone` is `ink` (a fact), `forest` (confirmed, yours) or `brick` (wants
 attention). The word is the meaning and the tone only underlines it, so a label still says everything in
 greyscale. On the person card (#13) a fact marked *wahrscheinlich* or *überliefert* gets an `ink` label
-with that word, an *unbelegt* one a `brick` label "unbelegt, Quelle fehlt" - it wants a source - and a
-*belegt* one no label at all, only its "Beleg: …" line: the normal state is not news.
+with that word, and a *belegt* one no label at all, only its "Beleg: …" line: the normal state is not news.
+An *unbelegt* fact gets no label either, only a quiet "unbelegt" in `ink-muted` beside where it was
+imported from: after an import nearly every fact is unbelegt, and a `brick` mark on each would turn the
+card red and stop meaning anything.
 
 ### The buttons
 
@@ -121,6 +124,9 @@ with that word, an *unbelegt* one a `brick` label "unbelegt, Quelle fehlt" - it 
 screen exists for. Everything else is `secondary`: an `ink` outline. With `href` the component draws a
 link that looks the same. A link is never disabled: a control that may refuse is a button. A `disabled` button drops to `ink-muted` on a `card-edge` edge - quieter, still
 readable. At least 44px tall, so a finger finds it too.
+
+The button of an upload field (`<c-common.file-field>`) is drawn as a `secondary` button too, so the
+field reads as a control rather than as the browser's bare "Browse…".
 
 ### The toast
 

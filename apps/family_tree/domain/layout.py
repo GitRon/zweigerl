@@ -7,15 +7,17 @@ Pure: no database, no Django. "readers.tree" loads the rows and calls "layout".
 
 import datetime
 import heapq
+import itertools
 import math
 import zlib
 from collections import defaultdict, deque
-from collections.abc import Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from enum import StrEnum
+from functools import cached_property
 from statistics import fmean
 
-from apps.family_tree.domain.stroke import Segment, pen_stroke
+from apps.family_tree.domain.stroke import Segment, pen_stroke, pen_strokes
 
 # Sizes in pixels. The cards' own look is #12's; these only say how much room each one takes.
 CARD_WIDTH = 140
@@ -25,7 +27,7 @@ SIBLING_GAP = 32
 BLOCK_GAP = 64
 ROW_GAP = 90
 # How much higher than a couple's the bar of a single parent's children runs, so a father's son from before the
-# marriage does not look like the couple's.
+# marriage does not look like the couple's - and how far apart two bars run that would otherwise lie on each other.
 BAR_STEP = 15
 # How much lower the line to a partner runs for every card it passes behind, so the line to a third spouse does
 # not lie on the line to the second.
@@ -88,6 +90,8 @@ class Placeholder:
     x: int
     y: int
     generation: int
+    # Whose line of ancestors the unknown parents are part of: the siblings and their descendants.
+    lineage: tuple[int, ...] = ()
 
 
 class LineKind(StrEnum):
@@ -96,10 +100,26 @@ class LineKind(StrEnum):
 
 
 @dataclass(frozen=True, kw_only=True)
-class Line:
-    kind: LineKind
+class Stroke:
+    """
+    One straight piece of a line, drawn on its own so it can stand out on its own: the part of a family's line
+    that leads to one of the children stands out without the rest.
+    """
+
     # An SVG path, see "domain.stroke".
     path: str
+    # Whose line of ancestors it is part of: the people who, chosen, make it stand out.
+    lineage: tuple[int, ...] = ()
+
+
+@dataclass(frozen=True, kw_only=True)
+class Line:
+    kind: LineKind
+    strokes: tuple[Stroke, ...]
+
+    @property
+    def path(self) -> str:
+        return " ".join(stroke.path for stroke in self.strokes)
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -109,6 +129,8 @@ class TreeLayout:
     lines: tuple[Line, ...] = ()
     width: int = 0
     height: int = 0
+    # Everyone in the tree with whose line of ancestors they are part of: themselves and their descendants.
+    lineages: Mapping[int, tuple[int, ...]] = field(default_factory=dict)
 
 
 def layout(
@@ -358,6 +380,45 @@ class _Unit:
     @property
     def center(self) -> float:
         return self.x + self.width / 2
+
+
+@dataclass(kw_only=True, eq=False)
+class _Bar:
+    """
+    The line from a family's parents to their children while it is laid out: where it leaves the parents, where
+    the children's cards start and how high the bar between them runs.
+    """
+
+    family: _Family
+    anchor: tuple[float, float]
+    children: list[tuple[float, float]]
+    y: float = 0.0
+
+    @cached_property
+    def points(self) -> list[float]:
+        """
+        Where the bar is joined, left to right: the line from the parents and every child.
+        """
+        return sorted({self.anchor[0], *(x for x, _ in self.children)})
+
+    @cached_property
+    def top(self) -> float:
+        """
+        Where the highest of the children's cards starts: the row the bar runs above.
+        """
+        return min(y for _, y in self.children)
+
+    def clashes(self, *, other: _Bar, y: float) -> bool:
+        """
+        Whether the bar, run at "y", would lie on the other one: above the same row, closer than a step and
+        overlapping, so the two read as one bar.
+        """
+        return (
+            other.top == self.top
+            and abs(other.y - y) < BAR_STEP
+            and self.points[0] <= other.points[-1] + PARTNER_GAP
+            and other.points[0] <= self.points[-1] + PARTNER_GAP
+        )
 
 
 @dataclass(kw_only=True, eq=False)
@@ -641,12 +702,14 @@ class _Tree:
             for node, (x, y) in sorted(corners.items(), key=lambda item: (item[1][1], item[1][0]))
             if node > 0
         )
+        lineages = self._lineages()
         placeholders = tuple(
             Placeholder(
                 sibling_ids=tuple(family.children),
                 x=corners[family.parents[0]][0],
                 y=corners[family.parents[0]][1],
                 generation=self.generations[family.parents[0]],
+                lineage=tuple(sorted(set().union(*(lineages[child] for child in family.children)))),
             )
             for family in self.families
             if family.parents[0] < 0
@@ -654,15 +717,35 @@ class _Tree:
         return TreeLayout(
             cards=cards,
             placeholders=placeholders,
-            lines=self._partner_lines(corners=corners) + self._children_lines(corners=corners),
+            lines=self._partner_lines(corners=corners, lineages=lineages)
+            + self._children_lines(corners=corners, lineages=lineages),
             width=max(x for x, _ in corners.values()) + CARD_WIDTH,
             height=len(self.rows) * (CARD_HEIGHT + ROW_GAP) - ROW_GAP,
+            lineages={card.person_id: tuple(sorted(lineages[card.person_id])) for card in cards},
         )
 
-    def _partner_lines(self, *, corners: dict[int, tuple[int, int]]) -> tuple[Line, ...]:
+    def _lineages(self) -> dict[int, set[int]]:
+        """
+        Everyone in the tree with the people whose ancestor they are, themselves included: chosen, any of them
+        makes this person stand out as part of their line.
+        """
+        lineages = {}
+        for person_id in self.generations:
+            lineage = {person_id}
+            queue = deque([person_id])
+            while queue:
+                for child in self.graph.children[queue.popleft()]:
+                    if child in self.generations and child not in lineage:
+                        lineage.add(child)
+                        queue.append(child)
+            lineages[person_id] = lineage
+        return lineages
+
+    def _partner_lines(self, *, corners: dict[int, tuple[int, int]], lineages: dict[int, set[int]]) -> tuple[Line, ...]:
         """
         Between the facing edges of a couple in one row, a step lower for every card it passes behind; across
-        rows, out of the upper one's side, down between them and into the lower one's side.
+        rows, out of the upper one's side, down between them and into the lower one's side. Part of the line of
+        whoever both are ancestors of.
         """
         lines = []
         for unit in self.units:
@@ -671,35 +754,30 @@ class _Tree:
                     left_node, right_node = sorted((couple.near, couple.far), key=unit.nodes.index)
                     y = corners[left_node][1] + self._drop(couple=couple)
                     segments = [((corners[left_node][0] + CARD_WIDTH, y), (corners[right_node][0], y))]
-                    lines.append(_partner_line(pair=(couple.near, couple.far), segments=segments))
+                    lines.append(_partner_line(pair=(couple.near, couple.far), segments=segments, lineages=lineages))
         lines.extend(
-            _partner_line(pair=pair, segments=_across_rows(corners=corners, pair=pair)) for pair in self.across.values()
+            _partner_line(pair=pair, segments=_across_rows(corners=corners, pair=pair), lineages=lineages)
+            for pair in self.across.values()
         )
         return tuple(lines)
 
-    def _children_lines(self, *, corners: dict[int, tuple[int, int]]) -> tuple[Line, ...]:
+    def _children_lines(
+        self, *, corners: dict[int, tuple[int, int]], lineages: dict[int, set[int]]
+    ) -> tuple[Line, ...]:
         """
         From the parents down to a bar above the children, and from the bar down to each child. A couple's
         line leaves the line between them, anyone else's the bottom of their cards; "_bar_shift" says how high
-        the bar runs.
+        the bar runs, "_bar_lanes" moves it where it would lie on another family's.
         """
-        lines = []
+        bars = []
         for family in self.families:
             children = [(corners[child][0] + CARD_WIDTH / 2, corners[child][1]) for child in family.children]
-            (anchor_x, start_y), from_partner_line = self._line_start(family=family, corners=corners)
-            bar_y = (
-                min(y for _, y in children)
-                - ROW_GAP / 2
-                + self._bar_shift(family=family, from_partner_line=from_partner_line)
-            )
-            bar = sorted({anchor_x, *(x for x, _ in children)})
-
-            segments: list[Segment] = [((anchor_x, start_y), (anchor_x, bar_y))]
-            if len(bar) > 1:
-                segments.append(((bar[0], bar_y), (bar[-1], bar_y)))
-            segments.extend(((x, bar_y), (x, y)) for x, y in children)
-            lines.append(Line(kind=LineKind.CHILDREN, path=pen_stroke(segments=segments, seed=_seed(key=family.key))))
-        return tuple(lines)
+            anchor, from_partner_line = self._line_start(family=family, corners=corners)
+            bar = _Bar(family=family, anchor=anchor, children=children)
+            bar.y = bar.top - ROW_GAP / 2 + self._bar_shift(family=family, from_partner_line=from_partner_line)
+            bars.append(bar)
+        _bar_lanes(bars=bars)
+        return tuple(_children_line(bar=bar, lineages=lineages) for bar in bars)
 
     def _bar_shift(self, *, family: _Family, from_partner_line: bool) -> float:
         """
@@ -767,10 +845,62 @@ def _across_rows(*, corners: dict[int, tuple[int, int]], pair: tuple[int, int]) 
     return [(start, end) for start, end in segments if start != end]
 
 
-def _partner_line(*, pair: tuple[int, int], segments: list[Segment]) -> Line:
+def _partner_line(*, pair: tuple[int, int], segments: list[Segment], lineages: dict[int, set[int]]) -> Line:
     return Line(
         kind=LineKind.PARTNERS,
-        path=pen_stroke(segments=segments, seed=_seed(key="partners-" + "-".join(map(str, sorted(pair))))),
+        strokes=(
+            Stroke(
+                path=pen_stroke(segments=segments, seed=_seed(key="partners-" + "-".join(map(str, sorted(pair))))),
+                lineage=tuple(sorted(lineages[pair[0]] & lineages[pair[1]])),
+            ),
+        ),
+    )
+
+
+def _bar_lanes(*, bars: list[_Bar]) -> None:
+    """
+    Moves a bar that would lie on another family's above the same row - two families standing side by side
+    whose lines reach over each other - a step lower or higher, the nearest that is free, but never more than two
+    steps from halfway between the rows. The families in their order, so the same tree comes out the same.
+    """
+    placed: list[_Bar] = []
+    for bar in bars:
+        if len(bar.points) < 2:
+            continue
+        middle = bar.top - ROW_GAP / 2
+        lanes = [bar.y + step * BAR_STEP for step in (0, 1, -1, 2, -2)]
+        free = (
+            y
+            for y in lanes
+            if abs(y - middle) <= 2 * BAR_STEP and not any(bar.clashes(other=other, y=y) for other in placed)
+        )
+        # Where every lane is taken, the bar keeps its own.
+        bar.y = next(free, bar.y)
+        placed.append(bar)
+
+
+def _children_line(*, bar: _Bar, lineages: dict[int, set[int]]) -> Line:
+    """
+    A family's line, one stroke per straight piece, each part of the lines of the children it leads to: the drop
+    from the parents of all of them, a piece of the bar of those beyond it, the drop to a child of that child's.
+    """
+    family, (anchor_x, start_y), y = bar.family, bar.anchor, bar.y
+    children = list(zip(family.children, bar.children, strict=True))
+    segments: list[Segment] = [((anchor_x, start_y), (anchor_x, y))]
+    leads: list[Iterable[int]] = [family.children]
+    for left, right in itertools.pairwise(bar.points):
+        segments.append(((left, y), (right, y)))
+        leads.append([child for child, (x, _) in children if (x >= right if left >= anchor_x else x <= left)])
+    for child, (x, top) in children:
+        segments.append(((x, y), (x, top)))
+        leads.append([child])
+    paths = pen_strokes(segments=segments, seed=_seed(key=family.key))
+    return Line(
+        kind=LineKind.CHILDREN,
+        strokes=tuple(
+            Stroke(path=path, lineage=tuple(sorted(set().union(*(lineages[child] for child in lead)))))
+            for path, lead in zip(paths, leads, strict=True)
+        ),
     )
 
 

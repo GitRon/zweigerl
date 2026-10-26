@@ -18,9 +18,16 @@ WOBBLE = 2.5
 
 def pen_stroke(*, segments: Sequence[Segment], seed: int) -> str:
     """
-    An SVG path drawing every segment as one slightly bowed stroke - a quadratic curve whose control point
-    sits off the middle of the segment, by an amount the seed decides. The ends stay exactly where they are,
-    so a stroke still meets the card it leads to. Every segment must have a length.
+    An SVG path drawing every segment as one slightly bowed stroke, see "pen_strokes".
+    """
+    return " ".join(pen_strokes(segments=segments, seed=seed))
+
+
+def pen_strokes(*, segments: Sequence[Segment], seed: int) -> list[str]:
+    """
+    One SVG path per segment, each a slightly bowed stroke - a quadratic curve whose control point sits off the
+    middle of the segment, by an amount the seed decides. The ends stay exactly where they are, so a stroke still
+    meets the card it leads to. Every segment must have a length. Together they are exactly "pen_stroke".
     """
     rng = random.Random(seed)
     parts = []
@@ -31,7 +38,7 @@ def pen_stroke(*, segments: Sequence[Segment], seed: int) -> str:
         control_y = (y1 + y2) / 2 + (x2 - x1) / length * bow
         start, control, end = (_point(x=x, y=y) for x, y in ((x1, y1), (control_x, control_y), (x2, y2)))
         parts.append(f"M {start} Q {control} {end}")
-    return " ".join(parts)
+    return parts
 
 
 def _point(*, x: float, y: float) -> str:

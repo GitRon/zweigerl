@@ -135,6 +135,13 @@ card his contacts example.
   at all. Each card fades with `$filtered && !$matches.includes(7)` and is outlined with
   `$filtered && $matches.includes(7)`. The server decides who matches, once, for the list and the tree;
   the browser never filters by itself.
+- **The line of ancestors is a computed signal.** `$ancestry` is the switch "Vorfahren hervorheben" in the
+  toolbar, on from the start. `data-computed:ancestors` on the canvas holds while it is on, no search runs and
+  the selected person is one the tree shows: `$ancestry && !$filtered && [3, 7, …].includes($selection)`.
+  Every card, placeholder and stroke carries the ids of the people whose line it belongs to, written into its
+  expression by the server, and fades with `$ancestors && ![7, 12].includes($selection)`; a stroke on the line
+  is drawn heavier. Nothing goes to the server on a click, and the browser decides nothing about the family:
+  [the layout](tree-layout.md#the-line-of-ancestors) worked out whose line is whose.
 - **Positions are inline styles.** Where a card stands comes from [the layout](tree-layout.md) in whole
   pixels and is written as `style="left: …px; top: …px"`; the lines are one SVG under the cards. They are
   data, not design, so they are no exception to [visual identity](visual-identity.md).

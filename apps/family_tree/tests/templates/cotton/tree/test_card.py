@@ -11,6 +11,7 @@ CARD = TreeCard(
     entry=PersonListEntry(person=PersonFactory.build(pk=7), name="Gerti Huber", initials="GH", lifespan="* 1958"),
     x=164,
     y=280,
+    lineage=(7, 9),
 )
 
 
@@ -73,3 +74,12 @@ def test_card_shows_the_portrait_in_the_frame():
 
     image = parse(html).find(id="tree-card-7").find("img")
     assert (image["src"], image["alt"]) == ("/media/photos/5/original.jpg", "Am Hof")
+
+
+def test_card_fades_unless_it_is_the_selected_person_or_one_of_their_ancestors():
+    html = render_component(
+        tag='<c-tree.card :card="card" width="140" height="190" />',
+        context={"card": CARD},
+    )
+
+    assert "($ancestors && ![7, 9].includes($selection))" in parse(html).find(id="tree-card-7")["data-class"]
