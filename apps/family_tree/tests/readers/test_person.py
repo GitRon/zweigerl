@@ -9,6 +9,8 @@ from apps.family_tree.readers.person import (
     FactEntry,
     KindChoice,
     LinkPreview,
+    NoteEntry,
+    NotesTab,
     PersonList,
     PersonListEntry,
     RelativeCandidates,
@@ -20,6 +22,8 @@ from apps.family_tree.readers.person import (
     fact_form,
     link_preview,
     loose_people,
+    note_entry,
+    notes_tab,
     person_card,
     person_entries,
     person_list,
@@ -33,6 +37,7 @@ from apps.family_tree.readers.person import (
 from apps.family_tree.tests.factories.citation import CitationFactory
 from apps.family_tree.tests.factories.fact import FactFactory
 from apps.family_tree.tests.factories.gedcom_import import GedcomImportFactory
+from apps.family_tree.tests.factories.note import NoteFactory
 from apps.family_tree.tests.factories.parent_child import ParentChildFactory
 from apps.family_tree.tests.factories.partnership import PartnershipFactory
 from apps.family_tree.tests.factories.person import PersonFactory
@@ -888,3 +893,51 @@ def test_relative_candidates_suggest_the_loose_and_leave_out_parents_and_childre
     candidates = relative_candidates(pk=lena.pk, relation="sibling", search="huber")
 
     assert (_people(candidates.suggested), _people(candidates.found)) == ([rosa], [stefan])
+
+
+@pytest.mark.django_db
+def test_notes_tab_lists_the_persons_notes_signed_by_full_name_or_user_name(django_user_model):
+    lena = PersonFactory(given_names="Lena")
+    anna = django_user_model.objects.create_user(username="anna", first_name="Anna", last_name="Huber")
+    sepp = django_user_model.objects.create_user(username="sepp")
+    first = NoteFactory(person=lena, author=anna)
+    second = NoteFactory(person=lena, author=sepp)
+    NoteFactory(person=PersonFactory(given_names="Fremd"))
+
+    assert notes_tab(pk=lena.pk) == NotesTab(
+        person=lena,
+        notes=[NoteEntry(note=first, author="Anna Huber"), NoteEntry(note=second, author="sepp")],
+    )
+
+
+@pytest.mark.django_db
+def test_notes_tab_names_the_import_of_a_note_without_author():
+    note = NoteFactory(gedcom_import=GedcomImportFactory(name="PAF Huber"))
+
+    assert notes_tab(pk=note.person.pk).notes == [NoteEntry(note=note, author=None, origin="PAF Huber")]
+
+
+@pytest.mark.django_db
+def test_notes_tab_of_somebody_not_in_the_tree_is_none():
+    assert notes_tab(pk=404) is None
+
+
+@pytest.mark.django_db
+def test_person_card_holds_the_notes_tab():
+    note = NoteFactory()
+
+    assert person_card(pk=note.person.pk).notes_tab.notes == [NoteEntry(note=note, author=None)]
+
+
+@pytest.mark.django_db
+def test_note_entry_finds_a_note_of_the_person():
+    note = NoteFactory()
+
+    assert note_entry(person_id=note.person.pk, note_id=note.pk) == NoteEntry(note=note, author=None)
+
+
+@pytest.mark.django_db
+def test_note_entry_of_somebody_elses_note_is_none():
+    note = NoteFactory()
+
+    assert note_entry(person_id=PersonFactory().pk, note_id=note.pk) is None

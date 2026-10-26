@@ -1,0 +1,10 @@
+<c-vars person />
+{# The form for a new note in the Notizen tab of the person card (#17); whoever is logged in signs it. #}
+<form aria-label="Neue Notiz" class="flex flex-col gap-3" data-on:submit="@post('{% url 'family_tree:note-create-view' pk=person.pk %}', {contentType: 'form'})">
+    {% csrf_token %}
+    <label class="flex flex-col gap-1">
+        <span class="text-sm">Neue Notiz</span>
+        <textarea name="text" rows="3" required placeholder="Eine Frage, ein Hinweis, was wer erzählt hat" class="rounded-md border-[1.5px] border-ink bg-sheet px-3 py-2 font-hand text-2xl leading-snug"></textarea>
+    </label>
+    <c-common.button variant="primary" type="submit" class="self-start">Notiz anlegen</c-common.button>
+</form>

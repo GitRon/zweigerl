@@ -6,6 +6,8 @@ from django.urls import reverse
 from apps.common.tests.html import parse, render_component
 from apps.family_tree.readers.person import (
     FactEntry,
+    NoteEntry,
+    NotesTab,
     PersonCard,
     PersonListEntry,
     PhotoEntry,
@@ -16,6 +18,7 @@ from apps.family_tree.readers.person import (
 )
 from apps.family_tree.tests.factories.citation import CitationFactory
 from apps.family_tree.tests.factories.fact import FactFactory
+from apps.family_tree.tests.factories.note import NoteFactory
 from apps.family_tree.tests.factories.person import PersonFactory
 from apps.family_tree.tests.factories.photo import PhotoFactory
 from apps.family_tree.tests.factories.photo_person import PhotoPersonFactory
@@ -40,6 +43,7 @@ CARD = PersonCard(
     relative_count=0,
     sources_tab=SourcesTab(person=GERTI.person, sources=[], kinds=[]),
     photos_tab=PhotosTab(person=GERTI.person, photos=[]),
+    notes_tab=NotesTab(person=GERTI.person, notes=[]),
     death_recorded=False,
 )
 DOCUMENTED = FactEntry(
@@ -114,10 +118,20 @@ def test_card_switches_tabs_with_their_counts():
     ) == ("Angaben 1", "$tab = 'facts'", "Verwandte 1", "$tab = 'relatives'")
 
 
-def test_card_offers_the_tabs_of_later_tickets_disabled():
-    html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
+def test_card_lists_the_notes_in_their_tab():
+    note = NoteEntry(note=NoteFactory.build(pk=4, person=GERTI.person, text="Zwei Jahre in Amerika?"), author=None)
 
-    assert parse(html).find("button", string="Notizen").has_attr("disabled") is True
+    html = render_component(
+        tag='<c-person.card :card="card" />',
+        context={"card": replace(CARD, notes_tab=NotesTab(person=GERTI.person, notes=[note]))},
+    )
+
+    page = parse(html)
+    assert (
+        " ".join(page.find(id="person-card-tab-notes").get_text().split()),
+        page.find(id="person-card-tab-notes")["data-on:click"],
+        page.find(id="person-card-notes").find(id="note-4") is not None,
+    ) == ("Notizen 1", "$tab = 'notes'", True)
 
 
 def test_card_shows_the_portrait_in_its_head():

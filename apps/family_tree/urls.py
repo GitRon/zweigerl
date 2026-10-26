@@ -22,6 +22,7 @@ from apps.family_tree.views.new_person import (
     new_relative_view,
     relative_candidates_view,
 )
+from apps.family_tree.views.note import delete_note_view, note_change_view, note_create_view
 from apps.family_tree.views.person import person_name_view, person_view
 from apps.family_tree.views.person_search import person_search_view
 from apps.family_tree.views.photo import photo_create_view, photo_describe_view, photo_portrait_view
@@ -72,6 +73,9 @@ urlpatterns = [
         delete_source_file_view,
         name="delete-source-file-view",
     ),
+    path("persons/<int:pk>/notes/", note_create_view, name="note-create-view"),
+    path("persons/<int:pk>/notes/<int:note_pk>/", note_change_view, name="note-change-view"),
+    path("persons/<int:pk>/notes/<int:note_pk>/delete/", delete_note_view, name="delete-note-view"),
     path("persons/<int:pk>/photos/", photo_create_view, name="photo-create-view"),
     path("persons/<int:pk>/photos/<int:photo_pk>/portrait/", photo_portrait_view, name="photo-portrait-view"),
     path("persons/<int:pk>/photos/<int:photo_pk>/", photo_describe_view, name="photo-describe-view"),

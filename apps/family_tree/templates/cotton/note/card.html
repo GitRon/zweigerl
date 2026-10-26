@@ -1,0 +1,39 @@
+<c-vars entry person />
+{# One note in the Notizen tab of the person card (#17): the text in handwriting, then who wrote it - or, for an #}
+{# imported note, where it came from - when, and "bearbeitet" once it was changed. The pencil swaps the text for #}
+{# its form while "$note" is this note; the cross asks before it goes. #}
+{% with note=entry.note %}
+<li id="note-{{ note.pk }}" class="border-b border-card-edge py-3">
+    <div class="flex flex-col gap-1" data-show="$note != {{ note.pk }}">
+        <p class="font-hand text-2xl leading-snug whitespace-pre-line">{{ note.text }}</p>
+        <div class="flex items-center justify-between gap-2">
+            <p class="text-sm text-ink-muted">
+                {% if entry.author %}{{ entry.author }}{% elif entry.origin %}Herkunft: {{ entry.origin }}{% else %}Unbekannt{% endif %}
+                · <time datetime="{{ note.created_at|date:'c' }}">{{ note.created_at|date:"j. F Y, H:i" }}</time>
+                {% if note.changed_at %}
+                    · <span title="Bearbeitet am {{ note.changed_at|date:'j. F Y, H:i' }}">bearbeitet</span>
+                {% endif %}
+            </p>
+            <div class="flex shrink-0 gap-1">
+                <c-common.button class="w-11 px-0!" aria-label="Notiz bearbeiten" title="Bearbeiten" data-on:click="$note = {{ note.pk }}">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 2.5l2.5 2.5L5.5 13H3v-2.5z M9.5 4l2.5 2.5" /></svg>
+                </c-common.button>
+                <c-common.button class="w-11 px-0!" aria-label="Notiz löschen" title="Löschen" data-on:click="@get('{% url 'family_tree:delete-note-view' pk=person.pk note_pk=note.pk %}')">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M3.5 3.5l9 9 M12.5 3.5l-9 9" /></svg>
+                </c-common.button>
+            </div>
+        </div>
+    </div>
+    <form aria-label="Notiz bearbeiten" class="flex flex-col gap-3" style="display: none" data-show="$note == {{ note.pk }}" data-on:submit="@post('{% url 'family_tree:note-change-view' pk=person.pk note_pk=note.pk %}', {contentType: 'form'})">
+        {% csrf_token %}
+        <label class="flex flex-col gap-1">
+            <span class="text-sm">Notiz</span>
+            <textarea name="text" rows="4" required class="rounded-md border-[1.5px] border-ink bg-sheet px-3 py-2 font-hand text-2xl leading-snug">{{ note.text }}</textarea>
+        </label>
+        <div class="flex gap-3">
+            <c-common.button type="submit">Speichern</c-common.button>
+            <c-common.button type="reset" data-on:click="$note = 0">Abbrechen</c-common.button>
+        </div>
+    </form>
+</li>
+{% endwith %}

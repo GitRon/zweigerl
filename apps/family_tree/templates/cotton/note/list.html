@@ -1,0 +1,16 @@
+<c-vars notes_tab />
+{# The Notizen tab of the person card (#17): every note, the oldest first, then the form for a new one. "$note" #}
+{# is the note whose form is open in place of its text, 0 while none is. Patched on its own after a change - the #}
+{# whole card would morph its tabs back to the first - which also closes any form left open. #}
+<div id="person-card-note-list" class="flex flex-col gap-3" data-signals="{note: 0}">
+    {% if notes_tab.notes %}
+        <ul class="flex flex-col">
+            {% for entry in notes_tab.notes %}
+                <c-note.card :entry="entry" :person="notes_tab.person" />
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="py-4 text-center text-ink-muted">Noch nix notiert. Fragen und Hinweise kommen hierher.</p>
+    {% endif %}
+    <c-note.new :person="notes_tab.person" />
+</div>

@@ -3,8 +3,9 @@
 {# The head says who they are and what they are to the home person; the pencil beside the name swaps it for #}
 {# the form "Name & Status bearbeiten" (#30) while "$editing" is this person, "$status" being the status #}
 {# chosen there. The tabs, switched by "$tab", hold every fact with its Beleg - added, changed and removed in #}
-{# place (#14) - the photos (#16), the sources with their scans (#15) and everyone directly related, each #}
-{# link with its button to remove it; "Verwandte hinzufügen" asks for a new one (#18), "Löschen" what #}
+{# place (#14) - the photos (#16), the sources with their scans (#15), everyone directly related, each #}
+{# link with its button to remove it, and the notes in handwriting (#17); "Verwandte hinzufügen" asks for a #}
+{# new relative (#18), "Löschen" what #}
 {# deleting the person would take with it (#19). #}
 {# Closing it - the button, or Escape on the canvas - moves #}
 {# the address back to the start page, so a reload does not open it again. Below "lg" it lies over the tree #}
@@ -86,7 +87,7 @@
         <button type="button" role="tab" id="person-card-tab-photos" aria-controls="person-card-photos" aria-selected="false" data-attr:aria-selected="String($tab == 'photos')" class="-mb-px flex min-h-11 cursor-pointer items-center gap-1.5 border-b-2 border-transparent" data-class="{'border-forest text-forest': $tab == 'photos', 'border-transparent': $tab != 'photos'}" data-on:click="$tab = 'photos'">Fotos <c-photo.count :photos_tab="card.photos_tab" /></button>
         <button type="button" role="tab" id="person-card-tab-sources" aria-controls="person-card-sources" aria-selected="false" data-attr:aria-selected="String($tab == 'sources')" class="-mb-px flex min-h-11 cursor-pointer items-center gap-1.5 border-b-2 border-transparent" data-class="{'border-forest text-forest': $tab == 'sources', 'border-transparent': $tab != 'sources'}" data-on:click="$tab = 'sources'">Quellen <c-source.count :sources_tab="card.sources_tab" /></button>
         <button type="button" role="tab" id="person-card-tab-relatives" aria-controls="person-card-relatives" aria-selected="false" data-attr:aria-selected="String($tab == 'relatives')" class="-mb-px flex min-h-11 cursor-pointer items-center gap-1.5 border-b-2 border-transparent" data-class="{'border-forest text-forest': $tab == 'relatives', 'border-transparent': $tab != 'relatives'}" data-on:click="$tab = 'relatives'">Verwandte <span class="text-ink-muted">{{ card.relative_count }}</span></button>
-        <button type="button" role="tab" aria-disabled="true" disabled class="-mb-px min-h-11 border-b-2 border-transparent text-ink-muted">Notizen</button>
+        <button type="button" role="tab" id="person-card-tab-notes" aria-controls="person-card-notes" aria-selected="false" data-attr:aria-selected="String($tab == 'notes')" class="-mb-px flex min-h-11 cursor-pointer items-center gap-1.5 border-b-2 border-transparent" data-class="{'border-forest text-forest': $tab == 'notes', 'border-transparent': $tab != 'notes'}" data-on:click="$tab = 'notes'">Notizen <c-note.count :notes_tab="card.notes_tab" /></button>
     </div>
     <section id="person-card-facts" role="tabpanel" aria-labelledby="person-card-tab-facts" data-show="$tab == 'facts'">
         {% if card.facts %}
@@ -142,6 +143,9 @@
         {% else %}
             <p class="py-8 text-center text-ink-muted">Noch niemand mit dieser Person verbunden.</p>
         {% endif %}
+    </section>
+    <section id="person-card-notes" role="tabpanel" aria-labelledby="person-card-tab-notes" style="display: none" data-show="$tab == 'notes'">
+        <c-note.list :notes_tab="card.notes_tab" />
     </section>
     <div class="flex flex-wrap gap-3">
         <c-common.button data-on:click="@get('{% url 'family_tree:new-relative-view' pk=card.entry.person.pk %}')">Verwandte hinzufügen</c-common.button>

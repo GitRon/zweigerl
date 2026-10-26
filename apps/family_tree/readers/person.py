@@ -6,7 +6,17 @@ from django.db.models import Count, F, Prefetch, Q, QuerySet
 from apps.family_tree.domain.dates import date_text, lifespan
 from apps.family_tree.domain.names import display_name, initials, matches, sort_key
 from apps.family_tree.domain.relationship import ancestors, connected_people, descendants, relationship_name
-from apps.family_tree.models import Citation, Fact, ParentChild, Partnership, Person, PhotoPerson, SiblingPair, Source
+from apps.family_tree.models import (
+    Citation,
+    Fact,
+    Note,
+    ParentChild,
+    Partnership,
+    Person,
+    PhotoPerson,
+    SiblingPair,
+    Source,
+)
 from apps.family_tree.models.fact import COUPLE_KINDS, CUSTOM, VALUE_KINDS
 from apps.family_tree.readers.evidence import facts, sources
 from apps.family_tree.readers.relationship import family_graph
@@ -147,6 +157,22 @@ class PhotosTab:
 
 
 @dataclass(frozen=True, kw_only=True)
+class NoteEntry:
+    note: Note
+    # Who wrote it, by full name or else user name; None for an imported note and one whose account is gone.
+    author: str | None
+    # The import the note came from - "PAF Ronny" (#23) - None for one written here.
+    origin: str | None = None
+
+
+@dataclass(frozen=True, kw_only=True)
+class NotesTab:
+    person: Person
+    # The person's notes, the oldest first (#17).
+    notes: list[NoteEntry]
+
+
+@dataclass(frozen=True, kw_only=True)
 class PersonCard:
     entry: PersonListEntry
     # How the person is related to the home person, None while nobody is chosen or nothing connects them.
@@ -156,6 +182,7 @@ class PersonCard:
     relative_count: int
     sources_tab: SourcesTab
     photos_tab: PhotosTab
+    notes_tab: NotesTab
     # Whether a death fact is recorded, so the form for name and status (#30) does not ask for the year again.
     death_recorded: bool
     # The import the person came from - "PAF Ronny" (#22) - None for somebody entered here.
@@ -183,6 +210,7 @@ def person_card(*, pk: int) -> PersonCard | None:
         relative_count=sum(len(group.entries) for group in groups),
         sources_tab=_sources_tab(person=person),
         photos_tab=_photos_tab(person=person),
+        notes_tab=_notes_tab(person=person),
         death_recorded=any(fact.kind == Fact.Kind.DEATH for fact in person.life_facts),
         origin=person.gedcom_import.name if person.gedcom_import else None,
     )
@@ -608,6 +636,40 @@ def _photos_tab(*, person: Person) -> PhotosTab:
             )
             for link in links
         ],
+    )
+
+
+def notes_tab(*, pk: int) -> NotesTab | None:
+    """
+    The Notizen tab of the person card (#17) on its own, for patching it after a note was written, changed or
+    deleted - or None for a person who is not there.
+    """
+    person = Person.objects.filter(pk=pk).first()
+    return _notes_tab(person=person) if person else None
+
+
+def note_entry(*, person_id: int, note_id: int) -> NoteEntry | None:
+    """
+    One note of the person as their card shows it, for asking before it is deleted (#17) - or None for a note
+    that is not theirs or no longer there.
+    """
+    note = _notes().filter(pk=note_id, person_id=person_id).first()
+    return _note_entry(note=note) if note else None
+
+
+def _notes_tab(*, person: Person) -> NotesTab:
+    return NotesTab(person=person, notes=[_note_entry(note=note) for note in _notes().filter(person=person)])
+
+
+def _notes() -> QuerySet[Note]:
+    return Note.objects.select_related("author", "gedcom_import")
+
+
+def _note_entry(*, note: Note) -> NoteEntry:
+    return NoteEntry(
+        note=note,
+        author=(note.author.get_full_name() or note.author.get_username()) if note.author else None,
+        origin=note.gedcom_import.name if note.gedcom_import else None,
     )
 
 

@@ -1,0 +1,16 @@
+<c-vars entry url />
+{# Asks before a note goes (#17), showing it as the card does. Appended to the body, it opens itself and removes #}
+{# itself when closed - with "Abbrechen" or Escape, which stops here so the canvas does not close the card behind #}
+{# it - or by the answer to "Löschen". #}
+<dialog id="delete-note-dialog" aria-labelledby="delete-note-dialog-title" class="m-auto w-full max-w-md rounded-lg border-[1.5px] border-ink bg-sheet p-6 text-ink backdrop:bg-ink/40" data-init="el.showModal()" data-on:close="el.remove()" data-on:keydown="evt.key == 'Escape' && evt.stopPropagation()">
+    <form class="flex flex-col gap-4" data-on:submit="@post('{{ url }}', {contentType: 'form'})">
+        {% csrf_token %}
+        <h2 id="delete-note-dialog-title" class="text-2xl">Notiz löschen?</h2>
+        <p class="line-clamp-4 font-hand text-2xl leading-snug whitespace-pre-line">{{ entry.note.text }}</p>
+        <p class="text-sm text-ink-muted">Die Notiz verschwindet ganz.</p>
+        <div class="flex justify-end gap-3">
+            <c-common.button data-on:click="el.closest('dialog').close()">Abbrechen</c-common.button>
+            <c-common.button variant="primary" type="submit">Löschen</c-common.button>
+        </div>
+    </form>
+</dialog>
