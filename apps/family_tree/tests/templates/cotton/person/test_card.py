@@ -89,10 +89,11 @@ def test_card_moves_the_address_back_to_the_start_page_when_closed():
     )
 
 
-def test_card_asks_for_a_new_relative():
+def test_card_asks_for_a_new_relative_in_the_relatives_tab():
     html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
 
-    assert parse(html).find("button", string="Verwandte hinzufügen")["data-on:click"] == (
+    relatives = parse(html).find(id="person-card-relatives")
+    assert relatives.find("button", string="Verwandte hinzufügen")["data-on:click"] == (
         f"@get('{reverse('family_tree:new-relative-view', kwargs={'pk': 7})}')"
     )
 
@@ -100,7 +101,8 @@ def test_card_asks_for_a_new_relative():
 def test_card_closes_by_clearing_the_selection():
     html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
 
-    assert parse(html).find("button", string="Schließen")["data-on:click"] == "$selection = 0; $editing = 0"
+    button = parse(html).find("button", attrs={"aria-label": "Karte schließen"})
+    assert button["data-on:click"] == "$selection = 0; $editing = 0"
 
 
 def test_card_switches_tabs_with_their_counts():
@@ -217,8 +219,8 @@ def test_card_opens_the_card_of_a_relative():
 def test_card_without_relatives_says_so():
     html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
 
-    assert (
-        parse(html).find(id="person-card-relatives").get_text().strip() == "Noch niemand mit dieser Person verbunden."
+    assert parse(html).find(id="person-card-relatives").find("p").get_text() == (
+        "Noch niemand mit dieser Person verbunden."
     )
 
 
@@ -293,10 +295,11 @@ def test_card_offers_no_unlinking_of_a_sibling_through_a_parent():
     assert parse(html).find("button", attrs={"aria-label": "Verbindung zu Johann Huber lösen"}) is None
 
 
-def test_card_asks_before_deleting_the_person():
+def test_card_asks_before_deleting_the_person_from_the_name_form():
     html = render_component(tag='<c-person.card :card="card" />', context={"card": CARD})
 
-    assert parse(html).find("button", string="Löschen")["data-on:click"] == (
+    form = parse(html).find(id="person-card-name")
+    assert form.find("button", string="Person löschen")["data-on:click"] == (
         f"@get('{reverse('family_tree:confirm-delete-person-view', kwargs={'pk': 7})}')"
     )
 

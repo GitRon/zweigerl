@@ -14,7 +14,7 @@ from apps.family_tree.readers.person import deletion_preview, link_preview
 @require_GET
 def confirm_delete_person_view(request: HttpRequest, pk: int) -> DatastarResponse:
     """
-    The dialog behind "Löschen" on a person's card (#19): what vanishes, what stays, which links go and whom it
+    The dialog behind "Person löschen" on a person's card (#19): what vanishes, what stays, which links go and whom it
     cuts off - or, for the home person, the way to choose another one first.
     """
     preview = deletion_preview(pk=pk)
