@@ -30,7 +30,7 @@ def test_create_note_refuses_somebody_not_in_the_tree():
 def test_create_note_refuses_a_note_without_text():
     lena = PersonFactory()
 
-    with pytest.raises(ValidationError, match="Eine Notiz braucht einen Text."):
+    with pytest.raises(ValidationError, match=r"Eine Notiz braucht einen Text\."):
         create_note(person_id=lena.pk, author_id=None, text="   ")
 
     assert Note.objects.exists() is False
@@ -68,7 +68,7 @@ def test_change_note_refuses_a_note_of_somebody_else():
 def test_change_note_refuses_an_emptied_text():
     note = NoteFactory(text="Zwei Jahre in Amerika?")
 
-    with pytest.raises(ValidationError, match="Eine Notiz braucht einen Text."):
+    with pytest.raises(ValidationError, match=r"Eine Notiz braucht einen Text\."):
         change_note(person_id=note.person.pk, note_id=note.pk, text="")
 
     note.refresh_from_db()
