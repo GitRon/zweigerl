@@ -128,6 +128,19 @@ def test_read_tells_a_pointer_from_a_value():
     )
 
 
+def test_read_skips_an_empty_line_and_a_stray_line_break():
+    file = io.BytesIO(b"0 @I1@ INDI\r\n\r\n1 BIRT\r\n2 PLAC Graz \n\r\n0 TRLR\r\n")
+
+    assert read(file=file) == [
+        Node(
+            tag="INDI",
+            xref="@I1@",
+            children=(Node(tag="BIRT", children=(Node(tag="PLAC", value="Graz "),)),),
+        ),
+        Node(tag="TRLR"),
+    ]
+
+
 def test_read_refuses_a_file_that_is_not_gedcom():
     with pytest.raises(ParserError, match="Invalid syntax"):
         read(file=io.BytesIO(b"0 HEAD\nLiebe Oma,\n0 TRLR\n"))
