@@ -101,7 +101,13 @@ card his contacts example.
 
 - **Moving is scrolling.** The tree sits in a container with `overflow: auto` (`<c-tree.canvas>`), so the
   trackpad, the mouse wheel, touch and - with `tabindex="0"` on the container - the arrow keys move it
-  without a line of script. Dragging with the mouse held down would need one and is its own ticket.
+  without a line of script. Dragging with the mouse held down is the one thing that needs one (#100):
+  `static/js/drag-scroll.js` moves every container marked `data-drag-scroll` by its `scrollLeft` and
+  `scrollTop`, so zoom, scrollbars and `scrollIntoView` never notice. Only the left mouse button drags -
+  touch and trackpad scroll by themselves. A drag may start on a card: below 5 px of movement a press is
+  a click and selects, beyond it the click that ends the drag is swallowed. While it runs the container
+  carries `data-drag-scroll="dragging"`, which the template styles with the grabbing cursor and no text
+  selection.
 - **Zoom is a signal and a transform.** `$zoom` starts at `1`, and the buttons change it in an inline
   expression clamped to 25 % - 200 %: `$zoom = Math.min(2, $zoom + 0.25)`. The drawing gets
   `data-style:transform="'scale(' + $zoom + ')'"` with its origin at the top left, and the element around
