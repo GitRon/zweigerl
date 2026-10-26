@@ -1,27 +1,31 @@
 <c-vars card />
 {# The person card beside the tree (#12, #13): who was selected there, shown while "$selection" is still them. #}
+{# The cross at the top right closes it (#94) and stays there while the card scrolls. Closing it - the cross, #}
+{# or Escape on the canvas - moves the address back to the start page, so a reload does not open it again. #}
 {# The head says who they are and what they are to the home person; the pencil beside the name swaps it for #}
 {# the form "Name & Status bearbeiten" (#30) while "$editing" is this person, "$status" being the status #}
-{# chosen there. The tabs, switched by "$tab", hold every fact with its Beleg - added, changed and removed in #}
-{# place (#14) - the photos (#16), the sources with their scans (#15), everyone directly related, each #}
-{# link with its button to remove it, and the notes in handwriting (#17); "Verwandte hinzufügen" asks for a #}
-{# new relative (#18), "Löschen" what #}
-{# deleting the person would take with it (#19). #}
-{# Closing it - the button, or Escape on the canvas - moves #}
-{# the address back to the start page, so a reload does not open it again. Below "lg" it lies over the tree #}
-{# instead of beside it - see docs/patterns/responsive-layout.md. Chosen from outside the tree - the list, a #}
-{# relative - "$focus" is this person, and the head centres their card in the tree a frame later, once this #}
-{# card is shown and the canvas beside it has its final width; a layout change under a smooth scroll would #}
-{# stop it. A loose person has no card in the tree to centre. #}
+{# chosen there. That form also holds "Person löschen", asking what deleting the person would take with it #}
+{# (#19): rare and expensive to get wrong, so it is out of the way of what is clicked all the time. The tabs, #}
+{# switched by "$tab", hold every fact with its Beleg - added, changed and removed in place (#14) - the #}
+{# photos (#16), the sources with their scans (#15), everyone directly related, each link with its button to #}
+{# remove it, and "Verwandte hinzufügen" asking for a new relative (#18), and the notes in handwriting (#17). #}
+{# Below "lg" it lies over the tree instead of beside it - see docs/patterns/responsive-layout.md. Chosen #}
+{# from outside the tree - the list, a relative - "$focus" is this person, and the head centres their card in #}
+{# the tree a frame later, once this card is shown and the canvas beside it has its final width; a layout #}
+{# change under a smooth scroll would stop it. A loose person has no card in the tree to centre. #}
 {% url 'family_tree:start-view' as start_url %}
 {% with person=card.entry.person %}
 <aside id="person-card" aria-label="Personenkarte" class="flex w-96 shrink-0 flex-col gap-4 overflow-y-auto border-l border-card-edge bg-birch p-6 max-lg:absolute max-lg:inset-y-0 max-lg:right-0 max-lg:w-full max-lg:max-w-md max-lg:border-l-[1.5px] max-lg:border-ink" data-signals="{tab: 'facts', editing: 0, status: ''}" data-show="$selection == {{ card.entry.person.pk }}" data-effect="$selection == 0 && location.pathname != '{{ start_url }}' && history.pushState(null, '', '{{ start_url }}')">
+    {# Pulled up over the head by its own height and the gap, so it takes no row of its own. #}
+    <c-common.button class="sticky top-0 z-10 -mb-15 w-11 shrink-0 self-end bg-birch px-0!" aria-label="Karte schließen" title="Karte schließen" data-on:click="$selection = 0; $editing = 0">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M3.5 3.5l9 9 M12.5 3.5l-9 9" /></svg>
+    </c-common.button>
     <div class="flex items-start gap-4" data-show="$editing != {{ person.pk }}" data-effect="$focus == {{ person.pk }} && ($focus = 0, requestAnimationFrame(() => document.getElementById('tree-card-{{ person.pk }}')?.scrollIntoView({block: 'center', inline: 'center'})))">
         <c-person.portrait :entry="card.entry" />
         <div class="flex min-w-0 flex-1 flex-col gap-1">
             <div class="flex items-start justify-between gap-2">
                 <h2 class="text-2xl leading-tight">{{ card.entry.name }}</h2>
-                <c-common.button class="w-11 shrink-0 px-0!" aria-label="Name &amp; Status bearbeiten" title="Name &amp; Status bearbeiten" data-on:click="$editing = {{ person.pk }}; $status = '{{ person.living_status }}'">
+                <c-common.button class="mr-15 w-11 shrink-0 px-0!" aria-label="Name &amp; Status bearbeiten" title="Name &amp; Status bearbeiten" data-on:click="$editing = {{ person.pk }}; $status = '{{ person.living_status }}'">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 2.5l2.5 2.5L5.5 13H3v-2.5z M9.5 4l2.5 2.5" /></svg>
                 </c-common.button>
             </div>
@@ -37,7 +41,7 @@
     </div>
     <form id="person-card-name" aria-label="Name &amp; Status bearbeiten" class="flex flex-col gap-3" style="display: none" data-show="$editing == {{ person.pk }}" data-on:submit="@post('{% url 'family_tree:person-name-view' pk=person.pk %}', {contentType: 'form'})">
         {% csrf_token %}
-        <h2 class="text-2xl leading-tight">Name &amp; Status bearbeiten</h2>
+        <h2 class="pr-15 text-2xl leading-tight">Name &amp; Status bearbeiten</h2>
         {# The search still running, so the list patched after saving stays filtered by it. #}
         <input type="hidden" name="search" value="" data-attr:value="$search">
         <label class="flex flex-col gap-1">
@@ -80,6 +84,9 @@
         <div class="flex gap-3">
             <c-common.button variant="primary" type="submit">Speichern</c-common.button>
             <c-common.button type="reset" data-on:click="$editing = 0">Abbrechen</c-common.button>
+        </div>
+        <div class="mt-3 border-t border-card-edge pt-6">
+            <c-common.button data-on:click="@get('{% url 'family_tree:confirm-delete-person-view' pk=person.pk %}')">Person löschen</c-common.button>
         </div>
     </form>
     <div role="tablist" aria-label="Über die Person" class="flex flex-wrap gap-x-3 border-b border-card-edge text-sm">
@@ -143,14 +150,12 @@
         {% else %}
             <p class="py-8 text-center text-ink-muted">Noch niemand mit dieser Person verbunden.</p>
         {% endif %}
+        <div class="pt-3">
+            <c-common.button data-on:click="@get('{% url 'family_tree:new-relative-view' pk=person.pk %}')">Verwandte hinzufügen</c-common.button>
+        </div>
     </section>
     <section id="person-card-notes" role="tabpanel" aria-labelledby="person-card-tab-notes" style="display: none" data-show="$tab == 'notes'">
         <c-note.list :notes_tab="card.notes_tab" />
     </section>
-    <div class="flex flex-wrap gap-3">
-        <c-common.button data-on:click="@get('{% url 'family_tree:new-relative-view' pk=card.entry.person.pk %}')">Verwandte hinzufügen</c-common.button>
-        <c-common.button data-on:click="@get('{% url 'family_tree:confirm-delete-person-view' pk=person.pk %}')">Löschen</c-common.button>
-        <c-common.button data-on:click="$selection = 0; $editing = 0">Schließen</c-common.button>
-    </div>
 </aside>
 {% endwith %}
