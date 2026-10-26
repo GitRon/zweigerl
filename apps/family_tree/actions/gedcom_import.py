@@ -1,7 +1,7 @@
 """
-The import of a GEDCOM file into an empty tree (#22), with its sources, citations and notes (#23). What maps to
-what is docs/patterns/gedcom.md, "The import"; reading the file and mapping it is "domain.gedcom" and
-"domain.gedcom_import".
+The import of a GEDCOM file (#22), with its sources, citations and notes (#23), into an empty tree or beside the
+people already there (#85). What maps to what is docs/patterns/gedcom.md, "The import"; reading the file and
+mapping it is "domain.gedcom" and "domain.gedcom_import".
 """
 
 from dataclasses import dataclass
@@ -54,18 +54,15 @@ class ImportResult:
 def import_gedcom(*, file: BinaryIO, name: str) -> ImportResult:
     """
     Reads a GEDCOM file into the tree under the name of the import - "PAF Ronny" - which every row it writes
-    keeps as its Herkunft. Only into an empty tree: merging with people already there is #35. The first person
-    of the file becomes the home person, as the export (#26) writes the home person first. Every row goes
-    through "save()", so the rules of the models hold for an import as for a form.
+    keeps as its Herkunft. Everything is written anew beside what the tree already holds, which stays as it is
+    (#85): the people both files know are merged by hand afterwards. Into an empty tree the first person of the
+    file becomes the home person, as the export (#26) writes the home person first; otherwise the home person
+    stays. Every row goes through "save()", so the rules of the models hold for an import as for a form.
 
-    Raises "ImportRefusedError" for a tree that is not empty, a file that is not GEDCOM and a row the models
-    refuse - all in one transaction, so a refused import leaves nothing behind.
+    Raises "ImportRefusedError" for a file that is not GEDCOM and a row the models refuse - all in one
+    transaction, so a refused import leaves nothing behind.
     """
-    if Person.objects.exists():
-        raise ImportRefusedError(
-            "Importiert wird nur in einen leeren Stammbaum. Hier stehen schon Personen - "
-            "zusammenführen kann Zweigerl noch nicht."
-        )
+    tree_was_empty = not Person.objects.exists()
     try:
         tree = read_tree(records=read(file=file))
     except (ParserError, IntegrityError, UnicodeDecodeError, OSError) as error:
@@ -80,7 +77,7 @@ def import_gedcom(*, file: BinaryIO, name: str) -> ImportResult:
     people = {person.xref: _person(person=person, origin=origin, sources=sources) for person in tree.people}
     for family in tree.families:
         _family(family=family, people=people, origin=origin, sources=sources)
-    if tree.people:
+    if tree_was_empty and tree.people:
         TreeSettings.objects.update_or_create(
             pk=TreeSettings.ONLY_ROW, defaults={"home_person": people[tree.people[0].xref]}
         )

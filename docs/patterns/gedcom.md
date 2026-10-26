@@ -113,8 +113,13 @@ differently is a rule of the generic reading, not an importer of its own.
   "Importieren", as by the command - the preview does not try the import.
 - **The name of the import** starts as the program from `HEAD/SOUR` and is changed there, to "PAF Ronny".
 
-- **Only into an empty tree.** Merging with people already there is #35, so the action refuses otherwise.
-- **The first `INDI` becomes the home person**, as the export writes the home person first.
+- **Into an empty tree, or beside the people already there** (#85). The import writes everything anew and changes
+  nothing that is there - no person, family, source or photo - so a MyHeritage export arrives beside the PAF tree,
+  each under the name of its own import. The xrefs of the two files never meet: they map records within one
+  file and are not stored. The people both files know are merged by hand afterwards, see
+  [persons and families](family.md#merging-two-people); recognising them is #35.
+- **The first `INDI` becomes the home person** of an empty tree, as the export writes the home person first. Into a
+  tree with people the home person stays as it is, chosen or not.
 - **Every row goes through `save()`**, in one transaction: a row the models refuse names its record -
   "@F2@ in der Datei: Diese beiden sind schon ein Paar." - and nothing is left behind. The PAF export of 412
   people takes a few seconds.
