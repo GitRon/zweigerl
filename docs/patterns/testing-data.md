@@ -35,7 +35,7 @@ The Familie Huber from the mockup is `apps/family_tree/fixtures/huber_family.jso
 asserts against the Hubers asserts against data it did not write down, and breaks when someone adds a
 cousin. Build what the test needs with factories.
 
-## The PAF file
+## The PAF and MyHeritage files
 
 `apps/family_tree/tests/data/paf_export.ged` is a real PAF 5.2.18 export with every value about a person
 replaced (#32) - the file the import (#22) is tested with. It keeps the real structure: line order, levels,
@@ -43,10 +43,18 @@ tags, xrefs, the BOM, CRLF, `CHAR UTF-8`, and the kind of every value, including
 free-text dates, `CONC` cut mid-word, `//` and `/?/` surnames, `DIV` on a person, inline `OBJE` with `_PRIM`,
 `_SCBK`, `_SSHOW` and `_TYPE`. `test_paf_export.py` beside it checks exactly that structure.
 
-**Only the result is in the repository; the real export never is.** `scripts/anonymise_paf.py` writes it:
+`myheritage_export.ged` beside it is a real export of MyHeritage Family Tree Builder, replaced the same way (#84):
+GEDCOM 5.5.1 with a BOM, CRLF but none after the last line, a stray LF at the end of one place, dates as
+`TT.MM.JJJJ` and `TO …`, `DEAT Y` with and without a date and with an `AGE` - also a range and "About" -
+citations directly on the person with `PAGE`, `QUAY`, `EVEN` and `DATA`, `RESI` with an address and an `EMAIL`,
+inline `OBJE` behind URLs with `_PRIM`, `_CUTOUT` and `_POSITION`, and `RIN`, `_UID` and `_UPD` on every record.
+`test_myheritage_export.py` checks that structure.
+
+**Only the result is in the repository; the real export never is.** `scripts/anonymise_gedcom.py` writes both:
 
 ```bash
-uv run python -m scripts.anonymise_paf <real export> apps/family_tree/tests/data/paf_export.ged
+uv run python -m scripts.anonymise_gedcom <real export> apps/family_tree/tests/data/paf_export.ged
+uv run python -m scripts.anonymise_gedcom <real export> apps/family_tree/tests/data/myheritage_export.ged
 ```
 
 - **Names** come from invented pools with the same kind of letters - plain, umlaut or ß, háček - and the
@@ -54,10 +62,12 @@ uv run python -m scripts.anonymise_paf <real export> apps/family_tree/tests/data
   `_MARNM` still agree. **Places** keep their number of comma parts.
 - **Dates** all move back by one random number of days, ten to thirty years, so order and lifespans stay;
   a year alone, a month and a year, and a day and a month move along. `ABT`, `oder`, `(?)` and a season stay.
-- **Free text** - notes, descriptions, occupations, sources, file paths, the submitter - becomes letters of
-  the same kind and length, word for word, so a `CONC` still cuts the same word in the same place. A path
-  keeps its drive and its extension. `_UID`s become new random hex.
-- **Titles in `NPFX`** ("Dr.") and what describes the file or a picture's role stay.
+- **Free text** - notes, descriptions, occupations, sources, addresses, file paths, the submitter - becomes
+  letters of the same kind and length, word for word, so a `CONC` still cuts the same word in the same place. A
+  path keeps its drive and its extension, a URL its scheme and host. `_UID`s and the numbers a program gives its
+  records - `RIN`, `_PHOTO_RIN` - become new random hex in the same form. An `AGE` keeps its words, its numbers
+  are replaced.
+- **Titles in `NPFX`** ("Dr."), a citation's `QUAY` and what describes the file or a picture's role stay.
 - **Nothing is written** when a tag carries a value the script has no rule for, or when a word it replaced
   is still in the result: a name or place from two letters, a free-text word from four. An invented
   name that happens to be a real one from the export is never chosen.

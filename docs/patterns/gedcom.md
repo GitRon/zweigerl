@@ -98,7 +98,9 @@ a tree entered the plain way exports as plain GEDCOM: `_ZWG_RELIABILITY`, `_ZWG_
 ## The import
 
 `manage.py import_gedcom <file> --name "PAF Ronny"` reads a GEDCOM file into the tree (#22), and so does
-"GEDCOM importieren" on the settings page (#25): both call `actions.gedcom_import.import_gedcom`.
+"GEDCOM importieren" on the settings page (#25): both call `actions.gedcom_import.import_gedcom`. **One import
+reads every program's export** - PAF and MyHeritage Family Tree Builder are tested (#84); what one program writes
+differently is a rule of the generic reading, not an importer of its own.
 
 - **The dialog shows what comes before anything is saved.** Choosing the file reads it with
   `domain.gedcom_preview.preview_file` - the same reading as the import, writing nothing - and shows the people,
@@ -121,9 +123,12 @@ a tree entered the plain way exports as plain GEDCOM: `_ZWG_RELIABILITY`, `_ZWG_
 
 `domain.gedcom.read` reads the file: ged4py finds the character set - a BOM, the `CHAR` of the header, ANSEL -
 and reads the lines, and `CONC` and `CONT` are joined as bytes, `CONC` without a space, so a word or a character
-PAF cut in two comes back whole. ged4py's own reading of dates and names is not used: it turns `ABT 1931` into
-`ABOUT 1931` and a date phrase into `(…)`. `domain.gedcom_import.read_tree` maps the records - which tag becomes
-what is in [Belege](evidence.md#paf); in short, the table above read backwards, and:
+PAF cut in two comes back whole. An empty line, which MyHeritage leaves where a value ended in a stray line break,
+is skipped - ged4py would refuse the file. ged4py's own reading of dates and names is not used: it turns
+`ABT 1931` into `ABOUT 1931` and a date phrase into `(…)`. `domain.gedcom_import.read_date` reads a date -
+GEDCOM, and a day the German way, `07.03.1962`, which MyHeritage writes beside it; the preview counts what it
+cannot read with the same function. `domain.gedcom_import.read_tree` maps the records - which tag becomes what is
+in [Belege](evidence.md#paf-and-myheritage); in short, the table above read backwards, and:
 
 | GEDCOM | Zweigerl |
 |---|---|
@@ -137,7 +142,8 @@ what is in [Belege](evidence.md#paf); in short, the table above read backwards, 
 | `DIV` below an `INDI` | a `DIV` of their family when they have exactly one, raw on the person otherwise |
 | `SOUR` record | a Source: `TITL` the title, `TEXT` the description; one without a title is "Quelle @S1@" (#23) |
 | `SOUR @S…@` below a fact | a Citation with its `PAGE`; a second one of the same source joins its page to the first |
-| `SOUR @S…@` directly under an `INDI` | the source filed with the person |
+| `QUAY` below a fact's `SOUR` | the fact's `reliability`, the best of its citations - see [Belege](evidence.md#paf-and-myheritage) |
+| `SOUR @S…@` directly under an `INDI` | the source filed with the person; what it carries stays raw on the person |
 | `NOTE` under an `INDI` | a Note with no author; a `NOTE @N…@` takes the text of the `NOTE` record it points at |
 
 `HEAD`, `SUBM` and `TRLR` describe the file and are left out, and a `NOTE` record is read only where a person
@@ -168,24 +174,27 @@ gave the dates migration `0003` kept (`{"tag": "MARR", "date": "im Krieg"}`) thi
   date of an occupation - stays raw below the fact.
 - **What a source, a citation or a note has no field for** stays raw on its row: a source's `AUTH` and `OBJE`,
   a citation's `QUAY`, a note's `CHAN`. A `SOUR` or `NOTE` with text on the line instead of a pointer - a
-  citation that names no record, a note on a family, an empty note - stays raw on its owner. A `SOUR` pointer
-  directly under an `INDI` keeps nothing of what is below it.
+  citation that names no record, a note on a family, an empty note - stays raw on its owner. What a `SOUR`
+  pointer directly under an `INDI` carries - MyHeritage's `PAGE`, `QUAY`, `EVEN` and `DATA` - stays raw on the
+  person as a `SOUR` without the pointer, since there is no fact to cite: `{"tag": "SOUR", "children": [{"tag":
+  "PAGE", "value": "Lena Huber"}, {"tag": "QUAY", "value": "3"}]}`.
 - **A family of one parent has no row** for what its `FAM` carries, so its `_UID`, and a `MARR` or `DIV` it
-  might carry, are not kept; the count of facts the import reports is the count written. The PAF export has
-  neither on such a family.
+  might carry, are not kept; the count of facts the import reports is the count written. One without children
+  leaves nothing at all. The PAF export has neither; the MyHeritage export has one of each.
 - **What a child's `FAMC` and `CHIL` carry** goes on the link to the first parent alone, since the export
   writes the links of a child into one `FAMC`.
 
 ## The round trip
 
-The PAF file of [test data](testing-data.md#the-paf-file), imported, exported and read again, gives the same
-people, families and sources - names, facts with their citations, notes, pedigrees and everything kept raw. It is compared as what the records say,
-not line by line: the export cuts a long value beside a space where PAF cuts it in the middle of a word, writes
-the records in an order of its own and names them by ids.
+The PAF and the MyHeritage file of [test data](testing-data.md#the-paf-and-myheritage-files), imported, exported
+and read again, give the same people, families and sources - names, facts with their citations, notes, pedigrees
+and everything kept raw. It is compared as what the records say, not line by line: the export cuts a long value
+beside a space where PAF cuts it in the middle of a word, writes the records and a person's raw parts of a name in
+an order of its own and names them by ids.
 
 ## Not yet
 
-- **GEDCOM 7 with the media packed in** is `.gedzip`, #36. The `OBJE` of a PAF export stays raw until #24 finds
+- **GEDCOM 7 with the media packed in** is `.gedzip`, #36. The `OBJE` of an import stays raw until #24 finds
   the files.
 
 ## See also

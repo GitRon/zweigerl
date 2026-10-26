@@ -179,18 +179,32 @@ cohabitation is not a wedding. A text it could not read went into the Partnershi
 Migrating back writes the dates into the two fields again. The migration carries its own copy of the date
 reading, so it does the same on every database whatever `domain/dates.py` becomes.
 
-## PAF
+## PAF and MyHeritage
 
-Decided 21.10.2026 (#22) and 18.10.2026 (#23): which tags of a PAF 5.2 export become facts, sources, citations,
-notes and fields, and which stay raw - see [GEDCOM](gedcom.md#the-import) for how.
+Decided 21.10.2026 (#22) and 18.10.2026 (#23) for a PAF 5.2 export, 26.10.2026 (#84) for one of MyHeritage
+Family Tree Builder: which tags become facts, sources, citations, notes and fields, and which stay raw - see
+[GEDCOM](gedcom.md#the-import) for how. One import reads both; what differs between programs is a row here, not a
+second importer.
 
 | Mapped | Kept raw |
 |---|---|
-| `NAME` with `GIVN`, `SURN`, `NICK`; `SEX`; `BIRT` (date and place), `CHR`, `DEAT`, `BURI` with their `DATE`; `OCCU`; `MARR`, `DIV` - a `DIV` on a person to their family when it is the only one; `SOUR` records with `TITL` and `TEXT`; a `SOUR` pointer below a fact with its `PAGE`; `NOTE` on an `INDI` | `_UID`, `CHAN`, `_MARNM`, `_AKA`, `NPFX`, `FCOM`, `RELI`, `DSCR`, `DEAT/CAUS`, the `PLAC` of every event but a birth, `OCCU/DATE`, `OBJE` with `_PRIM`, `_SCBK`, `_SSHOW` and `_TYPE` (until #24), `AUTH` of a source, `QUAY` and what else a citation carries, `NOTE` on a `FAM` or below an `OBJE`, every date Zweigerl cannot read |
+| `NAME` with `GIVN`, `SURN`, `NICK`; `SEX`; `BIRT` (date and place), `CHR`, `BAPM`, `DEAT`, `BURI` with their `DATE`, also as `TT.MM.JJJJ`; `DEAT Y` as the status *verstorben*; `OCCU`; `MARR`, `DIV` - a `DIV` on a person to their family when it is the only one; `SOUR` records with `TITL` and `TEXT`; a `SOUR` pointer below a fact with its `PAGE`, its `QUAY` as the reliability; a `SOUR` pointer directly under an `INDI` as a source filed with the person; `NOTE` on an `INDI` | `_UID`, `RIN`, `CHAN`, `_UPD`, `_MARNM`, `_AKA`, `NPFX`, `FCOM`, `RELI`, `DSCR`, `DEAT/CAUS`, `DEAT/AGE`, the `PLAC` of every event but a birth, `OCCU/DATE`, `OBJE` with `_PRIM`, `_SCBK`, `_SSHOW`, `_TYPE`, `_CUTOUT`, `_POSITION`, `_PHOTO_RIN` and a `FILE` path or URL (until #24), `AUTH` and `_TYPE` of a source, `QUAY`, `DATA` and what else a citation carries, what a `SOUR` directly under an `INDI` carries - `PAGE`, `QUAY`, `EVEN`, `DATA` - as a `SOUR` without the pointer, `RESI` with `ADDR` and `EMAIL`, `MARL`, `EVEN` with `TYPE` on a `FAM`, `NOTE` on a `FAM` or below an `OBJE`, every date Zweigerl cannot read - `TO …` too |
 
-**An imported fact is marked *belegt*** like any new one. With a citation it is documented for real; without
-one it shows as *unbelegt*, with its Herkunft beside it: "aus PAF Ronny". Almost everything a PAF export brings
-arrives that way - it is what still wants a source.
+**`QUAY` says how reliable a citation is**, from 0 to 3, and becomes the reliability of the fact it cites: 3
+(direct evidence) and 2 (secondary evidence) *belegt*, 1 (questionable) *wahrscheinlich*, 0 (unreliable)
+*überliefert*. A fact cited several times takes the best of its citations; the `QUAY` stays raw on each citation
+as well.
+
+**A death without a date is the status, not a fact.** MyHeritage writes `DEAT Y` for everybody who died, and a
+`death` fact needs a date, so the person is *verstorben* and the card shows "†". An `AGE` below it stays raw.
+
+**MyHeritage cites on the person, not on a fact.** Its `SOUR` pointers sit directly under the `INDI`, so they file
+the source with the person, and their `PAGE`, `QUAY` and `DATA/TEXT` - the wording - stay raw on the person: a
+Citation needs a fact.
+
+**An imported fact is marked *belegt*** like any new one, unless the `QUAY` of its citations says less. With a
+citation it is documented for real; without one it shows as *unbelegt*, with its Herkunft beside it: "aus PAF
+Ronny". Almost everything a PAF or MyHeritage export brings arrives that way - it is what still wants a source.
 
 **A cited source arrives as a Quelle, the citation as a Zitat with its page.** A `BIRT` is two facts; its
 citations go with the date, or with the place when there is no date Zweigerl can read - where the rest of the
