@@ -56,6 +56,12 @@ def test_canvas_zooms_in_and_out_with_its_buttons():
     ) == ("$zoom = Math.max(0.25, $zoom - 0.25)", "$zoom = Math.min(2, $zoom + 0.25)")
 
 
+def test_canvas_lets_the_mouse_drag_the_scrolling_container():
+    html = render_component(tag='<c-tree.canvas :tree="tree" />', context={"tree": TREE})
+
+    assert parse(html).find(attrs={"data-drag-scroll": True})["aria-label"] == "Stammbaum, scrollbar"
+
+
 def test_canvas_puts_its_slot_in_the_toolbar():
     html = render_component(
         tag='<c-tree.canvas :tree="tree"><span id="extra">Abmelden</span></c-tree.canvas>', context={"tree": TREE}

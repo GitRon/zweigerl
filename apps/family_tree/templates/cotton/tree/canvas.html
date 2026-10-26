@@ -1,6 +1,7 @@
 <c-vars tree selection="0" />
 {# The tree (#12): the cards and lines "readers.tree.tree" laid out, on a canvas that scrolls in its own #}
-{# container - trackpad, wheel, touch and the keyboard move it, the page itself never scrolls sideways. #}
+{# container - trackpad, wheel, touch, the keyboard and dragging with the mouse ("static/js/drag-scroll.js") #}
+{# move it, the page itself never scrolls sideways. #}
 {# "$zoom" scales the drawing; the sizer around it grows and shrinks with it so the scroll range follows. #}
 {# "selection" is the person whose card is open on arrival, 0 for nobody; "$focus" starts with them too, so #}
 {# their card is centred. The toolbar's slot takes what else belongs above the tree. See #}
@@ -13,7 +14,7 @@
         <c-common.button data-on:click="$zoom = 1" data-attr:disabled="$zoom == 1">Zurücksetzen</c-common.button>
         <div class="ml-auto">{{ slot }}</div>
     </div>
-    <div tabindex="0" aria-label="Stammbaum, scrollbar" class="min-h-0 flex-1 overflow-auto motion-safe:scroll-smooth">
+    <div tabindex="0" aria-label="Stammbaum, scrollbar" class="min-h-0 flex-1 cursor-grab overflow-auto motion-safe:scroll-smooth data-[drag-scroll=dragging]:cursor-grabbing data-[drag-scroll=dragging]:select-none data-[drag-scroll=dragging]:**:cursor-grabbing" data-drag-scroll>
         {% if tree.cards %}
             <div class="w-max p-12">
                 <div style="width: {{ tree.width }}px; height: {{ tree.height }}px;" data-style:width="$zoom * {{ tree.width }} + 'px'" data-style:height="$zoom * {{ tree.height }} + 'px'">

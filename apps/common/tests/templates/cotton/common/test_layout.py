@@ -27,6 +27,12 @@ def test_layout_loads_the_vendored_datastar_bundle():
     assert parse(html).find("script", type="module")["src"] == "/static/vendor/datastar/1.0.4/datastar.js"
 
 
+def test_layout_loads_the_script_that_drags_the_tree():
+    html = render_component(tag="<c-common.layout>Inhalt</c-common.layout>", context={"toasts": []})
+
+    assert parse(html).find("script", src="/static/js/drag-scroll.js")["type"] == "module"
+
+
 def test_layout_reloads_the_page_the_back_button_returns_to():
     html = render_component(tag="<c-common.layout>Inhalt</c-common.layout>", context={"toasts": []})
 
