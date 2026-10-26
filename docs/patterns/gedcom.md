@@ -1,15 +1,17 @@
 # GEDCOM
 
-**The whole tree goes out as one GEDCOM 5.5.1 file in UTF-8, with everybody in it, and comes back in through
+**A tree goes out as one GEDCOM 5.5.1 file in UTF-8, with everybody of it in it, and comes back in through
 the same tags.** GEDCOM is how the data leaves Zweigerl - for another program, and inside every backup (#27) -
 so nothing Zweigerl knows is dropped on the way out, and how a tree kept elsewhere comes in (#22). This page is
 the one mapping between the models and the tags, both ways.
 
 ## The export
 
-"GEDCOM herunterladen" on the settings page (`<c-settings.export>`) downloads `zweigerl-<date>.ged` from
-`/export/gedcom/`: a plain GET, not a datastar request, since nothing on the page changes.
-`readers.gedcom.gedcom_export()` builds the file and is what #27's backup calls too; `domain.gedcom.write`
+"GEDCOM herunterladen" on a tree's settings page (`<c-settings.export>`) downloads
+`zweigerl-<tree>-<date>.ged` - "zweigerl-familie-huber-2026-10-19.ged", the name spelled by
+`domain.file_names.file_slug` - from `/trees/<id>/export/gedcom/`: a plain GET, not a datastar request, since
+nothing on the page changes. `readers.gedcom.gedcom_export(tree_id=…)` builds the file of one tree, with nothing
+of another (#34); `readers.gedcom.gedcom_exports()` is every tree's for #27's backup. `domain.gedcom.write`
 writes the lines.
 
 - **Everybody is in it, living or not** (decided 19.10.2026, #26). There is no option to leave people out:
@@ -97,8 +99,9 @@ a tree entered the plain way exports as plain GEDCOM: `_ZWG_RELIABILITY`, `_ZWG_
 
 ## The import
 
-`manage.py import_gedcom <file> --name "PAF Ronny"` reads a GEDCOM file into the tree (#22), and so does
-"GEDCOM importieren" on the settings page (#25): both call `actions.gedcom_import.import_gedcom`. **One import
+`manage.py import_gedcom <file> --name "PAF Ronny" --tree "Familie Huber"` reads a GEDCOM file into a tree
+(#22), starting the tree when there is none of that name (#34), and so does "GEDCOM importieren" on a tree's
+settings page (#25): both call `actions.gedcom_import.import_gedcom`. **One import
 reads every program's export** - PAF and MyHeritage Family Tree Builder are tested (#84); what one program writes
 differently is a rule of the generic reading, not an importer of its own.
 
@@ -113,7 +116,8 @@ differently is a rule of the generic reading, not an importer of its own.
   "Importieren", as by the command - the preview does not try the import.
 - **The name of the import** starts as the program from `HEAD/SOUR` and is changed there, to "PAF Ronny".
 
-- **Only into an empty tree.** Merging with people already there is #35, so the action refuses otherwise.
+- **Only into an empty tree.** Merging with people already there is #35, so the action refuses otherwise. A file
+  of another family goes into a tree of its own (#34), which the settings page starts.
 - **The first `INDI` becomes the home person**, as the export writes the home person first.
 - **Every row goes through `save()`**, in one transaction: a row the models refuse names its record -
   "@F2@ in der Datei: Diese beiden sind schon ein Paar." - and nothing is left behind. The PAF export of 412

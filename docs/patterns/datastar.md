@@ -89,7 +89,7 @@ def person_view(request, pk):
 ```
 
 `is_datastar_request(request=...)` tells the two apart where a view needs to on its own. The person
-card (#13) is such a case: its address `/persons/<pk>/` loads the start page with the card open, but a
+card (#13) is such a case: its address `/persons/<pk>/` loads the page of their tree with the card open, but a
 click in the tree only wants the card. The view patches the component and adds `push_url(url=...)`, the
 same address-bar event `render_page` sends.
 
@@ -118,7 +118,7 @@ card his contacts example.
   for its frame (`data-class`) and for `aria-pressed` (`data-attr:aria-pressed`); the person card is
   patched into `#person-card` and shows itself with `data-show="$selection == 7"`, so closing it - the
   button or Escape - is setting `$selection = 0`. A `data-effect` on the card moves the address back to
-  the start page when that happens, so a reload does not open it again. Loaded at its own address, the
+  the page of the tree when that happens, so a reload does not open it again. Loaded at its own address, the
   canvas starts with `$selection` already set to the person. The selected card is filled `forest` with
   `birch` text (#83), so it is found at a glance at any zoom - an edge alone gets lost among the others at 50 %.
 - **Chosen from outside the tree, a person is brought into view.** The sidebar's list, a hit of the search
