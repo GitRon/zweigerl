@@ -24,7 +24,8 @@ def test_canvas_starts_unzoomed_with_nobody_selected():
     html = render_component(tag='<c-tree.canvas :tree="tree" />', context={"tree": TREE})
 
     assert (
-        parse(html).find("section")["data-signals"] == "{zoom: 1, selection: 0, focus: 0, filtered: false, matches: [], ancestry: true}"
+        parse(html).find("section")["data-signals"]
+        == "{zoom: 1, selection: 0, focus: 0, filtered: false, matches: [], ancestry: true}"
     )
 
 
@@ -32,7 +33,8 @@ def test_canvas_opens_with_the_person_selected_and_focused_whose_card_is_open():
     html = render_component(tag='<c-tree.canvas :tree="tree" selection="7" />', context={"tree": TREE})
 
     assert (
-        parse(html).find("section")["data-signals"] == "{zoom: 1, selection: 7, focus: 7, filtered: false, matches: [], ancestry: true}"
+        parse(html).find("section")["data-signals"]
+        == "{zoom: 1, selection: 7, focus: 7, filtered: false, matches: [], ancestry: true}"
     )
 
 

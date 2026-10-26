@@ -741,9 +741,7 @@ class _Tree:
             lineages[person_id] = lineage
         return lineages
 
-    def _partner_lines(
-        self, *, corners: dict[int, tuple[int, int]], lineages: dict[int, set[int]]
-    ) -> tuple[Line, ...]:
+    def _partner_lines(self, *, corners: dict[int, tuple[int, int]], lineages: dict[int, set[int]]) -> tuple[Line, ...]:
         """
         Between the facing edges of a couple in one row, a step lower for every card it passes behind; across
         rows, out of the upper one's side, down between them and into the lower one's side. Part of the line of

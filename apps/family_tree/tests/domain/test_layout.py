@@ -1,5 +1,6 @@
 import datetime
 import zlib
+from operator import attrgetter
 
 from apps.family_tree.domain.layout import (
     BAR_STEP,
@@ -17,6 +18,7 @@ from apps.family_tree.domain.layout import (
     PartnerLink,
     Placeholder,
     SiblingLink,
+    Stroke,
     TreeLayout,
     layout,
 )
@@ -365,19 +367,16 @@ def test_layout_draws_the_line_to_a_first_marriages_child_from_between_that_coup
     child = florian_card.x + CARD_WIDTH / 2
     bar = ROW - ROW_GAP / 2
     assert (
-        (
-            LineKind.CHILDREN,
-            pen_stroke(
-                segments=[
-                    ((middle, CARD_HEIGHT / 2), (middle, bar)),
-                    ((child, bar), (middle, bar)),
-                    ((child, bar), (child, ROW)),
-                ],
-                seed=zlib.crc32(b"children-1-2"),
-            ),
-        )
-        in _drawn(lines=result.lines)
-    )
+        LineKind.CHILDREN,
+        pen_stroke(
+            segments=[
+                ((middle, CARD_HEIGHT / 2), (middle, bar)),
+                ((child, bar), (middle, bar)),
+                ((child, bar), (child, ROW)),
+            ],
+            seed=zlib.crc32(b"children-1-2"),
+        ),
+    ) in _drawn(lines=result.lines)
 
 
 def test_layout_runs_the_bar_of_a_second_marriages_children_a_step_lower():
@@ -580,21 +579,18 @@ def test_layout_puts_an_ancestor_above_both_lines_of_different_length_that_meet_
     )
     bar = ROW - ROW_GAP / 2
     assert (
-        (
-            LineKind.CHILDREN,
-            pen_stroke(
-                segments=[
-                    ((152, CARD_HEIGHT / 2), (152, bar)),
-                    ((111, bar), (152, bar)),
-                    ((152, bar), (193, bar)),
-                    ((193, bar), (193, ROW)),
-                    ((111, bar), (111, 2 * ROW)),
-                ],
-                seed=zlib.crc32(b"children-1-2"),
-            ),
-        )
-        in _drawn(lines=result.lines)
-    )
+        LineKind.CHILDREN,
+        pen_stroke(
+            segments=[
+                ((152, CARD_HEIGHT / 2), (152, bar)),
+                ((111, bar), (152, bar)),
+                ((152, bar), (193, bar)),
+                ((193, bar), (193, ROW)),
+                ((111, bar), (111, 2 * ROW)),
+            ],
+            seed=zlib.crc32(b"children-1-2"),
+        ),
+    ) in _drawn(lines=result.lines)
 
 
 def test_layout_draws_a_stepped_line_between_partners_who_cannot_share_a_row():
@@ -715,19 +711,16 @@ def test_layout_hangs_the_children_of_partners_in_two_rows_from_their_stepped_li
     child = emma_card.x + CARD_WIDTH / 2
     assert (anna_card.person_id, emma_card.person_id) == (anna, emma)
     assert (
-        (
-            LineKind.CHILDREN,
-            pen_stroke(
-                segments=[
-                    (hook, (hook[0], bar)),
-                    ((child, bar), (hook[0], bar)),
-                    ((child, bar), (child, emma_card.y)),
-                ],
-                seed=zlib.crc32(b"children-3-4"),
-            ),
-        )
-        in _drawn(lines=result.lines)
-    )
+        LineKind.CHILDREN,
+        pen_stroke(
+            segments=[
+                (hook, (hook[0], bar)),
+                ((child, bar), (hook[0], bar)),
+                ((child, bar), (child, emma_card.y)),
+            ],
+            seed=zlib.crc32(b"children-3-4"),
+        ),
+    ) in _drawn(lines=result.lines)
 
 
 def test_layout_stops_on_a_cycle_of_parents():
@@ -1007,7 +1000,7 @@ def test_layout_of_four_generations_places_every_card_clear_of_its_neighbours():
     )
 
 
-def _married_into_the_middle():
+def _married_into_the_middle() -> TreeLayout:
     """
     Lena stands between her brothers Florian and Lukas, and her husband Markus beside her, on the side of his
     own parents. The line from Markus's parents to him reaches across Lukas, under Lena's parents' bar.
@@ -1082,10 +1075,23 @@ def test_layout_knows_whose_line_of_ancestors_everyone_is_part_of():
 def test_layout_makes_each_piece_of_a_line_part_of_the_lines_of_the_children_it_leads_to():
     result = _married_into_the_middle()
 
-    assert [stroke.lineage for stroke in result.lines[3].strokes] == [(5, 6, 7), (5,), (5, 6), (7,), (5,), (6,), (7,)]
+    assert tuple(map(attrgetter("lineage"), result.lines[3].strokes)) == (
+        (5, 6, 7),
+        (5,),
+        (5, 6),
+        (7,),
+        (5,),
+        (6,),
+        (7,),
+    )
 
 
 def test_layout_makes_a_partner_line_part_of_the_lines_of_the_couples_descendants_only():
     result = _married_into_the_middle()
 
-    assert [line.strokes[0].lineage for line in result.lines[:3]] == [(), (5, 6, 7), (8, 9)]
+    partners, lenas_parents, markuss_parents = result.lines[:3]
+    assert (partners.strokes, lenas_parents.strokes[0].lineage, markuss_parents.strokes[0].lineage) == (
+        (Stroke(path=partners.path, lineage=()),),
+        (5, 6, 7),
+        (8, 9),
+    )

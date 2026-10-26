@@ -157,7 +157,10 @@ def test_tree_card_is_the_card_of_the_person():
     TreeSettingsFactory(home_person=lena)
 
     assert tree_card(pk=lena.pk) == TreeCard(
-        entry=PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan=""), x=0, y=ROW, lineage=(lena.pk,)
+        entry=PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan=""),
+        x=0,
+        y=ROW,
+        lineage=(lena.pk,),
     )
 
 
