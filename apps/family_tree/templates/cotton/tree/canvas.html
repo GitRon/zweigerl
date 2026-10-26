@@ -13,7 +13,7 @@
         <span class="w-14 shrink-0 whitespace-nowrap text-center" aria-live="polite" data-text="Math.round($zoom * 100) + ' %'">100 %</span>
         <c-common.button aria-label="Vergrößern" data-on:click="$zoom = Math.min(2, $zoom + 0.25)" data-attr:disabled="$zoom == 2">+</c-common.button>
         <c-common.button data-on:click="$zoom = 1" data-attr:disabled="$zoom == 1">Zurücksetzen</c-common.button>
-        <c-common.button aria-pressed="true" data-attr:aria-pressed="String($ancestry)" data-on:click="$ancestry = !$ancestry">Vorfahren hervorheben</c-common.button>
+        <c-common.button class="gap-2 aria-pressed:bg-card" aria-pressed="true" data-attr:aria-pressed="String($ancestry)" data-on:click="$ancestry = !$ancestry"><span aria-hidden="true" data-show="$ancestry">✓</span>Vorfahren hervorheben</c-common.button>
         <div class="ml-auto">{{ slot }}</div>
     </div>
     <div tabindex="0" aria-label="Stammbaum, scrollbar" class="min-h-0 flex-1 overflow-auto motion-safe:scroll-smooth">

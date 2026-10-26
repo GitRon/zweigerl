@@ -80,7 +80,7 @@ def test_canvas_lets_the_line_of_ancestors_of_the_selected_person_stand_out_and_
     html = render_component(tag='<c-tree.canvas :tree="tree" />', context={"tree": TREE})
 
     page = parse(html)
-    toggle = page.find("button", string="Vorfahren hervorheben")
+    toggle = page.find(lambda tag: tag.name == "button" and "Vorfahren hervorheben" in tag.get_text())
     assert (
         page.find("section")["data-computed:ancestors"],
         toggle["data-on:click"],

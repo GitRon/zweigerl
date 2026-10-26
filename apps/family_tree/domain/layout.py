@@ -14,6 +14,7 @@ from collections import defaultdict, deque
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from enum import StrEnum
+from functools import cached_property
 from statistics import fmean
 
 from apps.family_tree.domain.stroke import Segment, pen_stroke, pen_strokes
@@ -393,14 +394,14 @@ class _Bar:
     children: list[tuple[float, float]]
     y: float = 0.0
 
-    @property
+    @cached_property
     def points(self) -> list[float]:
         """
         Where the bar is joined, left to right: the line from the parents and every child.
         """
         return sorted({self.anchor[0], *(x for x, _ in self.children)})
 
-    @property
+    @cached_property
     def top(self) -> float:
         """
         Where the highest of the children's cards starts: the row the bar runs above.
@@ -412,12 +413,11 @@ class _Bar:
         Whether the bar, run at "y", would lie on the other one: above the same row, closer than a step and
         overlapping, so the two read as one bar.
         """
-        mine, theirs = self.points, other.points
         return (
             other.top == self.top
             and abs(other.y - y) < BAR_STEP
-            and mine[0] <= theirs[-1] + PARTNER_GAP
-            and theirs[0] <= mine[-1] + PARTNER_GAP
+            and self.points[0] <= other.points[-1] + PARTNER_GAP
+            and other.points[0] <= self.points[-1] + PARTNER_GAP
         )
 
 
