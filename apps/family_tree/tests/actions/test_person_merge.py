@@ -275,7 +275,7 @@ def test_merge_persons_refuses_more_than_two_birth_parents_and_writes_nothing():
     ParentChildFactory(child=josef)
     ParentChildFactory(child=other)
 
-    with pytest.raises(ValidationError, match="3 leibliche Eltern. Führ zuerst die Eltern zusammen"):
+    with pytest.raises(ValidationError, match=r"3 leibliche Eltern\. Führ zuerst die Eltern zusammen"):
         merge_persons(person_id=josef.pk, other_id=other.pk, from_other=[])
 
     assert Person.objects.filter(pk=other.pk).exists() is True

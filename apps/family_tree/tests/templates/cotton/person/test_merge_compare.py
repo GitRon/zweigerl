@@ -39,11 +39,14 @@ TAG = '<c-person.merge-compare :preview="preview" />'
 def test_merge_compare_asks_which_differing_field_stays_starting_with_the_person():
     page = parse(render_component(tag=TAG, context={"preview": PREVIEW}))
 
-    radios = page.find_all("input", attrs={"type": "radio"})
-    assert [(radio["name"], radio["value"], radio.has_attr("checked")) for radio in radios] == [
-        ("call_name", "person", True),
-        ("call_name", "other", False),
-    ]
+    person, other = page.find_all("input", attrs={"type": "radio"})
+    assert (person["name"], person["value"], person.has_attr("checked"), other["value"], other.has_attr("checked")) == (
+        "call_name",
+        "person",
+        True,
+        "other",
+        False,
+    )
 
 
 def test_merge_compare_shows_where_each_came_from_and_what_each_brings():

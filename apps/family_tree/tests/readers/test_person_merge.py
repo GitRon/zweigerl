@@ -1,6 +1,7 @@
 import pytest
 
 from apps.family_tree.models import ParentChild, Person
+from apps.family_tree.readers.person import person_entries
 from apps.family_tree.readers.person_merge import MergeField, merge_candidates, merge_preview
 from apps.family_tree.tests.factories.fact import FactFactory
 from apps.family_tree.tests.factories.gedcom_import import GedcomImportFactory
@@ -23,7 +24,7 @@ def test_merge_candidates_offers_whoever_matches_the_search_but_partners_and_the
 
     candidates = merge_candidates(pk=josef.pk, search="jos")
 
-    assert [entry.person for entry in candidates] == [sepp]
+    assert candidates == [person_entries(person_ids=[sepp.pk])[sepp.pk]]
 
 
 @pytest.mark.django_db
@@ -33,7 +34,7 @@ def test_merge_candidates_offers_a_sibling():
 
     candidates = merge_candidates(pk=josef.pk, search="Josef")
 
-    assert [entry.person for entry in candidates] == [sepp]
+    assert candidates == [person_entries(person_ids=[sepp.pk])[sepp.pk]]
 
 
 @pytest.mark.django_db
@@ -67,27 +68,34 @@ def test_merge_preview_shows_both_sides_and_what_differs():
 
     other = preview.other
     assert (
-        [(field.name, field.differs) for field in preview.fields],
-        preview.fields[3],
+        preview.fields,
         (other.origin, other.fact_count, other.note_count, other.photo_count, other.source_count),
         (other.relative_count, preview.person.fact_count, preview.person.origin, preview.refusal),
     ) == (
         [
-            ("given_names", False),
-            ("surname", False),
-            ("call_name", True),
-            ("sex", True),
-            ("living_status", False),
+            MergeField(name="given_names", label="Vornamen", text="Josef", other_text="Josef"),
+            MergeField(name="surname", label="Familienname", text="Huber", other_text="Huber"),
+            MergeField(name="call_name", label="Rufname", text="", other_text="Sepp"),
+            MergeField(name="sex", label="Geschlecht", text="unbekannt", other_text="männlich"),
+            MergeField(name="living_status", label="Lebensstatus", text="unbekannt", other_text="unbekannt"),
         ],
-        MergeField(name="sex", label="Geschlecht", text="unbekannt", other_text="männlich"),
         ("MyH", 1, 1, 1, 1),
         (1, 0, None, ""),
     )
 
 
+@pytest.mark.parametrize(("other_text", "differs"), [("Sepp", True), ("", False)])
+def test_merge_field_differs_when_the_two_have_different_values(other_text, differs):
+    field = MergeField(name="call_name", label="Rufname", text="", other_text=other_text)
+
+    assert field.differs is differs
+
+
 @pytest.mark.django_db
 def test_merge_preview_refuses_a_couple():
-    partnership = PartnershipFactory(person_a=PersonFactory(given_names="Josef"), person_b=PersonFactory(given_names="Maria"))
+    partnership = PartnershipFactory(
+        person_a=PersonFactory(given_names="Josef"), person_b=PersonFactory(given_names="Maria")
+    )
 
     preview = merge_preview(pk=partnership.person_a_id, other_pk=partnership.person_b_id)
 

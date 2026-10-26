@@ -36,7 +36,8 @@ def merge_persons(*, person_id: int, other_id: int, from_other: Iterable[str]) -
         _refuse(person=person, other=other)
 
         merged = _merge_partnerships(person=person, other=other)
-        _merge_sibling_pairs(person=person, other=other)
+        _drop_sibling_pairs(person=person, other=other)
+        _move_sibling_pairs(person=person, other=other)
         _move_child_links(person=person, other=other, merged=merged)
         Partnership.objects.filter(pk__in=merged).delete()
         _move_parent_links(person=person, other=other)
@@ -124,11 +125,12 @@ def _merge_partnerships(*, person: Person, other: Person) -> dict[int, Partnersh
     return merged
 
 
-def _merge_sibling_pairs(*, person: Person, other: Person) -> None:
+def _drop_sibling_pairs(*, person: Person, other: Person) -> None:
     """
-    Gives the other's explicit siblings to the person, once. What the merge makes siblings through a parent has
-    no row of its own any more - see docs/patterns/family.md - so the pair goes, with what it kept raw: the two
-    themselves, somebody who shares a parent of either, and a child of one with a child of the other.
+    Deletes the explicit sibling pairs the merge makes siblings through a parent - see docs/patterns/family.md,
+    no pair stands beside a shared parent - with what they kept raw: the two themselves, somebody who shares a
+    parent of either, and a child of one with a child of the other. Before any link moves, since a link is
+    refused while such a pair is still there.
     """
     parents = set(ParentChild.objects.filter(child__in=(person, other)).values_list("parent", flat=True))
     for pair in SiblingPair.objects.filter(_either(person_id=person.pk) | _either(person_id=other.pk)):
@@ -145,6 +147,9 @@ def _merge_sibling_pairs(*, person: Person, other: Person) -> None:
         | Q(person_a__in=children_of_other, person_b__in=children_of_person)
     ).delete()
 
+
+def _move_sibling_pairs(*, person: Person, other: Person) -> None:
+    # The other's explicit siblings become the person's, a sibling of both once, with the raw of both pairs.
     for pair in SiblingPair.objects.filter(_either(person_id=other.pk)):
         sibling_id = pair.person_b_id if pair.person_a_id == other.pk else pair.person_a_id
         existing = SiblingPair.objects.filter(_pair(first=person.pk, second=sibling_id)).first()

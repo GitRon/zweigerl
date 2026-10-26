@@ -6,7 +6,7 @@ from apps.family_tree.actions.gedcom_import import ImportRefusedError, import_ge
 
 
 class Command(BaseCommand):
-    help = "Liest eine GEDCOM-Datei in den Stammbaum ein, etwa einen PAF-Export (#22), neben die Personen, die schon da sind (#85)."
+    help = "Liest eine GEDCOM-Datei in den Stammbaum ein, etwa einen PAF-Export (#22) - auch neben Personen (#85)."
 
     def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument("file", type=Path, help="Die GEDCOM-Datei.")

@@ -75,7 +75,9 @@ def merge_preview(*, pk: int, other_pk: int) -> MergePreview | None:
     Lebensdaten and Herkunft, and how much each brings - or why the two cannot be one, as "actions.person_merge"
     refuses them. None for somebody who is not there, and for the person and themselves.
     """
-    people = {person.pk: person for person in Person.objects.select_related("gedcom_import").filter(pk__in=(pk, other_pk))}
+    people = {
+        person.pk: person for person in Person.objects.select_related("gedcom_import").filter(pk__in=(pk, other_pk))
+    }
     if pk == other_pk or pk not in people or other_pk not in people:
         return None
 
