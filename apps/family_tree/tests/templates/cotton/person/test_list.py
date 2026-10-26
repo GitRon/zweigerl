@@ -75,6 +75,7 @@ def test_list_selects_a_person_opens_their_card_and_centres_them_in_the_tree():
     url = reverse("family_tree:person-view", kwargs={"pk": 7})
     button = parse(html).find(id="person-list-7").find("button")
     assert (button["data-on:click"], button["data-attr:aria-pressed"]) == (
-        f"$selection = 7; $focus = 7; document.getElementById('person-card') ? @get('{url}') : location.assign('{url}')",
+        "$selection = 7; $focus = 7; "
+        f"document.getElementById('person-card') ? @get('{url}') : location.assign('{url}')",
         "String($selection == 7)",
     )

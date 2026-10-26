@@ -3,7 +3,10 @@ from apps.common.tests.html import parse, render_component
 
 def test_file_field_passes_the_form_and_datastar_attributes_to_the_input():
     html = render_component(
-        tag="<c-common.file-field name=\"files\" multiple required accept=\".pdf\" class=\"mt-2\" data-on:change=\"@post('/preview/')\" />",
+        tag=(
+            '<c-common.file-field name="files" multiple required accept=".pdf" class="mt-2" '
+            "data-on:change=\"@post('/preview/')\" />"
+        ),
         context={},
     )
 
