@@ -14,7 +14,7 @@ def test_plain_text_puts_each_block_on_a_line_of_its_own():
 
 
 def test_plain_text_drops_an_inline_tag_without_a_break():
-    result = plain_text(text='<p><b>Sammlung:</b> <a href="https://example.org">Stammbaum</a></p>')
+    result = plain_text(text='<p><B>Sammlung:</B> <a href="https://example.org">Stammbaum</a></p>')
 
     assert result == "Sammlung: Stammbaum"
 
