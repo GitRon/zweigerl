@@ -30,7 +30,7 @@ def test_layout_loads_the_vendored_datastar_bundle():
 def test_layout_loads_the_script_that_drags_the_tree():
     html = render_component(tag="<c-common.layout>Inhalt</c-common.layout>", context={"toasts": []})
 
-    assert "/static/js/drag-scroll.js" in [script["src"] for script in parse(html).find_all("script", type="module")]
+    assert parse(html).find("script", src="/static/js/drag-scroll.js")["type"] == "module"
 
 
 def test_layout_reloads_the_page_the_back_button_returns_to():
