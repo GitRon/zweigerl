@@ -1,6 +1,6 @@
 """The anonymised PAF export of #32 keeps what the import (#22) has to cope with.
 
-The file is written by `scripts/anonymise_paf.py` from a real export that never enters the repository, so
+The file is written by `scripts/anonymise_gedcom.py` from a real export that never enters the repository, so
 these tests check its structure only - never an invented name or date, which change with every run.
 """
 

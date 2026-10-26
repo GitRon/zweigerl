@@ -86,11 +86,12 @@ def read(*, file: BinaryIO) -> list[Node]:
     "CHAR" of the header, ANSEL - and reads the lines; a CONC continues a value without a space, a CONT on a new
     line. Both are joined as bytes before decoding, since some programs cut a line in the middle of a character.
     Raises ged4py's "ParserError" or "IntegrityError" for a file that is not GEDCOM, and "UnicodeDecodeError"
-    for one that is not in the character set it names.
+    for one that is not in the character set it names. An empty line - MyHeritage writes one now and then - is
+    skipped, since ged4py refuses it and it says nothing.
     """
     # ged4py closes the file it reads once it is done with it, so it gets a copy rather than the caller's.
     file.seek(0)
-    data = io.BytesIO(file.read())
+    data = io.BytesIO(_without_blank_lines(data=file.read()))
     codec, bom_size = guess_codec(data)
     data.seek(0)
     records: list[_Open] = []
@@ -106,6 +107,11 @@ def read(*, file: BinaryIO) -> list[Node]:
         (stack[-1].children if stack else records).append(node)
         stack.append(node)
     return [_closed(node=node, codec=codec) for node in records]
+
+
+def _without_blank_lines(*, data: bytes) -> bytes:
+    # Only lines of nothing but spaces and line breaks: in UTF-16 even an empty line holds zero bytes, and stays.
+    return b"".join(line for line in data.splitlines(keepends=True) if line.strip(b" \t\r\n"))
 
 
 def _closed(*, node: _Open, codec: str) -> Node:

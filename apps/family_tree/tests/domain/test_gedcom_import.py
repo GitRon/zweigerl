@@ -1,6 +1,8 @@
 import datetime
 import io
 
+import pytest
+
 from apps.family_tree.domain.dates import DateKind, Precision, UncertainDate
 from apps.family_tree.domain.gedcom import read
 from apps.family_tree.domain.gedcom_import import (
@@ -12,6 +14,7 @@ from apps.family_tree.domain.gedcom_import import (
     ImportedPerson,
     ImportedSource,
     ImportedTree,
+    read_date,
     read_tree,
 )
 
@@ -77,10 +80,53 @@ def test_read_tree_reads_a_citation_with_its_page_and_keeps_the_rest_raw():
         ImportedFact(
             kind="death",
             date=YEAR_1989,
-            citations=[ImportedCitation(source="@S1@", page="fol. 12", raw=[{"tag": "QUAY", "value": "3"}])],
+            citations=[
+                ImportedCitation(source="@S1@", page="fol. 12", quality="3", raw=[{"tag": "QUAY", "value": "3"}])
+            ],
             raw=[{"tag": "SOUR", "value": "Brief"}],
         )
     ]
+
+
+@pytest.mark.parametrize(
+    ("quay", "reliability"),
+    [("3", "documented"), ("2", "documented"), ("1", "probable"), ("0", "handed_down"), ("hoch", "documented")],
+)
+def test_read_tree_takes_the_reliability_of_a_fact_from_the_quay_of_its_citation(quay, reliability):
+    records = read(file=io.BytesIO(f"0 @I1@ INDI\n1 OCCU Uhrmacher\n2 SOUR @S1@\n3 QUAY {quay}\n".encode()))
+
+    tree = read_tree(records=records)
+
+    assert tree.people[0].facts[0].reliability == reliability
+
+
+def test_read_tree_takes_the_best_quay_of_the_citations_of_a_fact():
+    records = read(
+        file=io.BytesIO(
+            b"0 @I1@ INDI\n1 OCCU Uhrmacher\n2 SOUR @S1@\n3 QUAY 0\n2 SOUR @S2@\n3 QUAY 1\n2 SOUR @S1@\n3 QUAY 0\n"
+        )
+    )
+
+    tree = read_tree(records=records)
+
+    first, second = tree.people[0].facts[0].citations
+    assert (first.quality, second.quality, tree.people[0].facts[0].reliability) == ("0", "1", "probable")
+
+
+def test_read_tree_takes_the_better_quay_of_one_source_cited_twice():
+    records = read(file=io.BytesIO(b"0 @I1@ INDI\n1 OCCU Uhrmacher\n2 SOUR @S1@\n3 QUAY 0\n2 SOUR @S1@\n3 QUAY 2\n"))
+
+    tree = read_tree(records=records)
+
+    assert tree.people[0].facts[0].citations[0].quality == "2"
+
+
+def test_read_tree_leaves_a_fact_without_a_quay_documented():
+    records = read(file=io.BytesIO(b"0 @I1@ INDI\n1 OCCU Uhrmacher\n2 SOUR @S1@\n"))
+
+    tree = read_tree(records=records)
+
+    assert tree.people[0].facts[0].reliability == "documented"
 
 
 def test_read_tree_joins_the_pages_of_one_source_cited_twice_by_a_fact():
@@ -128,13 +174,40 @@ def test_read_tree_reads_the_citation_of_a_wedding():
 
 
 def test_read_tree_files_a_source_pointed_at_from_a_person_with_them():
-    records = read(file=io.BytesIO(b"0 @I1@ INDI\n1 SOUR @S1@\n2 PAGE fol. 12\n1 SOUR Brief von Tante Resi\n"))
+    records = read(file=io.BytesIO(b"0 @I1@ INDI\n1 SOUR @S1@\n1 SOUR Brief von Tante Resi\n"))
 
     tree = read_tree(records=records)
 
     assert (tree.people[0].sources, tree.people[0].raw) == (
         ["@S1@"],
         [{"tag": "SOUR", "value": "Brief von Tante Resi"}],
+    )
+
+
+def test_read_tree_keeps_what_a_source_pointed_at_from_a_person_carries_raw_without_the_pointer():
+    records = read(
+        file=io.BytesIO(
+            b"0 @I1@ INDI\n1 SOUR @S1@\n2 PAGE Lena Huber\n2 QUAY 3\n2 DATA\n3 DATE 5 MAR 2006\n3 TEXT Bestaetigt\n"
+        )
+    )
+
+    tree = read_tree(records=records)
+
+    assert (tree.people[0].sources, tree.people[0].raw) == (
+        ["@S1@"],
+        [
+            {
+                "tag": "SOUR",
+                "children": [
+                    {"tag": "PAGE", "value": "Lena Huber"},
+                    {"tag": "QUAY", "value": "3"},
+                    {
+                        "tag": "DATA",
+                        "children": [{"tag": "DATE", "value": "5 MAR 2006"}, {"tag": "TEXT", "value": "Bestaetigt"}],
+                    },
+                ],
+            }
+        ],
     )
 
 
@@ -430,3 +503,29 @@ def test_read_tree_keeps_what_a_child_link_carries_raw():
     assert children == [
         ImportedChild(xref="@I3@", raw=[{"tag": "NOTE", "value": "vom Hof"}, {"tag": "_FREL", "value": "Natural"}])
     ]
+
+
+def test_read_tree_reads_a_day_written_the_german_way():
+    records = read(file=io.BytesIO(b"0 @I1@ INDI\n1 DEAT\n2 DATE 12.03.1931\n"))
+
+    tree = read_tree(records=records)
+
+    assert tree.people[0].facts == [ImportedFact(kind="death", date=MARCH_12_1931)]
+
+
+@pytest.mark.parametrize("text", ["12.03.1931", "12.3.1931", " 12.03.1931 ", "12 MAR 1931"])
+def test_read_date_reads_gedcom_and_a_day_written_the_german_way(text):
+    assert read_date(text=text) == MARCH_12_1931
+
+
+@pytest.mark.parametrize(
+    ("text", "message"),
+    [
+        ("31.02.1931", "kein gültiges Datum"),
+        ("12 03.1931", "kein Datum, das Zweigerl lesen kann"),
+        ("TO 12 MAR 1931", "kein Datum, das Zweigerl lesen kann"),
+    ],
+)
+def test_read_date_refuses_what_it_cannot_read(text, message):
+    with pytest.raises(ValueError, match=message):
+        read_date(text=text)

@@ -42,9 +42,9 @@ rather than inferring the conventions from nearby code.
   GEDCOM, derived siblings, the home person, the Familie Huber fixture
 - [Belege](docs/patterns/evidence.md) — `Fact`, `Source` and `Citation`, reliability, the derived "unbelegt",
   one value per fact, uncertain dates
-- [GEDCOM](docs/patterns/gedcom.md) — the export of the whole tree as GEDCOM 5.5.1 and the import of a PAF
-  export, what maps to which tag, Zweigerl's own `_ZWG_` tags, the shape of the raw GEDCOM an import keeps and
-  the round trip
+- [GEDCOM](docs/patterns/gedcom.md) — the export of the whole tree as GEDCOM 5.5.1 and the import of a PAF or
+  MyHeritage export, what maps to which tag, Zweigerl's own `_ZWG_` tags, the shape of the raw GEDCOM an import
+  keeps and the round trip
 - [Tree layout](docs/patterns/tree-layout.md) — who is in the tree, rows by generation, siblings and
   placeholders, where each card goes, and the seeded pen strokes of its lines
 - [datastar](docs/patterns/datastar.md) — the pinned version, signals, fragments, pages, CSRF, toasts and

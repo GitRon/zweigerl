@@ -7,11 +7,12 @@ Zweigerl does not understand as raw structures beside the row it belongs to. Not
 cannot read stays raw, and somebody without a death record is not known to be alive.
 """
 
+import datetime
 import re
 from collections.abc import Callable
 from dataclasses import dataclass, field, replace
 
-from apps.family_tree.domain.dates import UncertainDate, from_gedcom
+from apps.family_tree.domain.dates import DateKind, Precision, UncertainDate, from_gedcom
 from apps.family_tree.domain.gedcom import Node, raw_list, to_raw
 
 # The longest value a fact holds - "Fact.value". A longer one stays raw rather than failing the whole import.
@@ -35,6 +36,15 @@ SEXES = ("M", "F", "X", "U")
 PEDIGREES = {"birth": "birth", "adopted": "adopted", "foster": "foster"}
 
 NAME = re.compile(r"^(?P<given>[^/]*)(?:/(?P<surname>[^/]*)/?)?")
+# A day the German way, as MyHeritage writes some of them: "07.03.1962".
+DOTTED_DAY = re.compile(r"^(\d{1,2})\.(\d{1,2})\.(\d{3,4})$")
+
+# How sure a citation is, GEDCOM's QUAY from 0 to 3, as the reliability of the fact it cites - see
+# docs/patterns/evidence.md. Direct and secondary evidence document it, questionable evidence makes it probable,
+# unreliable evidence leaves it handed down.
+RELIABILITY_BY_QUAY = {"3": "documented", "2": "documented", "1": "probable", "0": "handed_down"}
+# The most reliable first: a fact cited several times takes the best of its citations.
+RELIABILITIES = ("documented", "probable", "handed_down")
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -42,6 +52,8 @@ class ImportedCitation:
     # The xref of the SOUR record the fact cites, as the file names it.
     source: str
     page: str = ""
+    # The QUAY, "0" to "3", which stays raw as well; empty without one.
+    quality: str = ""
     raw: list[dict] = field(default_factory=list)
 
 
@@ -53,6 +65,14 @@ class ImportedFact:
     date: UncertainDate | None = None
     citations: list[ImportedCitation] = field(default_factory=list)
     raw: list[dict] = field(default_factory=list)
+
+    @property
+    def reliability(self) -> str:
+        """
+        A "Fact.Reliability": what the best QUAY among its citations says, "documented" when none has one.
+        """
+        said = [RELIABILITY_BY_QUAY[cited.quality] for cited in self.citations if cited.quality in RELIABILITY_BY_QUAY]
+        return min(said, key=RELIABILITIES.index, default="documented")
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -299,12 +319,15 @@ def _read_note(*, person: _Person, node: Node) -> None:
 
 def _read_source(*, person: _Person, node: Node) -> None:
     """
-    A SOUR pointer directly under the INDI files the source with the person, as the export writes it; what it
-    carries below has no row to stay on and is not kept. A SOUR with its text on the line cites no record and
-    stays raw.
+    A SOUR pointer directly under the INDI files the source with the person, as the export writes it. What it
+    carries below - MyHeritage cites everything this way, with PAGE, QUAY and DATA - has no fact to be a citation
+    of, so it stays raw on the person as a SOUR without the pointer. A SOUR with its text on the line cites no
+    record and stays raw.
     """
     if node.pointer:
         person.sources.append(node.pointer)
+        if node.children:
+            person.raw.append(to_raw(node=node))
     else:
         person.raw.append(to_raw(node=node))
 
@@ -392,9 +415,9 @@ def _dated(*, node: Node, kind: str) -> ImportedFact | None:
 def _cited(*, nodes: tuple[Node, ...] | list[Node]) -> tuple[list[ImportedCitation], list[dict]]:
     """
     The citations among what hangs below a fact - each SOUR pointing at a record, with its PAGE - and the rest as
-    raw structures. A fact cites a source once, so a second SOUR of the same record joins its page to the first.
-    A page too long for a citation stays raw below it. A SOUR with its text on the line cites no record and stays
-    raw.
+    raw structures. A fact cites a source once, so a second SOUR of the same record joins its page to the first,
+    and the better of their QUAYs counts. A page too long for a citation stays raw below it. A SOUR with its text
+    on the line cites no record and stays raw.
     """
     citations: dict[str, ImportedCitation] = {}
     for node in nodes:
@@ -406,9 +429,21 @@ def _cited(*, nodes: tuple[Node, ...] | list[Node]) -> tuple[list[ImportedCitati
         if len(page) > CITATION_PAGE_LENGTH:
             page_node, page = None, cited.page
         raw = raw_list(nodes=[child for child in node.children if child is not page_node])
-        citations[node.pointer] = replace(cited, page=page, raw=[*cited.raw, *raw])
+        citations[node.pointer] = replace(
+            cited, page=page, quality=_better_quality(known=cited.quality, sour=node), raw=[*cited.raw, *raw]
+        )
     rest = [node for node in nodes if node.tag != "SOUR" or not node.pointer]
     return list(citations.values()), raw_list(nodes=rest)
+
+
+def _better_quality(*, known: str, sour: Node) -> str:
+    """
+    The better of a citation's QUAY so far and the one below this SOUR - a higher one is better. A QUAY that is not
+    0 to 3 counts as none.
+    """
+    quay = _first(node=sour, tag="QUAY")
+    said = quay.value.strip() if quay else ""
+    return max((value for value in (known, said) if value in RELIABILITY_BY_QUAY), default="")
 
 
 def _source(*, record: Node) -> ImportedSource:
@@ -430,11 +465,26 @@ def _source(*, record: Node) -> ImportedSource:
     )
 
 
+def read_date(*, text: str) -> UncertainDate:
+    """
+    A date as an export writes it: GEDCOM 5.5.1, or a day the German way, "07.03.1962", which MyHeritage writes
+    beside it. Raises ValueError for anything else - the import keeps that raw, the preview names it.
+    """
+    if match := DOTTED_DAY.match(text.strip()):
+        day, month, year = (int(part) for part in match.groups())
+        try:
+            day_1 = datetime.date(year, month, day)
+        except ValueError as error:
+            raise ValueError(f"„{text}“ ist kein gültiges Datum.") from error
+        return UncertainDate(kind=DateKind.EXACT, date_1=day_1, precision=Precision.DAY)
+    return from_gedcom(text=text)
+
+
 def _date(*, node: Node | None) -> UncertainDate | None:
     if node is None:
         return None
     try:
-        return from_gedcom(text=node.value)
+        return read_date(text=node.value)
     except ValueError:
         return None
 

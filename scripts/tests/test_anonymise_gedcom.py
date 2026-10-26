@@ -6,8 +6,8 @@ from unittest import mock
 
 import pytest
 
-from scripts import anonymise_paf
-from scripts.anonymise_paf import (
+from scripts import anonymise_gedcom
+from scripts.anonymise_gedcom import (
     FEMALE_NAMES,
     MALE_NAMES,
     SURNAMES,
@@ -83,6 +83,14 @@ def test_parse_keeps_lf_without_bom_and_without_a_last_line_break():
     assert parse(text=text).render() == text
 
 
+def test_parse_keeps_a_stray_line_break_inside_a_value():
+    text = "0 @I1@ INDI\r\n1 BIRT\r\n2 PLAC Gmunden \n\r\n0 TRLR\r\n"
+
+    document = parse(text=text)
+
+    assert (document.lines[2].value, document.render()) == ("Gmunden \n", text)
+
+
 def test_parse_refuses_a_line_that_is_no_gedcom():
     with pytest.raises(AnonymiseError, match=r"Line 2 is not a GEDCOM line."):
         parse(text="0 HEAD\r\nHuber\r\n")
@@ -114,6 +122,19 @@ def test_char_class(text, expected):
         (["INDI", "NOTE"], "Schmied", "text"),
         (["INDI", "SEX"], "M", "keep"),
         (["FAM", "DIV"], "Y", "keep"),
+        (["INDI", "_UID"], "4F2A93", "uid"),
+        (["INDI", "RIN"], "MH:I500001", "uid"),
+        (["INDI", "OBJE", "_PHOTO_RIN"], "MH:P500001", "uid"),
+        (["INDI", "OBJE", "_PARENTRIN"], "MH:PA500001", "uid"),
+        (["HEAD", "_PROJECT_GUID"], "4F2A93", "uid"),
+        (["HEAD", "_EXPORTED_FROM_SITE_ID"], "123456", "uid"),
+        (["SOUR", "_MEDI"], "123456-1", "uid"),
+        (["INDI", "_UPD"], "12 MAR 1989 10:11:12 GMT -0500", "date"),
+        (["INDI", "DEAT", "AGE"], "About 45-50", "age"),
+        (["INDI", "OBJE", "_FILESIZE"], "72219", "text"),
+        (["INDI", "OBJE", "_POSITION"], "12 34 56 78", "text"),
+        (["INDI", "SOUR", "QUAY"], "3", "keep"),
+        (["INDI", "SOUR", "DATA", "TEXT"], "Bestätigt", "text"),
     ],
 )
 def test_rule_for(path, value, expected):
@@ -309,10 +330,10 @@ def test_anonymiser_choose_scrambles_when_every_name_is_forbidden():
     ("char", "alphabet"),
     [
         ("7", "0123456789"),
-        ("k", anonymise_paf.ASCII_LETTERS),
-        ("K", anonymise_paf.ASCII_LETTERS.upper()),
-        ("ö", anonymise_paf.LATIN1_LETTERS),
-        ("Ž", anonymise_paf.BEYOND_LATIN1_LETTERS.upper()),
+        ("k", anonymise_gedcom.ASCII_LETTERS),
+        ("K", anonymise_gedcom.ASCII_LETTERS.upper()),
+        ("ö", anonymise_gedcom.LATIN1_LETTERS),
+        ("Ž", anonymise_gedcom.BEYOND_LATIN1_LETTERS.upper()),
     ],
 )
 def test_anonymiser_scramble_char_keeps_the_kind_of_character(anonymiser, char, alphabet):
@@ -387,7 +408,7 @@ def test_anonymiser_name_without_slashes_is_given_names(anonymiser):
 
 
 def test_anonymiser_invent_place_keeps_letters_beyond_latin1(anonymiser):
-    assert anonymiser.invent_place(part="Plzeň") in anonymise_paf.BEYOND_LATIN1_PLACES
+    assert anonymiser.invent_place(part="Plzeň") in anonymise_gedcom.BEYOND_LATIN1_PLACES
 
 
 def test_anonymiser_invent_place_builds_a_name_with_umlauts(anonymiser):
@@ -415,6 +436,26 @@ def test_anonymiser_file_keeps_drive_separators_and_extension(anonymiser):
 
 def test_anonymiser_file_without_drive_and_extension(anonymiser):
     assert len(anonymiser.file(value="Fotos\\Taufe")) == 11
+
+
+def test_anonymiser_file_keeps_the_scheme_and_host_of_a_url(anonymiser):
+    url = "https://sites-cf.example.com/Huber/Josef_1931.jpg"
+
+    invented = anonymiser.file(value=url)
+
+    assert (invented[:29], invented[-4:], len(invented), "Huber" in invented) == (url[:29], ".jpg", len(url), False)
+
+
+def test_forbidden_words_leave_out_the_host_of_a_url():
+    document = parse(text="0 @I1@ INDI\n1 OBJE\n2 FILE https://sites.example.com/Huber.jpg\n")
+
+    assert forbidden_words(document=document) == {"huber"}
+
+
+def test_anonymiser_age_keeps_its_words_and_replaces_its_numbers(anonymiser):
+    invented = anonymiser.age(value="About 45-50")
+
+    assert (invented[:6], invented[8], invented[6:8].isdigit(), invented[9:].isdigit()) == ("About ", "-", True, True)
 
 
 def test_anonymiser_uid_keeps_its_form_and_is_consistent(anonymiser):
@@ -523,9 +564,9 @@ def test_module_runs_as_a_script(tmp_path):
     target = tmp_path / "anonymised.ged"
 
     with (
-        mock.patch.object(sys, "argv", ["anonymise_paf", str(source), str(target)]),
+        mock.patch.object(sys, "argv", ["anonymise_gedcom", str(source), str(target)]),
         pytest.raises(SystemExit) as exited,
     ):
-        runpy.run_path(anonymise_paf.__file__, run_name="__main__")
+        runpy.run_path(anonymise_gedcom.__file__, run_name="__main__")
 
     assert exited.value.code == 0

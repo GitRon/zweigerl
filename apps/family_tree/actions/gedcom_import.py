@@ -176,9 +176,9 @@ def _fact(
     partnership: Partnership | None = None,
 ) -> None:
     """
-    One fact with its citations. It stays "belegt" either way: with a citation it is documented for real, without
-    one it shows as "unbelegt" - see docs/patterns/evidence.md. A citation of a source the file does not have is
-    left out, as a pointer meaning nothing.
+    One fact with its citations. It is "belegt" unless the QUAY of its citations says less: with a citation it is
+    documented for real, without one it shows as "unbelegt" - see docs/patterns/evidence.md. A citation of a
+    source the file does not have is left out, as a pointer meaning nothing.
     """
     date = fact.date
     row = Fact(
@@ -190,6 +190,7 @@ def _fact(
         date_1=date.date_1 if date else None,
         date_2=date.date_2 if date else None,
         precision=date.precision if date else "",
+        reliability=fact.reliability,
         gedcom_raw=fact.raw,
         gedcom_import=origin,
     )

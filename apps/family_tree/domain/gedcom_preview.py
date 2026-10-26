@@ -14,9 +14,8 @@ from typing import BinaryIO
 
 from ged4py.parser import IntegrityError, ParserError
 
-from apps.family_tree.domain.dates import from_gedcom
 from apps.family_tree.domain.gedcom import Node, read
-from apps.family_tree.domain.gedcom_import import read_tree
+from apps.family_tree.domain.gedcom_import import read_date, read_tree
 
 URL = re.compile(r"^[a-z][a-z0-9+.-]*://", re.IGNORECASE)
 WINDOWS_PATH = re.compile(r"^[a-z]:[\\/]|\\", re.IGNORECASE)
@@ -138,7 +137,7 @@ def _below_events(*, nodes: tuple[Node, ...]) -> Iterator[Node]:
 
 def _read_date(*, text: str) -> datetime.date | None:
     try:
-        return from_gedcom(text=text).date_1
+        return read_date(text=text).date_1
     except ValueError:
         return None
 

@@ -10,6 +10,8 @@ from apps.family_tree.domain.gedcom_preview import Preview, UnreadableGedcomErro
 TODAY = datetime.date(2026, 10, 25)
 # The anonymised PAF export of #32 - see docs/patterns/testing-data.md. A test pins counts, never a name or a date.
 PAF_EXPORT = Path(__file__).parent.parent / "data" / "paf_export.ged"
+# The anonymised MyHeritage export of #84, the same way.
+MYHERITAGE_EXPORT = Path(__file__).parent.parent / "data" / "myheritage_export.ged"
 
 
 def _preview(text: str) -> Preview:
@@ -21,6 +23,19 @@ def test_preview_file_reads_the_paf_export():
         result = preview_file(file=file, today=TODAY)
 
     assert (result.program, result.charset, result.people, result.families) == ("PAF", "UTF-8", 412, 163)
+
+
+def test_preview_file_reads_the_myheritage_export():
+    with MYHERITAGE_EXPORT.open("rb") as file:
+        result = preview_file(file=file, today=TODAY)
+
+    assert (result.program, result.people, result.families, result.photos_url, result.unreadable_dates) == (
+        "MYHERITAGE",
+        171,
+        75,
+        39,
+        2,
+    )
 
 
 def test_preview_file_refuses_a_file_that_is_not_gedcom():
@@ -83,6 +98,12 @@ def test_preview_counts_the_dates_it_cannot_read_but_not_when_a_record_was_chang
     result = _preview("0 @I1@ INDI\n1 BIRT\n2 DATE Frühjahr 1939\n1 CHAN\n2 DATE gestern\n")
 
     assert result.unreadable_dates == 1
+
+
+def test_preview_reads_a_day_written_the_german_way_as_the_import_does():
+    result = _preview("0 @I1@ INDI\n1 BIRT\n2 DATE 07.03.1962\n1 DEAT\n2 DATE 07.03.2062\n")
+
+    assert (result.unreadable_dates, result.future_dates) == (0, 1)
 
 
 def test_preview_warns_about_people_with_an_address_or_an_email_but_not_about_the_submitter():

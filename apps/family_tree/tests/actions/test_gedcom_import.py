@@ -1,4 +1,5 @@
 import io
+import json
 from dataclasses import replace
 from pathlib import Path
 
@@ -25,6 +26,8 @@ from apps.family_tree.tests.factories.person import PersonFactory
 # The anonymised PAF export of #32 - see docs/patterns/testing-data.md. Its values are invented anew on every run
 # of the script that writes it, so a test pins forms and counts, never a name or a date.
 PAF_EXPORT = Path(__file__).parent.parent / "data" / "paf_export.ged"
+# The anonymised MyHeritage export of #84, written the same way.
+MYHERITAGE_EXPORT = Path(__file__).parent.parent / "data" / "myheritage_export.ged"
 
 
 @pytest.mark.django_db
@@ -248,14 +251,37 @@ def test_import_gedcom_reads_the_paf_export():
 
 
 @pytest.mark.django_db
-def test_import_gedcom_gets_back_what_the_export_writes_of_the_paf_export():
+def test_import_gedcom_reads_the_myheritage_export():
+    with MYHERITAGE_EXPORT.open("rb") as file:
+        result = import_gedcom(file=file, name="MyHeritage Huber")
+
+    assert (result.people, result.families, result.sources, result.citations) == (171, 75, 1, 0)
+    assert (
+        Person.objects.filter(living_status=Person.LivingStatus.DECEASED).count(),
+        Source.objects.get().people.count(),
+    ) == (110, 49)
+
+
+@pytest.mark.django_db
+def test_import_gedcom_takes_the_reliability_of_a_fact_from_the_quay_of_its_citation():
+    file = io.BytesIO(b"0 @I1@ INDI\n1 OCCU Uhrmacher\n2 SOUR @S1@\n3 QUAY 1\n0 @S1@ SOUR\n1 TITL Brief\n")
+
+    import_gedcom(file=file, name="MyHeritage Huber")
+
+    fact = Fact.objects.get()
+    assert (fact.reliability, fact.citations.get().gedcom_raw) == ("probable", [{"tag": "QUAY", "value": "1"}])
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("export", [PAF_EXPORT, MYHERITAGE_EXPORT], ids=["paf", "myheritage"])
+def test_import_gedcom_gets_back_what_the_export_writes_of_a_program_export(export):
     """
-    The round trip of #22 and #23: the PAF export imported and exported again reads as the same people, families
+    The round trip of #22, #23 and #84: an export imported and exported again reads as the same people, families
     and sources - their names, facts, citations, notes and everything kept raw. Compared as text, not as lines:
     the export cuts a long value beside a space, PAF in the middle of a word, and writes the records in an order
     of its own.
     """
-    with PAF_EXPORT.open("rb") as file:
+    with export.open("rb") as file:
         original = read_tree(records=read(file=file))
         import_gedcom(file=file, name="PAF Huber")
 
@@ -269,13 +295,15 @@ def test_import_gedcom_gets_back_what_the_export_writes_of_the_paf_export():
 def _people(*, tree: ImportedTree) -> list[ImportedPerson]:
     """
     Without the xrefs, which are the file's own - a citation and a filed source name their source by its title
-    instead - and with the facts in one order.
+    instead - and with the facts and the raw structures in one order: the export writes the raw parts of a name
+    into its own NAME, which comes first, where MyHeritage writes a "_UPD" before it.
     """
     titles = {source.xref: source.title for source in tree.sources}
     return [
         replace(
             person,
             xref="",
+            raw=sorted(person.raw, key=lambda structure: json.dumps(structure, sort_keys=True)),
             facts=sorted(
                 (
                     replace(
@@ -299,17 +327,19 @@ def _sources(*, tree: ImportedTree) -> list[ImportedSource]:
 def _families(*, tree: ImportedTree) -> list[tuple]:
     """
     The families by the places of their members among the people. A parent on their own has no row to keep what
-    their family carries raw - its "_UID" - so only a couple's raw is compared.
+    their family carries - its "_UID", a "MARR" - so only a couple's wedding and raw are compared, and a parent on
+    their own without children, which leaves no row at all, is not compared.
     """
     place = {person.xref: index for index, person in enumerate(tree.people)}
     families = [
         (
             tuple(sorted(place[xref] for xref in family.parents)),
             sorted((place[child.xref], child.pedigree, child.raw) for child in family.children),
-            family.married,
+            family.married if len(family.parents) == 2 else False,
             sorted(family.facts, key=lambda fact: (fact.kind, str(fact.date))),
             family.raw if len(family.parents) == 2 else [],
         )
         for family in tree.families
+        if len(family.parents) == 2 or family.children
     ]
     return sorted(families, key=lambda family: family[0])

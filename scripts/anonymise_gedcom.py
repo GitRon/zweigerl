@@ -1,12 +1,13 @@
-"""Turn a real PAF export into the anonymised test file of #32.
+"""Turn a real PAF or MyHeritage export into an anonymised test file (#32, #84).
 
-    uv run python -m scripts.anonymise_paf <real export> apps/family_tree/tests/data/paf_export.ged
+    uv run python -m scripts.anonymise_gedcom <real export> apps/family_tree/tests/data/paf_export.ged
+    uv run python -m scripts.anonymise_gedcom <real export> apps/family_tree/tests/data/myheritage_export.ged
 
-The structure stays: line order, levels, tags, xrefs, BOM, line endings, the charset declaration and the
-kind of every value. Every value that says something about real people is replaced - names, places, dates,
-free text, file paths, the submitter and the `_UID`s. A tag with a value this script has no rule for stops
-the run rather than passing through, and so does any replaced word that is still in the result. Nothing is
-written then.
+The structure stays: line order, levels, tags, xrefs, BOM, line endings - a stray one inside a value too - the
+charset declaration and the kind of every value. Every value that says something about real people is
+replaced - names, places, dates, free text, file paths and the path of a URL, the submitter, the `_UID`s and the
+record numbers. A tag with a value this script has no rule for stops the run rather than passing through, and so
+does any replaced word that is still in the result. Nothing is written then.
 
 Every run draws its replacements and its date offset at random and keeps them only in memory, so nothing in
 the repository leads back to the real values. Within one file they are consistent: the same surname becomes
@@ -26,12 +27,19 @@ from dataclasses import dataclass
 from pathlib import Path
 
 BOM = "﻿"
-LINE = re.compile(r"(?P<level>\d+) (?:(?P<xref>@[^@]+@) )?(?P<tag>\S+)(?: (?P<value>.*))?")
+# A value may end in a line break of the other kind - MyHeritage leaves a LF in a place now and then, in a file
+# of CRLF - which stays part of it.
+LINE = re.compile(r"(?P<level>\d+) (?:(?P<xref>@[^@]+@) )?(?P<tag>\S+)(?: (?P<value>.*))?", re.DOTALL)
 POINTER = re.compile(r"@[^@]+@")
 LETTERS = re.compile(r"[^\W\d_]+")
 WORD = re.compile(r"[^\W_]+")
-# A path keeps its drive and its extension; the folders and the name in between are what say who it is.
-FILE_PATH = re.compile(r"(?P<drive>[A-Za-z]:)?(?P<path>.*?)(?P<extension>\.[^\W_]{1,5})?")
+# A path keeps its drive and its extension, a URL its scheme and host as well; the folders and the name in
+# between are what say who it is.
+FILE_PATH = re.compile(
+    r"(?P<drive>[A-Za-z][A-Za-z0-9+.-]*://[^/]*|[A-Za-z]:)?(?P<path>.*?)(?P<extension>\.[^\W_]{1,5})?"
+)
+# An age at death: its words - "About" - stay, its numbers are replaced.
+NUMBER = re.compile(r"\d+")
 
 # Below this length a free-text word is too common to count as a leak ("am", "und", "der").
 MIN_TEXT_WORD = 4
@@ -41,10 +49,16 @@ MAX_ATTEMPTS = 100
 NAME_TAGS = {"GIVN": "given", "NICK": "given", "SURN": "surname", "_MARNM": "surname", "_AKA": "name"}
 TEXT_TAGS = {
     "ADDR", "ADR1", "ADR2", "AUTH", "CAUS", "CITY", "COPR", "CTRY", "DSCR", "EDUC", "EMAIL", "EVEN", "NATI",
-    "NOTE", "OCCU", "PAGE", "PHON", "POST", "PUBL", "RELI", "RESI", "STAE", "TEXT", "TITL", "TYPE",
+    "NOTE", "OCCU", "PAGE", "PHON", "POST", "PUBL", "RELI", "RESI", "STAE", "TEXT", "TITL", "TYPE", "_FILESIZE",
+    "_POSITION",
 }  # fmt: skip
-# Values that describe the file or a picture's role, never a person. NPFX holds titles such as "Dr.".
-KEEP_TAGS = {"CHAR", "DEST", "FORM", "LANG", "NPFX", "SEX", "TIME", "VERS", "_PRIM", "_SCBK", "_SSHOW", "_TYPE"}
+# Numbers a program gives its records and its projects - kept in form like a `_UID`, never in value.
+UID_TAGS = {"RIN", "_UID", "_EXPORTED_FROM_SITE_ID", "_MEDI", "_PARENTRIN", "_PHOTO_RIN", "_PROJECT_GUID"}
+# Values that describe the file or a picture's role, never a person. NPFX holds titles such as "Dr.", QUAY a
+# citation's quality from 0 to 3.
+KEEP_TAGS = {
+    "CHAR", "DEST", "FORM", "LANG", "NPFX", "QUAY", "SEX", "TIME", "VERS", "_PRIM", "_SCBK", "_SSHOW", "_TYPE",
+}  # fmt: skip
 CONTINUATION_TAGS = {"CONT", "CONC"}
 
 GEDCOM_MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
@@ -199,9 +213,13 @@ def rule_for(*, path: list[str], value: str | None) -> str:
         return "text"
     if tag == "NAME" and path[0] == "INDI":
         return "name"
-    rule = NAME_TAGS.get(tag) or {"PLAC": "place", "DATE": "date", "FILE": "file", "_UID": "uid"}.get(tag)
+    rule = NAME_TAGS.get(tag) or {"PLAC": "place", "DATE": "date", "_UPD": "date", "FILE": "file", "AGE": "age"}.get(
+        tag
+    )
     if rule:
         return rule
+    if tag in UID_TAGS:
+        return "uid"
     if tag in TEXT_TAGS:
         return "text"
     if tag in KEEP_TAGS or value == "Y":
@@ -332,6 +350,7 @@ class Anonymiser:
                 "date": self.date,
                 "file": self.file,
                 "uid": self.uid,
+                "age": self.age,
             }[unit.rule]
             document.lines[unit.indexes[0]].value = replace(value=text, sex=unit.sex)
 
@@ -440,6 +459,10 @@ class Anonymiser:
 
         return self.remembered(key=("uid", value), invent=invent)
 
+    def age(self, *, value: str, sex: str = "") -> str:
+        """`About 45-50` keeps its words and its form; the numbers become others of the same length."""
+        return NUMBER.sub(lambda match: self.word(word=match[0]), value)
+
     def hex_digit(self, *, like: str) -> str:
         digit = self.rng.choice("0123456789ABCDEF")
         return digit.lower() if like.islower() else digit
@@ -525,7 +548,7 @@ def anonymise(*, text: str, rng: random.Random) -> str:
 
 
 def main(*, argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Write an anonymised copy of a PAF export.")
+    parser = argparse.ArgumentParser(description="Write an anonymised copy of a GEDCOM export.")
     parser.add_argument("source", type=Path, help="the real export, outside the repository")
     parser.add_argument("target", type=Path, help="where the anonymised file goes")
     arguments = parser.parse_args(argv)
