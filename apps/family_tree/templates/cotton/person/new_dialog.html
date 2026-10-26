@@ -34,7 +34,7 @@
             {% endif %}
             <fieldset class="flex flex-col gap-2" data-show="$relation != ''">
                 <legend class="mb-1 text-sm">Wer?</legend>
-                <input type="search" aria-label="Im Baum suchen" placeholder="Im Baum suchen…" autocomplete="off" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet px-3" data-bind="relative_search" data-on:input__debounce.300ms="@get('{{ candidates_url }}')" data-on:keydown="evt.key == 'Enter' && evt.preventDefault()">
+                <c-common.search-field bind="relative_search" label="Im Baum suchen" :url="candidates_url" data-on:keydown="evt.key == 'Enter' && evt.preventDefault()" />
                 <div id="relative-candidates"></div>
                 <label class="flex min-h-11 cursor-pointer items-center gap-2"><input type="radio" class="accent-forest" name="relative_id" value="" data-bind="relative"> Neue Person anlegen</label>
             </fieldset>

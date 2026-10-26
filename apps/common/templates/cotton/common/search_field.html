@@ -1,0 +1,11 @@
+<c-vars bind label url />
+{# A search field bound to the signal "bind", asking "url" again at each pause in typing. The cross empties #}
+{# it with one click: it clears the signal, asks "url" once more and hands the focus back to the field. #}
+{# It is our own because Firefox draws no clear button for "type=search"; the browsers that do have theirs #}
+{# hidden, so there are never two. Any other attribute lands on the input through "attrs". #}
+<div class="relative">
+    <input type="search" aria-label="{{ label }}" placeholder="{{ label }}…" autocomplete="off" class="min-h-11 w-full rounded-md border-[1.5px] border-ink bg-sheet pr-11 pl-3 [&::-webkit-search-cancel-button]:appearance-none" data-bind="{{ bind }}" data-on:input__debounce.300ms="@get('{{ url }}')" {{ attrs }}>
+    <button type="button" aria-label="Suche leeren" title="Suche leeren" class="absolute inset-y-[1.5px] right-[1.5px] flex w-11 cursor-pointer items-center justify-center rounded-md hover:bg-card" style="display: none" data-show="${{ bind }} != ''" data-on:click="${{ bind }} = ''; @get('{{ url }}'); el.previousElementSibling.focus()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" /></svg>
+    </button>
+</div>
