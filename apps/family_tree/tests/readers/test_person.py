@@ -46,7 +46,7 @@ from apps.family_tree.tests.factories.photo_person import PhotoPersonFactory
 from apps.family_tree.tests.factories.sibling_pair import SiblingPairFactory
 from apps.family_tree.tests.factories.source import SourceFactory
 from apps.family_tree.tests.factories.source_file import SourceFileFactory
-from apps.family_tree.tests.factories.tree_settings import TreeSettingsFactory
+from apps.family_tree.tests.factories.tree import TreeFactory
 
 
 @pytest.mark.django_db
@@ -112,9 +112,19 @@ def test_person_list_sorts_by_family_name_and_counts_everybody():
     zach = PersonFactory(given_names="Anna", surname="Zach")
     oehler = PersonFactory(given_names="Anna", surname="Öhler")
 
-    result = person_list(search="")
+    result = person_list(tree_id=TreeFactory().pk, search="")
 
     assert (result.entries[0].person, result.entries[1].person, result.total) == (oehler, zach, 2)
+
+
+@pytest.mark.django_db
+def test_person_list_leaves_out_the_people_of_another_tree():
+    lena = PersonFactory(given_names="Lena")
+    PersonFactory(given_names="Lena", tree__name="Familie Berger")
+
+    found = person_list(tree_id=lena.tree_id, search="")
+
+    assert (_people(found.entries), found.total) == ([lena], 1)
 
 
 @pytest.mark.django_db
@@ -122,7 +132,7 @@ def test_person_list_keeps_only_who_matches_the_search():
     lena = PersonFactory(given_names="Lena", surname="Huber")
     PersonFactory(given_names="Markus", surname="Brandl")
 
-    result = person_list(search="hub")
+    result = person_list(tree_id=TreeFactory().pk, search="hub")
 
     assert result == PersonList(
         entries=[PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan="")], total=2
@@ -134,7 +144,7 @@ def test_person_list_finds_the_call_name():
     gertrud = PersonFactory(given_names="Gertrud", surname="Huber", call_name="Gerti")
     PersonFactory(given_names="Gerhard", surname="Huber")
 
-    result = person_list(search="gerti")
+    result = person_list(tree_id=TreeFactory().pk, search="gerti")
 
     assert result.entries == [PersonListEntry(person=gertrud, name="Gerti Huber", initials="GH", lifespan="")]
 
@@ -147,7 +157,7 @@ def test_person_list_shows_the_earliest_birth_and_death():
     FactFactory(person=josef, kind=Fact.Kind.DEATH, date_1=datetime.date(2009, 5, 1))
     FactFactory(person=josef, kind=Fact.Kind.BAPTISM, date_1=datetime.date(1930, 1, 1))
 
-    assert person_list(search="").entries[0].lifespan == "* 1931 † 2009"
+    assert person_list(tree_id=TreeFactory().pk, search="").entries[0].lifespan == "* 1931 † 2009"
 
 
 @pytest.mark.django_db
@@ -155,7 +165,7 @@ def test_person_list_shows_only_the_birth_of_somebody_not_known_to_be_dead():
     lena = PersonFactory(given_names="Lena", living_status=Person.LivingStatus.LIVING)
     FactFactory(person=lena, date_1=datetime.date(1989, 3, 12))
 
-    assert person_list(search="").entries[0].lifespan == "* 1989"
+    assert person_list(tree_id=TreeFactory().pk, search="").entries[0].lifespan == "* 1989"
 
 
 @pytest.mark.django_db
@@ -163,7 +173,7 @@ def test_person_list_marks_somebody_dead_without_a_death_date():
     theresia = PersonFactory(given_names="Theresia", living_status=Person.LivingStatus.DECEASED)
     FactFactory(person=theresia, date_1=datetime.date(1934, 1, 1))
 
-    assert person_list(search="").entries[0].lifespan == "* 1934 †"
+    assert person_list(tree_id=TreeFactory().pk, search="").entries[0].lifespan == "* 1934 †"
 
 
 @pytest.mark.django_db
@@ -222,7 +232,7 @@ def test_person_card_names_the_relationship_to_the_home_person():
     johann = PersonFactory(given_names="Johann", sex=Person.Sex.MALE)
     lena = PersonFactory(given_names="Lena")
     ParentChildFactory(parent=johann, child=lena)
-    TreeSettingsFactory(home_person=lena)
+    TreeFactory(home_person=lena)
 
     assert person_card(pk=johann.pk).relationship == "Vater"
 
@@ -656,7 +666,7 @@ def test_deletion_preview_lists_every_link_that_goes():
 def test_deletion_preview_of_the_home_person_says_so_and_cuts_off_nobody():
     lena = PersonFactory(given_names="Lena")
     ParentChildFactory(parent=lena)
-    TreeSettingsFactory(home_person=lena)
+    TreeFactory(home_person=lena)
 
     preview = deletion_preview(pk=lena.pk)
 
@@ -675,7 +685,7 @@ def test_deletion_preview_names_whom_the_deletion_cuts_off_from_the_home_person(
     ParentChildFactory(parent=franz, child=johann)
     ParentChildFactory(parent=anna, child=johann)
     ParentChildFactory(parent=maria, child=lena)
-    TreeSettingsFactory(home_person=lena)
+    TreeFactory(home_person=lena)
 
     preview = deletion_preview(pk=johann.pk)
 
@@ -756,9 +766,9 @@ def test_loose_people_are_those_with_no_connection_to_the_home_person():
     anna = PersonFactory(given_names="Anna", surname="Berger")
     PartnershipFactory(person_a=franz, person_b=anna)
     PersonFactory(given_names="Rosa", surname="Auer")
-    TreeSettingsFactory(home_person=lena)
+    TreeFactory(home_person=lena)
 
-    assert _names(loose_people()) == ["Rosa", "Anna", "Franz"]
+    assert _names(loose_people(tree_id=TreeFactory().pk)) == ["Rosa", "Anna", "Franz"]
 
 
 @pytest.mark.django_db
@@ -767,12 +777,21 @@ def test_loose_people_without_a_home_person_are_measured_from_the_person_entered
     ParentChildFactory(parent=johann)
     PersonFactory(given_names="Rosa", surname="Auer")
 
-    assert _names(loose_people()) == ["Rosa"]
+    assert _names(loose_people(tree_id=TreeFactory().pk)) == ["Rosa"]
+
+
+@pytest.mark.django_db
+def test_loose_people_leave_out_the_people_of_another_tree():
+    lena = TreeFactory(home_person=PersonFactory(given_names="Lena")).home_person
+    rosa = PersonFactory(given_names="Rosa")
+    PersonFactory(given_names="Markus", tree__name="Familie Berger")
+
+    assert _people(loose_people(tree_id=lena.tree_id)) == [rosa]
 
 
 @pytest.mark.django_db
 def test_loose_people_of_an_empty_tree_are_nobody():
-    assert loose_people() == []
+    assert loose_people(tree_id=TreeFactory().pk) == []
 
 
 def _people(entries: list[PersonListEntry]) -> list[Person]:
@@ -806,6 +825,17 @@ def test_relative_dialog_names_no_parent_to_pair_with_two():
 @pytest.mark.django_db
 def test_relative_dialog_of_somebody_not_there_is_none():
     assert relative_dialog(pk=404) is None
+
+
+@pytest.mark.django_db
+def test_relative_candidates_offer_nobody_of_another_tree():
+    lena = PersonFactory(given_names="Lena")
+    rosa = PersonFactory(given_names="Rosa")
+    PersonFactory(given_names="Rosa", tree__name="Familie Berger")
+
+    found = relative_candidates(pk=lena.pk, relation="partner", search="rosa")
+
+    assert _people(found.found) == [rosa]
 
 
 @pytest.mark.django_db
@@ -884,7 +914,7 @@ def test_relative_candidates_suggest_the_other_parent_and_leave_out_the_family_a
 @pytest.mark.django_db
 def test_relative_candidates_suggest_the_loose_and_leave_out_parents_and_children_as_sibling():
     lena = PersonFactory(given_names="Lena", surname="Huber")
-    TreeSettingsFactory(home_person=lena)
+    TreeFactory(home_person=lena)
     ParentChildFactory(parent=PersonFactory(surname="Huber"), child=lena)
     ParentChildFactory(parent=lena, child=PersonFactory(surname="Huber"))
     stefan = PartnershipFactory(person_a=lena, person_b=PersonFactory(given_names="Stefan", surname="Huber")).person_b

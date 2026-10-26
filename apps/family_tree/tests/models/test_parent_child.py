@@ -138,3 +138,11 @@ def test_parent_child_refuses_an_unknown_pedigree_in_the_database():
 
     with pytest.raises(IntegrityError, match="parentchild_pedigree_valid"):
         ParentChild.objects.bulk_create([ParentChild(parent=johann, child=lena, pedigree="guessed")])
+
+
+@pytest.mark.django_db
+def test_parent_child_refuses_a_parent_of_another_tree():
+    lena = PersonFactory()
+
+    with pytest.raises(ValidationError, match="Elternteil und Kind gehören zu verschiedenen Stammbäumen"):
+        ParentChildFactory(parent=PersonFactory(tree__name="Familie Berger"), child=lena)

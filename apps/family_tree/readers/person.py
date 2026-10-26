@@ -20,7 +20,7 @@ from apps.family_tree.models import (
 from apps.family_tree.models.fact import COUPLE_KINDS, CUSTOM, VALUE_KINDS
 from apps.family_tree.readers.evidence import facts, sources
 from apps.family_tree.readers.relationship import family_graph
-from apps.family_tree.readers.tree_settings import home_person
+from apps.family_tree.readers.trees import home_person
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -73,14 +73,14 @@ class PersonList:
     total: int
 
 
-def person_list(*, search: str) -> PersonList:
+def person_list(*, tree_id: int, search: str) -> PersonList:
     """
-    The people of the sidebar (#10) whose names match "search", sorted by family name, each with the name they
-    went by, their initials and their Lebensdaten - plus how many people there are at all. Filtered and sorted
-    in Python rather than in the query: SQLite compares umlauts neither case-insensitively nor in German
-    order, and one family is few enough rows to read whole.
+    The people of the tree "tree_id" in the sidebar (#10) whose names match "search", sorted by family name, each
+    with the name they went by, their initials and their Lebensdaten - plus how many people the tree has at all.
+    Filtered and sorted in Python rather than in the query: SQLite compares umlauts neither case-insensitively nor
+    in German order, and one family is few enough rows to read whole.
     """
-    persons = _with_life_facts()
+    persons = _with_life_facts().filter(tree=tree_id)
     found = [
         person
         for person in persons
@@ -200,11 +200,15 @@ def person_card(*, pk: int) -> PersonCard | None:
         return None
 
     groups = relative_groups(person=person)
-    home = home_person()
+    home = home_person(tree_id=person.tree_id)
 
     return PersonCard(
         entry=_entry(person=person),
-        relationship=(relationship_name(family=family_graph(), home_id=home.pk, person_id=person.pk) if home else None),
+        relationship=(
+            relationship_name(family=family_graph(tree_id=person.tree_id), home_id=home.pk, person_id=person.pk)
+            if home
+            else None
+        ),
         facts=[_fact_entry(fact=fact, person=person) for fact in facts(person=person)],
         relatives=groups,
         relative_count=sum(len(group.entries) for group in groups),
@@ -279,7 +283,7 @@ def deletion_preview(*, pk: int) -> DeletionPreview | None:
     vanishing_facts = Fact.objects.filter(
         Q(person=person) | Q(partnership__person_a=person) | Q(partnership__person_b=person)
     )
-    home = home_person()
+    home = home_person(tree_id=person.tree_id)
     return DeletionPreview(
         entry=_entry(person=person),
         home=home is not None and home.pk == pk,
@@ -288,15 +292,15 @@ def deletion_preview(*, pk: int) -> DeletionPreview | None:
         source_count=sources(person=person).count(),
         photo_count=person.photo_links.count(),
         relatives=relative_groups(person=person),
-        cut_off=_cut_off(pk=pk, home=home),
+        cut_off=_cut_off(tree_id=person.tree_id, pk=pk, home=home),
     )
 
 
-def _cut_off(*, pk: int, home: Person | None) -> list[PersonListEntry]:
+def _cut_off(*, tree_id: int, pk: int, home: Person | None) -> list[PersonListEntry]:
     if home is not None and home.pk == pk:
         return []
-    before = _connected(anchor_id=_anchor_id(home=home), without_id=None)
-    after = _connected(anchor_id=_anchor_id(home=home, without_id=pk), without_id=pk)
+    before = _connected(tree_id=tree_id, anchor_id=_anchor_id(tree_id=tree_id, home=home), without_id=None)
+    after = _connected(tree_id=tree_id, anchor_id=_anchor_id(tree_id=tree_id, home=home, without_id=pk), without_id=pk)
     return _sorted_entries(person_ids=before - after - {pk})
 
 
@@ -396,9 +400,9 @@ class RelativeCandidates:
 
 def relative_candidates(*, pk: int, relation: str, search: str) -> RelativeCandidates:
     """
-    Who is offered as the parent, partner, child or sibling of "pk" (#89), each list sorted by family name. Left out
-    is whom the family's rules would refuse or who makes no sense: the person, who already is that to them, a
-    descendant as parent, an ancestor or somebody with two birth parents as child, a parent, child or sibling as
+    Who of their tree is offered as the parent, partner, child or sibling of "pk" (#89), each list sorted by family
+    name. Left out is whom the family's rules would refuse or who makes no sense: the person, who already is that to
+    them, a descendant as parent, an ancestor or somebody with two birth parents as child, a parent, child or sibling as
     partner, a parent or child as sibling. Nobody is left out for their Lebensdaten - those are too often unknown
     or uncertain. Nothing is offered for a person who is not there or a relation that is none.
     """
@@ -415,7 +419,7 @@ def relative_candidates(*, pk: int, relation: str, search: str) -> RelativeCandi
     excluded, suggested_ids = _candidate_rules(person=person, relation=relation)
     people = [
         candidate
-        for candidate in _with_life_facts().exclude(pk__in=excluded)
+        for candidate in _with_life_facts().filter(tree=person.tree_id).exclude(pk__in=excluded)
         if matches(search=search, names=(candidate.given_names, candidate.surname, candidate.call_name))
     ]
     people.sort(key=lambda candidate: sort_key(given_names=candidate.given_names, surname=candidate.surname))
@@ -433,7 +437,7 @@ def _candidate_rules(*, person: Person, relation: str) -> tuple[set[int], set[in
     parents, partners, children, siblings = (
         {relative.pk for relative in group} for group in (found.parents, found.partners, found.children, found.siblings)
     )
-    family = family_graph()
+    family = family_graph(tree_id=person.tree_id)
     if relation == "parent":
         excluded = parents | descendants(family=family, person_id=person.pk)
         suggested = {partner for parent in parents for partner in family.partners.get(parent, ())}
@@ -452,31 +456,37 @@ def _candidate_rules(*, person: Person, relation: str) -> tuple[set[int], set[in
         suggested = set(Person.objects.filter(child_links__child__in=children).values_list("pk", flat=True))
     else:
         excluded = siblings | parents | children
-        suggested = {entry.person.pk for entry in loose_people()}
+        suggested = {entry.person.pk for entry in loose_people(tree_id=person.tree_id)}
     return excluded | {person.pk}, suggested
 
 
-def loose_people() -> list[PersonListEntry]:
+def loose_people(*, tree_id: int) -> list[PersonListEntry]:
     """
-    The "Lose Zweigerl" of the sidebar (#19): everyone with no connection to the home person, or - while nobody is
-    chosen - to the person entered first, whom the tree is laid out around then. Nothing ever deletes them on its
-    own; they wait to be connected again or deleted.
+    The "Lose Zweigerl" of the tree "tree_id" in the sidebar (#19): everyone with no connection to the home person,
+    or - while nobody is chosen - to the person entered first, whom the tree is laid out around then. Nothing ever
+    deletes them on its own; they wait to be connected again or deleted.
     """
-    connected = _connected(anchor_id=_anchor_id(home=home_person()), without_id=None)
-    return _sorted_entries(person_ids=set(Person.objects.exclude(pk__in=connected).values_list("pk", flat=True)))
+    connected = _connected(
+        tree_id=tree_id, anchor_id=_anchor_id(tree_id=tree_id, home=home_person(tree_id=tree_id)), without_id=None
+    )
+    return _sorted_entries(
+        person_ids=set(Person.objects.filter(tree=tree_id).exclude(pk__in=connected).values_list("pk", flat=True))
+    )
 
 
-def _anchor_id(*, home: Person | None, without_id: int | None = None) -> int | None:
+def _anchor_id(*, tree_id: int, home: Person | None, without_id: int | None = None) -> int | None:
     # The person the tree is laid out around, as "readers.tree.tree_layout" chooses them.
     if home is not None:
         return home.pk
-    return Person.objects.exclude(pk=without_id).order_by("pk").values_list("pk", flat=True).first()
+    return (
+        Person.objects.filter(tree=tree_id).exclude(pk=without_id).order_by("pk").values_list("pk", flat=True).first()
+    )
 
 
-def _connected(*, anchor_id: int | None, without_id: int | None) -> frozenset[int]:
+def _connected(*, tree_id: int, anchor_id: int | None, without_id: int | None) -> frozenset[int]:
     if anchor_id is None:
         return frozenset()
-    return connected_people(family=family_graph(without_id=without_id), start_id=anchor_id)
+    return connected_people(family=family_graph(tree_id=tree_id, without_id=without_id), start_id=anchor_id)
 
 
 def _sorted_entries(*, person_ids: set[int]) -> list[PersonListEntry]:

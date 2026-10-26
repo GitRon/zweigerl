@@ -100,7 +100,7 @@ def _patch_photos(*, request: HttpRequest, pk: int):
     yield ServerSentEventGenerator.patch_elements(
         render_component(request, "person.portrait", entry=person_entries(person_ids=[pk])[pk])
     )
-    yield from search_events(request, search=request.POST.get("search", "").strip())
+    yield from search_events(request, tree_id=found.person.tree_id, search=request.POST.get("search", "").strip())
     if (in_tree := tree_card(pk=pk)) is not None:
         yield ServerSentEventGenerator.patch_elements(
             render_component(request, "tree.card", card=in_tree, width=CARD_WIDTH, height=CARD_HEIGHT)

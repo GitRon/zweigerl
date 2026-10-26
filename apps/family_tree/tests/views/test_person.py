@@ -4,7 +4,7 @@ from pytest_django.asserts import assertTemplateUsed
 
 from apps.family_tree.models import Person
 from apps.family_tree.tests.factories.person import PersonFactory
-from apps.family_tree.tests.factories.tree_settings import TreeSettingsFactory
+from apps.family_tree.tests.factories.tree import TreeFactory
 
 
 @pytest.mark.django_db
@@ -19,6 +19,21 @@ def test_person_view_renders_the_start_page_with_the_card_open(admin_client):
         lena.pk,
     )
     assertTemplateUsed(response, "family_tree/start.html")
+
+
+@pytest.mark.django_db
+def test_person_view_opens_the_page_of_their_own_tree(admin_client):
+    PersonFactory(given_names="Lena")
+    markus = PersonFactory(given_names="Markus", tree__name="Familie Berger")
+
+    response = admin_client.get(reverse("family_tree:person-view", kwargs={"pk": markus.pk}))
+
+    people = response.context["person_list"]
+    assert (response.context["open_tree"].tree, people.total, people.entries[0].person) == (
+        markus.tree,
+        1,
+        markus,
+    )
 
 
 @pytest.mark.django_db
@@ -56,7 +71,7 @@ def _name_form(**changes) -> dict:
 @pytest.mark.django_db
 def test_person_name_view_saves_and_patches_card_list_and_tree(admin_client):
     gerti = PersonFactory(given_names="Gertrud", surname="Hubr")
-    TreeSettingsFactory(home_person=gerti)
+    TreeFactory(home_person=gerti)
 
     response = admin_client.post(
         reverse("family_tree:person-name-view", kwargs={"pk": gerti.pk}),
@@ -82,7 +97,7 @@ def test_person_name_view_saves_and_patches_card_list_and_tree(admin_client):
 
 @pytest.mark.django_db
 def test_person_name_view_patches_the_new_name_into_the_loose_twigs(admin_client):
-    TreeSettingsFactory()
+    TreeFactory(home_person=PersonFactory())
     gerti = PersonFactory(given_names="Gertrud", surname="Hubr")
 
     response = admin_client.post(
@@ -111,7 +126,7 @@ def test_person_name_view_keeps_the_search_running_in_the_list(admin_client):
 
 @pytest.mark.django_db
 def test_person_name_view_does_not_patch_a_tree_card_the_tree_does_not_show(admin_client):
-    TreeSettingsFactory()
+    TreeFactory(home_person=PersonFactory())
     stranger = PersonFactory(given_names="Fremd")
 
     response = admin_client.post(

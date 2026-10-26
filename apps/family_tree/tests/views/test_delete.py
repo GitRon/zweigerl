@@ -4,7 +4,7 @@ from django.urls import reverse
 from apps.family_tree.models import ParentChild, Person
 from apps.family_tree.tests.factories.parent_child import ParentChildFactory
 from apps.family_tree.tests.factories.person import PersonFactory
-from apps.family_tree.tests.factories.tree_settings import TreeSettingsFactory
+from apps.family_tree.tests.factories.tree import TreeFactory
 
 DATASTAR = {"Datastar-Request": "true"}
 
@@ -20,7 +20,7 @@ def _family() -> tuple[Person, Person, Person]:
     franz = PersonFactory(given_names="Franz")
     ParentChildFactory(parent=johann, child=lena)
     ParentChildFactory(parent=franz, child=johann)
-    TreeSettingsFactory(home_person=lena)
+    TreeFactory(home_person=lena)
     return lena, johann, franz
 
 
@@ -45,7 +45,7 @@ def test_confirm_delete_person_view_of_somebody_not_there_is_not_found(admin_cli
 
 
 @pytest.mark.django_db
-def test_delete_person_view_deletes_and_goes_back_to_the_start_page(admin_client):
+def test_delete_person_view_deletes_and_goes_back_to_the_page_of_the_tree(admin_client):
     _, johann, _ = _family()
 
     response = admin_client.post(
@@ -54,7 +54,7 @@ def test_delete_person_view_deletes_and_goes_back_to_the_start_page(admin_client
 
     body = _events(response)
     assert Person.objects.filter(pk=johann.pk).exists() is False
-    assert reverse("family_tree:start-view") in body
+    assert reverse("family_tree:tree-view", kwargs={"tree_pk": johann.tree_id}) in body
     assert admin_client.session["_toasts"] == [{"text": "Passt. Johann Huber ist gelöscht.", "style": "success"}]
 
 

@@ -73,3 +73,11 @@ def test_partnership_includes_nobody_else():
     partnership = PartnershipFactory()
 
     assert partnership.includes(person_id=PersonFactory().pk) is False
+
+
+@pytest.mark.django_db
+def test_partnership_refuses_partners_of_two_trees():
+    lena = PersonFactory()
+
+    with pytest.raises(ValidationError, match="Die beiden gehören zu verschiedenen Stammbäumen"):
+        PartnershipFactory(person_a=lena, person_b=PersonFactory(tree__name="Familie Berger"))

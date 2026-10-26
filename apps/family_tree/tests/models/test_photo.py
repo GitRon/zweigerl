@@ -9,6 +9,7 @@ from apps.family_tree.models import Photo, PhotoPerson
 from apps.family_tree.tests.factories.person import PersonFactory
 from apps.family_tree.tests.factories.photo import PhotoFactory
 from apps.family_tree.tests.factories.photo_person import PhotoPersonFactory
+from apps.family_tree.tests.factories.tree import TreeFactory
 
 ABOUT_1950 = UncertainDate(kind=DateKind.ABOUT, date_1=datetime.date(1950, 1, 1), precision=Precision.YEAR)
 
@@ -100,14 +101,23 @@ def test_photo_refuses_a_date_without_its_precision_on_save():
 def test_photo_refuses_a_date_without_its_precision_in_the_database():
     with pytest.raises(IntegrityError, match="photo_date_complete"):
         Photo.objects.bulk_create(
-            [Photo(date_kind="exact", date_1=datetime.date(1950, 1, 1), sort_date=datetime.date(1950, 1, 1))]
+            [
+                Photo(
+                    tree=TreeFactory(),
+                    date_kind="exact",
+                    date_1=datetime.date(1950, 1, 1),
+                    sort_date=datetime.date(1950, 1, 1),
+                )
+            ]
         )
 
 
 @pytest.mark.django_db
 def test_photo_refuses_a_date_without_its_sort_date_in_the_database():
     with pytest.raises(IntegrityError, match="photo_sort_date_with_date"):
-        Photo.objects.bulk_create([Photo(date_kind="exact", date_1=datetime.date(1950, 1, 1), precision="year")])
+        Photo.objects.bulk_create(
+            [Photo(tree=TreeFactory(), date_kind="exact", date_1=datetime.date(1950, 1, 1), precision="year")]
+        )
 
 
 @pytest.mark.django_db
@@ -122,6 +132,7 @@ def test_photo_refuses_a_second_date_that_is_no_range_in_the_database():
         Photo.objects.bulk_create(
             [
                 Photo(
+                    tree=TreeFactory(),
                     date_kind="about",
                     date_1=datetime.date(1950, 1, 1),
                     date_2=datetime.date(1960, 1, 1),
@@ -180,3 +191,11 @@ def test_photo_person_allows_many_photos_that_are_no_portrait():
     second = PhotoPersonFactory(person=first.person)
 
     assert list(first.person.photos.all()) == [first.photo, second.photo]
+
+
+@pytest.mark.django_db
+def test_photo_person_refuses_a_person_of_another_tree():
+    photo = PhotoFactory()
+
+    with pytest.raises(ValidationError, match="Das Foto und die Person gehören zu verschiedenen Stammbäumen"):
+        PhotoPersonFactory(photo=photo, person=PersonFactory(tree__name="Familie Berger"))

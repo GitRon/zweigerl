@@ -1,7 +1,7 @@
 <c-vars card />
 {# The person card beside the tree (#12, #13): who was selected there, shown while "$selection" is still them. #}
 {# The cross at the top right closes it (#94), above the head and the form alike. Closing it - the cross, or #}
-{# Escape on the canvas - moves the address back to the start page, so a reload does not open it again. The #}
+{# Escape on the canvas - moves the address back to the page of the tree, so a reload does not open it again. The #}
 {# cross scrolls away with the card - held at the top alone, it would lie over the column of pencils in the #}
 {# tabs. Once it is out of sight ("$scrolled", set by datastar's intersection observer on the cross), a slim #}
 {# bar with the name and a second cross sticks to the top of the card instead (#99): the content runs under #}
@@ -17,7 +17,7 @@
 {# from outside the tree - the list, a relative - "$focus" is this person, and the head centres their card in #}
 {# the tree a frame later, once this card is shown and the canvas beside it has its final width; a layout #}
 {# change under a smooth scroll would stop it. A loose person has no card in the tree to centre. #}
-{% url 'family_tree:start-view' as start_url %}
+{% url 'family_tree:tree-view' tree_pk=card.entry.person.tree_id as start_url %}
 {% with person=card.entry.person %}
 <aside id="person-card" aria-label="Personenkarte" class="flex w-96 shrink-0 scroll-pt-16 flex-col gap-4 overflow-y-auto border-l border-card-edge bg-birch p-6 max-lg:absolute max-lg:inset-y-0 max-lg:right-0 max-lg:w-full max-lg:max-w-md max-lg:border-l-[1.5px] max-lg:border-ink" data-signals="{tab: 'facts', editing: 0, status: '', scrolled: false}" data-show="$selection == {{ card.entry.person.pk }}" data-effect="$selection == 0 && location.pathname != '{{ start_url }}' && history.pushState(null, '', '{{ start_url }}')">
     {# No height and the gap taken back, so it moves nothing; the bar inside hangs over what is below it, #}

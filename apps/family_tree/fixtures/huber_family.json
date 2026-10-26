@@ -1,8 +1,17 @@
 [
   {
+    "model": "family_tree.tree",
+    "pk": 1,
+    "fields": {
+      "name": "Familie Huber",
+      "home_person": 12
+    }
+  },
+  {
     "model": "family_tree.person",
     "pk": 1,
     "fields": {
+      "tree": 1,
       "given_names": "Josef",
       "surname": "Huber",
       "call_name": "",
@@ -15,6 +24,7 @@
     "model": "family_tree.person",
     "pk": 2,
     "fields": {
+      "tree": 1,
       "given_names": "Theresia",
       "surname": "Huber",
       "call_name": "",
@@ -27,6 +37,7 @@
     "model": "family_tree.person",
     "pk": 3,
     "fields": {
+      "tree": 1,
       "given_names": "Gertrud",
       "surname": "Huber",
       "call_name": "Gerti",
@@ -39,6 +50,7 @@
     "model": "family_tree.person",
     "pk": 4,
     "fields": {
+      "tree": 1,
       "given_names": "Franz",
       "surname": "Huber",
       "call_name": "",
@@ -51,6 +63,7 @@
     "model": "family_tree.person",
     "pk": 5,
     "fields": {
+      "tree": 1,
       "given_names": "Johann",
       "surname": "Huber",
       "call_name": "",
@@ -63,6 +76,7 @@
     "model": "family_tree.person",
     "pk": 6,
     "fields": {
+      "tree": 1,
       "given_names": "Maria",
       "surname": "Huber",
       "call_name": "",
@@ -75,6 +89,7 @@
     "model": "family_tree.person",
     "pk": 7,
     "fields": {
+      "tree": 1,
       "given_names": "Florian",
       "surname": "Huber",
       "call_name": "",
@@ -87,6 +102,7 @@
     "model": "family_tree.person",
     "pk": 8,
     "fields": {
+      "tree": 1,
       "given_names": "Lukas",
       "surname": "Huber",
       "call_name": "",
@@ -99,6 +115,7 @@
     "model": "family_tree.person",
     "pk": 9,
     "fields": {
+      "tree": 1,
       "given_names": "Matthias",
       "surname": "Huber",
       "call_name": "",
@@ -111,6 +128,7 @@
     "model": "family_tree.person",
     "pk": 10,
     "fields": {
+      "tree": 1,
       "given_names": "Katharina",
       "surname": "Huber",
       "call_name": "",
@@ -123,6 +141,7 @@
     "model": "family_tree.person",
     "pk": 11,
     "fields": {
+      "tree": 1,
       "given_names": "Stefan",
       "surname": "Huber",
       "call_name": "",
@@ -135,6 +154,7 @@
     "model": "family_tree.person",
     "pk": 12,
     "fields": {
+      "tree": 1,
       "given_names": "Lena",
       "surname": "Huber",
       "call_name": "",
@@ -147,6 +167,7 @@
     "model": "family_tree.person",
     "pk": 13,
     "fields": {
+      "tree": 1,
       "given_names": "Markus",
       "surname": "Brandl",
       "call_name": "",
@@ -159,6 +180,7 @@
     "model": "family_tree.person",
     "pk": 14,
     "fields": {
+      "tree": 1,
       "given_names": "Emma",
       "surname": "Brandl",
       "call_name": "",
@@ -171,6 +193,7 @@
     "model": "family_tree.person",
     "pk": 15,
     "fields": {
+      "tree": 1,
       "given_names": "Jakob",
       "surname": "Brandl",
       "call_name": "",
@@ -183,6 +206,7 @@
     "model": "family_tree.person",
     "pk": 16,
     "fields": {
+      "tree": 1,
       "given_names": "Hildegard",
       "surname": "Moser",
       "call_name": "Hilde",
@@ -452,16 +476,10 @@
     }
   },
   {
-    "model": "family_tree.treesettings",
-    "pk": 1,
-    "fields": {
-      "home_person": 12
-    }
-  },
-  {
     "model": "family_tree.source",
     "pk": 1,
     "fields": {
+      "tree": 1,
       "title": "Geburtsurkunde",
       "kind": "civil_registry",
       "description": "Standesamt Graz, Geburtenbuch Nr. 1989/3471. Nennt beide Eltern und den behandelnden Arzt.",
@@ -475,6 +493,7 @@
     "model": "family_tree.source",
     "pk": 2,
     "fields": {
+      "tree": 1,
       "title": "Gespräch mit Oma Theresia, 2014",
       "kind": "family_tradition",
       "description": "Aufgeschriebene Erinnerungen an Lenas Kindheit und den Umzug der Familie von Graz nach Wien. Keine Dokumente angehängt.",
@@ -488,6 +507,7 @@
     "model": "family_tree.source",
     "pk": 3,
     "fields": {
+      "tree": 1,
       "title": "Studienunterlagen",
       "kind": "other",
       "description": "TU Wien.",
@@ -501,6 +521,7 @@
     "model": "family_tree.source",
     "pk": 4,
     "fields": {
+      "tree": 1,
       "title": "Heiratseintrag, 1985",
       "kind": "civil_registry",
       "description": "Trauung von Johann Huber und Maria Gruber, eingetragen in Graz.",

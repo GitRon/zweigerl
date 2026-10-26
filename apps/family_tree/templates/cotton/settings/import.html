@@ -1,13 +1,13 @@
-<c-vars tree_empty />
+<c-vars tree_id tree_empty />
 {# The GEDCOM import on the settings page (#25): the button fetching the dialog that asks for the file - only #}
 {# into an empty tree, as the import refuses any other until a second import is possible (#85). #}
 <section id="import" class="flex max-w-xl flex-col gap-3">
     <h2 class="text-2xl">Import</h2>
     {% if tree_empty %}
         <p class="text-ink-muted">Ein Stammbaum aus einem anderen Programm, etwa ein PAF-Export als GEDCOM-Datei. Bevor etwas gespeichert wird, siehst du, was ankommt.</p>
-        <c-common.button class="self-start" data-on:click="@get('{% url 'family_tree:gedcom-import-dialog-view' %}')">GEDCOM importieren</c-common.button>
+        <c-common.button class="self-start" data-on:click="@get('{% url 'family_tree:gedcom-import-dialog-view' tree_pk=tree_id %}')">GEDCOM importieren</c-common.button>
     {% else %}
-        <p class="text-ink-muted">Importiert wird nur in einen leeren Stammbaum. Hier stehen schon Personen - zusammenführen kann Zweigerl noch nicht.</p>
+        <p class="text-ink-muted">Importiert wird nur in einen leeren Stammbaum. Hier stehen schon Personen - leg für die Datei einen neuen Stammbaum an, zusammenführen kann Zweigerl noch nicht.</p>
         <c-common.button class="self-start" disabled>GEDCOM importieren</c-common.button>
     {% endif %}
 </section>

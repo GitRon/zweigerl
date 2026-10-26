@@ -29,7 +29,7 @@ from apps.family_tree.models import (
     Person,
     SiblingPair,
     Source,
-    TreeSettings,
+    Tree,
 )
 
 
@@ -51,17 +51,20 @@ class ImportResult:
 
 
 @transaction.atomic
-def import_gedcom(*, file: BinaryIO, name: str) -> ImportResult:
+def import_gedcom(*, tree_id: int, file: BinaryIO, name: str) -> ImportResult:
     """
-    Reads a GEDCOM file into the tree under the name of the import - "PAF Ronny" - which every row it writes
-    keeps as its Herkunft. Only into an empty tree: merging with people already there is #35. The first person
-    of the file becomes the home person, as the export (#26) writes the home person first. Every row goes
-    through "save()", so the rules of the models hold for an import as for a form.
+    Reads a GEDCOM file into the tree "tree_id" under the name of the import - "PAF Ronny" - which every row it
+    writes keeps as its Herkunft. Only into an empty tree: merging with people already there is #35, and the family
+    of one's partner goes into a tree of its own (#34). The first person of the file becomes the home person, as
+    the export (#26) writes the home person first. Every row goes through "save()", so the rules of the models hold
+    for an import as for a form.
 
-    Raises "ImportRefusedError" for a tree that is not empty, a file that is not GEDCOM and a row the models
-    refuse - all in one transaction, so a refused import leaves nothing behind.
+    Raises "Tree.DoesNotExist" for a tree that is not there, and "ImportRefusedError" for a tree that is not empty,
+    a file that is not GEDCOM and a row the models refuse - all in one transaction, so a refused import leaves
+    nothing behind.
     """
-    if Person.objects.exists():
+    target = Tree.objects.get(pk=tree_id)
+    if target.people.exists():
         raise ImportRefusedError(
             "Importiert wird nur in einen leeren Stammbaum. Hier stehen schon Personen - "
             "zusammenführen kann Zweigerl noch nicht."
@@ -72,7 +75,7 @@ def import_gedcom(*, file: BinaryIO, name: str) -> ImportResult:
         raise ImportRefusedError(f"Das ist keine GEDCOM-Datei, die Zweigerl lesen kann: {error}") from error
 
     try:
-        origin = GedcomImport(name=name.strip())
+        origin = GedcomImport(tree=target, name=name.strip())
         origin.save()
     except ValidationError as error:
         raise ImportRefusedError(" ".join(error.messages)) from error
@@ -81,9 +84,8 @@ def import_gedcom(*, file: BinaryIO, name: str) -> ImportResult:
     for family in tree.families:
         _family(family=family, people=people, origin=origin, sources=sources)
     if tree.people:
-        TreeSettings.objects.update_or_create(
-            pk=TreeSettings.ONLY_ROW, defaults={"home_person": people[tree.people[0].xref]}
-        )
+        target.home_person = people[tree.people[0].xref]
+        target.save()
 
     return ImportResult(
         gedcom_import=origin,
@@ -99,13 +101,20 @@ def import_gedcom(*, file: BinaryIO, name: str) -> ImportResult:
 
 
 def _source(*, source: ImportedSource, origin: GedcomImport) -> Source:
-    row = Source(title=source.title, description=source.description, gedcom_raw=source.raw, gedcom_import=origin)
+    row = Source(
+        tree_id=origin.tree_id,
+        title=source.title,
+        description=source.description,
+        gedcom_raw=source.raw,
+        gedcom_import=origin,
+    )
     _save(row=row, xref=source.xref)
     return row
 
 
 def _person(*, person: ImportedPerson, origin: GedcomImport, sources: dict[str, Source]) -> Person:
     row = Person(
+        tree_id=origin.tree_id,
         given_names=person.given_names,
         surname=person.surname,
         call_name=person.call_name,

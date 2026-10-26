@@ -1,4 +1,5 @@
 from ambient_toolbox.mixins.validation import ValidateConstraintsOnSaveMixin
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.functions import Greatest, Least
 
@@ -50,6 +51,17 @@ class Partnership(ValidateConstraintsOnSaveMixin, GedcomRawMixin):
 
     def __str__(self) -> str:
         return f"{self.person_a} & {self.person_b}"
+
+    def clean(self) -> None:
+        """
+        The rule across rows no constraint can hold: both are of one tree (#34).
+        """
+        if (
+            self.person_a_id is not None
+            and self.person_b_id is not None
+            and self.person_a.tree_id != self.person_b.tree_id
+        ):
+            raise ValidationError("Die beiden gehören zu verschiedenen Stammbäumen.")
 
     def includes(self, *, person_id: int) -> bool:
         return person_id in (self.person_a_id, self.person_b_id)

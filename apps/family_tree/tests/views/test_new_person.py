@@ -7,6 +7,7 @@ from apps.family_tree.models import ParentChild, Person
 from apps.family_tree.tests.factories.parent_child import ParentChildFactory
 from apps.family_tree.tests.factories.partnership import PartnershipFactory
 from apps.family_tree.tests.factories.person import PersonFactory
+from apps.family_tree.tests.factories.tree import TreeFactory
 
 DATASTAR = {"Datastar-Request": "true"}
 FIELDS = {"given_names": "Rosa", "surname": "Huber", "sex": "F", "living_status": "living"}
@@ -18,7 +19,9 @@ def _events(response) -> str:
 
 @pytest.mark.django_db
 def test_new_person_view_appends_the_dialog(admin_client):
-    response = admin_client.get(reverse("family_tree:new-person-view"), headers=DATASTAR)
+    tree = TreeFactory()
+
+    response = admin_client.get(reverse("family_tree:new-person-view", kwargs={"tree_pk": tree.pk}), headers=DATASTAR)
 
     body = _events(response)
     assert response.status_code == 200
@@ -27,21 +30,40 @@ def test_new_person_view_appends_the_dialog(admin_client):
 
 @pytest.mark.django_db
 def test_create_person_view_opens_the_new_card(admin_client):
-    response = admin_client.post(reverse("family_tree:create-person-view"), FIELDS, headers=DATASTAR)
+    tree = TreeFactory()
+
+    response = admin_client.post(
+        reverse("family_tree:create-person-view", kwargs={"tree_pk": tree.pk}), FIELDS, headers=DATASTAR
+    )
 
     body = _events(response)
-    rosa = Person.objects.get()
+    rosa = Person.objects.get(tree=tree)
     assert reverse("family_tree:person-view", kwargs={"pk": rosa.pk}) in body
     assert admin_client.session["_toasts"] == [{"text": "Passt. Rosa Huber ist jetzt im Baum.", "style": "success"}]
 
 
 @pytest.mark.django_db
 def test_create_person_view_answers_a_refusal_with_its_reason(admin_client):
-    response = admin_client.post(reverse("family_tree:create-person-view"), {**FIELDS, "sex": "Q"}, headers=DATASTAR)
+    tree = TreeFactory()
+
+    response = admin_client.post(
+        reverse("family_tree:create-person-view", kwargs={"tree_pk": tree.pk}), {**FIELDS, "sex": "Q"}, headers=DATASTAR
+    )
 
     body = _events(response)
     assert Person.objects.exists() is False
     assert "Das Geschlecht ist männlich, weiblich, divers oder unbekannt." in body
+
+
+@pytest.mark.django_db
+def test_create_person_view_answers_a_tree_that_is_not_there(admin_client):
+    tree = TreeFactory()
+
+    response = admin_client.post(
+        reverse("family_tree:create-person-view", kwargs={"tree_pk": tree.pk + 1}), FIELDS, headers=DATASTAR
+    )
+
+    assert "Diesen Stammbaum gibt es nicht mehr." in _events(response)
 
 
 @pytest.mark.django_db

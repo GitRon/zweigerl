@@ -3,9 +3,11 @@ import datetime
 import factory
 
 from apps.family_tree.models import Photo
+from apps.family_tree.tests.factories.tree import TreeFactory
 
 
 class PhotoFactory(factory.django.DjangoModelFactory):
+    tree = factory.SubFactory(TreeFactory)
     file = factory.Sequence(lambda n: f"photos/{n}/original.jpg")
 
     class Meta:

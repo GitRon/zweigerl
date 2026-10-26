@@ -3,9 +3,10 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.db.models import ProtectedError
 
-from apps.family_tree.models import Citation
+from apps.family_tree.models import Citation, Fact
 from apps.family_tree.tests.factories.citation import CitationFactory
 from apps.family_tree.tests.factories.fact import FactFactory
+from apps.family_tree.tests.factories.partnership import PartnershipFactory
 from apps.family_tree.tests.factories.source import SourceFactory
 
 
@@ -39,3 +40,24 @@ def test_citation_keeps_a_cited_source_from_being_deleted():
 
     with pytest.raises(ProtectedError, match="protected foreign keys"):
         citation.source.delete()
+
+
+def test_citation_clean_leaves_an_incomplete_citation_to_the_field_validation():
+    assert Citation(page="Nr. 3").clean() is None
+
+
+@pytest.mark.django_db
+def test_citation_refuses_a_source_of_another_tree():
+    fact = FactFactory()
+
+    with pytest.raises(ValidationError, match="Die Quelle gehört zu einem anderen Stammbaum als die Angabe"):
+        CitationFactory(fact=fact, source=SourceFactory(tree__name="Familie Berger"))
+
+
+@pytest.mark.django_db
+def test_citation_of_a_couple_cites_a_source_of_their_tree():
+    marriage = FactFactory(person=None, partnership=PartnershipFactory(), kind=Fact.Kind.MARRIAGE)
+
+    citation = CitationFactory(fact=marriage, source=SourceFactory())
+
+    assert Citation.objects.get() == citation

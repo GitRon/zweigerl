@@ -1,7 +1,8 @@
 import pytest
 from django.core.management import call_command
 
-from apps.family_tree.readers.tree_settings import home_person
+from apps.family_tree.readers.trees import home_person
+from apps.family_tree.tests.factories.tree import TreeFactory
 
 
 @pytest.mark.django_db
@@ -14,4 +15,4 @@ def test_huber_family_loads_with_its_home_person():
     """
     call_command("loaddata", "huber_family", verbosity=0)
 
-    assert home_person() is not None
+    assert home_person(tree_id=TreeFactory().pk) is not None

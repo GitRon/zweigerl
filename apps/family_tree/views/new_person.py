@@ -9,27 +9,36 @@ from django_cotton import render_component
 from apps.common.toasts import toast_session, toast_sse
 from apps.family_tree.actions.person import Relation, add_relative, create_person, link_relative
 from apps.family_tree.domain.names import display_name
-from apps.family_tree.models import Partnership, Person
+from apps.family_tree.models import Partnership, Person, Tree
 from apps.family_tree.readers.person import RelativeDialog, person_entries, relative_candidates, relative_dialog
 
 
 @require_GET
 @datastar_response
-def new_person_view(request: HttpRequest):
+def new_person_view(request: HttpRequest, tree_pk: int):
     """
-    The dialog behind "Person hinzufügen" in the sidebar (#18): a person on their own, connected to nobody.
+    The dialog behind "Person hinzufügen" in the sidebar (#18): a person of the tree on their own, connected to
+    nobody.
     """
-    yield _dialog(request=request, title="Person hinzufügen", url=reverse("family_tree:create-person-view"))
+    yield _dialog(
+        request=request,
+        title="Person hinzufügen",
+        url=reverse("family_tree:create-person-view", kwargs={"tree_pk": tree_pk}),
+    )
 
 
 @require_POST
 @datastar_response
-def create_person_view(request: HttpRequest):
+def create_person_view(request: HttpRequest, tree_pk: int):
     """
-    Adds the person entered in the dialog and opens their card, where everything else about them is entered.
+    Adds the person entered in the dialog to the tree and opens their card, where everything else about them is
+    entered.
     """
     try:
-        person = create_person(**_person_fields(request=request))
+        person = create_person(tree_id=tree_pk, **_person_fields(request=request))
+    except Tree.DoesNotExist:
+        yield toast_sse(request=request, text="Diesen Stammbaum gibt es nicht mehr.", style="error")
+        return
     except ValidationError as error:
         yield toast_sse(request=request, text=" ".join(error.messages), style="error")
         return

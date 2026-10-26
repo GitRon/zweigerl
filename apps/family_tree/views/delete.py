@@ -34,7 +34,7 @@ def confirm_delete_person_view(request: HttpRequest, pk: int) -> DatastarRespons
 @datastar_response
 def delete_person_view(request: HttpRequest, pk: int):
     """
-    Deletes the person once the dialog was confirmed, and goes back to the start page. Whoever the deletion cuts
+    Deletes the person once the dialog was confirmed, and goes back to the page of their tree. Whoever the deletion cuts
     off from the home person must have been ticked off - as many as the tick named, so a tree changed in the
     meantime asks again rather than cutting off somebody nobody was told about.
     """
@@ -59,7 +59,9 @@ def delete_person_view(request: HttpRequest, pk: int):
         return
 
     toast_session(request=request, text=f"Passt. {preview.entry.name} ist gelöscht.", style="success")
-    yield ServerSentEventGenerator.redirect(reverse("family_tree:start-view"))
+    yield ServerSentEventGenerator.redirect(
+        reverse("family_tree:tree-view", kwargs={"tree_pk": preview.entry.person.tree_id})
+    )
 
 
 @require_GET

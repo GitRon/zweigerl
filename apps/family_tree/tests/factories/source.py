@@ -1,9 +1,11 @@
 import factory
 
 from apps.family_tree.models import Source
+from apps.family_tree.tests.factories.tree import TreeFactory
 
 
 class SourceFactory(factory.django.DjangoModelFactory):
+    tree = factory.SubFactory(TreeFactory)
     title = factory.Sequence(lambda n: f"Taufbuch Mariazell, Band {n}")
     kind = Source.Kind.PARISH_REGISTER
 

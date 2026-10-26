@@ -11,23 +11,31 @@ from apps.family_tree.tests.factories.parent_child import ParentChildFactory
 from apps.family_tree.tests.factories.partnership import PartnershipFactory
 from apps.family_tree.tests.factories.person import PersonFactory
 from apps.family_tree.tests.factories.sibling_pair import SiblingPairFactory
-from apps.family_tree.tests.factories.tree_settings import TreeSettingsFactory
+from apps.family_tree.tests.factories.tree import TreeFactory
 
 ROW = CARD_HEIGHT + ROW_GAP
 
 
 @pytest.mark.django_db
 def test_tree_layout_of_an_empty_tree_is_empty():
-    assert tree_layout() == TreeLayout()
+    assert tree_layout(tree_id=TreeFactory().pk) == TreeLayout()
 
 
 @pytest.mark.django_db
 def test_tree_layout_is_laid_out_around_the_home_person():
     PersonFactory(given_names="Fremd")
     lena = PersonFactory(given_names="Lena")
-    TreeSettingsFactory(home_person=lena)
+    TreeFactory(home_person=lena)
 
-    assert tree_layout().cards == (Card(person_id=lena.pk, x=0, y=0, generation=0),)
+    assert tree_layout(tree_id=TreeFactory().pk).cards == (Card(person_id=lena.pk, x=0, y=0, generation=0),)
+
+
+@pytest.mark.django_db
+def test_tree_layout_leaves_out_another_tree_and_its_home_person():
+    TreeFactory(name="Familie Berger", home_person=PersonFactory(tree__name="Familie Berger"))
+    lena = PersonFactory(given_names="Lena")
+
+    assert tree_layout(tree_id=lena.tree_id).cards == (Card(person_id=lena.pk, x=0, y=0, generation=0),)
 
 
 @pytest.mark.django_db
@@ -35,7 +43,7 @@ def test_tree_layout_without_a_home_person_starts_from_who_was_entered_first():
     josef = PersonFactory(given_names="Josef")
     PersonFactory(given_names="Fremd")
 
-    assert tree_layout().cards == (Card(person_id=josef.pk, x=0, y=0, generation=0),)
+    assert tree_layout(tree_id=TreeFactory().pk).cards == (Card(person_id=josef.pk, x=0, y=0, generation=0),)
 
 
 @pytest.mark.django_db
@@ -50,9 +58,9 @@ def test_tree_layout_brings_partners_parents_and_siblings_without_known_parents(
     ParentChildFactory(parent=maria, child=lena)
     SiblingPairFactory(person_a=katharina, person_b=stefan)
     PartnershipFactory(person_a=lena, person_b=katharina)
-    TreeSettingsFactory(home_person=lena)
+    TreeFactory(home_person=lena)
 
-    result = tree_layout()
+    result = tree_layout(tree_id=TreeFactory().pk)
 
     assert result.cards == (
         Card(person_id=johann.pk, x=0, y=0, generation=-1),
@@ -78,9 +86,9 @@ def test_tree_layout_orders_siblings_by_their_earliest_birth_fact():
     FactFactory(person=lena, date_1=datetime.date(1987, 1, 1))
     FactFactory(person=florian, as_value=True)
     FactFactory(person=florian, kind=Fact.Kind.DEATH, date_1=datetime.date(1950, 1, 1))
-    TreeSettingsFactory(home_person=lena)
+    TreeFactory(home_person=lena)
 
-    assert tree_layout().cards[1:] == (
+    assert tree_layout(tree_id=TreeFactory().pk).cards[1:] == (
         Card(person_id=lena.pk, x=0, y=ROW, generation=0),
         Card(person_id=lukas.pk, x=172, y=ROW, generation=0),
         Card(person_id=florian.pk, x=344, y=ROW, generation=0),
@@ -89,7 +97,7 @@ def test_tree_layout_orders_siblings_by_their_earliest_birth_fact():
 
 @pytest.mark.django_db
 def test_tree_of_an_empty_tree_has_no_cards():
-    assert tree() == Tree(cards=[], placeholders=(), lines=(), width=0, height=0)
+    assert tree(tree_id=TreeFactory().pk) == Tree(cards=[], placeholders=(), lines=(), width=0, height=0)
 
 
 @pytest.mark.django_db
@@ -98,9 +106,9 @@ def test_tree_puts_each_person_on_their_card_with_whose_line_of_ancestors_they_a
     lena = PersonFactory(given_names="Lena", surname="Huber")
     PersonFactory(given_names="Fremd")
     ParentChildFactory(parent=johann, child=lena)
-    TreeSettingsFactory(home_person=lena)
+    TreeFactory(home_person=lena)
 
-    assert tree().cards == [
+    assert tree(tree_id=TreeFactory().pk).cards == [
         TreeCard(
             entry=PersonListEntry(person=johann, name="Johann Huber", initials="JH", lifespan=""),
             x=0,
@@ -122,9 +130,9 @@ def test_tree_knows_everyone_it_shows():
     lena = PersonFactory(given_names="Lena")
     PersonFactory(given_names="Fremd")
     ParentChildFactory(parent=johann, child=lena)
-    TreeSettingsFactory(home_person=lena)
+    TreeFactory(home_person=lena)
 
-    assert tree().person_ids == [johann.pk, lena.pk]
+    assert tree(tree_id=TreeFactory().pk).person_ids == [johann.pk, lena.pk]
 
 
 @pytest.mark.django_db
@@ -141,9 +149,9 @@ def test_tree_marks_the_ancestor_in_whom_two_lines_of_the_home_person_meet():
     ParentChildFactory(parent=franz, child=bernd)
     ParentChildFactory(parent=anna, child=emma)
     ParentChildFactory(parent=bernd, child=emma)
-    TreeSettingsFactory(home_person=emma)
+    TreeFactory(home_person=emma)
 
-    cards = tree().cards
+    cards = tree(tree_id=TreeFactory().pk).cards
 
     assert (cards[0].entry.person, cards[0].pedigree_collapse) == (josef, True)
     assert (cards[1].entry.person, cards[1].pedigree_collapse) == (johann, False)
@@ -154,7 +162,7 @@ def test_tree_card_is_the_card_of_the_person():
     johann = PersonFactory(given_names="Johann")
     lena = PersonFactory(given_names="Lena")
     ParentChildFactory(parent=johann, child=lena)
-    TreeSettingsFactory(home_person=lena)
+    TreeFactory(home_person=lena)
 
     assert tree_card(pk=lena.pk) == TreeCard(
         entry=PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan=""),
@@ -168,6 +176,13 @@ def test_tree_card_is_the_card_of_the_person():
 def test_tree_card_of_somebody_the_tree_does_not_show_is_none():
     lena = PersonFactory(given_names="Lena")
     stranger = PersonFactory(given_names="Fremd")
-    TreeSettingsFactory(home_person=lena)
+    TreeFactory(home_person=lena)
 
     assert tree_card(pk=stranger.pk) is None
+
+
+@pytest.mark.django_db
+def test_tree_card_of_somebody_not_there_is_none():
+    lena = PersonFactory(given_names="Lena")
+
+    assert tree_card(pk=lena.pk + 1) is None

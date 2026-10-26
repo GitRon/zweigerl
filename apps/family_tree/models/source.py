@@ -22,6 +22,9 @@ class Source(ValidateConstraintsOnSaveMixin, GedcomRawMixin):
         NEWSPAPER = "newspaper", "Zeitung"
         OTHER = "other", "Sonstiges"
 
+    tree = models.ForeignKey(
+        "family_tree.Tree", verbose_name="Stammbaum", on_delete=models.PROTECT, related_name="sources"
+    )
     title = models.CharField("Titel", max_length=300)
     kind = models.CharField("Art", max_length=30, choices=Kind, default=Kind.OTHER)
     # What the source says and where it is kept - the mockup's "citation". Not the Citation, which is the

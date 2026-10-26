@@ -24,6 +24,10 @@ class Person(ValidateConstraintsOnSaveMixin, GedcomRawMixin):
         DECEASED = "deceased", "verstorben"
         UNKNOWN = "unknown", "unbekannt"
 
+    # PROTECT: a tree with people in it is not deleted along the way (#34).
+    tree = models.ForeignKey(
+        "family_tree.Tree", verbose_name="Stammbaum", on_delete=models.PROTECT, related_name="people"
+    )
     # GEDCOM NAME /SURN/ with GIVN and NICK. Every one may be empty: GEDCOM allows a person without a name,
     # and "the unknown first wife" is a person in the tree.
     given_names = models.CharField("Vornamen", max_length=200, blank=True)
