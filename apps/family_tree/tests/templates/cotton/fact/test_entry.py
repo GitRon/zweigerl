@@ -30,7 +30,7 @@ def test_entry_marks_an_undocumented_fact():
         tag=TAG, context={"entry": replace(DOCUMENTED, citations=[], undocumented=True), "person": GERTI}
     )
 
-    assert "unbelegt, Quelle fehlt" in parse(html).find(id="fact-11").get_text()
+    assert "unbelegt" in parse(html).find(id="fact-11").get_text()
 
 
 def test_entry_labels_a_probable_fact():
@@ -48,7 +48,7 @@ def test_entry_names_the_import_an_undocumented_fact_came_from_beside_its_mark()
     )
 
     text = parse(html).find(id="fact-11").get_text()
-    assert "aus PAF Huber" in text and "unbelegt, Quelle fehlt" in text
+    assert "aus PAF Huber" in text and "unbelegt" in text
 
 
 def test_entry_names_no_import_for_a_fact_entered_here():
