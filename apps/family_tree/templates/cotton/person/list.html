@@ -1,7 +1,9 @@
 <c-vars person_list search="" />
 {# The people of the sidebar, as "readers.person.person_list" found them for "search". Patched whole by #}
 {# the live search, so the count and the empty text move with it. A click selects the person, opens their #}
-{# card and - "$focus" - centres them in the tree, the same for a hit of the search. #}
+{# card and - "$focus" - centres them in the tree, the same for a hit of the search. Where no "#person-card" #}
+{# waits for the card - on the settings - the click loads the person's address instead: the start page with #}
+{# their card open (#96). #}
 <div id="person-list" class="flex min-h-0 flex-1 flex-col gap-2">
     <p class="flex justify-between text-sm text-ink-muted" aria-live="polite">
         {% if search %}
@@ -14,7 +16,7 @@
         <ul class="flex min-h-0 flex-col gap-0.5 overflow-y-auto">
             {% for entry in person_list.entries %}
                 <li id="person-list-{{ entry.person.pk }}">
-                    <button type="button" class="flex w-full cursor-pointer items-center gap-3 rounded-md px-2 py-1.5 text-left hover:bg-card" aria-pressed="false" data-attr:aria-pressed="String($selection == {{ entry.person.pk }})" data-class="{'bg-card': $selection == {{ entry.person.pk }}}" data-on:click="$selection = {{ entry.person.pk }}; $focus = {{ entry.person.pk }}; @get('{% url 'family_tree:person-view' pk=entry.person.pk %}')">
+                    <button type="button" class="flex w-full cursor-pointer items-center gap-3 rounded-md px-2 py-1.5 text-left hover:bg-card" aria-pressed="false" data-attr:aria-pressed="String($selection == {{ entry.person.pk }})" data-class="{'bg-card': $selection == {{ entry.person.pk }}}" data-on:click="$selection = {{ entry.person.pk }}; $focus = {{ entry.person.pk }}; document.getElementById('person-card') ? @get('{% url 'family_tree:person-view' pk=entry.person.pk %}') : location.assign('{% url 'family_tree:person-view' pk=entry.person.pk %}')">
                         <c-common.frame :src="entry.portrait_url" :alt="entry.portrait_alt" :initials="entry.initials" width="w-7" />
                         <span class="flex min-w-0 flex-col leading-tight">
                             <span class="truncate">{{ entry.name }}</span>
