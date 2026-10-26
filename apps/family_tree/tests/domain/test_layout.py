@@ -723,6 +723,31 @@ def test_layout_hangs_the_children_of_partners_in_two_rows_from_their_stepped_li
     ) in _drawn(lines=result.lines)
 
 
+def test_layout_keeps_an_empty_row_and_reaches_down_to_the_cards_below_it():
+    emil, franzi, anton, berta, daniel = 1, 2, 3, 4, 5
+
+    result = layout(
+        people=[LayoutPerson(id=person_id) for person_id in (emil, franzi, anton, berta, daniel)],
+        partnerships=[PartnerLink(person_a=anton, person_b=franzi), PartnerLink(person_a=franzi, person_b=daniel)],
+        parent_links=[
+            ParentLink(parent=emil, child=franzi),
+            ParentLink(parent=anton, child=daniel),
+            ParentLink(parent=berta, child=daniel),
+        ],
+        sibling_links=[],
+        home_person_id=emil,
+    )
+
+    assert [(card.person_id, card.y) for card in result.cards] == [
+        (emil, 0),
+        (anton, 0),
+        (berta, 0),
+        (franzi, 2 * ROW),
+        (daniel, 2 * ROW),
+    ]
+    assert result.height == 2 * ROW + CARD_HEIGHT
+
+
 def test_layout_stops_on_a_cycle_of_parents():
     anton, berta = 1, 2
 

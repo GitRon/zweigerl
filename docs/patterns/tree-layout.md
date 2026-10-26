@@ -32,6 +32,10 @@ parents', 1 for their children's. Where two paths disagree, three rules settle i
    the other; the home person stays. A couple that cannot - a marriage across generations - keeps its two
    rows and gets a stepped line, see [Lines](#lines).
 
+Moving people up and down can leave a generation with nobody in it (#68). Its row stays empty rather than
+closing up, so a card's row is always its generation, and the tree's height runs from the top of the highest
+row to the bottom of the lowest.
+
 ## What stands together
 
 - **A couple** stands side by side: a `Partnership`, or two parents of one child without one.

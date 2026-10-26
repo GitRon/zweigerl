@@ -720,7 +720,7 @@ class _Tree:
             lines=self._partner_lines(corners=corners, lineages=lineages)
             + self._children_lines(corners=corners, lineages=lineages),
             width=max(x for x, _ in corners.values()) + CARD_WIDTH,
-            height=len(self.rows) * (CARD_HEIGHT + ROW_GAP) - ROW_GAP,
+            height=max(y for _, y in corners.values()) + CARD_HEIGHT,
             lineages={card.person_id: tuple(sorted(lineages[card.person_id])) for card in cards},
         )
 
