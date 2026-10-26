@@ -1,8 +1,11 @@
 <c-vars card />
 {# The person card beside the tree (#12, #13): who was selected there, shown while "$selection" is still them. #}
 {# The cross at the top right closes it (#94), above the head and the form alike. Closing it - the cross, or #}
-{# Escape on the canvas - moves the address back to the start page, so a reload does not open it again. It #}
-{# scrolls away with the card: held at the top, it would lie over the column of pencils in the tabs. #}
+{# Escape on the canvas - moves the address back to the start page, so a reload does not open it again. The #}
+{# cross scrolls away with the card - held at the top alone, it would lie over the column of pencils in the #}
+{# tabs. Once it is out of sight ("$scrolled", set by datastar's intersection observer on the cross), a slim #}
+{# bar with the name and a second cross sticks to the top of the card instead (#99): the content runs under #}
+{# a bar, not under a lone button that looks like one more pencil. #}
 {# The head says who they are and what they are to the home person; the pencil beside the name swaps it for #}
 {# the form "Name & Status bearbeiten" (#30) while "$editing" is this person, "$status" being the status #}
 {# chosen there. That form also holds "Person löschen", asking what deleting the person would take with it #}
@@ -16,9 +19,19 @@
 {# change under a smooth scroll would stop it. A loose person has no card in the tree to centre. #}
 {% url 'family_tree:start-view' as start_url %}
 {% with person=card.entry.person %}
-<aside id="person-card" aria-label="Personenkarte" class="flex w-96 shrink-0 flex-col gap-4 overflow-y-auto border-l border-card-edge bg-birch p-6 max-lg:absolute max-lg:inset-y-0 max-lg:right-0 max-lg:w-full max-lg:max-w-md max-lg:border-l-[1.5px] max-lg:border-ink" data-signals="{tab: 'facts', editing: 0, status: ''}" data-show="$selection == {{ card.entry.person.pk }}" data-effect="$selection == 0 && location.pathname != '{{ start_url }}' && history.pushState(null, '', '{{ start_url }}')">
+<aside id="person-card" aria-label="Personenkarte" class="flex w-96 shrink-0 flex-col gap-4 overflow-y-auto border-l border-card-edge bg-birch p-6 max-lg:absolute max-lg:inset-y-0 max-lg:right-0 max-lg:w-full max-lg:max-w-md max-lg:border-l-[1.5px] max-lg:border-ink" data-signals="{tab: 'facts', editing: 0, status: '', scrolled: false}" data-show="$selection == {{ card.entry.person.pk }}" data-effect="$selection == 0 && location.pathname != '{{ start_url }}' && history.pushState(null, '', '{{ start_url }}')">
+    {# No height and the gap taken back, so it moves nothing; the bar inside hangs over what is below it, #}
+    {# across the padding to both edges of the card. #}
+    <div class="sticky top-0 z-20 -mx-6 -mb-4 h-0">
+        <div class="flex items-center justify-between gap-3 border-b border-card-edge bg-birch px-6 py-2" style="display: none" data-show="$scrolled">
+            <span class="truncate font-serif text-lg">{{ card.entry.name }}</span>
+            <c-common.button class="w-11 shrink-0 px-0!" aria-label="Karte schließen" title="Karte schließen" data-on:click="$selection = 0; $editing = 0">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M3.5 3.5l9 9 M12.5 3.5l-9 9" /></svg>
+            </c-common.button>
+        </div>
+    </div>
     {# Pulled up over the head by its own height and the gap, so it takes no row of its own. #}
-    <c-common.button class="relative z-10 -mb-15 w-11 shrink-0 self-end px-0!" aria-label="Karte schließen" title="Karte schließen" data-on:click="$selection = 0; $editing = 0">
+    <c-common.button class="relative z-10 -mb-15 w-11 shrink-0 self-end px-0!" aria-label="Karte schließen" title="Karte schließen" data-on:click="$selection = 0; $editing = 0" data-on-intersect="$scrolled = false" data-on-intersect__exit="$scrolled = true">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M3.5 3.5l9 9 M12.5 3.5l-9 9" /></svg>
     </c-common.button>
     <div class="flex items-start gap-4" data-show="$editing != {{ person.pk }}" data-effect="$focus == {{ person.pk }} && ($focus = 0, requestAnimationFrame(() => document.getElementById('tree-card-{{ person.pk }}')?.scrollIntoView({block: 'center', inline: 'center'})))">
