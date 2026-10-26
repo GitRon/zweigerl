@@ -87,6 +87,12 @@ Every line is a `Line` with its `kind` and an SVG `path`:
 | `partners`, across two rows | the side of the upper partner facing the lower | down the gap beside them, across a quarter of the row gap above the lower row, down the gap beside the lower partner and into their side - clear of the cards in between |
 | `children` | the gap beside the outer of a couple, on their partner line - between the two when they stand side by side; the last bend of a stepped line; or the bottom of a single parent's, two unmarried parents' or a placeholder's card | a bar above the children, and from it down to each child |
 
+A bar reaches from the line down from the parents to the outermost child, no further. **Two bars never lie on
+each other** (#103): where the bars of two families above the same row overlap - the family of a partner who
+stands among their spouse's siblings reaches across them - the later one, in the order of the families, runs
+a `BAR_STEP` lower, or higher, whichever is nearest and free, at most two steps from halfway between the rows.
+Each child hangs from exactly one bar that can be followed to their parents.
+
 A line between rows that are not neighbours - Ahnenschwund over a different number of generations - runs
 straight down through the rows in between.
 
@@ -95,6 +101,24 @@ by at most `WOBBLE` pixels, its ends left exactly where they are. The bow is ran
 line has a fixed seed, the `crc32` of the people it joins (`partners-3-5`, `children-3-5`,
 `placeholder-7-8`), so a line looks the same on every load and after every restart. Python's `hash()` is
 salted per process and would change it each time. Tests need no patching, see [mocking](mocking.md).
+
+## The line of ancestors
+
+**Chosen, a person's line of ancestors stands out** (#103): they, their parents, grandparents and so on up,
+and the lines joining them; everything else fades. The layout says, for each piece, whose line it is part of:
+
+- `TreeLayout.lineages` gives every person themselves and their descendants in the tree - choosing any of
+  them makes the person's card stand out. A `Placeholder` is part of the lines of its siblings.
+- A `Line` is made of `Stroke`s, one per straight piece, drawn by `pen_strokes()` with the line's seed - put
+  together they are exactly the line `pen_stroke()` draws. Each stroke's `lineage`: the drop from the parents
+  belongs to all the children, a piece of the bar to the children beyond it, the drop to a child to that
+  child. So of a family only the way down to the one child on the line stands out, not the bar to their
+  siblings.
+- A partner line belongs to the line of whoever both partners are ancestors of: it stands out between a
+  person's parents, not between them and a spouse.
+
+Where two lines of ancestors meet, the ancestor is part of both and stands out once. How it is shown is
+[datastar](datastar.md#the-tree-and-its-canvas).
 
 ## See also
 

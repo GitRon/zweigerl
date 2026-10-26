@@ -1,4 +1,4 @@
-from apps.family_tree.domain.stroke import WOBBLE, pen_stroke
+from apps.family_tree.domain.stroke import WOBBLE, pen_stroke, pen_strokes
 
 
 def test_pen_stroke_draws_each_segment_as_one_curve_between_its_ends():
@@ -27,3 +27,11 @@ def test_pen_stroke_bows_off_the_straight_line_by_at_most_the_wobble():
     control_x, control_y = (float(value) for value in result.split()[4:6])
     assert control_x == 50
     assert 0 < abs(control_y) <= WOBBLE
+
+
+def test_pen_strokes_draws_each_segment_on_its_own_exactly_as_the_whole_stroke():
+    segments = [((0, 0), (100, 0)), ((100, 0), (100, 50))]
+
+    result = pen_strokes(segments=segments, seed=7)
+
+    assert (len(result), " ".join(result)) == (2, pen_stroke(segments=segments, seed=7))
