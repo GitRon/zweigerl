@@ -52,6 +52,16 @@ def test_read_tree_reads_a_source_with_its_text_and_keeps_the_rest_raw():
     ]
 
 
+def test_read_tree_reads_the_html_text_of_a_source_as_text():
+    records = read(file=io.BytesIO(b"0 @S1@ SOUR\n1 TITL Stammbaum\n1 TEXT <p>Treffer</p><p>Sammlung: Stammbaum</p>\n"))
+
+    tree = read_tree(records=records)
+
+    assert tree.sources == [
+        ImportedSource(xref="@S1@", title="Stammbaum", description="Treffer\nSammlung: Stammbaum"),
+    ]
+
+
 def test_read_tree_names_a_source_without_a_title_after_its_record():
     records = read(file=io.BytesIO(b"0 @S1@ SOUR\n1 TITL\n"))
 
