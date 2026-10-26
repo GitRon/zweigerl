@@ -93,7 +93,7 @@ def test_tree_of_an_empty_tree_has_no_cards():
 
 
 @pytest.mark.django_db
-def test_tree_puts_each_person_on_their_card():
+def test_tree_puts_each_person_on_their_card_with_whose_line_of_ancestors_they_are_part_of():
     johann = PersonFactory(given_names="Johann", surname="Huber")
     lena = PersonFactory(given_names="Lena", surname="Huber")
     PersonFactory(given_names="Fremd")
@@ -101,9 +101,30 @@ def test_tree_puts_each_person_on_their_card():
     TreeSettingsFactory(home_person=lena)
 
     assert tree().cards == [
-        TreeCard(entry=PersonListEntry(person=johann, name="Johann Huber", initials="JH", lifespan=""), x=0, y=0),
-        TreeCard(entry=PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan=""), x=0, y=ROW),
+        TreeCard(
+            entry=PersonListEntry(person=johann, name="Johann Huber", initials="JH", lifespan=""),
+            x=0,
+            y=0,
+            lineage=(johann.pk, lena.pk),
+        ),
+        TreeCard(
+            entry=PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan=""),
+            x=0,
+            y=ROW,
+            lineage=(lena.pk,),
+        ),
     ]
+
+
+@pytest.mark.django_db
+def test_tree_knows_everyone_it_shows():
+    johann = PersonFactory(given_names="Johann")
+    lena = PersonFactory(given_names="Lena")
+    PersonFactory(given_names="Fremd")
+    ParentChildFactory(parent=johann, child=lena)
+    TreeSettingsFactory(home_person=lena)
+
+    assert tree().person_ids == [johann.pk, lena.pk]
 
 
 @pytest.mark.django_db
@@ -136,7 +157,7 @@ def test_tree_card_is_the_card_of_the_person():
     TreeSettingsFactory(home_person=lena)
 
     assert tree_card(pk=lena.pk) == TreeCard(
-        entry=PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan=""), x=0, y=ROW
+        entry=PersonListEntry(person=lena, name="Lena Huber", initials="LH", lifespan=""), x=0, y=ROW, lineage=(lena.pk,)
     )
 
 

@@ -75,7 +75,8 @@ Georgia and the system sans: it reads, but it is not Zweigerl.
 - **Matt, without a gradient and without a shadow.** The `--shadow-*` scales are dropped, so `shadow-md`
   does not exist. A page in an album lies flat.
 - **Lines are ink: `ink`, 1.5px** (`border-[1.5px]`), drawn as if with a pen. A hairline that only
-  separates is `card-edge` at 1px.
+  separates is `card-edge` at 1px. The one heavier line is the line of ancestors that stands out in the
+  tree, `ink` at 2.5px while everything else fades - see [the tree layout](tree-layout.md#the-line-of-ancestors).
 - **Paper corners.** The radius scale is `rounded-sm` (2px), `rounded-md` (3px) and `rounded-lg` (4px), and
   nothing else exists. A label is `sm`, a control `md`, a picture frame `lg`.
 - **Pictures are real**: photos and scans, pressed plants from a herbarium. Nothing is illustrated, no

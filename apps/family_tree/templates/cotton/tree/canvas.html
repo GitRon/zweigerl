@@ -3,14 +3,17 @@
 {# container - trackpad, wheel, touch and the keyboard move it, the page itself never scrolls sideways. #}
 {# "$zoom" scales the drawing; the sizer around it grows and shrinks with it so the scroll range follows. #}
 {# "selection" is the person whose card is open on arrival, 0 for nobody; "$focus" starts with them too, so #}
-{# their card is centred. The toolbar's slot takes what else belongs above the tree. See #}
-{# docs/patterns/datastar.md, "The tree and its canvas". #}
-<section aria-label="Stammbaum" class="flex min-h-0 min-w-0 flex-1 flex-col" data-signals="{zoom: 1, selection: {{ selection }}, focus: {{ selection }}, filtered: false, matches: []}" data-on:keydown__window="evt.key == 'Escape' && ($selection = 0)">
+{# their card is centred. The toolbar's slot takes what else belongs above the tree. "$ancestors" says whether #}
+{# the line of ancestors of whoever is selected stands out (#103): switched on with "$ancestry", for somebody #}
+{# the tree shows, while no search runs. Every card and every stroke of a line knows whose line it is part #}
+{# of; the rest fades. See docs/patterns/datastar.md, "The tree and its canvas". #}
+<section aria-label="Stammbaum" class="flex min-h-0 min-w-0 flex-1 flex-col" data-signals="{zoom: 1, selection: {{ selection }}, focus: {{ selection }}, filtered: false, matches: [], ancestry: true}" data-computed:ancestors="$ancestry && !$filtered && [{{ tree.person_ids|join:', ' }}].includes($selection)" data-on:keydown__window="evt.key == 'Escape' && ($selection = 0)">
     <div class="flex flex-wrap items-center gap-2 border-b border-card-edge px-4 py-2">
         <c-common.button aria-label="Verkleinern" data-on:click="$zoom = Math.max(0.25, $zoom - 0.25)" data-attr:disabled="$zoom == 0.25">−</c-common.button>
         <span class="w-14 shrink-0 whitespace-nowrap text-center" aria-live="polite" data-text="Math.round($zoom * 100) + ' %'">100 %</span>
         <c-common.button aria-label="Vergrößern" data-on:click="$zoom = Math.min(2, $zoom + 0.25)" data-attr:disabled="$zoom == 2">+</c-common.button>
         <c-common.button data-on:click="$zoom = 1" data-attr:disabled="$zoom == 1">Zurücksetzen</c-common.button>
+        <c-common.button aria-pressed="true" data-attr:aria-pressed="String($ancestry)" data-on:click="$ancestry = !$ancestry">Vorfahren hervorheben</c-common.button>
         <div class="ml-auto">{{ slot }}</div>
     </div>
     <div tabindex="0" aria-label="Stammbaum, scrollbar" class="min-h-0 flex-1 overflow-auto motion-safe:scroll-smooth">
@@ -20,11 +23,13 @@
                     <div class="relative origin-top-left" style="width: {{ tree.width }}px; height: {{ tree.height }}px;" data-style:transform="'scale(' + $zoom + ')'">
                         <svg class="absolute inset-0 overflow-visible text-ink" width="{{ tree.width }}" height="{{ tree.height }}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
                             {% for line in tree.lines %}
-                                <path d="{{ line.path }}" />
+                                {% for stroke in line.strokes %}
+                                    <path d="{{ stroke.path }}" data-class="{'opacity-35': $ancestors && ![{{ stroke.lineage|join:', ' }}].includes($selection), 'stroke-[2.5px]': $ancestors && [{{ stroke.lineage|join:', ' }}].includes($selection)}" />
+                                {% endfor %}
                             {% endfor %}
                         </svg>
                         {% for placeholder in tree.placeholders %}
-                            <div class="absolute flex items-center justify-center rounded-lg border-[1.5px] border-dashed border-ink-muted px-3 text-center text-sm text-ink-muted" style="left: {{ placeholder.x }}px; top: {{ placeholder.y }}px; width: {{ tree.card_width }}px; height: {{ tree.card_height }}px;">Eltern unbekannt</div>
+                            <div class="absolute flex items-center justify-center rounded-lg border-[1.5px] border-dashed border-ink-muted px-3 text-center text-sm text-ink-muted" style="left: {{ placeholder.x }}px; top: {{ placeholder.y }}px; width: {{ tree.card_width }}px; height: {{ tree.card_height }}px;" data-class="{'opacity-35': $ancestors && ![{{ placeholder.lineage|join:', ' }}].includes($selection)}">Eltern unbekannt</div>
                         {% endfor %}
                         {% for card in tree.cards %}
                             <c-tree.card :card="card" :width="tree.card_width" :height="tree.card_height" />
